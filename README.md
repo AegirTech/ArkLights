@@ -11,7 +11,7 @@ ArkLights is the <b> lightning fast</b> and <b> fully managed</b> Arknights game
 
 ## 使用指南
 
-[【必读】快速开始使用ArkLights](docs\guide.md)
+[【必读】快速开始使用ArkLights](docs/guide.md)
 
 ## 参与开发
 
