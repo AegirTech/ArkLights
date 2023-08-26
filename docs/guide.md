@@ -1,16 +1,8 @@
 # 必读
 
-下载： [蓝奏云(密码0000)](https://wwa.lanzoui.com/b010qimmf) /
-[github release](https://github.com/tkkcc/ArkLights/releases)
+下载：[github release](https://github.com/AegirTech/ArkLights/releases)
 
-QQ闲聊群：[1009619697](https://qm.qq.com/cgi-bin/qm/qr?k=ZtJVQZ1LI_9nMh3tj7fKgYu5PrwqBCje&jump_from=webapi)
-
-QQ频道号：[h800n9f23g](https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&appChannel=share&inviteCode=1W5HRqT&appChannel=share&businessType=9&from=246610&biz=ka)
-
-[云控](#云端控制)平台：[github.com/AegirTech](https://github.com/AegirTech)
-
-github源码：[github.com/tkkcc/ArkLights](https://github.com/tkkcc/ArkLights)  
-觉得好用请在github上点个star。
+[云控](#云端控制)平台：[伊比利亚审判庭](https://ark.aegirtech.com/)
 
 ## 最近更新
 
