@@ -157,7 +157,7 @@ def upload(md5, type, force):
     if type == "RELEASE":
         upFile = pkgPath
     elif type == "SKILL":
-        upFile = r"C:\Users\DazeCake\Development\ArkLights\res\skill.zip"
+        upFile = r"res\skill.zip"
     md5 = hashlib.md5()
     with open(upFile, "rb") as f:
         md5.update(f.read())
