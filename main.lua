@@ -79,36 +79,70 @@ require('skill')
 require("fight")
 require("cloud")
 require("ex")
-
+ 
 load(after_require_hook or '')()
 
-consoleInit()
-showControlBar(true)
-setEventCallback()
+consoleInit()--调用控制台
+showControlBar(true)--显示悬浮窗
+setEventCallback()--设置脚本关闭和悬浮窗触控事件
 hotUpdate()
--- fetchSkillIcon()
+fetchSkillIcon()
 check_root_mode()
-enable_accessibility_service()
-enable_snapshot_service()
+enable_accessibility_service()--无障碍权限
+enable_snapshot_service()--开启无障碍截图
 remove_old_log()
-detectServer()
+detectServer()--查找游戏服务器对应的app
 predebug_hook()
 showUI()
-loadUIConfig()
+loadUIConfig()--读取ui配置
 restart_mode_hook()
 update_state_from_debugui()
 check_crontab_on_start()
-cloud.startHeartBeat()
+cloud.startHeartBeat()--云控
 
--- debug_mode=true
+
+
+log("抄作业：",copy_homework)
+if copy_homework then
+  ip = pc_ipv4--本机ip
+  local adbPath = adb_adress--adb位置
+  local host = simulator_host--模拟器地址
+  local headers ="Content-Type: application/json"--post请求头
+  simulator_id=""--maa返回的模拟器编号
+  --get maa版本号
+  local ret,time = httpGet("http://" .. ip .. ":8848/API/V1/getVersion")
+  log(ret)  
+  if not ret then 
+    log("未获取到maa版本号") 
+    exit()
+  end
+  ssleep (1) 
+  local t= {
+    adbPath=adbPath,
+    host=host,
+    detailJson="",
+  }
+  ssleep (3)        
+    --请求maa连接模拟器并返回id,这之后ide会和模拟器断开,但是模拟器里面的脚本在继续,后面请用log,不要用print调试
+    --asynHttpGet(callback,"http://" .. ip .. ":8848/API/V1/connect?adbPath="..adbPath .."&host="..host)
+         
+  local res ,code = httpPost("http://" .. ip .. ":8848/API/V1/connect",JsonEncode(t),30,headers)
+    --延时到端口返回json
+    --[===[while not resp ==true do
+        ssleep (1)
+        log (resp)
+         end
+        ssleep (10)
+        log (resp)]===]
+        
+  if res then simulator_id= JsonDecode(res)["data"]["id"] end
+  log("模拟器id",simulator_id)
+  if not simulator_id or #simulator_id ==0 then exit() end 
+end
+  
+--debug_mode=true
 if debug_mode then
-  log("debug_mode")
-  -- log(findOne("活动公告返回"))
-  -- log(findOne("framelayout_only"))
-  -- log(findOne("login"))
-  -- ssleep(1)
-  -- tap("login")
-  -- exit()
+  log("debug_mode") 
 end
 
 load(before_account_hook or '')()
