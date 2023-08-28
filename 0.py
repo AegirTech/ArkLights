@@ -13,8 +13,8 @@ import win32com.client
 # win环境下的快速开发脚本
 
 # 配置全局路径 请确保路径存在
-path = r"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\script\main"
-pkgPath = r"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\out\main.lr"
+path = r"E:\明日方舟速通\main"
+pkgPath = r"E:\懒人精灵3.8.6.2\out\main.lr"
 
 
 class WindowMgr:
@@ -123,7 +123,7 @@ def release():
     ready = not input("已经在懒人打包了吗[Y/n]: ") == 'n' or False
     if not ready:
         exit()
-    
+
     '''发布'''
     # 复制pkgPath到release
     shutil.copy(pkgPath, os.path.join("./release/", 'script.lr'))

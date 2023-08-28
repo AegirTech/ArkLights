@@ -3007,6 +3007,8 @@ get_fight_type = function(x)
     return "上一次"
   elseif table.any({"PR", "CE", "CA", "AP", "LS", "SK"}, f) then
     return "物资芯片"
+  elseif table.any({"CW"},f) then
+    return "别传"
   elseif table.any(table.values(jianpin2name), f) then
     return "剿灭"
   elseif f('HD') then
@@ -3491,6 +3493,18 @@ path.主线 = function(x)
   auto(p, nil, 10, 10)
 
   path.开始游戏(x)
+end
+
+path.别传 = function (x)
+  log("别传")
+  if findOne("开始行动") then return path.开始游戏(x) end
+  path.跳转("首页")
+  tap("面板作战")
+  if not appear("主页") then return end
+  wait(function()
+    tap("别传")
+    if not findOne("主页") then return true end
+  end, 5)
 end
 
 path.上一次 = function(x)
