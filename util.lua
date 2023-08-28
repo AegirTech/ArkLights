@@ -4775,7 +4775,7 @@ killacc = function()
                         #  continue
                         #fi
                         
-                        # snap=$(sed -rn '\''s|.*com.bilabila.arknightsspeedrun23:id/switch_snap.[^>]*bilabila[^>]*bounds=.\[([0-9]*),([0-9]*)\]\[([0-9]*),([0-9]*)\]..*|input tap $(((\1+\3)/2)) $(((\2+\4)/2))|p'\'' /sdcard/window_dump.xml)
+                        # snap=$(sed -rn '\''s|.*com.bilabila.arknightsspeedrun2:id/switch_snap.[^>]*bilabila[^>]*bounds=.\[([0-9]*),([0-9]*)\]\[([0-9]*),([0-9]*)\]..*|input tap $(((\1+\3)/2)) $(((\2+\4)/2))|p'\'' /sdcard/window_dump.xml)
                         # if [[ -n $snap ]]; then
                           #   eval $snap
                           #   continue
