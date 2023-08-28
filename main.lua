@@ -86,7 +86,7 @@ consoleInit()--调用控制台
 showControlBar(true)--显示悬浮窗
 setEventCallback()--设置脚本关闭和悬浮窗触控事件
 hotUpdate()
-fetchSkillIcon()
+--fetchSkillIcon()
 check_root_mode()
 enable_accessibility_service()--无障碍权限
 enable_snapshot_service()--开启无障碍截图
