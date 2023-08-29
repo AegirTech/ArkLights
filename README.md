@@ -7,17 +7,13 @@ ArkLights is the <b> lightning fast</b> and <b> fully managed</b> Arknights game
 <p align="center">明日方舟速通 —— 高效的明日方舟全托管APP</a> </p>
 
 
-<p align="center" >
-<a href=https://arklights.pages.dev>使用文档</a>
-<a href=https://www.bilibili.com/video/BV11T4y1S7cj>999源石锭速刷记录7时21分</a>
-<a href=https://www.bilibili.com/video/BV1eQ4y1C7Ch>每日任务速通记录35.25s</a>
-<a href=https://arklights.pages.dev/guide.html#%E4%BA%91%E7%AB%AF%E6%8E%A7%E5%88%B6>云控平台</a>
-<a href=https://ark.aegirtech.com/>云端托管by蛋糕</a>
-</p>
-
 ![](cover.jpg)
 
-### Development
+## 使用指南
+
+[【必读】快速开始使用ArkLights](docs/guide.md)
+
+## 参与开发
 
 1. 内置函数参考[懒人精灵无障碍模式IDE](http://bbs.lrappsoft.com/forum.php?mod=forumdisplay&fid=2)内文档
 
@@ -58,7 +54,13 @@ ArkLights is the <b> lightning fast</b> and <b> fully managed</b> Arknights game
     
     更多说明请参考 [开发与贡献指南](./docs/development.md)
 
-<!-- ### Star History -->
-<!---->
-<!-- [![Star History Chart](https://api.star-history.com/svg?repos=tkkcc/ArkLights,ArknightsAutoHelper/ArknightsAutoHelper,MaaAssistantArknights/MaaAssistantArknights&type=Date)](https://star-history.com/#tkkcc/ArkLights&ArknightsAutoHelper/ArknightsAutoHelper&MaaAssistantArknights/MaaAssistantArknights&Date) -->
+## 错误反馈
+
+请详细的描述错误的复现场景并简明扼要的阐述你的问题，一个好的issue有助于开发者快速解决问题。
+
+## 其他相关项目
+
+- [伊比利亚审判庭](https://ark.aegirtech.com/) 在线全日制云端托管，解放你的双手，使用本服务亦是对开发的支持
+
+
 

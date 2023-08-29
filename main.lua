@@ -63,8 +63,13 @@ network_timeout = 300
 matrixOcr = ocr
 
 -- update_source = 'https://arklights.pages.dev'
-update_source = 'https://gitee.com/bilabila/arknights/raw/master'
-update_source_fallback = update_source
+-- update_source = 'https://gitee.com/bilabila/arknights/raw/master'
+-- update_source_fallback = update_source
+
+update_source = 'http://ark.aegirtech.com:8080'
+new_script_path = getWorkPath() .. '/newscript.lr'
+skill_path = getWorkPath() .. '/skill.zip'
+skill_extract_path = getWorkPath() .. '/skill'
 
 require('util')
 require("point")
@@ -81,7 +86,7 @@ consoleInit()
 showControlBar(true)
 setEventCallback()
 hotUpdate()
-fetchSkillIcon()
+-- fetchSkillIcon()
 check_root_mode()
 enable_accessibility_service()
 enable_snapshot_service()

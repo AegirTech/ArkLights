@@ -45,30 +45,36 @@ enable_log_wrapper = function(func) return disable_log_wrapper(func, true) end
 -- 无障碍函数替换
 if not openPermissionSetting then
   openPermissionSetting =
-    function() stop("没root请换用无障碍版速通") end
+      function() stop("没root请换用无障碍版速通") end
   isSnapshotServiceRun = function() return true end
   isAccessibilityServiceRun = function() return true end
   Path = {}
   function Path:new(o)
-    o = o or {startTime = 0, durTime = 0, point = {}}
+    o = o or { startTime = 0, durTime = 0, point = {} }
     setmetatable(o, self)
     self.__index = self
     return o
   end
+
   function Path:setStartTime(t) self.startTime = t end
+
   function Path:setDurTime(t) self.durTime = t end
+
   function Path:addPoint(x, y)
     table.insert(self.point, x)
     table.insert(self.point, y)
   end
+
   Gesture = {}
   function Gesture:new(o)
-    o = o or {path = {}}
+    o = o or { path = {} }
     setmetatable(o, self)
     self.__index = self
     return o
   end
+
   function Gesture:addPath(path) table.insert(self.path, path) end
+
   gestureDispatchOnePath = function(path, id)
     local point = path.point
     if #point < 2 then return end
@@ -102,7 +108,6 @@ if not openPermissionSetting then
     touchUp(id)
   end
   function Gesture:dispatch()
-
     for id, path in pairs(self.path) do
       log(71, id, path)
       beginThread(gestureDispatchOnePath, path, id)
@@ -179,7 +184,9 @@ _getDisplaySize = getDisplaySize
 getDisplaySize = function()
   -- override height and width
   if type(force_height) == 'number' and type(force_width) == 'number' and
-    force_width > 0 and force_height > 0 then return force_width, force_height end
+      force_width > 0 and force_height > 0 then
+    return force_width, force_height
+  end
 
   -- -- try to get from wm command, seems not work on real devices
   -- local wmsize = exec("wm size")
@@ -194,7 +201,7 @@ end
 getScreen = function()
   local width, height = getDisplaySize()
   if getDisplayRotate() % 2 == 1 then width, height = height, width end
-  return {width = width, height = height}
+  return { width = width, height = height }
 end
 saveConfig = setStringConfig
 loadConfig = function(k, v)
@@ -223,7 +230,6 @@ end
 
 -- https://stackoverflow.com/questions/10460126/how-to-remove-spaces-from-a-string-in-lua
 string.trim = function(s)
-
   s = s or ''
   return s:match '^()%s*$' and '' or s:match '^%s*(.*%S)'
 end
@@ -357,7 +363,6 @@ string.commonmap = function(str, extra_map)
     ["—"] = "-",
     ["＋"] = "+",
   }, extra_map or {}))
-
 end
 
 string.filterSplit = function(str, extra_map)
@@ -372,8 +377,10 @@ string.endsWith = function(str, suffix)
   return string.sub(str, #str - string.len(suffix) + 1) == suffix
 end
 
-startsWithX = function(x) return
-  function(prefix) return x:startsWith(prefix) end end
+startsWithX = function(x)
+  return
+      function(prefix) return x:startsWith(prefix) end
+end
 
 string.padStart = function(str, len, char)
   if char == nil then char = " " end
@@ -597,7 +604,7 @@ table.reverseIndex = function(t)
 end
 
 table.find =
-  function(t, f) for k, v in pairs(t) do if f(v) then return k end end end
+    function(t, f) for k, v in pairs(t) do if f(v) then return k end end end
 
 table.shuffle = function(tbl)
   for i = #tbl, 2, -1 do
@@ -658,7 +665,7 @@ end
 -- TODO: better algorithms
 loop_times = function(x)
   local times, f, n
-  local maxlen = 40 -- of one piece
+  local maxlen = 40  -- of one piece
   local maxtimes = 1 -- of same pieces
   if x == nil or #x == 0 then return 0 end
   for i = 1, maxlen do
@@ -684,7 +691,7 @@ loop_times = function(x)
 end
 
 map = function(...)
-  local a = {...}
+  local a = { ... }
   local n = select("#", ...)
   local r = {}
   local f, x = a[1], a[2]
@@ -694,7 +701,7 @@ map = function(...)
     n = #x
   elseif n > 2 then
     ur = true
-    x = {table.unpack(a, 2, n)}
+    x = { table.unpack(a, 2, n) }
     n = n - 1
   end
   for i = 1, n do
@@ -729,7 +736,7 @@ end
 table.clear = function(x) for k, v in pairs(x) do x[k] = nil end end
 
 removeFuncHash =
-  function(x) return x:startsWith('function') and 'function' or x end
+    function(x) return x:startsWith('function') and 'function' or x end
 
 table2string = function(t)
   if type(t) == 'table' then
@@ -743,7 +750,7 @@ end
 -- log_history = {}
 log = function(...)
   if disable_log then return end
-  local arg = {...}
+  local arg = { ... }
 
   local l = table.join({
     map(tostring, running, ' ', table.unpack(map(table2string, arg))),
@@ -810,7 +817,7 @@ findColorAbsolute = function(color, confidence)
     end
   end
   local x, y = color:match("(%d+),(%d+)")
-  return {x = tonumber(x), y = tonumber(y)}
+  return { x = tonumber(x), y = tonumber(y) }
 end
 
 findOne_game_up_check_last_time = 0
@@ -834,7 +841,6 @@ findOne = function(x, confidence)
   if type(x) == "table" and #x == 0 then return findNode(x) end
   if type(x) == "table" and #x > 0 then return x end
   if type(x) == "string" then
-
     -- 控制截图频率
     local current = time()
     if findOne_interval > 0 and current - findOne_last_time > findOne_interval then
@@ -854,8 +860,8 @@ findOne = function(x, confidence)
       local px, py
       -- log(x0, rfg[x0], first_color[x0], x)
       px, py = findMultiColor(rfg[x0][1], rfg[x0][2], rfg[x0][3], rfg[x0][4],
-                              first_color[x0], x, 0, confidence)
-      if px ~= -1 then pos = {px, py} end
+        first_color[x0], x, 0, confidence)
+      if px ~= -1 then pos = { px, py } end
     end
     return pos
   end
@@ -867,7 +873,7 @@ findOnes = function(x, confidence)
   confidence = confidence or default_findcolor_confidence
   log(rfg[x], first_color[x], point[x])
   return findMultiColorAll(rfg[x][1], rfg[x][2], rfg[x][3], rfg[x][4],
-                           first_color[x], point[x], 0, confidence) or {}
+    first_color[x], point[x], 0, confidence) or {}
 end
 
 -- x={2,3} "信用" func nil
@@ -886,7 +892,7 @@ tap = function(x, noretry, allow_outside_game)
     if type(x) == "string" then
       local p = x:find(coord_delimeter)
       local q = x:find(coord_delimeter, p + 1)
-      x = map(tonumber, {x:sub(1, p - 1), x:sub(p + 1, q - 1)})
+      x = map(tonumber, { x:sub(1, p - 1), x:sub(p + 1, q - 1) })
     end
   end
   log("tap", x0, x)
@@ -939,8 +945,8 @@ end
 swipq = function(direction)
   local finger = {
     point = {
-      {screen.width // 2, screen.height // 2},
-      {direction == 'right' and (screen.width - 1) or 0, screen.height // 2},
+      { screen.width // 2,                                screen.height // 2 },
+      { direction == 'right' and (screen.width - 1) or 0, screen.height // 2 },
     },
     duration = 500,
   }
@@ -953,7 +959,7 @@ swipu = function(dis)
   log('swipu', dis)
   -- preprocess distance
   if type(dis) == "string" then dis = distance[dis] end
-  if type(dis) ~= "table" then dis = {dis} end
+  if type(dis) ~= "table" then dis = { dis } end
   if not dis then return end
 
   -- flatten to one depth
@@ -973,7 +979,7 @@ swipu = function(dis)
 
       local finger = {
         {
-          point = {{freex, freey}, {freex, screen.height - 1}},
+          point = { { freex, freey }, { freex, screen.height - 1 } },
           start = 0,
           duration = 0,
         },
@@ -989,15 +995,15 @@ swipu = function(dis)
         if d > max_once_dis then
           table.insert(finger, {
             point = {
-              {freex + max_once_dis, freey + flipx},
-              {freex + max_once_dis, freey + flipy},
+              { freex + max_once_dis, freey + flipx },
+              { freex + max_once_dis, freey + flipy },
             },
             start = start,
             duration = duration,
           })
         else
           table.insert(finger, {
-            point = {{freex + d, freey}, {freex + d + flipx, freey + flipy}},
+            point = { { freex + d, freey }, { freex + d + flipx, freey + flipy } },
             start = start,
             duration = duration,
           })
@@ -1028,7 +1034,7 @@ swipe = function(x)
   if x == 'right' then
     gesture({
       {
-        point = {{scale(300), scale(150)}, {1000000, scale(150)}},
+        point = { { scale(300), scale(150) }, { 1000000, scale(150) } },
         start = 0,
         duration = 250,
       },
@@ -1037,7 +1043,7 @@ swipe = function(x)
   elseif x == 'left' then
     gesture({
       {
-        point = {{screen.width - 100, scale(150)}, {scale(1), scale(150)}},
+        point = { { screen.width - 100, scale(150) }, { scale(1), scale(150) } },
         start = 0,
         duration = 250,
       },
@@ -1046,11 +1052,11 @@ swipe = function(x)
   elseif x == 'lift' then
     gesture({
       {
-        point = {{scale(300), scale(150)}, {scale(300), screen.height - 1}},
+        point = { { scale(300), scale(150) }, { scale(300), screen.height - 1 } },
         start = 0,
         duration = 100,
       },
-      {point = {{screen.width - scale(300), 150}}, start = 60, duration = 50},
+      { point = { { screen.width - scale(300), 150 } }, start = 60, duration = 50 },
     })
     sleep(100 + 50)
   end
@@ -1075,10 +1081,10 @@ end
 swipc = function()
   local x1, y1, x2, y2
   x1, y1 = math.round((500 - 1920 / 2) * minscale + screen.width / 2),
-           screen.height // 2
+      screen.height // 2
   x2, y2 = math.round((1500 - 1920 / 2) * minscale + screen.width / 2),
-           scale(100)
-  local finger = {point = {{x1, y1}, {x2, y1}, {x2, y2}}, duration = 500}
+      scale(100)
+  local finger = { point = { { x1, y1 }, { x2, y1 }, { x2, y2 } }, duration = 500 }
   gesture(finger)
   sleep(finger.duration + 50)
 end
@@ -1093,7 +1099,7 @@ swipo = function(left, nodelay)
     local x2 = scale(10000 / 720 * 1080)
     local y1 = scale(533)
     duration = 400
-    finger = {{point = {{x1, y1}, {x2, y1}}, duration = duration}}
+    finger = { { point = { { x1, y1 }, { x2, y1 } }, duration = duration } }
     delay = 750
   else
     local x = scale(600)
@@ -1108,9 +1114,9 @@ swipo = function(left, nodelay)
     local downd = taps + 100
     duration = downd
     finger = {
-      {point = {{x, y}, {x, y2}}, start = 0, duration = downd},
-      {point = {{x2, y}, {x2, y3}}, start = slids, duration = slidd},
-      {point = {{x2, y}, {x2, y}}, start = taps, duration = tapd},
+      { point = { { x, y }, { x, y2 } },   start = 0,     duration = downd },
+      { point = { { x2, y }, { x2, y3 } }, start = slids, duration = slidd },
+      { point = { { x2, y }, { x2, y } },  start = taps,  duration = tapd },
     }
     delay = 250
   end
@@ -1123,14 +1129,14 @@ end
 -- swip for fight
 swip = function(dis)
   if type(dis) == "string" then dis = distance[dis] end
-  if type(dis) ~= "table" then dis = {dis} end
+  if type(dis) ~= "table" then dis = { dis } end
   if not dis then return end
 
   -- 懒人单次手势不能添加过多定时点，理想是在插入finger时处理，偷懒直接手动切分下距离
   -- 只处理作战关卡导航中的情况
   local max_dis_one_gesture = 5000
   if #dis == 2 and math.abs(dis[1]) == swip_right_max and dis[2] <
-    -max_dis_one_gesture then
+      -max_dis_one_gesture then
     table.insert(dis, dis[2] + max_dis_one_gesture)
     dis[2] = -max_dis_one_gesture
   end
@@ -1172,13 +1178,13 @@ zoom = function(retry)
   -- 特殊兼容 华为云 miui13
   if retry % 2 == 0 then
     finger = {
-      {point = {{5, 0}}, duration = duration},
-      {point = {{0, 0}, {5, 0}}, duration = duration},
+      { point = { { 5, 0 } },           duration = duration },
+      { point = { { 0, 0 }, { 5, 0 } }, duration = duration },
     }
   else
     finger = {
-      {point = {{0, 0}}, duration = duration},
-      {point = {{0, 5}, {0, 0}}, duration = duration},
+      { point = { { 0, 0 } },           duration = duration },
+      { point = { { 0, 5 }, { 0, 0 } }, duration = duration },
     }
   end
   -- local w =screen.width//2
@@ -1200,7 +1206,6 @@ zoom = function(retry)
 end
 
 auto_total_timeout_hook = function()
-
   -- 应对进关卡黑屏、启动游戏黑屏、卡死
   -- 愚人节
   if findOne("跳过剧情") then path.跳过剧情() end
@@ -1208,7 +1213,7 @@ auto_total_timeout_hook = function()
 
   -- 新增界面卡住、回归任务
 
-  local known = {"面板", "主页"}
+  local known = { "面板", "主页" }
   wait(function()
     if findAny(known) then return true end
     tap("主题曲已开放")
@@ -1226,7 +1231,7 @@ auto_total_timeout_hook = function()
   for w = 150, screen.width - 50, 50 do
     if findAny(known) then return true end
     for h = 50, screen.height - 50, 50 do
-      tap({w, h})
+      tap({ w, h })
       back()
     end
   end
@@ -1243,7 +1248,6 @@ auto = function(p, fallback, timeout, total_timeout, total_timeout_restart)
 
         auto_total_timeout_hook()
         stop("auto超时" .. total_timeout .. 's', 'cur')
-
       else
         return true
       end
@@ -1255,7 +1259,6 @@ auto = function(p, fallback, timeout, total_timeout, total_timeout_restart)
         -- log(663, k, v)
         -- print(type(k))
         if findOne(k) then
-
           -- log(664, k)
           log(k, "=>", v)
           -- effective_state = k
@@ -1288,7 +1291,7 @@ end
 qqnotify_before_run = function()
   qqmessage = {}
   if qqnotify_quiet then
-    table.extend(qqmessage, {devicenote, usernote})
+    table.extend(qqmessage, { devicenote, usernote })
   elseif account_idx ~= nil then
     table.extend(qqmessage, {
       devicenote and devicenote or getDevice(), "号" .. account_idx,
@@ -1306,7 +1309,7 @@ qqnotify_after_run = function(run_start_time)
   local qqmessage_bak = shallowCopy(qqmessage)
   if not qqnotify_noruntime and run_start_time then
     table.insert(qqmessage,
-                 math.floor((time() - run_start_time) / 1000 / 60) .. "分钟")
+      math.floor((time() - run_start_time) / 1000 / 60) .. "分钟")
   end
   if not qqnotify_nofight then
     table.insert(qqmessage, shrink_fight_config(fight_history))
@@ -1326,7 +1329,7 @@ end
 
 -- run function / job / table of function and job
 run = function(...)
-  local arg = {...}
+  local arg = { ... }
   if #arg == 1 then
     if type(arg[1]) == "function" then return arg[1]() end
     if type(arg[1]) == "table" then arg = arg[1] end
@@ -1356,11 +1359,11 @@ half_hour_cron = function(x, h)
       x, h = x[1], x[2]
     end
   end
-  return {callback = function() run(x) end, hour = h, minute = m}
+  return { callback = function() run(x) end, hour = h, minute = m }
 end
 
 findTap = function(target)
-  if type(target) == 'string' or #target == 0 then target = {target} end
+  if type(target) == 'string' or #target == 0 then target = { target } end
   for _, v in pairs(target) do
     -- log(574, v, type(v))
     local p = findOne(v)
@@ -1373,7 +1376,7 @@ findTap = function(target)
 end
 
 appearTap = function(target, timeout, interval)
-  if type(target) == 'string' or #target == 0 then target = {target} end
+  if type(target) == 'string' or #target == 0 then target = { target } end
   target = appear(target, timeout, interval)
   if target then
     -- log("apperTap: ", target)
@@ -1382,7 +1385,7 @@ appearTap = function(target, timeout, interval)
   end
 end
 -- {x:2,y:3} => {2,3}
-xy2arr = function(t) return {t.x, t.y} end
+xy2arr = function(t) return { t.x, t.y } end
 
 clamp = function(x, minimum, maximum)
   minimum = minimum or 0
@@ -1418,8 +1421,8 @@ end
 deploy = function(x1, x2, y2, d)
   local y1 = screen.height - scale(109)
   d = d or 2
-  d = ({{0, -1}, {1, 0}, {0, 1}, {-1, 0}})[d]
-  d = {d[1] * 500, d[2] * 500}
+  d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d]
+  d = { d[1] * 500, d[2] * 500 }
   local dragd = 500
   local dird = 200
   local delay = 150 -- 有人卡这儿？
@@ -1430,71 +1433,71 @@ deploy = function(x1, x2, y2, d)
   local finger = {
     {
       point = {
-        {x1, y1}, {x2, y2}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2},
-        {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2},
-        {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4},
-        {x3, y2}, {x4, y2}, {x2, y3}, {x2, y4}, {x3, y2}, {x4, y2}, {x2, y3},
-        {x2, y4}, {x2, y2},
+        { x1, y1 }, { x2, y2 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+        { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+        { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+        { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+        { x2, y4 }, { x2, y2 },
       },
       duration = dragd,
     }, {
-      point = {{x2, y2}, {clamp(x2 + d[1]), clamp(y2 + d[2])}},
-      duration = dird,
-      start = dragd + delay,
-    },
+    point = { { x2, y2 }, { clamp(x2 + d[1]), clamp(y2 + d[2]) } },
+    duration = dird,
+    start = dragd + delay,
+  },
   }
   -- if 1 or zl_enable_tap_before_drag then
   --   tap({x1, y1})
@@ -1512,9 +1515,9 @@ retreat = function(x1, y1, x2, y2)
   y1 = math.round((y1 - (1080 / 2)) * minscale) + (screen.height // 2)
   x2 = math.round((x2 - (1920 / 2)) * minscale) + (screen.width // 2)
   y2 = math.round((y2 - (1080 / 2)) * minscale) + (screen.height // 2)
-  tap({x1, y1})
+  tap({ x1, y1 })
   ssleep(t)
-  tap({x2, y2})
+  tap({ x2, y2 })
   ssleep(t)
 
   -- touchDown(0, x1, y1)
@@ -1550,7 +1553,7 @@ end
 -- wait until see node / point / list of node and point
 appear = function(target, timeout, interval, disappear)
   log((disappear and "dis" or '') .. "appear", target)
-  if not (type(target) == 'table' and #target > 0) then target = {target} end
+  if not (type(target) == 'table' and #target > 0) then target = { target } end
   return wait(function()
     for _, v in pairs(target) do
       -- log(1291, type(v), #v, v, findNode(v))
@@ -1587,10 +1590,10 @@ trySolveCapture = function()
   -- 手工给2分钟
   if not appear("realgame", 5) then
     local msg =
-      "请在2分钟内手动滑动验证码，超时将暂时跳过该账号"
+    "请在2分钟内手动滑动验证码，超时将暂时跳过该账号"
     toast(msg)
     captureqqimagedeliver("WARN", "触发图灵测试",
-                          table.join(qqmessage, ' ') .. ' ' .. msg)
+      table.join(qqmessage, ' ') .. ' ' .. msg)
     if not appear("realgame", 120) then
       back()
       if not appear("realgame", 5) then closeapp(appid) end
@@ -1637,20 +1640,22 @@ end
 
 screenLockSwipUp = function()
   if not wait(function()
-    local node = findOne("keyguard_indication")
-    if not node then return true end
-    local center = (node.bounds.t + node.bounds.b) // 2
-    local width = getScreen().width
-    gesture({point = {{width // 2, center}, {width // 2, 1}}, duration = 1000})
-    sleep(1000 + 50)
-  end, 5) then stop("解锁失败1004") end
+        local node = findOne("keyguard_indication")
+        if not node then return true end
+        local center = (node.bounds.t + node.bounds.b) // 2
+        local width = getScreen().width
+        gesture({ point = { { width // 2, center }, { width // 2, 1 } }, duration = 1000 })
+        sleep(1000 + 50)
+      end, 5) then
+    stop("解锁失败1004")
+  end
 end
 screenLockGesture = function()
   local point = JsonDecode(unlock_gesture or "[]") or {}
   log("point", point)
   if findOne("keyguard_input") then
     if unlock_mode == 0 then
-      gesture({point = point, duration = 3000})
+      gesture({ point = point, duration = 3000 })
       sleep(3000 + 50)
     else
       for _, p in pairs(point) do
@@ -1706,7 +1711,7 @@ findtap_operator = function(operator)
     ssleep(1)
     -- 616,107
     local res = ocrp({
-      rect = {scale(616), scale(107), screen.width - 1, screen.height - 1},
+      rect = { scale(616), scale(107), screen.width - 1, screen.height - 1 },
     })
     res = res or {}
 
@@ -1751,8 +1756,8 @@ findtap_operator_fast = function(operator)
     -- TODO: wait for 节点精灵 fix bug
     -- we must ocr on small region if we want to use position
     local region = {
-      {590, 487, 1059, 523}, {1033, 487, 1491, 523}, {1464, 487, 1919, 523},
-      {590, 907, 1059, 943}, {1033, 907, 1491, 943}, {1464, 907, 1919, 943},
+      { 590, 487, 1059, 523 }, { 1033, 487, 1491, 523 }, { 1464, 487, 1919, 523 },
+      { 590, 907, 1059, 943 }, { 1033, 907, 1491, 943 }, { 1464, 907, 1919, 943 },
     }
 
     -- {0,0,0,0,"1059,457,#D2D1D1|1033,455,#FFFFFF|1464,443,#D1CACE|1491,446,#D6D5D5",95}
@@ -1768,7 +1773,7 @@ findtap_operator_fast = function(operator)
         for _, w in pairs(info.words) do
           if operator_notfound[w.word] then
             log('found', w.word)
-            tap({scale(r[1]) + w.rect.left, scale(r[2]) + w.rect.top})
+            tap({ scale(r[1]) + w.rect.left, scale(r[2]) + w.rect.top })
             operator_notfound[w.word] = nil
             found = found - 1
             if found == 0 then return end
@@ -1853,7 +1858,7 @@ tapAll = function(ks)
   local finger = {}
   for i, k in pairs(ks) do
     if type(k) == 'string' then k = point[k] end
-    table.insert(finger, {point = {{k[1], k[2]}}, duration = duration})
+    table.insert(finger, { point = { { k[1], k[2] } }, duration = duration })
   end
   log('tapall', finger)
   if enable_simultaneous_tap then
@@ -1867,22 +1872,26 @@ end
 -- event queue
 Lock = {}
 function Lock:new(o)
-  o = o or {queue = {}, length = 0, id = 0}
+  o = o or { queue = {}, length = 0, id = 0 }
   setmetatable(o, self)
   self.__index = self
   return o
 end
+
 function Lock:remove(id)
   self.queue[id] = nil
   self.length = self.length - 1
 end
+
 function Lock:exist(id) return self.queue[id] end
+
 function Lock:add()
   self.id = self.id + 1
   self.queue[self.id] = 1
   self.length = self.length + 1
   return self.id
 end
+
 lock = Lock:new()
 
 captureqqimagedeliver = function(log_level, log_title, log_detail, important)
@@ -1919,7 +1928,7 @@ captureqqimagedeliver = function(log_level, log_title, log_detail, important)
   elseif type(pushplus_token) == 'string' and #pushplus_token > 5 then
     img_url = uploadImg(img_src)
   elseif type(telegram_token) == 'string' and type(telegram_chatid) == 'string' and
-    #telegram_token > 0 and #telegram_chatid > 0 then
+      #telegram_token > 0 and #telegram_chatid > 0 then
     img_url = uploadImg(img_src)
   else
     img_url = ''
@@ -1944,15 +1953,15 @@ captureqqimagedeliver = function(log_level, log_title, log_detail, important)
   -- local
   if qqnotify_save then
     local img_dst = '/sdcard/' .. package .. '/' .. path_name_escape(info) ..
-                      '.jpg'
+        '.jpg'
     exec("cp '" .. img_src .. "' '" .. img_dst .. "'")
   end
 end
 
 poweroff =
-  function() if root_mode then exec("su root sh -c 'reboot -p'") end end
+    function() if root_mode then exec("su root sh -c 'reboot -p'") end end
 
-kill_game_last_time = {[oppid] = time(), [bppid] = time()}
+kill_game_last_time = { [oppid] = time(), [bppid] = time() }
 closeapp = function(package)
   if not package then return end
   -- log("package",package)
@@ -1971,7 +1980,7 @@ closeapp = function(package)
     log(intent)
     local stop_node
     stop_node = appear({
-      {text = "*停止*"}, {text = "*结束*"}, {text = "*STOP*"},
+      { text = "*停止*" }, { text = "*结束*" }, { text = "*STOP*" },
     }, 10)
     if not stop_node then return end
     stop_node = findNode(stop_node)
@@ -1979,7 +1988,7 @@ closeapp = function(package)
     tap(stop_node)
 
     ok_node = nil
-    ok_node = appear({{text = "*确*"}, {text = "*OK*"}}, 5)
+    ok_node = appear({ { text = "*确*" }, { text = "*OK*" } }, 5)
     if not ok_node then return end
     ok_node = findNode(ok_node)
     if not ok_node or not ok_node.enabled then return back() end
@@ -2102,10 +2111,9 @@ make_account_ui = function(layout, prefix)
   for k, v in pairs(all_job) do
     if k % max_checkbox_one_row == 1 then
       newRow(layout, prefix .. "now_job_row" .. k)
-
     end
     ui.addCheckBox(layout, prefix .. "now_job_ui" .. k, v,
-                   table.includes(now_job, v))
+      table.includes(now_job, v))
   end
 end
 
@@ -2126,18 +2134,18 @@ show_multi_account_ui = function()
   -- ui.setOnClick(layout .. "_start", make_jump_ui_command(layout, "main"))
 
   addButton(layout, nil, "返回", make_jump_ui_command(layout, "main"), nil,
-            nil)
+    nil)
 
   -- addButton(layout, nil, "启动", make_jump_ui_command(layout, nil,
   --                                                       "crontab_enable=false;lock:remove(main_ui_lock)"),
   -- ui_small_submit_width)
   addButton(layout, nil, "定时", make_jump_ui_command(layout, nil,
-                                                        "crontab_enable_only=true;lock:remove(main_ui_lock)"),
-            ui_small_submit_width)
+      "crontab_enable_only=true;lock:remove(main_ui_lock)"),
+    ui_small_submit_width)
 
   addButton(layout, nil, "启动并定时",
-            make_jump_ui_command(layout, nil, "lock:remove(main_ui_lock)"),
-            ui_small_submit_width, ui_small_submit_height, ui_submit_color)
+    make_jump_ui_command(layout, nil, "lock:remove(main_ui_lock)"),
+    ui_small_submit_width, ui_small_submit_height, ui_submit_color)
 
   -- newRow(layout)
   -- addButton(layout, nil, "退出",
@@ -2149,12 +2157,12 @@ show_multi_account_ui = function()
 
   newRow(layout)
   addButton(layout, randomString(32), "导出帐密", make_jump_ui_command(
-              layout, layout, "multi_account_config_export(1)"))
+    layout, layout, "multi_account_config_export(1)"))
   addButton(layout, randomString(32), "导出全部", make_jump_ui_command(
-              layout, layout, "multi_account_config_export()"))
+    layout, layout, "multi_account_config_export()"))
   addButton(layout, randomString(32), "导入",
-            make_jump_ui_command(layout, nil,
-                                 "multi_account_config_import();show_multi_account_ui()"))
+    make_jump_ui_command(layout, nil,
+      "multi_account_config_import();show_multi_account_ui()"))
 
   newRow(layout)
   ui.addCheckBox(layout, layout .. '_enable', "启用账号", false)
@@ -2165,7 +2173,7 @@ show_multi_account_ui = function()
     continue_account = shrink_number_config(continue_account)
     continue_account_btn = randomString(32)
     addButton(layout, continue_account_btn, "继续账号" .. continue_account,
-              "ui.setVisiblity(continue_account_btn,3);ui.setText('multi_account_choice', ui.getText('multi_account_choice') .. ' # '.. continue_account);saveConfig('continue_account','');")
+      "ui.setVisiblity(continue_account_btn,3);ui.setText('multi_account_choice', ui.getText('multi_account_choice') .. ' # '.. continue_account);saveConfig('continue_account','');")
   end
 
   newRow(layout)
@@ -2198,10 +2206,10 @@ show_multi_account_ui = function()
     ui.addEditText(layout, "password" .. i, "", -1)
 
     addButton(layout, nil, "#" .. i, make_jump_ui_command(layout, nil,
-                                                          "multi_account_config_remove_once_choice('" ..
-                                                            i ..
-                                                            "');saveConfig('continue_account','');lock:remove(main_ui_lock)"),
-              -2, nil, ui_submit_color)
+        "multi_account_config_remove_once_choice('" ..
+        i ..
+        "');saveConfig('continue_account','');lock:remove(main_ui_lock)"),
+      -2, nil, ui_submit_color)
 
     -- ui.addCheckBox(layout, "multi_account" .. i, "启用", true)
     newRow(layout)
@@ -2210,14 +2218,14 @@ show_multi_account_ui = function()
 
     -- ui.addRadioGroup(layout, "server" .. i, {"官服", "B服"}, 0, -2, -2, true)
 
-    ui.addSpinner(layout, "server" .. i, {"官服", "B服"}, 0)
+    ui.addSpinner(layout, "server" .. i, { "官服", "B服" }, 0)
     -- newRow(layout)
     -- addTextView(layout, "账号" .. padi .. "用")
 
     addTextView(layout, "用")
     addButton(layout, "multi_account_inherit_toggle" .. i,
-              i == 1 and '单号设置' or "继承设置",
-              "multi_account_inherit_toggle(" .. i .. ")")
+      i == 1 and '单号设置' or "继承设置",
+      "multi_account_inherit_toggle(" .. i .. ")")
 
     --
     -- addButton(layout, "multi_account_inherit_toggle" .. i, "单号设置",
@@ -2226,7 +2234,7 @@ show_multi_account_ui = function()
     -- addTextView(layout, "账号" .. padi .. "使用",multi_account_inherit)
     -- newRow(layout)
     ui.addSpinner(layout, "multi_account_inherit_spinner" .. i,
-                  multi_account_all_inherit_choice, 0)
+      multi_account_all_inherit_choice, 0)
 
     -- addTextView(layout, "设置")
     -- addButton(layout, "multi_account_inherit_toggle" .. i,
@@ -2321,13 +2329,13 @@ multi_account_config_export = function(simple)
     -- 提取账密
     local account = ''
     for i = 1, multi_account_num do
-      local username = content['username' .. i]:trim():map({[' '] = ''})
+      local username = content['username' .. i]:trim():map({ [' '] = '' })
       local password = content['password' .. i]:trim()
       local server = content['server' .. i]
       if type(username) == 'string' and #username > 0 and type(password) ==
-        'string' and #password > 0 then
+          'string' and #password > 0 then
         account = account .. username .. ' ' .. password .. ' ' ..
-                    (server == 1 and 'B服' or '官服') .. '\n'
+            (server == 1 and 'B服' or '官服') .. '\n'
       end
     end
     log(account)
@@ -2339,7 +2347,6 @@ multi_account_config_export = function(simple)
 
   putClipboard(content)
   toast("多账号设置已复制" .. #content)
-
 end
 
 parse_simple_config = function(data)
@@ -2349,7 +2356,7 @@ parse_simple_config = function(data)
   local i = multi_account_num
   while i > 0 do
     if type(cur["username" .. i]) == 'string' and #cur["username" .. i] > 0 or
-      type(cur["password" .. i]) == 'string' and #cur["password" .. i] > 0 then
+        type(cur["password" .. i]) == 'string' and #cur["password" .. i] > 0 then
       break
     end
     i = i - 1
@@ -2437,7 +2444,7 @@ notifyqq = function(image, info, to, sync)
   if #to < 5 then return end
 
   local param = "image=" .. encodeUrl(image) .. "&info=" .. encodeUrl(info) ..
-                  "&to=" .. encodeUrl(to)
+      "&to=" .. encodeUrl(to)
   log('notify qq', info, to)
 
   local id = lock:add()
@@ -2473,8 +2480,8 @@ notifypp = function(img, info, to, channel, sync)
 
   -- 不发图更好
   local param = "content=" .. encodeUrl("![](" .. img .. ")") .. "&title=" ..
-                  encodeUrl(info) .. "&token=" .. encodeUrl(to) ..
-                  "&template=markdown"
+      encodeUrl(info) .. "&token=" .. encodeUrl(to) ..
+      "&template=markdown"
   if #strOr(channel) > 0 then param = param .. "&channel=" .. channel end
   log('notify pp', info, to)
   -- log("param", param)
@@ -2511,7 +2518,7 @@ notifytg = function(imgurl, info, chatid, bottoken, tgapi, sync)
   else
     local tgurl = tgapi .. '/bot' .. bottoken .. '/sendPhoto'
     local param = "chat_id=" .. chatid .. "&photo=" .. encodeUrl(imgurl) ..
-                    "&caption=" .. encodeUrl(info)
+        "&caption=" .. encodeUrl(info)
     asynHttpPost(function(code)
       log("notifytg", code)
       lock:remove(id)
@@ -2539,18 +2546,18 @@ notify_wechat = function(webhookurl, info, img, md5)
   print(webhookurl)
   if string.find(webhookurl, "weixin.qq.com") == nil then
     webhookurl = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=' ..
-                   webhookurl
+        webhookurl
   end
   -- 推送文字
-  local body = {msgtype = "text", text = {content = info}}
+  local body = { msgtype = "text", text = { content = info } }
   local res, code = httpPost(webhookurl, JsonEncode(body), 15,
-                             "Content-Type: application/json;charset=UTF-8")
+    "Content-Type: application/json;charset=UTF-8")
   if code ~= 200 then print("Wechat text failed" .. status_code .. res) end
   -- 推送图片 因为markdown格式限制4kb 使用文件上传获取media麻烦，故图片文字分开发送
   if img ~= nil then
-    local body = {msgtype = "image", image = {base64 = img, md5 = md5}}
+    local body = { msgtype = "image", image = { base64 = img, md5 = md5 } }
     local res, code = httpPost(webhookurl, JsonEncode(body), 15,
-                               "Content-Type: application/json;charset=UTF-8")
+      "Content-Type: application/json;charset=UTF-8")
     if code == 200 then
       print("Wechat notify successfully")
     else
@@ -2569,50 +2576,132 @@ clean_table = function(t, idx, bad)
   return ans, idx
 end
 
-hotUpdate = function()
+-- hotUpdate = function()
+--   toast("正在检查更新...")
+--   if disable_hotupdate then return end
+--   -- https://gitee.com/bilabila/arknights/raw/master
+--   -- local url = 'https://gitee.com/bilabila/arknights/raw/master/script.lr'
+--   local url = update_source .. '/script.lr'
+--   if beta_mode then url = url .. '.beta' end
+--   local md5url = url .. '.md5'
+--   local path = getWorkPath() .. '/newscript.lr'
+--   local md5path = path .. '.md5'
+--   if downloadFile(md5url, md5path) == -1 then
+--     toast("下载校验数据失败")
+--     ssleep(3)
+--     return
+--   end
+--   local f = io.open(md5path, 'r')
+--   local expectmd5 = f:read() or '1'
+--   f:close()
+--   if #expectmd5 ~= #'b966ddd58fd64b2f963a0c6b61b463ce' and update_source ~=
+--     update_source_fallback then
+--     log(2405)
+--     update_source = update_source_fallback
+--     return hotUpdate()
+--   end
+--   if expectmd5 == loadConfig("lr_md5", "2") then
+--     toast("已经是最新版")
+--     return
+--   end
+--   -- log(3, expectmd5, loadConfig("lr_md5", "2"))
+--   if downloadFile(url, path) == -1 then
+--     toast("下载最新脚本失败")
+--     ssleep(3)
+--     return
+--   end
+--   if fileMD5(path) ~= expectmd5 then
+--     toast("脚本校验失败")
+--     ssleep(3)
+--     return
+--   end
+--   installLrPkg(path)
+--   saveConfig("lr_md5", expectmd5)
+--   sleep(1000)
+--   -- log(5, expectmd5, loadConfig("lr_md5", "2"))
+--   log("已更新至最新")
+--   return restartScript()
+-- end
+
+check_hot_update = function()
   toast("正在检查更新...")
-  if disable_hotupdate then return end
-  -- https://gitee.com/bilabila/arknights/raw/master
-  -- local url = 'https://gitee.com/bilabila/arknights/raw/master/script.lr'
-  local url = update_source .. '/script.lr'
-  if beta_mode then url = url .. '.beta' end
-  local md5url = url .. '.md5'
-  local path = getWorkPath() .. '/newscript.lr'
-  local md5path = path .. '.md5'
-  if downloadFile(md5url, md5path) == -1 then
-    toast("下载校验数据失败")
+  if disable_hotupdate then 
+    log("热更新已禁用")
+    return 
+  end
+
+  local file_md5 = loadConfig("lr_md5", "null")
+  local skill_md5 = loadConfig("skill_md5", "null")
+
+  -- 检查是否需要更新
+  local res, code = httpGet(
+    update_source .. "/checkUpdate?lr_md5=" .. tostring(file_md5) ..
+    "&skill_md5=" .. tostring(skill_md5), 30)
+  if code == -1 then
+    toast("无法连接到热更新服务器")
     ssleep(3)
-    return
+    return false
   end
-  local f = io.open(md5path, 'r')
-  local expectmd5 = f:read() or '1'
-  f:close()
-  if #expectmd5 ~= #'b966ddd58fd64b2f963a0c6b61b463ce' and update_source ~=
-    update_source_fallback then
-    log(2405)
-    update_source = update_source_fallback
-    return hotUpdate()
+  local status, data = pcall(JsonDecode, res)
+  local update_info = data.data
+  return update_info
+end
+
+updateLr = function(update_info)
+  if update_info.updateLr then
+    toast("正在更新脚本...")
+    if downloadFile(update_info.lrUrl, new_script_path) == -1 then
+      toast("下载最新版本失败")
+      ssleep(3)
+      return false
+    end
+  else
+    toast("脚本已经是最新版")
+    return true
   end
-  if expectmd5 == loadConfig("lr_md5", "2") then
-    toast("已经是最新版")
-    return
-  end
-  -- log(3, expectmd5, loadConfig("lr_md5", "2"))
-  if downloadFile(url, path) == -1 then
-    toast("下载最新脚本失败")
-    ssleep(3)
-    return
-  end
-  if fileMD5(path) ~= expectmd5 then
+  if fileMD5(new_script_path) ~= update_info.lrMD5 then
     toast("脚本校验失败")
     ssleep(3)
-    return
+    return false
   end
+  saveConfig("lr_md5", update_info.lrMD5)
+  return true
+end
+
+updateSkill = function(update_info)
+  if update_info.updateSkill then
+    toast("正在更新基建图标...")
+    if downloadFile(update_info.skillUrl, skill_path) == -1 then
+      toast("下载最新版本基建图标失败")
+      ssleep(3)
+      return false
+    end
+  else
+    toast("基建图标已经是最新版")
+    return true
+  end
+  if fileMD5(skill_path) ~= update_info.skillMD5 then
+    toast("基建图标校验失败")
+    ssleep(3)
+    return false
+  end
+  unZip(skill_path, skill_extract_path)
+  saveConfig("skill_md5", update_info.skillMD5)
+  return true
+end
+
+hotUpdate = function()
+  local update_info = check_hot_update()
+  if not update_info.updateLr and not update_info.updateSkill then
+    toast("已经是最新版")
+    return true
+  end
+  updateLr(update_info)
+  updateSkill(update_info)
+
   installLrPkg(path)
-  saveConfig("lr_md5", expectmd5)
   sleep(1000)
-  -- log(5, expectmd5, loadConfig("lr_md5", "2"))
-  log("已更新至最新")
+  log("更新完成")
   return restartScript()
 end
 
@@ -2660,27 +2749,26 @@ make_continue_account_ui = function(layout)
     newRow(layout, nil, nil, -1)
     continue_account = shrink_number_config(continue_account)
     addButton(layout, nil, "启动并定时，本次只跑剩余账号 #" ..
-                continue_account, make_jump_ui_command(layout, nil,
-                                                       "multi_account_config_remove_once_choice(continue_account);saveConfig('continue_account','');lock:remove(main_ui_lock)"),
-              -1, nil, ui_submit_color)
+      continue_account, make_jump_ui_command(layout, nil,
+        "multi_account_config_remove_once_choice(continue_account);saveConfig('continue_account','');lock:remove(main_ui_lock)"),
+      -1, nil, ui_submit_color)
     newRow(layout, nil, nil, -1)
     continue_all_account = shrink_number_config(continue_all_account)
     addButton(layout, nil, "启动并定时，本次先跑剩余账号 #" ..
-                continue_all_account, make_jump_ui_command(layout, nil,
-                                                           "multi_account_config_remove_once_choice(continue_all_account);saveConfig('continue_account','');lock:remove(main_ui_lock)"),
-              -1, nil, ui_submit_color)
+      continue_all_account, make_jump_ui_command(layout, nil,
+        "multi_account_config_remove_once_choice(continue_all_account);saveConfig('continue_account','');lock:remove(main_ui_lock)"),
+      -1, nil, ui_submit_color)
   end
 end
 
 make_continue_extra_ui = function(layout)
-
   continue_extra_mode = loadConfig("continue_extra_mode", '')
   if #continue_extra_mode > 0 then
     newRow(layout, nil, nil, -1)
     addButton(layout, nil, "继续" .. continue_extra_mode,
-              make_jump_ui_command(layout, nil,
-                                   "extra_mode=continue_extra_mode;saveConfig('continue_extra_mode','');lock:remove(main_ui_lock)"),
-              -1, nil, ui_submit_color)
+      make_jump_ui_command(layout, nil,
+        "extra_mode=continue_extra_mode;saveConfig('continue_extra_mode','');lock:remove(main_ui_lock)"),
+      -1, nil, ui_submit_color)
   end
 end
 
@@ -2696,7 +2784,6 @@ make_afterjob_ui = function(layout)
   ui.addEditText(layout, "crontab_text", "4:00 12:00 20:00")
 end
 make_jump_ui = function(layout)
-
   local max_checkbox_one_row = 3
   local readme_btn = randomString(32)
   -- local jump_btn
@@ -2707,9 +2794,9 @@ make_jump_ui = function(layout)
   -- end
 
   local buttons = {
-    {nil, "多号", make_jump_ui_command(layout, 'multi_account')},
+    { nil, "多号", make_jump_ui_command(layout, 'multi_account') },
     -- jump_btn, --
-    {nil, "解锁", make_jump_ui_command(layout, 'gesture_capture')}, -- {
+    { nil, "解锁", make_jump_ui_command(layout, 'gesture_capture') }, -- {
     --   layout .. "crontab", "定时执行",
     --   make_jump_ui_command(layout, 'crontab'),
     -- },
@@ -2721,12 +2808,12 @@ make_jump_ui = function(layout)
     --   layout .. "qqgroup", "反馈群",
     --   make_jump_ui_command(layout, nil, "jump_qqgroup()"),
     -- },
-    {nil, "肉鸽/公招", make_jump_ui_command(layout, "extra")},
+    { nil, "肉鸽/公招", make_jump_ui_command(layout, "extra") },
     -- {nil, "必读", make_jump_ui_command(layout, "help")},
-    {nil, "退出", make_jump_ui_command(layout, nil, "peaceExit()")}, {
-      readme_btn, "必读", make_jump_ui_command(layout, nil,
-                                                 "saveConfig('readme_already_read','1');jump_readme()"),
-    }, {nil, "高级设置", make_jump_ui_command(layout, "debug")},
+    { nil, "退出", make_jump_ui_command(layout, nil, "peaceExit()") }, {
+    readme_btn, "必读", make_jump_ui_command(layout, nil,
+    "saveConfig('readme_already_read','1');jump_readme()"),
+  }, { nil, "高级设置", make_jump_ui_command(layout, "debug") },
     -- {
     --   layout .. "demo", "视频演示",
     --   make_jump_ui_command(layout, nil, "jump_bilibili()"),
@@ -2748,14 +2835,14 @@ make_jump_ui = function(layout)
   -- ui.setBackground(layout .. "_stop", ui_cancel_color)
 
   addButton(layout, nil, "启动", make_jump_ui_command(layout, nil,
-                                                        "crontab_enable=false;lock:remove(main_ui_lock)"),
-            ui_small_submit_width)
+      "crontab_enable=false;lock:remove(main_ui_lock)"),
+    ui_small_submit_width)
   addButton(layout, nil, "定时", make_jump_ui_command(layout, nil,
-                                                        "crontab_enable_only=true;lock:remove(main_ui_lock)"),
-            ui_small_submit_width)
+      "crontab_enable_only=true;lock:remove(main_ui_lock)"),
+    ui_small_submit_width)
   addButton(layout, nil, "启动并定时",
-            make_jump_ui_command(layout, nil, "lock:remove(main_ui_lock)"),
-            ui_small_submit_width, ui_small_submit_height, ui_submit_color)
+    make_jump_ui_command(layout, nil, "lock:remove(main_ui_lock)"),
+    ui_small_submit_width, ui_small_submit_height, ui_submit_color)
 end
 
 make_ui_title = function(layout, name)
@@ -2763,7 +2850,7 @@ make_ui_title = function(layout, name)
   local resolution = screen.width .. 'x' .. screen.height
   name = name or ''
   local title = name .. " " .. getApkVerInt() .. "-" ..
-                  release_date:gsub(' ', '-') .. ' ' .. resolution
+      release_date:gsub(' ', '-') .. ' ' .. resolution
   ui.setTitleText(layout, is_apk_old() and apk_old_warning or title)
 end
 
@@ -2783,7 +2870,7 @@ show_main_ui = function()
     addTextView(layout, "服务器选")
     -- ui.addRadioGroup(layout, "server", {"官服", "B服"}, 0, -2, -2, true)
 
-    ui.addSpinner(layout, "server", {"官服", "B服"}, 0)
+    ui.addSpinner(layout, "server", { "官服", "B服" }, 0)
   end
 
   make_account_ui(layout)
@@ -2873,7 +2960,7 @@ show_help_ui = function()
   ui.setOnClick(layout .. "_stop", make_jump_ui_command(layout, "main"))
   newRow(layout)
   ui.addWebView(layout, randomString(32), 'https://arklights.pages.dev/guide',
-                -2, 1000)
+    -2, 1000)
   ui.show(layout, false)
 end
 
@@ -2885,8 +2972,8 @@ show_debug_ui = function()
   newRow(layout)
 
   addButton(layout, nil, "返回",
-            make_jump_ui_command(layout, loadConfig("last_layout", "main")),
-            nil, nil)
+    make_jump_ui_command(layout, loadConfig("last_layout", "main")),
+    nil, nil)
   -- ui.addButton(layout, layout .. "_stop", "返回")
   -- ui.setBackground(layout .. "_stop", ui_cancel_color)
   -- ui.setOnClick(layout .. "_stop",
@@ -2974,18 +3061,18 @@ show_debug_ui = function()
 
   newRow(layout)
   ui.addCheckBox(layout, "zero_san_after_fight", "使用1-7清空剩余理智",
-                 true)
+    true)
   newRow(layout)
   ui.addCheckBox(layout, "restart_on_crontab_timeout",
-                 "跨定时点结束后重启", true)
+    "跨定时点结束后重启", true)
 
   newRow(layout)
   ui.addCheckBox(layout, "auto_update_gameclient",
-                 "自动更新游戏客户端", false)
+    "自动更新游戏客户端", false)
 
   newRow(layout)
   ui.addCheckBox(layout, "delete_download_floder",
-                 "自动清理download文件夹", false)
+    "自动清理download文件夹", false)
 
   newRow(layout)
   addTextView(layout, "QQ通知账号")
@@ -3021,48 +3108,48 @@ show_debug_ui = function()
 
   newRow(layout)
   ui.addCheckBox(layout, "qqnotify_save",
-                 "QQ通知保存到/sdcard/包名/ (保留一周)", true)
+    "QQ通知保存到/sdcard/包名/ (保留一周)", true)
 
   newRow(layout)
   ui.addCheckBox(layout, "qqnotify_quiet",
-                 "QQ通知设备名与账号名只显示备注", false)
+    "QQ通知设备名与账号名只显示备注", false)
 
   newRow(layout)
   ui.addCheckBox(layout, "qqnotify_notime", "QQ通知不显示发送时间",
-                 false)
+    false)
 
   newRow(layout)
   ui.addCheckBox(layout, "qqnotify_nofailedfight",
-                 "QQ通知不显示代理失败信息", false)
+    "QQ通知不显示代理失败信息", false)
 
   newRow(layout)
   ui.addCheckBox(layout, "qqnotify_nofight", "QQ通知不显示作战信息",
-                 false)
+    false)
   newRow(layout)
   ui.addCheckBox(layout, "qqnotify_noruntime", "QQ通知不显示耗时信息",
-                 false)
+    false)
 
   newRow(layout)
   ui.addCheckBox(layout, "qqnotify_bar", "QQ通知显示悬浮按钮", false)
 
   newRow(layout)
   ui.addCheckBox(layout, "qqnotify_beforemail",
-                 "QQ通知显示邮件收取前情况", true)
+    "QQ通知显示邮件收取前情况", true)
 
   newRow(layout)
   ui.addCheckBox(layout, "qqnotify_afterenter",
-                 "QQ通知显示基建进入后情况", true)
+    "QQ通知显示基建进入后情况", true)
 
   newRow(layout)
   ui.addCheckBox(layout, "qqnotify_beforeleaving",
-                 "QQ通知显示基建退出前情况", true)
+    "QQ通知显示基建退出前情况", true)
   newRow(layout)
   ui.addCheckBox(layout, "qqnotify_beforemission",
-                 "QQ通知显示任务收集前情况", true)
+    "QQ通知显示任务收集前情况", true)
 
   newRow(layout)
   ui.addCheckBox(layout, "collect_beforeleaving",
-                 "基建离开前加一次基建收获", true)
+    "基建离开前加一次基建收获", true)
 
   newRow(layout)
   addTextView(layout, "基建换班心情阈值")
@@ -3070,40 +3157,40 @@ show_debug_ui = function()
 
   newRow(layout)
   ui.addCheckBox(layout, "shift_prefer_speed", "基建换班禁用高产换班",
-                 false)
+    false)
 
   newRow(layout)
   ui.addCheckBox(layout, "disable_dorm_shift", "基建换班禁用宿舍换班",
-                 false)
+    false)
   newRow(layout)
   ui.addCheckBox(layout, "disable_control_shift",
-                 "基建换班禁用控制中枢换班", false)
+    "基建换班禁用控制中枢换班", false)
   newRow(layout)
   ui.addCheckBox(layout, "disable_meeting_shift",
-                 "基建换班禁用会客厅换班", false)
+    "基建换班禁用会客厅换班", false)
   newRow(layout)
   ui.addCheckBox(layout, "disable_office_shift",
-                 "基建换班禁用办公室换班", false)
+    "基建换班禁用办公室换班", false)
   newRow(layout)
   ui.addCheckBox(layout, "disable_manu_shift",
-                 "基建换班禁用制造站换班", false)
+    "基建换班禁用制造站换班", false)
   newRow(layout)
   ui.addCheckBox(layout, "disable_trading_shift",
-                 "基建换班禁用贸易站换班", false)
+    "基建换班禁用贸易站换班", false)
   newRow(layout)
   ui.addCheckBox(layout, "disable_overview_shift",
-                 "基建换班禁用总览换班", false)
+    "基建换班禁用总览换班", false)
 
   newRow(layout)
   ui.addCheckBox(layout, "disable_free_draw",
-                 "限时活动禁用赠送寻访(每日单抽)", false)
+    "限时活动禁用赠送寻访(每日单抽)", false)
 
   newRow(layout)
   ui.addCheckBox(layout, "zl_disable_lighter",
-                 "前瞻投资禁用升级幕后筹备", false)
+    "前瞻投资禁用升级幕后筹备", false)
   newRow(layout)
   ui.addCheckBox(layout, "disable_strick_account_check",
-                 "多账号允许不填帐密(双号双服玩家)", false)
+    "多账号允许不填帐密(双号双服玩家)", false)
 
   newRow(layout)
   addTextView(layout, "多账号双休日跳过账号")
@@ -3184,7 +3271,7 @@ show_debug_ui = function()
 
   newRow(layout)
   ui.addCheckBox(layout, "enable_simultaneous_tap", "启用多点同步点击",
-                 false)
+    false)
 
   newRow(layout)
   addTextView(layout, "强制分辨率")
@@ -3226,7 +3313,7 @@ show_extra_ui = function()
   newRow(layout)
 
   addButton(layout, nil, "返回", make_jump_ui_command(layout, "main"), nil,
-            nil)
+    nil)
   -- ui.addButton(layout, layout .. "_stop", "返回")
   -- ui.setBackground(layout .. "_stop", ui_cancel_color)
   -- ui.setOnClick(layout .. "_stop", make_jump_ui_command(layout, "main"))
@@ -3243,22 +3330,22 @@ show_extra_ui = function()
 
   newRow(layout)
   addButton(layout, nil, "生息演算(仅720p)",
-            make_jump_ui_command(layout, nil,
-                                 "extra_mode='生息演算沙中之火';lock:remove(main_ui_lock)"))
+    make_jump_ui_command(layout, nil,
+      "extra_mode='生息演算沙中之火';lock:remove(main_ui_lock)"))
   ui.addCheckBox(layout, "sand_fire_unstop", "打满也不结束", false)
   newRow(layout)
 
   addButton(layout, nil, "活动任务与商店（尖灭）",
-            make_jump_ui_command(layout, nil,
-                                 "extra_mode='活动任务与商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    make_jump_ui_command(layout, nil,
+      "extra_mode='活动任务与商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
   newRow(layout)
   addButton(layout, nil, "傀影与猩红孤钻",
-            make_jump_ui_command(layout, nil,
-                                 "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
+    make_jump_ui_command(layout, nil,
+      "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
   addButton(layout, nil, "水月与深蓝之树(仅720p)",
-            make_jump_ui_command(layout, nil,
-                                 "extra_mode='水月与深蓝之树';lock:remove(main_ui_lock)"))
+    make_jump_ui_command(layout, nil,
+      "extra_mode='水月与深蓝之树';lock:remove(main_ui_lock)"))
   newRow(layout)
   addTextView(layout, [[选第]])
   ui.addEditText(layout, "zl_best_operator", [[-1]])
@@ -3313,8 +3400,8 @@ show_extra_ui = function()
 
   newRow(layout)
   addButton(layout, layout .. "_recruit", "公开招募加急",
-            make_jump_ui_command(layout, nil,
-                                 "extra_mode='公开招募加急';lock:remove(main_ui_lock)"))
+    make_jump_ui_command(layout, nil,
+      "extra_mode='公开招募加急';lock:remove(main_ui_lock)"))
   addTextView(layout, [[保留标签]])
   ui.addEditText(layout, layout .. "_recruit_important_tag", [[]])
   -- newRow(layout)
@@ -3369,8 +3456,9 @@ jump_qqgroup = function()
   local key = "KlYYiyXj2VRJg1qNqRo3tExo959SrKhT"
   local intent = {
     action = "android.intent.action.VIEW",
-    uri = "mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26jump_from%3Dwebapi%26k%3D" ..
-      key,
+    uri =
+        "mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26jump_from%3Dwebapi%26k%3D" ..
+        key,
   }
   runIntent(intent)
   putClipboard(qq)
@@ -3446,7 +3534,7 @@ show_gesture_capture_ui = function()
   local layout = "gesture_capture"
   ui.newLayout(layout, ui_page_width, -2)
   ui.setTitleText(layout, (root_mode and '亮屏解锁' or
-                    " 当前无root权限，请借助其他亮屏解锁软件"))
+    " 当前无root权限，请借助其他亮屏解锁软件"))
 
   newRow(layout)
 
@@ -3454,13 +3542,13 @@ show_gesture_capture_ui = function()
 
   newRow(layout)
   addTextView(layout,
-              [[录入解锁手势或密码，以便熄屏下自动解锁]])
+    [[录入解锁手势或密码，以便熄屏下自动解锁]])
 
   newRow(layout)
   addTextView(layout, "1. 点击")
 
   addButton(layout, nil, "开始录制", "gesture_capture()", nil, nil,
-            ui_submit_color)
+    ui_submit_color)
   -- ui.addButton(layout, layout .. "_start", "开始录制", ui_small_submit_width)
   -- ui.setBackground(layout .. "_start", ui_submit_color)
   -- ui.setOnClick(layout .. "_start", "")
@@ -3472,12 +3560,12 @@ show_gesture_capture_ui = function()
   newRow(layout)
   addTextView(layout, "4. 选择锁屏类型")
 
-  ui.addSpinner(layout, "unlock_mode", {"手势", "密码"}, 0)
+  ui.addSpinner(layout, "unlock_mode", { "手势", "密码" }, 0)
   -- ui.addRadioGroup(layout, "unlock_mode", {"手势", "密码"}, 0, -2, -2, true)
 
   newRow(layout)
   addTextView(layout,
-              [[5. 快速测试：启动脚本后，手动熄屏，5秒内应观察到亮屏解锁现象。]])
+    [[5. 快速测试：启动脚本后，手动熄屏，5秒内应观察到亮屏解锁现象。]])
   newRow(layout)
   addTextView(layout, "当前手势：")
   ui.addTextView(layout, "unlock_gesture", JsonEncode({}))
@@ -3505,32 +3593,36 @@ gesture_capture = function()
 
   local state
   if not wait(function()
-    state = appear({
-      "gesture_capture_ui", "keyguard_indication", "keyguard_input",
-    }, 5)
-    if not state then
-      stop("未找到解锁界面")
-    elseif state == "gesture_capture_ui" then
-      ui.setText("unlock_gesture", JsonEncode({}))
-      return true
-    elseif state == "keyguard_indication" then
-      screenLockSwipUp()
-    elseif state == "keyguard_input" then
-      return true
-    end
-  end, 30) then stop("手势录制2010") end
+        state = appear({
+          "gesture_capture_ui", "keyguard_indication", "keyguard_input",
+        }, 5)
+        if not state then
+          stop("未找到解锁界面")
+        elseif state == "gesture_capture_ui" then
+          ui.setText("unlock_gesture", JsonEncode({}))
+          return true
+        elseif state == "keyguard_indication" then
+          screenLockSwipUp()
+        elseif state == "keyguard_input" then
+          return true
+        end
+      end, 30) then
+    stop("手势录制2010")
+  end
 
   if state == title then return end
   log(200)
 
   if not wait(function()
-    local p = catchClick()
-    if findOne("gesture_capture_ui") then return true end
-    if p then
-      table.insert(finger, {p.x, p.y})
-      ui.setText("unlock_gesture", JsonEncode(finger))
-    end
-  end, 30) then stop("手势录制超时") end
+        local p = catchClick()
+        if findOne("gesture_capture_ui") then return true end
+        if p then
+          table.insert(finger, { p.x, p.y })
+          ui.setText("unlock_gesture", JsonEncode(finger))
+        end
+      end, 30) then
+    stop("手势录制超时")
+  end
 end
 gesture_capture = disable_game_up_check_wrapper(gesture_capture)
 
@@ -3541,13 +3633,13 @@ show_crontab_ui = function()
   newRow(layout)
   ui.addCheckBox(layout, layout .. "_option", "定时执行总开关", true)
   local max_checkbox_one_row = 4
-  local default_hour = {8, 16, 24}
+  local default_hour = { 8, 16, 24 }
   for i = 1, 24 do
     if i % max_checkbox_one_row == 1 then
       newRow(layout, layout .. "_row" .. i)
     end
     ui.addCheckBox(layout, layout .. i, tostring(i):padStart(2, '0') .. "点",
-                   table.includes(default_hour, i))
+      table.includes(default_hour, i))
   end
   newRow(layout, layout .. "_stop_row")
   ui.addButton(layout, layout .. "_stop", "返回", ui_submit_width)
@@ -3594,7 +3686,7 @@ end
 
 loadUIConfig = function(layouts)
   if not layouts then
-    layouts = {"multi_account", "gesture_capture", "extra", "debug", "main"}
+    layouts = { "multi_account", "gesture_capture", "extra", "debug", "main" }
   end
   for _, layout in pairs(layouts) do
     assignGlobalVariable(loadOneUIConfig(layout))
@@ -3611,7 +3703,7 @@ randomString = function(length)
   return res
 end
 gesture = function(fingers)
-  if #fingers == 0 then fingers = {fingers} end
+  if #fingers == 0 then fingers = { fingers } end
   local gesture = Gesture:new() -- 创建一个手势滑动对象
   for _, finger in pairs(fingers) do
     local path = Path:new()
@@ -3648,15 +3740,14 @@ end
 -- input = disable_game_up_check_wrapper(input)
 
 enable_accessibility_service = function(after_killacc)
-
   if isAccessibilityServiceRun() then return end
   if root_mode then
     local service = package .. "/com.nx.assist.AssistService"
     local services = exec(
-                       "su root sh -c 'settings get secure enabled_accessibility_services'")
+      "su root sh -c 'settings get secure enabled_accessibility_services'")
     log("3363", services)
     services = table.filter(services:trim():split(':'),
-                            function(x) return x ~= 'null' end)
+      function(x) return x ~= 'null' end)
 
     log("3365", services)
     local other_services = table.join(table.filter(services, function(x)
@@ -3665,12 +3756,12 @@ enable_accessibility_service = function(after_killacc)
     log("3366", other_services)
     local cmd = [[su root sh -c '
 settings put secure enabled_accessibility_services ]] .. other_services ..
-                  (#other_services > 0 and ':' or '') .. service .. [[;
+        (#other_services > 0 and ':' or '') .. service .. [[;
 settings put secure enabled_accessibility_services ]] ..
-                  (#other_services > 0 and other_services or [['\'\'']]) .. [[;
+        (#other_services > 0 and other_services or [['\'\'']]) .. [[;
 
 settings put secure enabled_accessibility_services ]] .. other_services ..
-                  (#other_services > 0 and ':' or '') .. service .. [[;
+        (#other_services > 0 and ':' or '') .. service .. [[;
 
 ' 2>&1 ]]
     local out = exec(cmd)
@@ -3731,14 +3822,14 @@ appops set ]] .. package .. [[ SYSTEM_ALERT_WINDOW allow
   -- _toast("请开启录屏权限")
   openPermissionSetting()
   if not wait(function()
-    if isSnapshotServiceRun() then return true end
-    local p
-    p = findOne("snap")
-    if p then clickNodeFalse(p) end
-    p = findOne({text = '立即开始'})
-    if p then clickNodeFalse(p) end
-    ssleep(1)
-  end, 60) then
+        if isSnapshotServiceRun() then return true end
+        local p
+        p = findOne("snap")
+        if p then clickNodeFalse(p) end
+        p = findOne({ text = '立即开始' })
+        if p then clickNodeFalse(p) end
+        ssleep(1)
+      end, 60) then
     toast("开启录屏权限超时")
     restartPackage()
   end
@@ -3868,7 +3959,7 @@ predebug_hook = function()
   --   local left, top = p.bounds.l, p.bounds.t
   --   tap({left - scale(10), top + scale(10)})
   -- end
-  findTap({text="下一步"})
+  findTap({ text = "下一步" })
   exit()
 end
 
@@ -3923,38 +4014,38 @@ parse_fight_config = function(fight_ui)
     elseif table.includes(table.keys(extrajianpin2name), v) then
       v = extrajianpin2name[v]
     end
-    if table.find({'活动'}, startsWithX(v)) then
+    if table.find({ '活动' }, startsWithX(v)) then
       local idx = v:gsub(".-(%d+)$", '%1')
       v = "HD-" .. (idx or '')
       -- log(2731, v, idx)
     end
 
     -- special fight expand
-    if table.includes({'CE', 'LS', 'AP', 'SK', 'CA'}, v) then
+    if table.includes({ 'CE', 'LS', 'AP', 'SK', 'CA' }, v) then
       for i = 6, 1, -1 do
         for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
       end
-    elseif table.includes({'PR'}, v) then
+    elseif table.includes({ 'PR' }, v) then
       for _ = 1, 99 do
-        table.extend(expand_fight, {"PR-B-2", "PR-A-2", "PR-C-2", "PR-D-2"})
+        table.extend(expand_fight, { "PR-B-2", "PR-A-2", "PR-C-2", "PR-D-2" })
       end
       for _ = 1, 99 do
-        table.extend(expand_fight, {"PR-B-1", "PR-A-1", "PR-C-1", "PR-D-1"})
+        table.extend(expand_fight, { "PR-B-1", "PR-A-1", "PR-C-1", "PR-D-1" })
       end
-    elseif table.includes({'PR1'}, v) then
+    elseif table.includes({ 'PR1' }, v) then
       for _ = 1, 99 do
-        table.extend(expand_fight, {"PR-B-1", "PR-A-1", "PR-C-1", "PR-D-1"})
+        table.extend(expand_fight, { "PR-B-1", "PR-A-1", "PR-C-1", "PR-D-1" })
       end
-    elseif table.includes({'WT', 'JM'}, v) then
+    elseif table.includes({ 'WT', 'JM' }, v) then
       for _ = 1, 99 do table.insert(expand_fight, '当期委托') end
       for _ = 1, 99 do table.insert(expand_fight, '长期委托1') end
       for _ = 1, 99 do table.insert(expand_fight, '长期委托2') end
       for _ = 1, 99 do table.insert(expand_fight, '长期委托3') end
-    elseif table.includes({'HD'}, v) then
-      for _, i in pairs({8, 7, 6}) do
+    elseif table.includes({ 'HD' }, v) then
+      for _, i in pairs({ 8, 7, 6 }) do
         for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
       end
-    elseif table.includes({'HD1'}, v) then
+    elseif table.includes({ 'HD1' }, v) then
       for i = 10, 1, -1 do table.insert(expand_fight, 'HD' .. '-' .. i) end
       table.insert(expand_fight, "BREAK")
     else
@@ -3970,8 +4061,8 @@ update_state_from_ui = function()
   bilibili_captcha_times = 0
 
   disable_clue_unlock = account_idx and
-                          table.includes(multi_account_disable_clue_unlock,
-                                         account_idx)
+      table.includes(multi_account_disable_clue_unlock,
+        account_idx)
 
   -- 总览换班就按工作状态了，保证高心情
   -- prefer_skill = true
@@ -3992,10 +4083,10 @@ update_state_from_ui = function()
 
   -- 活动开放时间段
   hd_open_time_end = parse_time("202308220400")
-  hd_shop_open_time_end = parse_time("202306080400") -- 活动商店关闭时间
+  hd_shop_open_time_end = parse_time("202306080400")  -- 活动商店关闭时间
   hd2_open_time_end = parse_time("202303210400")
   hd2_shop_open_time_end = parse_time("202302240400") -- 活动2商店关闭时间
-  hd_mod = "ss" -- 活动类型 "故事集"/"ss" 区分活动任务和是否活动作战
+  hd_mod = "ss"                                       -- 活动类型 "故事集"/"ss" 区分活动任务和是否活动作战
   hd2_mod = "故事集"
 
   -- 资源关全天开放时间段
@@ -4064,9 +4155,9 @@ crontab_next_time = function(text)
     local hour = math.round(tonumber(hour_second[1] or 0) or 0)
     local min = math.round(tonumber(hour_second[2] or 0) or 0)
     table.insert(candidate, os.time(
-                   update(os.date("*t"), {hour = hour, min = min, sec = 0})))
+      update(os.date("*t"), { hour = hour, min = min, sec = 0 })))
     table.insert(candidate, os.time(
-                   update(os.date("*t"), {hour = hour + 24, min = min, sec = 0})))
+      update(os.date("*t"), { hour = hour + 24, min = min, sec = 0 })))
   end
   table.sort(candidate)
   -- log("candidate", candidate)
@@ -4109,7 +4200,7 @@ check_crontab = function()
   -- exit()
   if next_time == 0 then return end
   if restart_on_crontab_timeout and str2int(next_time_on_start, next_time) ~=
-    next_time then
+      next_time then
     toast("跨定时点重启")
     restart()
   end
@@ -4124,7 +4215,6 @@ check_crontab = function()
 end
 
 setEventCallback = function()
-
   setStopCallBack(function()
     disable_log = false
     log("结束")
@@ -4143,13 +4233,12 @@ setEventCallback = function()
     disableRootToast(true)
     restartScript()
   end)
-
 end
 
 consoleInit = function()
   console.clearLog()
   console.setPos(round(screen.height * 0.05), round(screen.height * 0.05),
-                 round(screen.height * 0.9), round(screen.height * 0.9))
+    round(screen.height * 0.9), round(screen.height * 0.9))
   local screen = getScreen()
   local resolution = screen.width .. 'x' .. screen.height
   local title = getApkVerInt() .. ' ' .. release_date .. '  ' .. resolution
@@ -4183,7 +4272,6 @@ showUI = function()
     if not wait(function() return not lock:exist(main_ui_lock) end, math.huge) then
       peaceExit()
     end
-
   end
 end
 
@@ -4237,9 +4325,9 @@ swipzl = function(mode)
 
   if mode == 'right' then
     finger = {
-      {point = {{x1, y}, {screen.width - 1, y}}, start = 0, duration = duration},
+      { point = { { x1, y }, { screen.width - 1, y } }, start = 0, duration = duration },
       {
-        point = {{x1, y}, {screen.width - 1, y}},
+        point = { { x1, y }, { screen.width - 1, y } },
         start = duration + delay,
         duration = duration,
       },
@@ -4248,8 +4336,8 @@ swipzl = function(mode)
     delay = 500
   else
     finger = {
-      {point = {{x2, y}, {0, y}}, start = 0, duration = duration},
-      {point = {{x2, y}, {0, y}}, start = duration + delay, duration = duration},
+      { point = { { x2, y }, { 0, y } }, start = 0,                duration = duration },
+      { point = { { x2, y }, { 0, y } }, start = duration + delay, duration = duration },
     }
     duration = duration + delay + duration
     delay = 500
@@ -4425,7 +4513,7 @@ make_multi_account_choice_hook = function(skip_current)
   -- 截取后续账号
   choice = table.slice(choice, choice_idx)
   return ";multi_account_choice=" ..
-           string.format('%q', table.join(choice, ' '))
+      string.format('%q', table.join(choice, ' '))
 end
 
 -- restart_mode = function(mode, multi)
@@ -4455,7 +4543,7 @@ save_run_state = function(skip_current)
 
   local pre_hook = loadConfig('restart_mode_hook', '')
   pre_hook = pre_hook:gsub(hook_prefix:quote() .. ".*" .. hook_suffix:quote(),
-                           '')
+    '')
   hook = pre_hook .. hook
   saveConfig("restart_mode_hook", hook)
   saveConfig("hideUIOnce", "true")
@@ -4483,7 +4571,7 @@ appendLog = function(content)
   mkdir(path)
   path = path .. '/log.txt'
   writeFile(path, os.date('%m.%d %H:%M:%S') .. " " .. strOr(content) .. "\n",
-            true)
+    true)
 end
 
 restart_mode_hook = function()
@@ -4498,7 +4586,6 @@ restart_mode_hook = function()
 end
 
 check_login_frequency = function()
-
   login_times = (login_times or 0) + 1
 
   if login_times > 1 then
@@ -4521,12 +4608,11 @@ check_login_frequency = function()
   table.insert(login_time_history, time())
   log("login_time_history", login_time_history)
   if max_login_times_5min > 0 and #login_time_history >= max_login_times_5min and
-    login_time_history[#login_time_history] -
-    login_time_history[#login_time_history - max_login_times_5min + 1] < 15 * 60 *
-    1000 then
+      login_time_history[#login_time_history] -
+      login_time_history[#login_time_history - max_login_times_5min + 1] < 15 * 60 *
+      1000 then
     stop("15分钟内登录次数达到" .. max_login_times_5min, 'next')
   end
-
 end
 
 keepalive = function()
@@ -4581,7 +4667,7 @@ killacc = function()
   --                 (#other_services > 0 and ':' or '') .. service .. [[;
   -- ' 2>&1 ]]
   open(package)
-  appear({package = package}, 5)
+  appear({ package = package }, 5)
   ssleep(1)
 
   local cmd = [[nohup su root sh -c ' \
@@ -4727,7 +4813,6 @@ am send-trim-memory ]] .. appid .. [[ RUNNING_CRITICAL
 ' > /dev/null & ]]
 
   exec(cmd)
-
 end
 
 oom_score_adj = function()
@@ -4817,7 +4902,7 @@ solveCapture = function()
   point.captcha_left_area = {
     left + scale(105), top + scale(40), left + scale(196), top + scale(481),
   }
-  point.captcha_area_btn = {left + scale(114), top + scale(609)}
+  point.captcha_area_btn = { left + scale(114), top + scale(609) }
 
   local w, h, color
   local i, j, b, g, r
@@ -4829,23 +4914,23 @@ solveCapture = function()
   data = {}
   for i = 1, #color do
     b, g, r = colorToRGB(color[i])
-    table.extend(data, {r, g, b})
+    table.extend(data, { r, g, b })
   end
 
   maxgrad = {}
   for i = w + 1, #color do
     y1 = (0.299 * data[i * 3 - 2] + 0.587 * data[i * 3 - 1] + 0.114 *
-           data[i * 3])
+      data[i * 3])
     y2 =
-      (0.299 * data[(i - 2) * 3 - 2] + 0.587 * data[(i - 2) * 3 - 1] + 0.114 *
-        data[(i - 2) * 3])
+        (0.299 * data[(i - 2) * 3 - 2] + 0.587 * data[(i - 2) * 3 - 1] + 0.114 *
+          data[(i - 2) * 3])
     y3 =
-      (0.299 * data[(i - w) * 3 - 2] + 0.587 * data[(i - w) * 3 - 1] + 0.114 *
-        data[(i - w) * 3])
+        (0.299 * data[(i - w) * 3 - 2] + 0.587 * data[(i - w) * 3 - 1] + 0.114 *
+          data[(i - w) * 3])
     diff1 = y1 - y2
     diff2 = y1 - y3
     maxgrad[i % w] = (maxgrad[i % w] or 0) + max(0, diff1) /
-                       (1 + math.abs(diff2))
+        (1 + math.abs(diff2))
   end
 
   -- local best = {}
@@ -4872,22 +4957,22 @@ solveCapture = function()
   data = {}
   for i = 1, #color do
     b, g, r = colorToRGB(color[i])
-    table.extend(data, {r, g, b})
+    table.extend(data, { r, g, b })
   end
   maxgrad = {}
   for i = w + 1, #color do
     y1 = (0.299 * data[i * 3 - 2] + 0.587 * data[i * 3 - 1] + 0.114 *
-           data[i * 3])
+      data[i * 3])
     y2 =
-      (0.299 * data[(i - 2) * 3 - 2] + 0.587 * data[(i - 2) * 3 - 1] + 0.114 *
-        data[(i - 2) * 3])
+        (0.299 * data[(i - 2) * 3 - 2] + 0.587 * data[(i - 2) * 3 - 1] + 0.114 *
+          data[(i - 2) * 3])
     y3 =
-      (0.299 * data[(i - w) * 3 - 2] + 0.587 * data[(i - w) * 3 - 1] + 0.114 *
-        data[(i - w) * 3])
+        (0.299 * data[(i - w) * 3 - 2] + 0.587 * data[(i - w) * 3 - 1] + 0.114 *
+          data[(i - w) * 3])
     diff1 = y1 - y2
     diff2 = y1 - y3
     maxgrad[i % w] = (maxgrad[i % w] or 0) + max(0, -diff1) /
-                       (1 + math.abs(diff2))
+        (1 + math.abs(diff2))
   end
 
   -- local best = {}
@@ -4925,18 +5010,18 @@ solveCapture = function()
   local duration = 500
   local finger = {
     point = {
-      {sx, sy}, {sx + distance, sy},
-      {sx + distance + scale(10), sy - scale(100)},
-      {sx + distance + scale(10), sy},
-      {sx + distance + scale(10), sy - scale(100)},
-      {sx + distance + scale(10), sy},
-      {sx + distance - scale(10), sy - scale(100)},
-      {sx + distance - scale(10), sy},
-      {sx + distance - scale(10), sy - scale(100)},
-      {sx + distance - scale(10), sy}, {sx + distance, sy - scale(100)},
-      {sx + distance, sy}, {sx + distance, sy - scale(100)},
-      {sx + distance, sy}, {sx + distance, sy - scale(100)},
-      {sx + distance, sy},
+      { sx,                        sy }, { sx + distance, sy },
+      { sx + distance + scale(10), sy - scale(100) },
+      { sx + distance + scale(10), sy },
+      { sx + distance + scale(10), sy - scale(100) },
+      { sx + distance + scale(10), sy },
+      { sx + distance - scale(10), sy - scale(100) },
+      { sx + distance - scale(10), sy },
+      { sx + distance - scale(10), sy - scale(100) },
+      { sx + distance - scale(10), sy }, { sx + distance, sy - scale(100) },
+      { sx + distance, sy }, { sx + distance, sy - scale(100) },
+      { sx + distance, sy }, { sx + distance, sy - scale(100) },
+      { sx + distance, sy },
     },
     duration = duration,
   }
@@ -4964,9 +5049,9 @@ disableRootToast = function(reenable)
 root_manager=$(pm list packages|grep -e .superuser -e .supersu -e .magisk | head -n1|cut -d: -f2)
 root_manager=${root_manager:-com.android.settings}
 appops set $root_manager TOAST_WINDOW ]] .. (reenable and "allow" or "deny") ..
-                [[;
+      [[;
 settings put global heads_up_notifications_enabled ]] .. (reenable and 1 or 0) ..
-                [[;
+      [[;
 ' > /dev/null & ]]
   -- log(5208,cmd)
   exec(cmd)
@@ -4988,7 +5073,6 @@ hd_wrapper = function(func)
       point[k] = point[k .. "活动"]
       rfl[k] = rfl[k .. "活动"]
       first_point[k] = first_point[k .. "活动"]
-
     end
 
     local ret = func(...)
@@ -5007,9 +5091,9 @@ end
 
 update_state_from_debugui = function()
   multi_account_choice_weekday_only = expand_number_config(
-                                        multi_account_choice_weekday_only or '')
+    multi_account_choice_weekday_only or '')
   multi_account_disable_clue_unlock = expand_number_config(
-                                        multi_account_disable_clue_unlock or '')
+    multi_account_disable_clue_unlock or '')
 
   max_jmfight_times = str2int(max_jmfight_times, 1)
   findOne_interval = str2int(findOne_interval, -1)
@@ -5121,11 +5205,11 @@ end
 is_network_unstable = function()
   local cur_time = parse_time()
   local s, e
-  s = os.time(update(os.date("*t"), {hour = 4, min = 0}))
-  e = os.time(update(os.date("*t"), {hour = 4, min = 15}))
+  s = os.time(update(os.date("*t"), { hour = 4, min = 0 }))
+  e = os.time(update(os.date("*t"), { hour = 4, min = 15 }))
   if s < cur_time and cur_time < e then return true end
-  s = os.time(update(os.date("*t"), {hour = 16, min = 0}))
-  e = os.time(update(os.date("*t"), {hour = 16, min = 15}))
+  s = os.time(update(os.date("*t"), { hour = 16, min = 0 }))
+  e = os.time(update(os.date("*t"), { hour = 16, min = 15 }))
   if s < cur_time and cur_time < e then return true end
 end
 
@@ -5195,7 +5279,7 @@ uploadImg = function(img)
 end
 
 -- eager post_util_hook
-loadUIConfig({"debug"})
+loadUIConfig({ "debug" })
 force_width = str2int(force_width, 0)
 force_height = str2int(force_height, 0)
 
@@ -5203,7 +5287,6 @@ force_height = str2int(force_height, 0)
 -- 接打码平台 http://www.ttshitu.com/
 
 trySolvePointSelectionCapture = function(username, password, rect)
-
   -- 截图验证码 794,348,1138,745
   -- local p = point["选点验证码识别区域"]
   local img = getWorkPath() .. "/capture.jpg"
@@ -5218,7 +5301,7 @@ trySolvePointSelectionCapture = function(username, password, rect)
   }
 
   local res, code = httpPost("http://api.ttshitu.com/predict", JsonEncode(data),
-                             30, "Content-Type: application/json;charset=UTF-8")
+    30, "Content-Type: application/json;charset=UTF-8")
   if code == 200 then
     local status, data = pcall(JsonDecode, res)
     data = data or {}
@@ -5236,20 +5319,19 @@ trySolvePointSelectionCapture = function(username, password, rect)
       local x, y = string.match(coord, "(%d+),(%d+)")
       x = x or 0
       y = y or 0
-      local ans_p = {rect.l + x, rect.t + y}
+      local ans_p = { rect.l + x, rect.t + y }
       tap(ans_p)
       ssleep(0.2)
     end
     return true
   end
-
 end
 
 ttshitu_report = function()
   if not ttshitu_last_id then return end
-  local data = {id = ttshitu_last_id}
+  local data = { id = ttshitu_last_id }
   local ret, code = httpPost("http://api.ttshitu.com/reporterror.json",
-                             JsonEncode(data), 30,
-                             "Content-Type: application/json;charset=UTF-8")
+    JsonEncode(data), 30,
+    "Content-Type: application/json;charset=UTF-8")
   log(ret, code)
 end
