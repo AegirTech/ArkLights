@@ -1658,27 +1658,30 @@ sandfir_get_reward = function()
     end
 end
 
---游戏自动更新，需要有root权限
---检查游戏版本是否是最新
+-- 游戏自动更新，需要有root权限
+-- 检查游戏版本是否是最新
+-- 地址 https://ak-conf.hypergryph.com/config/prod/official/Android/version 
+-- 返回格式 {"resVersion":"23-05-04-12-38-30-79f56b","clientVersion":"2.0.01"}
 game_check_version = function(pkg)
 	--log("su root sh -c dumpsys package " .. pkg .. " | grep versionName")
     local current_version = exec("su root sh -c 'dumpsys package " .. pkg .. " | grep versionName'")
     current_version = current_version:match("versionName=([^%s]+)")
-	--local current_version = exec("su root sh -c dumpsys package " .. pkg .. " | grep versionName")
-    if type(current_version) == 'string' and #current_version > 0  then
-        --地址 https://ak-conf.hypergryph.com/config/prod/official/Android/version 
-        --返回格式 {"resVersion":"23-05-04-12-38-30-79f56b","clientVersion":"2.0.01"}
-       	local ret = httpGet("https://ak-conf.hypergryph.com/config/prod/official/Android/version")
-        local status
-        status, ret = pcall(JsonDecode, ret)
-        latestVersion = get(ret, 'clientVersion')
-		if latestVersion == current_version then
-        	log(pkg .. "已安装最新版本",latestVersion)
-           	return true
-        end
+    if current_version == nil then 
+    	log("未安装" .. pkg)
+    	return true 
     end
-    log(pkg .. "非最新版,当前版本",current_version,"最新版",latestVersion)
-    return false
+    current_version = string.gsub(current_version, "%.", "")
+    local ret = httpGet("https://ak-conf.hypergryph.com/config/prod/official/Android/version")
+    local status
+    status, ret = pcall(JsonDecode, ret)
+    latestVersion = string.gsub(get(ret, 'clientVersion'), "%.", "")
+	if math.abs(current_version - latestVersion) < 5 then -- 鹰角有时候偷偷更新导致版本号不一致
+       	log(pkg .. "已安装最新版本",latestVersion)
+        return true
+    else
+        log(pkg .. "非最新版,当前版本",current_version,"最新版",latestVersion)
+        return false
+    end
 end
 
 --获取b服下载链接
@@ -1696,11 +1699,14 @@ end
 
 --更新游戏
 auto_update_game = function()
+    if not root_mode then
+        log("无root权限，跳过游戏更新")
+        return
+    end
     log("开始检查游戏更新")
 	if game_check_version("com.hypergryph.arknights") == false then
-        local url = parse_download_url("https://ak.hypergryph.com/downloads/android_lastest")
         toast("官服更新开始")
-    	install_game(url)
+    	install_game(parse_download_url("https://ak.hypergryph.com/downloads/android_lastest"))
     end
     if game_check_version("com.hypergryph.arknights.bilibili") == false then
         toast("b服更新开始")
@@ -1732,7 +1738,7 @@ delele_download_file = function()
     --exec("su root rm -rf /sdcard/Download/*.apk")
     exec("su -c 'find /sdcard/download -name \"*arknights*.apk\" -exec rm {} \\;'")--官服
     exec("su -c 'find /sdcard/download -name \"*mrfz*.apk\" -exec rm {} \\;'")--b服
-    exec("su root rm -rf /sdcard/Download/*.crdownload'")--浏览器未下载完成文件
+    exec("su -c 'find /sdcard/download -name \"*crdownload\" -exec rm {} \\;'")--浏览器未下载完成文件
 end
 
 -- 解析官服重定向地址
