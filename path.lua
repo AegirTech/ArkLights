@@ -3007,8 +3007,8 @@ get_fight_type = function(x)
     return "上一次"
   elseif table.any({"PR", "CE", "CA", "AP", "LS", "SK"}, f) then
     return "物资芯片"
-  elseif table.any({"CW"},f) then
-    return "别传"
+  elseif table.any({"CW","WD"},f) then
+    return "插曲"
   elseif table.any(table.values(jianpin2name), f) then
     return "剿灭"
   elseif f('HD') then
@@ -3495,16 +3495,38 @@ path.主线 = function(x)
   path.开始游戏(x)
 end
 
-path.别传 = function (x)
-  log("别传")
+path.插曲 = function (x)
+  log("插曲")
+  local chapter = x:find("-")
+  chapter = x:sub(1, chapter - 1)
   if findOne("开始行动") then return path.开始游戏(x) end
   path.跳转("首页")
   tap("面板作战")
   if not appear("主页") then return end
-  wait(function()
-    tap("别传")
-    if not findOne("主页") then return true end
-  end, 5)
+  if not wait(function()
+    if findOne("插曲界面") then return true end
+    tap("插曲")
+  end) then return end
+  if not wait(function()
+    tap("插曲列表" .. chapter)
+    if findOne("进入活动") then return true end
+  end) then return end
+  if not wait(function()
+    tap("进入活动")
+    if not appear("进入活动") then return true end
+  end) then return end
+  swip(x)
+  ssleep(.5)
+  tap("作战列表"..x)
+  if not appear("开始行动") then
+
+    wait(function()
+      if appear("主页") then return true end
+      back()
+    end, 30)
+
+  end
+  path.开始游戏(x)
 end
 
 path.上一次 = function(x)
