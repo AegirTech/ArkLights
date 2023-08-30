@@ -348,9 +348,9 @@ mizuki_help_fight = function(reflashNum)
     end, {})
 
     local order = {
-        { "羽毛笔",       0,  1 },
-        { "海沫",          0,  1 },
-        { "煌",             0,  2 },
+        { "羽毛笔", 0, 1 },
+        { "海沫", 0, 1 },
+        { "煌", 0, 2 },
         { "百炼嘉维尔", 99, 2 }
     }
     local best = table.findv(order, function(x) return name2point[x[1]] end)
@@ -1095,7 +1095,7 @@ mizuki_fight = function(firstFight)
         if not wait(function()
                 if findOne("攻击范围") and
                     (zl_skill_idx ~= 2 or zl_skill_idx == 2 and
-                    findOne("战略二技能")) then
+                        findOne("战略二技能")) then
                     if not single_man_operation then tap("近卫招募列表2") end
                     return true
                 end
@@ -1539,7 +1539,7 @@ sandfir_enter_fight = function()
     sandfir_zoom_map()
     if not wait(function()
             return tapUntilCheckedPointColor(sandfire_point.作战关卡, sandfire_point.作战信息, "选择作战",
-            0.3)
+                0.3)
         end, 5) then
         -- exit()
         return false
@@ -1660,39 +1660,39 @@ end
 
 -- 游戏自动更新，需要有root权限
 -- 检查游戏版本是否是最新
--- 地址 https://ak-conf.hypergryph.com/config/prod/official/Android/version 
+-- 地址 https://ak-conf.hypergryph.com/config/prod/official/Android/version
 -- 返回格式 {"resVersion":"23-05-04-12-38-30-79f56b","clientVersion":"2.0.01"}
 game_check_version = function(pkg)
-	--log("su root sh -c dumpsys package " .. pkg .. " | grep versionName")
+    --log("su root sh -c dumpsys package " .. pkg .. " | grep versionName")
     local current_version = exec("su root sh -c 'dumpsys package " .. pkg .. " | grep versionName'")
     current_version = current_version:match("versionName=([^%s]+)")
-    if current_version == nil then 
-    	log("未安装" .. pkg)
-    	return true 
+    if current_version == nil then
+        log("未安装" .. pkg)
+        return true
     end
     current_version = string.gsub(current_version, "%.", "")
     local ret = httpGet("https://ak-conf.hypergryph.com/config/prod/official/Android/version")
     local status
     status, ret = pcall(JsonDecode, ret)
     latestVersion = string.gsub(get(ret, 'clientVersion'), "%.", "")
-	if math.abs(current_version - latestVersion) < 5 then -- 鹰角有时候偷偷更新导致版本号不一致
-       	log(pkg .. "已安装最新版本",latestVersion)
+    if math.abs(current_version - latestVersion) < 5 then -- 鹰角有时候偷偷更新导致版本号不一致
+        log(pkg .. "已安装最新版本", latestVersion)
         return true
     else
-        log(pkg .. "非最新版,当前版本",current_version,"最新版",latestVersion)
+        log(pkg .. "非最新版,当前版本", current_version, "最新版", latestVersion)
         return false
     end
 end
 
 --获取b服下载链接
 get_bilibili_url = function()
-	local url = "https://line1-h5-pc-api.biligame.com/game/detail/gameinfo?game_base_id=101772"
+    local url = "https://line1-h5-pc-api.biligame.com/game/detail/gameinfo?game_base_id=101772"
     local ret = httpGet(url)
     local status
-    status,ret = pcall(JsonDecode, ret)
-    ret = get(ret, 'data','android_download_link')
+    status, ret = pcall(JsonDecode, ret)
+    ret = get(ret, 'data', 'android_download_link')
     if type(ret) == 'string' and #ret > 0 then
-    	return ret
+        return ret
     end
     return nil
 end
@@ -1704,54 +1704,55 @@ auto_update_game = function()
         return
     end
     log("开始检查游戏更新")
-	if game_check_version("com.hypergryph.arknights") == false then
+    if game_check_version("com.hypergryph.arknights") == false then
         toast("官服更新开始")
-    	install_game(parse_download_url("https://ak.hypergryph.com/downloads/android_lastest"))
+        install_game(parse_download_url("https://ak.hypergryph.com/downloads/android_lastest"))
     end
     if game_check_version("com.hypergryph.arknights.bilibili") == false then
         toast("b服更新开始")
-    	install_game(get_bilibili_url())
-	end
+        install_game(get_bilibili_url())
+    end
 end
 
 --下载并安装游戏
 install_game = function(url)
-  console.show()
-	os.execute("mkdir " .. getWorkPath() .. '/apk/')
-	downloadpath = getWorkPath() .. '/apk/arknights.apk'
-    log("开始下载",url,downloadpath)
+    console.show()
+    os.execute("mkdir " .. getWorkPath() .. '/apk/')
+    downloadpath = getWorkPath() .. '/apk/arknights.apk'
+    log("开始下载", url, downloadpath)
     if downloadFile(url, downloadpath, function(process)
-        if process % 5 == 0 then toast("下载进度："..process.."%") end end) == 0 then --下载进度
-    	--使用root权限安装
+            if process % 5 == 0 then toast("下载进度：" .. process .. "%") end
+        end) == 0 then --下载进度
+        --使用root权限安装
         exec("su root sh -c 'pm install -r " .. downloadpath .. "'")
         --删除apk
         exec("su root rm -rf " .. downloadpath)
         --log("install finish",downloadpath)
     else
-       log("下载失败，请检查网络连接")
+        log("下载失败，请检查网络连接")
     end
-  console.dismiss()
+    console.dismiss()
 end
 
 --删除安卓系统download文件夹中的部分文件(速通会误点下载导致下载一堆客户端)
 delele_download_file = function()
     --exec("su root rm -rf /sdcard/Download/*.apk")
-    exec("su -c 'find /sdcard/download -name \"*arknights*.apk\" -exec rm {} \\;'")--官服
-    exec("su -c 'find /sdcard/download -name \"*mrfz*.apk\" -exec rm {} \\;'")--b服
-    exec("su -c 'find /sdcard/download -name \"*crdownload\" -exec rm {} \\;'")--浏览器未下载完成文件
+    exec("su -c 'find /sdcard/download -name \"*arknights*.apk\" -exec rm {} \\;'") --官服
+    exec("su -c 'find /sdcard/download -name \"*mrfz*.apk\" -exec rm {} \\;'")      --b服
+    exec("su -c 'find /sdcard/download -name \"*crdownload\" -exec rm {} \\;'")     --浏览器未下载完成文件
 end
 
 -- 解析官服重定向地址
 function parse_download_url(url)
     local http = require("socket.http")
     local url = url
-    local response, code, headers, status = http.request{
+    local response, code, headers, status = http.request {
         url = url,
         method = "GET",
         redirect = false -- 禁用自动重定向 防止直接开始下载
-   }
-   if code == 302 then
-    local redirect = headers.location
-    return redirect
-  end
+    }
+    if code == 302 then
+        local redirect = headers.location
+        return redirect
+    end
 end

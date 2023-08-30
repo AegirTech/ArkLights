@@ -6,7 +6,7 @@ discoverBeforeFight = still_wrapper(function(operators, pngdata, pageid)
     if cmpColor(x, y, 'FFFFFF', default_findcolor_confidence) == 1 then
       prewhite = prewhite + 1
     elseif prewhite > scale(5) and
-      cmpColor(x, y, '333333', default_findcolor_confidence) == 1 then
+        cmpColor(x, y, '333333', default_findcolor_confidence) == 1 then
       prewhite = 0
       table.insert(corner, x)
     end
@@ -22,14 +22,14 @@ discoverBeforeFight = still_wrapper(function(operators, pngdata, pageid)
   for _, x in pairs(corner) do
     if x - prex > scale(207) then
       prex = x
-      table.insert(card, {x - scale(6), scale(129)})
-      table.insert(card, {x - scale(6), scale(553)})
+      table.insert(card, { x - scale(6), scale(129) })
+      table.insert(card, { x - scale(6), scale(553) })
     end
   end
 
   log(114, card)
   -- card = {card[3]}
-  card = {card[7]}
+  card = { card[7] }
   for idx, v in pairs(card) do
     -- 头像判断
     -- local y
@@ -48,13 +48,13 @@ discoverBeforeFight = still_wrapper(function(operators, pngdata, pageid)
     -- y = 556 -- 0.035
     -- -- y = 565 -- 0.033
     -- -- y = 570 -- 0.039
-    local icon1 = {v[1], v[2], v[1] + scale(192), v[2] + scale(192)}
+    local icon1 = { v[1], v[2], v[1] + scale(192), v[2] + scale(192) }
     log("icon1", icon1)
     local png =
-      findAvatar(icon1[1], icon1[2], icon1[3], icon1[4], avatarPngdata) or
+        findAvatar(icon1[1], icon1[2], icon1[3], icon1[4], avatarPngdata) or
         'empty1.png'
     log(129, png)
-    table.insert(operators, {png, pageid})
+    table.insert(operators, { png, pageid })
   end
 end)
 
@@ -69,7 +69,7 @@ w, h = 36, 36
 for i = 1, h do
   for j = 1, w do
     if true then
-      table.insert(avatarIconMask, {i, j})
+      table.insert(avatarIconMask, { i, j })
       -- log(613,i,j)
     end
     if ((i - 18.5) ^ 2 + (j - 18.5) ^ 2) < 10 ^ 2 then
@@ -90,8 +90,8 @@ findAvatar = function(x1, y1, x2, y2, pngdata)
     i, j = m[1], m[2]
     -- b, g, r = colorToRGB(color[(i - 1) * w + j])
     b, g, r = colorToRGB(color[math.round((i - 1) * scale(192) / 36) * w +
-                           math.round(j * scale(192) / 36)])
-    table.extend(data, {r, g, b})
+    math.round(j * scale(192) / 36)])
+    table.extend(data, { r, g, b })
 
     if 1 then
       r = string.format('%X', r):padStart(2, '0')
@@ -118,11 +118,11 @@ findAvatar = function(x1, y1, x2, y2, pngdata)
   local flatScore = 0
   for _, i in pairs(avatarIconCenterList) do
     flatScore = abs(data[i * 3 - 2] - data[(i + 1) * 3 - 2]) +
-                  abs(data[i * 3 - 1] - data[(i + 1) * 3 - 1]) +
-                  abs(data[i * 3] - data[(i + 1) * 3]) +
-                  abs(data[i * 3 - 2] - data[(i + 36) * 3 - 2]) +
-                  abs(data[i * 3 - 1] - data[(i + 36) * 3 - 1]) +
-                  abs(data[i * 3] - data[(i + 36) * 3])
+        abs(data[i * 3 - 1] - data[(i + 1) * 3 - 1]) +
+        abs(data[i * 3] - data[(i + 1) * 3]) +
+        abs(data[i * 3 - 2] - data[(i + 36) * 3 - 2]) +
+        abs(data[i * 3 - 1] - data[(i + 36) * 3 - 1]) +
+        abs(data[i * 3] - data[(i + 36) * 3])
     flatScore = 0
     table.insert(flatScoreTable, 1 / (1 + flatScore))
     scoreBase = scoreBase + flatScoreTable[#flatScoreTable]
@@ -142,8 +142,8 @@ findAvatar = function(x1, y1, x2, y2, pngdata)
       else
         -- log(142)
         pointScore = abs(data[i * 3 - 2] - v[i * 3 - 2]) +
-                       abs(data[i * 3 - 1] - v[i * 3 - 1]) +
-                       abs(data[i * 3] - v[i * 3])
+            abs(data[i * 3 - 1] - v[i * 3 - 1]) +
+            abs(data[i * 3] - v[i * 3])
       end
 
       score = score + pointScore * flatScoreTable[idx]
@@ -191,7 +191,7 @@ initAvatarPngdata = function()
     for _, m in pairs(avatarIconMask) do
       i, j = m[1], m[2]
       b, g, r = colorToRGB(color[(w - i - 1) * w + j])
-      table.extend(pngdata[v], {r, g, b})
+      table.extend(pngdata[v], { r, g, b })
       if nil and v == 'Bskill_man_exp2.png' then
         -- if v == 'Bskill_ws_evolve2.png' then
         r = string.format('%X', r):padStart(2, '0')

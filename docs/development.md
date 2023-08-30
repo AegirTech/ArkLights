@@ -14,9 +14,8 @@ ArkLights（速通）是一个开源的，几乎没有任何限制的开源项�
 ### 推荐工具
 
 - Visual Studio Code
-  - `sumneko.lua`
+  - `sumneko.lua`(格式化标准)
   - `formulahendry.code-runner`
-  - `Koihik.vscode-lua-format`(可选)
   - `教主.lrzs`(可选，可能无法在vsc插件商店中找到)
 - 懒人精灵
 
