@@ -14,8 +14,8 @@ import requests
 # win环境下的快速开发脚本
 
 # 配置全局路径 请确保路径存在
-path = r"E:\明日方舟速通\main"
-pkgPath = r"E:\懒人精灵3.8.6.2\out\main.lr"
+path = r"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\script\main"
+pkgPath = r"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\out\main.lr"
 
 
 class WindowMgr:
