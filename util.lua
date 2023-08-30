@@ -2625,9 +2625,9 @@ end
 
 check_hot_update = function()
   toast("正在检查更新...")
-  if disable_hotupdate then 
+  if disable_hotupdate then
     log("热更新已禁用")
-    return 
+    return
   end
 
   local file_md5 = loadConfig("lr_md5", "null")
