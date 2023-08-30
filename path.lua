@@ -2251,7 +2251,7 @@ path.总览换班 = function()
     local y2 = screen.height - scale(300)
     local paths = {
       { point = { { x1, y1 }, { x3, y1 } }, duration = duration },
-      { point = { { x1, y2 }, { x2, y2 } }, duration = flipd, start = flips },
+      { point = { { x1, y2 }, { x2, y2 } }, duration = flipd,   start = flips },
     }
     -- sleep(100)
     gesture(paths)
@@ -3205,6 +3205,8 @@ get_fight_type = function(x)
     return "上一次"
   elseif table.any({ "PR", "CE", "CA", "AP", "LS", "SK" }, f) then
     return "物资芯片"
+  elseif table.any({ "CW", "WD" }, f) then
+    return "插曲"
   elseif table.any(table.values(jianpin2name), f) then
     return "剿灭"
   elseif f('HD') then
@@ -3697,6 +3699,44 @@ path.主线 = function(x)
   -- 10秒内需要完成章节/环境切换
   auto(p, nil, 10, 10)
 
+  path.开始游戏(x)
+end
+
+path.插曲 = function(x)
+  log("插曲")
+  local chapter = x:find("-")
+  chapter = x:sub(1, chapter - 1)
+  if findOne("开始行动") then return path.开始游戏(x) end
+  path.跳转("首页")
+  tap("面板作战")
+  if not appear("主页") then return end
+  if not wait(function()
+        if findOne("插曲界面") then return true end
+        tap("插曲")
+      end) then
+    return
+  end
+  if not wait(function()
+        tap("插曲列表" .. chapter)
+        if findOne("进入活动") then return true end
+      end) then
+    return
+  end
+  if not wait(function()
+        tap("进入活动")
+        if not appear("进入活动") then return true end
+      end) then
+    return
+  end
+  swip(x)
+  ssleep(.5)
+  tap("作战列表" .. x)
+  if not appear("开始行动") then
+    wait(function()
+      if appear("主页") then return true end
+      back()
+    end, 30)
+  end
   path.开始游戏(x)
 end
 
@@ -5020,7 +5060,7 @@ path.访问好友 = function()
         -- if not findOne("好友列表") then return true end
       end, 30) then
     return
-  end                      -- 无好友或网络超时10秒
+  end -- 无好友或网络超时10秒
   log(2256)
   if speedrun then
     disappear("正在提交反馈至神经", network_timeout)

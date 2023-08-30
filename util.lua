@@ -3839,8 +3839,7 @@ test_fight_hook = function()
   if not test_fight then return end
   -- log(2392)
   fight = {
-    "HD-10", "HD-9", "HD-8", "HD-7", "HD-6", "HD-5", "HD-4", "HD-3", "HD-2",
-    "HD-1",
+    "HD-9", "HD-8", "HD-7", "HD-6", "HD-5", "HD-4", "HD-3", "HD-2", "HD-1",
     -- "12-1",
     -- "12-2",
     -- "12-3",
