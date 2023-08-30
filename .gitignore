@@ -16,5 +16,3 @@ dist/
 .temp/
 .cache/
 *.txt
-0.py
-.gitignore
