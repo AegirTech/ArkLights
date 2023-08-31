@@ -102,13 +102,13 @@ cloud.startHeartBeat()
 
 -- debug_mode=true
 if debug_mode then
-  log("debug_mode")
-  -- log(findOne("活动公告返回"))
-  -- log(findOne("framelayout_only"))
-  -- log(findOne("login"))
-  -- ssleep(1)
-  -- tap("login")
-  -- exit()
+    log("debug_mode")
+    -- log(findOne("活动公告返回"))
+    -- log(findOne("framelayout_only"))
+    -- log(findOne("login"))
+    -- ssleep(1)
+    -- tap("login")
+    -- exit()
 end
 
 load(before_account_hook or '')()
@@ -125,108 +125,108 @@ if auto_update_gameclient == true then auto_update_game() end
 
 -- log("100",cloud.enabled(),cloud_task)
 if cloud.getTaskEnabled() and not cloud_task then
-  -- 云控模式冷启动
-  -- log("102",102)
+    -- 云控模式冷启动
+    -- log("102",102)
 elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi) and
     multi_account_enable then
-  -- 多帐号模式
+    -- 多帐号模式
 
-  -- 分隔临时账号设置
-  multi_account_choice = multi_account_choice:commonmap()
-  local temp_choice_pos = multi_account_choice:find('#')
-  if temp_choice_pos then
-    multi_account_config_remove_once_choice()
-    multi_account_choice = multi_account_choice:sub(temp_choice_pos + 1,
-      #multi_account_choice)
-  end
-  log("multi_account_choice", multi_account_choice)
-
-  multi_account_choice = expand_number_config(multi_account_choice)
-  for idx, i in pairs(multi_account_choice) do
-    multi_account_choice_idx = idx
-    account_idx = i
-    -- log("type(i)",type(i))
-    -- log('_G["username" .. i]',_G["username" .. i])
-    username = (_G["username" .. i] or ''):map({
-      ["＃"] = "#",
-      ["\n"] = "",
-      [" "] = "",
-      ["　"] = "",
-    })
-    password = (_G["password" .. i] or ''):map({
-      ["\n"] = "",
-      [" "] = "",
-      ["　"] = "",
-    })
-    server = _G["server" .. i] or 0
-    usernote = ''
-    apply_multi_account_setting(i)
-    update_state_from_ui()
-    if multi_account_end_closeotherapp then
-      closeapp(appid == oppid and bppid or oppid)
+    -- 分隔临时账号设置
+    multi_account_choice = multi_account_choice:commonmap()
+    local temp_choice_pos = multi_account_choice:find('#')
+    if temp_choice_pos then
+        multi_account_config_remove_once_choice()
+        multi_account_choice = multi_account_choice:sub(temp_choice_pos + 1,
+            #multi_account_choice)
     end
-    if multi_account_end_closeapp then closeapp(appid) end
+    log("multi_account_choice", multi_account_choice)
 
-    log(account_idx, username, '*****' .. password:sub(#password, #password))
-    if username:find("#") then
-      usernote = username:sub(username:find('#') + 1, #username):trim()
-      username = username:sub(1, username:find('#') - 1):trim()
+    multi_account_choice = expand_number_config(multi_account_choice)
+    for idx, i in pairs(multi_account_choice) do
+        multi_account_choice_idx = idx
+        account_idx = i
+        -- log("type(i)",type(i))
+        -- log('_G["username" .. i]',_G["username" .. i])
+        username = (_G["username" .. i] or ''):map({
+            ["＃"] = "#",
+            ["\n"] = "",
+            [" "] = "",
+            ["　"] = "",
+        })
+        password = (_G["password" .. i] or ''):map({
+            ["\n"] = "",
+            [" "] = "",
+            ["　"] = "",
+        })
+        server = _G["server" .. i] or 0
+        usernote = ''
+        apply_multi_account_setting(i)
+        update_state_from_ui()
+        if multi_account_end_closeotherapp then
+            closeapp(appid == oppid and bppid or oppid)
+        end
+        if multi_account_end_closeapp then closeapp(appid) end
+
+        log(account_idx, username, '*****' .. password:sub(#password, #password))
+        if username:find("#") then
+            usernote = username:sub(username:find('#') + 1, #username):trim()
+            username = username:sub(1, username:find('#') - 1):trim()
+        end
+        -- log({username, usernote})
+        if extra_mode then
+            no_extra_job = job
+            job = { extra_mode }
+        end
+
+        if #username > 0 and #password > 0 then
+            table.insert(job, 1, "退出账号")
+        end
+
+        saveConfig("continue_account", (not temp_choice_pos and idx == 1) and '' or
+            table.join(table.slice(multi_account_choice, idx), ' '))
+        saveConfig("continue_all_account",
+            (not temp_choice_pos and idx == 1) and '' or
+            table.join(
+                table.extend(table.slice(multi_account_choice, idx),
+                    table.slice(multi_account_choice, 1, idx - 1)),
+                ' '))
+
+        -- 账密有一为空
+        local skip_account = false
+        if not (disable_strick_account_check or #username > 0 and #password > 0) then
+            skip_account = true
+        end
+
+        -- 双休日不上号
+        if not isweekday() and table.includes(multi_account_choice_weekday_only, i) then
+            skip_account = true
+        end
+
+        if not skip_account then run(job) end
     end
-    -- log({username, usernote})
-    if extra_mode then
-      no_extra_job = job
-      job = { extra_mode }
-    end
-
-    if #username > 0 and #password > 0 then
-      table.insert(job, 1, "退出账号")
-    end
-
-    saveConfig("continue_account", (not temp_choice_pos and idx == 1) and '' or
-      table.join(table.slice(multi_account_choice, idx), ' '))
-    saveConfig("continue_all_account",
-      (not temp_choice_pos and idx == 1) and '' or
-      table.join(
-        table.extend(table.slice(multi_account_choice, idx),
-          table.slice(multi_account_choice, 1, idx - 1)),
-        ' '))
-
-    -- 账密有一为空
-    local skip_account = false
-    if not (disable_strick_account_check or #username > 0 and #password > 0) then
-      skip_account = true
-    end
-
-    -- 双休日不上号
-    if not isweekday() and table.includes(multi_account_choice_weekday_only, i) then
-      skip_account = true
-    end
-
-    if not skip_account then run(job) end
-  end
-  saveConfig("continue_account", '')
+    saveConfig("continue_account", '')
 elseif not crontab_enable_only then
-  -- 单帐号模式
-  transfer_global_variable("multi_account_user0")
-  update_state_from_ui()
-  test_fight_hook()
-  if extra_mode then
-    no_extra_job = job
-    job = { extra_mode }
-  end
-  if #strOr(username) > 0 and #strOr(password) > 0 then
-    username = username:trim()
-    password = password:trim()
-    table.insert(job, 1, "退出账号")
-  end
-  run(job)
-  cloud.completeTask(last_upload_img)
+    -- 单帐号模式
+    transfer_global_variable("multi_account_user0")
+    update_state_from_ui()
+    test_fight_hook()
+    if extra_mode then
+        no_extra_job = job
+        job = { extra_mode }
+    end
+    if #strOr(username) > 0 and #strOr(password) > 0 then
+        username = username:trim()
+        password = password:trim()
+        table.insert(job, 1, "退出账号")
+    end
+    run(job)
+    cloud.completeTask(last_upload_img)
 end
 
 -- 完成后
 if end_closeapp then
-  closeapp(oppid)
-  closeapp(bppid)
+    closeapp(oppid)
+    closeapp(bppid)
 end
 if not no_background_after_run and end_home then home() end
 if end_screenoff then screenoff() end
