@@ -10,6 +10,7 @@ import itertools
 import tempfile
 import subprocess
 
+# 请使用720p图像计算
 
 def unpack(source_folder="arknights", destination_folder="arknights_extract"):
     import UnityPy
@@ -356,7 +357,8 @@ def screencap_distance(path="screencap"):
     point = defaultdict(int)
     distance = defaultdict(int)
     shift_right = 0
-    distance[1] = 500
+    # 滑动到最右边时 hd-1的x坐标相距屏幕中心的距离
+    distance[1] = 250
     for x in sorted(screencap.glob("*.jpg")):
         x = reader.readtext(str(x))
         print("x", x)
@@ -374,6 +376,7 @@ def screencap_distance(path="screencap"):
             text = text.replace(" ", "-")
             text = text.replace("B12", "BI-2")
             text = text.replace(" ", "")
+            text = text.replace("1C", "IC")
             m = re.search("^.?.-(\d+)$", text)
             if not m:
                 continue
@@ -398,9 +401,11 @@ def screencap_distance(path="screencap"):
         p[0] = 960 + shift_right * 1080 // 720
         print(f'["HD-{x}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
 
+    # 距离膨胀系数，部分活动需要微调
+    distanceExpansionCoefficient = 1.14
     for x in sorted(distance):
         p = distance[x] - shift_right
-        p = int(p * 1.13)
+        p = int(p * distanceExpansionCoefficient)
         print(f'["HD-{x}"] = ' + "{ swip_right_max, -" + str(p) + "},")
 
 

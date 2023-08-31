@@ -4079,6 +4079,7 @@ path.活动 = function(x)
         return path.跳过剧情()
     end
 
+    -- 理想城：长夏狂欢季
     local car_check = function()
         if car_checked then return end
         car_checked = true
@@ -4119,6 +4120,7 @@ path.活动 = function(x)
         end
         return true
     end
+    car_check()
     local car_check = function()
         if car_checked then return end
         car_checked = true
@@ -4316,7 +4318,7 @@ path.活动 = function(x)
             return
         end
     end
-    car_check()
+    -- car_check()
     if not findOne("活动导航0") then return end
     if not wait(function()
             -- local level = str2int(x:sub(#x), 1)

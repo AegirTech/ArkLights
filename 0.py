@@ -75,7 +75,7 @@ class WindowMgr:
         return self._handle
 
 
-def run():
+def run(now = True):
     """自动运行调试 需提前打开任意lua文件"""
     myWindowMgr = WindowMgr()
     hwnd = myWindowMgr.find_window_wildcard(None, ".*?懒人精灵 - .*?")
@@ -95,10 +95,11 @@ def run():
         )
         sleep(0.1)
         # F5
-        win32api.keybd_event(116, win32api.MapVirtualKey(116, 0), 0, 0)
-        win32api.keybd_event(
-            116, win32api.MapVirtualKey(116, 0), win32con.KEYEVENTF_KEYUP, 0
-        )
+        if now:
+            win32api.keybd_event(116, win32api.MapVirtualKey(116, 0), 0, 0)
+            win32api.keybd_event(
+                116, win32api.MapVirtualKey(116, 0), win32con.KEYEVENTF_KEYUP, 0
+            )
 
 
 def save(forRelease):
@@ -153,12 +154,9 @@ def saverun():
 def release(type):
     if type == "RELEASE":
         save(True)
-        ready = not input("已经在懒人打包了吗[Y/n]: ") == "n" or False
-        if not ready:
-            exit()
+        run(False)
 
-        """发布"""
-
+        newLrMD5 = input("请输入md5值: ")
         # 输出pkgPath的文件的md5
         md5 = hashlib.md5()
         with open(pkgPath, "rb") as f:
@@ -166,7 +164,7 @@ def release(type):
         md5Text = md5.hexdigest()
 
         # 判断输入值是否与md5Text相等
-        if input("请输入md5值: ") == md5Text:
+        if newLrMD5 == md5Text:
             print("md5值正确")
             # 上传
             upload(md5Text, type, "false")
