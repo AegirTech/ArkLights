@@ -231,7 +231,7 @@ if __name__ == "__main__":
             release("SKILL")
 
     except Exception as e:
-        print("缺少正确参数")
+        print("缺少正确参数或没有启用管理员权限")
         print(
             """
 run: 运行

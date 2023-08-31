@@ -2625,10 +2625,6 @@ end
 
 check_hot_update = function()
     toast("正在检查更新...")
-    if disable_hotupdate then
-        log("热更新已禁用")
-        return
-    end
 
     local file_md5 = loadConfig("lr_md5", "null")
     local skill_md5 = loadConfig("skill_md5", "null")
@@ -2664,6 +2660,7 @@ updateLr = function(update_info)
         ssleep(3)
         return false
     end
+    installLrPkg(new_script_path)
     saveConfig("lr_md5", update_info.lrMD5)
     return true
 end
@@ -2691,6 +2688,10 @@ updateSkill = function(update_info)
 end
 
 hotUpdate = function()
+    if disable_hotupdate then
+        log("热更新已禁用")
+        return
+    end
     local update_info = check_hot_update()
     if not update_info.updateLr and not update_info.updateSkill then
         toast("已经是最新版")
@@ -2699,7 +2700,6 @@ hotUpdate = function()
     updateLr(update_info)
     updateSkill(update_info)
 
-    installLrPkg(path)
     sleep(1000)
     log("更新完成")
     return restartScript()
