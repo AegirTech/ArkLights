@@ -665,7 +665,7 @@ end
 -- TODO: better algorithms
 loop_times = function(x)
     local times, f, n
-    local maxlen = 40 -- of one piece
+    local maxlen = 40  -- of one piece
     local maxtimes = 1 -- of same pieces
     if x == nil or #x == 0 then return 0 end
     for i = 1, maxlen do
@@ -4043,7 +4043,7 @@ parse_fight_config = function(fight_ui)
             for _ = 1, 99 do table.insert(expand_fight, '长期委托2') end
             for _ = 1, 99 do table.insert(expand_fight, '长期委托3') end
         elseif table.includes({ 'HD' }, v) then
-            for _, i in pairs({ 8, 7, 6 }) do
+            for _, i in pairs({ 9, 8, 7 }) do
                 for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
             end
         elseif table.includes({ 'HD1' }, v) then
@@ -4083,11 +4083,11 @@ update_state_from_ui = function()
     -- log("fight", fight)
 
     -- 活动开放时间段
-    hd_open_time_end = parse_time("202308220400")
-    hd_shop_open_time_end = parse_time("202306080400") -- 活动商店关闭时间
+    hd_open_time_end = parse_time("202309100400")
+    hd_shop_open_time_end = parse_time("202306080400")  -- 活动商店关闭时间
     hd2_open_time_end = parse_time("202303210400")
     hd2_shop_open_time_end = parse_time("202302240400") -- 活动2商店关闭时间
-    hd_mod = "ss"                                     -- 活动类型 "故事集"/"ss" 区分活动任务和是否活动作战
+    hd_mod = "ss"                                       -- 活动类型 "故事集"/"ss" 区分活动任务和是否活动作战
     hd2_mod = "故事集"
 
     -- 资源关全天开放时间段
