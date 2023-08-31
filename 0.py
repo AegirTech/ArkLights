@@ -60,7 +60,8 @@ class WindowMgr:
     def find_window_wildcard(self, class_name, wildcard):
         """根据类名，查找一个顶级窗口，确保其类名相符，且标题可以用正则表达式匹配对应的通配符"""
         self._handle = None
-        win32gui.EnumWindows(self._window_enum_callback, [class_name, wildcard])
+        win32gui.EnumWindows(self._window_enum_callback,
+                             [class_name, wildcard])
         return self._handle
 
     def set_foreground(self):
@@ -211,7 +212,8 @@ def upload(md5, type, force):
     files = [("fille", (fileName, open(upFile, "rb"), "application/octet-stream"))]
     headers = {"User-Agent": "Apifox/1.0.0 (https://apifox.com)"}
 
-    response = requests.request("POST", url, headers=headers, data=payload, files=files)
+    response = requests.request(
+        "POST", url, headers=headers, data=payload, files=files)
 
     print(response.json().get("msg"))
 
