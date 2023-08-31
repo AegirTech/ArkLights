@@ -164,7 +164,7 @@ def skillicon2operator(
 def recruit(
     char="../ArkAssetsTool/ArkAssets/gamedata/excel/[unpack]character_table/character_table.json",
     gacha="../ArkAssetsTool/ArkAssets/gamedata/excel/[unpack]gacha_table/gacha_table.json",
-    to = "lua",
+    to="lua",
 ):
     char = json.loads(open(char).read())
     gacha = json.loads(open(gacha).read())
@@ -291,7 +291,6 @@ def recruit(
     elif to == "json":
         goodtag = json.dumps(goodtag, ensure_ascii=False)
 
-
     return goodtag
 
 
@@ -308,6 +307,7 @@ def py2lua(x):
         return str(x)
     elif type(x) is str:
         return '"' + x + '"'
+
 
 def py2rust(x):
     if type(x) is list:
@@ -347,10 +347,10 @@ def screencap(stem):
 def screencap_distance(path="screencap"):
     screencap = Path(path)
     import torch
+
     torch.backends.cudnn.enabled = False
     import easyocr
     from PIL import Image
-
 
     reader = easyocr.Reader(["en", "ch_sim"])
     point = defaultdict(int)
@@ -359,9 +359,9 @@ def screencap_distance(path="screencap"):
     distance[1] = 500
     for x in sorted(screencap.glob("*.jpg")):
         x = reader.readtext(str(x))
-        print("x",x)
+        print("x", x)
         visible_point = defaultdict(int)
-        for (loc, text, confidence) in x:
+        for loc, text, confidence in x:
             text = text.replace(" G", "-6")
             text = text.replace("CI -2", "CW-2")
             text = text.replace("-G", "-6")
@@ -377,7 +377,7 @@ def screencap_distance(path="screencap"):
             m = re.search("^.?.-(\d+)$", text)
             if not m:
                 continue
-            print("m",m)
+            print("m", m)
             m = int(m.group(1))
             visible_point[m] = loc[0][0]
             if point[m]:
@@ -387,7 +387,7 @@ def screencap_distance(path="screencap"):
             if m in distance:
                 continue
             distance[m] = visible_point[m] - visible_point[m - 1] + distance[m - 1]
-            print("m-1,distance[m-1]",m-1,distance,visible_point)
+            print("m-1,distance[m-1]", m - 1, distance, visible_point)
         # print("visible_point", visible_point)
     # print("point", point)
     # print("distance", distance)

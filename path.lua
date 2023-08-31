@@ -3205,7 +3205,7 @@ get_fight_type = function(x)
         return "上一次"
     elseif table.any({ "PR", "CE", "CA", "AP", "LS", "SK" }, f) then
         return "物资芯片"
-    elseif table.any({ "CW", "WD" }, f) then
+    elseif table.any({ "CW" }, f) then
         return "插曲"
     elseif table.any(table.values(jianpin2name), f) then
         return "剿灭"

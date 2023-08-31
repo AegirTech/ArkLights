@@ -13,6 +13,10 @@
     "[lua]": {
         "editor.defaultFormatter": "sumneko.lua"
     },
+    "[python]": {
+        "editor.formatOnType": true,
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
     "Lua.runtime.unicodeName": true,
     "Lua.diagnostics.enable": false,
     "diffEditor.ignoreTrimWhitespace": false,

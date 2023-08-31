@@ -67,7 +67,6 @@ oppid = "com.hypergryph.arknights"
 bppid = "com.hypergryph.arknights.bilibili"
 
 
-
 def mode(serial, f="help", *args, **kwargs):
     serial = str(serial)
     package = "com.bilabila.arknightsspeedrun2"

@@ -21,17 +21,18 @@ if not os.path.exists("localConfig.py"):
             + "# 例: mainProjectPath = r"
             + r'"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\script\main"'
             + "\n"
-            + "mainProjectPath = r\"\"\n"
+            + 'mainProjectPath = r""\n'
             + "# 打包的main.lr路径: \n"
             + "# 例: lrPath = r"
             + r'"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\out\main.lr"'
             + "\n"
-            + "lrPath = r\"\"\n"
+            + 'lrPath = r""\n'
         )
         exit()
 
 # 检查localConfig.py是否配置
 import localConfig as lc
+
 if lc.mainProjectPath == "" or lc.lrPath == "":
     print("localConfig.py未配置，请配置路径")
     exit()
@@ -60,8 +61,7 @@ class WindowMgr:
     def find_window_wildcard(self, class_name, wildcard):
         """根据类名，查找一个顶级窗口，确保其类名相符，且标题可以用正则表达式匹配对应的通配符"""
         self._handle = None
-        win32gui.EnumWindows(self._window_enum_callback,
-                             [class_name, wildcard])
+        win32gui.EnumWindows(self._window_enum_callback, [class_name, wildcard])
         return self._handle
 
     def set_foreground(self):
@@ -212,8 +212,7 @@ def upload(md5, type, force):
     files = [("fille", (fileName, open(upFile, "rb"), "application/octet-stream"))]
     headers = {"User-Agent": "Apifox/1.0.0 (https://apifox.com)"}
 
-    response = requests.request(
-        "POST", url, headers=headers, data=payload, files=files)
+    response = requests.request("POST", url, headers=headers, data=payload, files=files)
 
     print(response.json().get("msg"))
 
@@ -234,10 +233,12 @@ if __name__ == "__main__":
 
     except Exception as e:
         print("缺少正确参数")
-        print("""
+        print(
+            """
 run: 运行
 save: 保存
 saverun: 保存并运行
 r: 发布脚本
 rs: 发布技能图标
-""")
+"""
+        )
