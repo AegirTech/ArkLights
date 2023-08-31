@@ -4,7 +4,6 @@ import sys
 import datetime
 from time import sleep
 import hashlib
-import shutil
 import win32gui
 import win32con
 import win32api
@@ -13,9 +12,32 @@ import requests
 
 # win环境下的快速开发脚本
 
-# 配置全局路径 请确保路径存在
-path = r"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\script\main"
-pkgPath = r"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\out\main.lr"
+# 检查localConfig.py是否存在
+if not os.path.exists("localConfig.py"):
+    print("localConfig.py不存在，已自动创建，请配置路径")
+    with open("localConfig.py", "w", encoding="utf-8") as f:
+        f.write(
+            "# main工程路径: \n"
+            + "# 例: mainProjectPath = r"
+            + r'"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\script\main"'
+            + "\n"
+            + "mainProjectPath = r\"\"\n"
+            + "# 打包的main.lr路径: \n"
+            + "# 例: lrPath = r"
+            + r'"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\out\main.lr"'
+            + "\n"
+            + "lrPath = r\"\"\n"
+        )
+        exit()
+
+# 检查localConfig.py是否配置
+import localConfig as lc
+if lc.mainProjectPath == "" or lc.lrPath == "":
+    print("localConfig.py未配置，请配置路径")
+    exit()
+else:
+    path = lc.mainProjectPath
+    pkgPath = lc.lrPath
 
 
 class WindowMgr:
@@ -152,7 +174,13 @@ def release(type):
 
 
 def upload(md5, type, force):
-    token = open("token.txt", "r").readline()
+    try:
+        token = open("token.txt", "r").readline()
+    except Exception as e:
+        print("token.txt不存在")
+        with open("token.txt", "w") as f:
+            f.write(input("请输入token: "))
+        token = open("token.txt", "r").readline()
     upFile = ""
     if type == "RELEASE":
         upFile = pkgPath
@@ -185,7 +213,7 @@ def upload(md5, type, force):
 
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
 
-    print(response.text)
+    print(response.json().get("msg"))
 
 
 if __name__ == "__main__":
@@ -203,6 +231,11 @@ if __name__ == "__main__":
             release("SKILL")
 
     except Exception as e:
-        print(sys.argv)
-        print(e)
-    # upload("5272c8cc09d3d5642973c4c0531010e5", "RELEASE", "false")
+        print("缺少正确参数")
+        print("""
+run: 运行
+save: 保存
+saverun: 保存并运行
+r: 发布脚本
+rs: 发布技能图标
+""")
