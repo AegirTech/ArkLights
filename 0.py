@@ -26,7 +26,9 @@ if not os.path.exists("localConfig.py"):
             + "# 例: lrPath = r"
             + r'"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\out\main.lr"'
             + "\n"
-            + 'lrPath = r""\n'
+            + 'lrPath = r""\n\n'
+            + "# 热更新token: \n"
+            + 'token = ""\n'
         )
         exit()
 
@@ -175,13 +177,10 @@ def release(type):
 
 
 def upload(md5, type, force):
-    try:
-        token = open("token.txt", "r").readline()
-    except Exception as e:
-        print("token.txt不存在")
-        with open("token.txt", "w") as f:
-            f.write(input("请输入token: "))
-        token = open("token.txt", "r").readline()
+    token = lc.token
+    if token == "":
+        print("token未配置，请配置token")
+        exit()
     upFile = ""
     if type == "RELEASE":
         upFile = pkgPath
