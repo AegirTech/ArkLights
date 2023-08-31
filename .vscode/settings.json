@@ -1,0 +1,21 @@
+{
+    "files.autoSaveDelay": 2000,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "code-runner.executorMap": {
+        "lua": "python3 0.py saverun"
+    },
+    "code-runner.runInTerminal": true,
+    "Lua.runtime.version": "Lua 5.3",
+    "Lua.workspace.library": [
+        "${3rd}/lrapi/library"
+    ],
+    "[lua]": {
+        "editor.defaultFormatter": "sumneko.lua"
+    },
+    "Lua.runtime.unicodeName": true,
+    "Lua.diagnostics.enable": false,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false,
+}

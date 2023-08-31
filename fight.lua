@@ -1,61 +1,61 @@
 discoverBeforeFight = still_wrapper(function(operators, pngdata, pageid)
-  local prewhite = 0
-  local y = scale(504)
-  local corner = {}
-  for x = scale(543), scale(1590) do
-    if cmpColor(x, y, 'FFFFFF', default_findcolor_confidence) == 1 then
-      prewhite = prewhite + 1
-    elseif prewhite > scale(5) and
-        cmpColor(x, y, '333333', default_findcolor_confidence) == 1 then
-      prewhite = 0
-      table.insert(corner, x)
+    local prewhite = 0
+    local y = scale(504)
+    local corner = {}
+    for x = scale(543), scale(1590) do
+        if cmpColor(x, y, 'FFFFFF', default_findcolor_confidence) == 1 then
+            prewhite = prewhite + 1
+        elseif prewhite > scale(5) and
+            cmpColor(x, y, '333333', default_findcolor_confidence) == 1 then
+            prewhite = 0
+            table.insert(corner, x)
+        end
     end
-  end
-  log(113, corner)
+    log(113, corner)
 
-  local card = {}
-  if #corner == 0 then
-    log("找不到干员卡片")
-    return
-  end
-  local prex = -math.huge
-  for _, x in pairs(corner) do
-    if x - prex > scale(207) then
-      prex = x
-      table.insert(card, { x - scale(6), scale(129) })
-      table.insert(card, { x - scale(6), scale(553) })
+    local card = {}
+    if #corner == 0 then
+        log("找不到干员卡片")
+        return
     end
-  end
+    local prex = -math.huge
+    for _, x in pairs(corner) do
+        if x - prex > scale(207) then
+            prex = x
+            table.insert(card, { x - scale(6), scale(129) })
+            table.insert(card, { x - scale(6), scale(553) })
+        end
+    end
 
-  log(114, card)
-  -- card = {card[3]}
-  card = { card[7] }
-  for idx, v in pairs(card) do
-    -- 头像判断
-    -- local y
-    -- y = 133 -- 0.0275
-    -- y = 130 -- 0.0481
-    -- y = 136 -- 0.0194
-    -- y = 138 -- 0.0181
-    -- y = 140 -- 0.0179
-    -- y = 150 -- 0.023
-    -- y = 145 -- 0.022
-    -- y = 142 -- 0.0172
-    -- y = 141 -- 0.0183
-    -- y = 143 -- 0.0172
-    --
-    -- y = 559 -- 0.031
-    -- y = 556 -- 0.035
-    -- -- y = 565 -- 0.033
-    -- -- y = 570 -- 0.039
-    local icon1 = { v[1], v[2], v[1] + scale(192), v[2] + scale(192) }
-    log("icon1", icon1)
-    local png =
-        findAvatar(icon1[1], icon1[2], icon1[3], icon1[4], avatarPngdata) or
-        'empty1.png'
-    log(129, png)
-    table.insert(operators, { png, pageid })
-  end
+    log(114, card)
+    -- card = {card[3]}
+    card = { card[7] }
+    for idx, v in pairs(card) do
+        -- 头像判断
+        -- local y
+        -- y = 133 -- 0.0275
+        -- y = 130 -- 0.0481
+        -- y = 136 -- 0.0194
+        -- y = 138 -- 0.0181
+        -- y = 140 -- 0.0179
+        -- y = 150 -- 0.023
+        -- y = 145 -- 0.022
+        -- y = 142 -- 0.0172
+        -- y = 141 -- 0.0183
+        -- y = 143 -- 0.0172
+        --
+        -- y = 559 -- 0.031
+        -- y = 556 -- 0.035
+        -- -- y = 565 -- 0.033
+        -- -- y = 570 -- 0.039
+        local icon1 = { v[1], v[2], v[1] + scale(192), v[2] + scale(192) }
+        log("icon1", icon1)
+        local png =
+            findAvatar(icon1[1], icon1[2], icon1[3], icon1[4], avatarPngdata) or
+            'empty1.png'
+        log(129, png)
+        table.insert(operators, { png, pageid })
+    end
 end)
 
 avatar2operator = JsonDecode([[
@@ -67,188 +67,188 @@ avatarIconMask = {}
 avatarIconCenterList = {}
 w, h = 36, 36
 for i = 1, h do
-  for j = 1, w do
-    if true then
-      table.insert(avatarIconMask, { i, j })
-      -- log(613,i,j)
+    for j = 1, w do
+        if true then
+            table.insert(avatarIconMask, { i, j })
+            -- log(613,i,j)
+        end
+        if ((i - 18.5) ^ 2 + (j - 18.5) ^ 2) < 10 ^ 2 then
+            table.insert(avatarIconCenterList, j + (i - 1) * 36)
+        end
     end
-    if ((i - 18.5) ^ 2 + (j - 18.5) ^ 2) < 10 ^ 2 then
-      table.insert(avatarIconCenterList, j + (i - 1) * 36)
-    end
-  end
 end
 -- log(avatarIconCenterList)
 -- exit()
 
 findAvatar = function(x1, y1, x2, y2, pngdata)
-  local s = ''
-  local w, h, color = getScreenPixel(x1, y1, x2, y2)
-  local i, j, b, g, r
-  local data = {}
-  log(87, x1, y1, x2, y2, w, h, #color, #avatarIconMask)
-  for _, m in pairs(avatarIconMask) do
-    i, j = m[1], m[2]
-    -- b, g, r = colorToRGB(color[(i - 1) * w + j])
-    b, g, r = colorToRGB(color[math.round((i - 1) * scale(192) / 36) * w +
-    math.round(j * scale(192) / 36)])
-    table.extend(data, { r, g, b })
+    local s = ''
+    local w, h, color = getScreenPixel(x1, y1, x2, y2)
+    local i, j, b, g, r
+    local data = {}
+    log(87, x1, y1, x2, y2, w, h, #color, #avatarIconMask)
+    for _, m in pairs(avatarIconMask) do
+        i, j = m[1], m[2]
+        -- b, g, r = colorToRGB(color[(i - 1) * w + j])
+        b, g, r = colorToRGB(color[math.round((i - 1) * scale(192) / 36) * w +
+        math.round(j * scale(192) / 36)])
+        table.extend(data, { r, g, b })
 
-    if 1 then
-      r = string.format('%X', r):padStart(2, '0')
-      g = string.format('%X', g):padStart(2, '0')
-      b = string.format('%X', b):padStart(2, '0')
-      s = s .. i .. '|' .. j .. '|' .. r .. g .. b .. ','
+        if 1 then
+            r = string.format('%X', r):padStart(2, '0')
+            g = string.format('%X', g):padStart(2, '0')
+            b = string.format('%X', b):padStart(2, '0')
+            s = s .. i .. '|' .. j .. '|' .. r .. g .. b .. ','
+        end
     end
-  end
-  -- log(103, #data)
-  -- log(s)
-  -- exit()
-  --
-  local best_score = 100000
-  -- local threshold = 100
-  local best = nil
-  local score = 0
-  local scoreBase = 0
-  local pointScore = 0
-  -- local flatPoint = 0
-  local abs = math.abs
-  local white_num = 0
-
-  local flatScoreTable = {}
-  local flatScore = 0
-  for _, i in pairs(avatarIconCenterList) do
-    flatScore = abs(data[i * 3 - 2] - data[(i + 1) * 3 - 2]) +
-        abs(data[i * 3 - 1] - data[(i + 1) * 3 - 1]) +
-        abs(data[i * 3] - data[(i + 1) * 3]) +
-        abs(data[i * 3 - 2] - data[(i + 36) * 3 - 2]) +
-        abs(data[i * 3 - 1] - data[(i + 36) * 3 - 1]) +
-        abs(data[i * 3] - data[(i + 36) * 3])
-    flatScore = 0
-    table.insert(flatScoreTable, 1 / (1 + flatScore))
-    scoreBase = scoreBase + flatScoreTable[#flatScoreTable]
-  end
-
-  -- log(109)
-  local tmp = ''
-  for k, v in pairs(pngdata) do
-    tmp = ''
-    score = 0
-    white_num = 0
-    for idx, i in pairs(avatarIconCenterList) do
-      -- log(137, k, #v, i, score)
-      if v[i * 3 - 2] == 255 and v[i * 3 - 1] == 255 and v[i * 3] == 255 then
-        pointScore = 0
-        white_num = white_num + 1
-      else
-        -- log(142)
-        pointScore = abs(data[i * 3 - 2] - v[i * 3 - 2]) +
-            abs(data[i * 3 - 1] - v[i * 3 - 1]) +
-            abs(data[i * 3] - v[i * 3])
-      end
-
-      score = score + pointScore * flatScoreTable[idx]
-      if i % 36 == 1 then tmp = tmp .. '\n' end
-      if pointScore > 200 then
-        tmp = tmp .. '1'
-      else
-        tmp = tmp .. ' '
-      end
-      -- if score / (36 * 36 - white_num) / scoreBase > best_score then break end
-    end
-    score = score / (#avatarIconCenterList - white_num) / scoreBase
-
-    -- if k == 'char_293_thorns_2' then log(662, score, tmp) end
-    -- if k == 'char_1014_nearl2' then log(662, score, tmp) end
-    -- if k == 'Bskill_tra_flow_gc1.png' then log(663, score, tmp) end
-    -- if k == 'char_350_surtr_2' then log(663, score, white_num, tmp) end
-    --
-    -- if k == 'Bskill_tra_texas1.png' then log(662, score, tmp) end
-    -- if k == 'Bskill_tra_Lappland2.png' then log(663, score, tmp) end
-    if k == 'char_264_f12yin_2' then log(663, score, white_num, tmp) end
+    -- log(103, #data)
+    -- log(s)
     -- exit()
+    --
+    local best_score = 100000
+    -- local threshold = 100
+    local best = nil
+    local score = 0
+    local scoreBase = 0
+    local pointScore = 0
+    -- local flatPoint = 0
+    local abs = math.abs
+    local white_num = 0
 
-    if best_score > score then
-      best_score = score
-      best = k
-      best_w = white_num
+    local flatScoreTable = {}
+    local flatScore = 0
+    for _, i in pairs(avatarIconCenterList) do
+        flatScore = abs(data[i * 3 - 2] - data[(i + 1) * 3 - 2]) +
+            abs(data[i * 3 - 1] - data[(i + 1) * 3 - 1]) +
+            abs(data[i * 3] - data[(i + 1) * 3]) +
+            abs(data[i * 3 - 2] - data[(i + 36) * 3 - 2]) +
+            abs(data[i * 3 - 1] - data[(i + 36) * 3 - 1]) +
+            abs(data[i * 3] - data[(i + 36) * 3])
+        flatScore = 0
+        table.insert(flatScoreTable, 1 / (1 + flatScore))
+        scoreBase = scoreBase + flatScoreTable[#flatScoreTable]
     end
-  end
-  log(2208, best_score, best, avatar2operator[best])
-  return best
+
+    -- log(109)
+    local tmp = ''
+    for k, v in pairs(pngdata) do
+        tmp = ''
+        score = 0
+        white_num = 0
+        for idx, i in pairs(avatarIconCenterList) do
+            -- log(137, k, #v, i, score)
+            if v[i * 3 - 2] == 255 and v[i * 3 - 1] == 255 and v[i * 3] == 255 then
+                pointScore = 0
+                white_num = white_num + 1
+            else
+                -- log(142)
+                pointScore = abs(data[i * 3 - 2] - v[i * 3 - 2]) +
+                    abs(data[i * 3 - 1] - v[i * 3 - 1]) +
+                    abs(data[i * 3] - v[i * 3])
+            end
+
+            score = score + pointScore * flatScoreTable[idx]
+            if i % 36 == 1 then tmp = tmp .. '\n' end
+            if pointScore > 200 then
+                tmp = tmp .. '1'
+            else
+                tmp = tmp .. ' '
+            end
+            -- if score / (36 * 36 - white_num) / scoreBase > best_score then break end
+        end
+        score = score / (#avatarIconCenterList - white_num) / scoreBase
+
+        -- if k == 'char_293_thorns_2' then log(662, score, tmp) end
+        -- if k == 'char_1014_nearl2' then log(662, score, tmp) end
+        -- if k == 'Bskill_tra_flow_gc1.png' then log(663, score, tmp) end
+        -- if k == 'char_350_surtr_2' then log(663, score, white_num, tmp) end
+        --
+        -- if k == 'Bskill_tra_texas1.png' then log(662, score, tmp) end
+        -- if k == 'Bskill_tra_Lappland2.png' then log(663, score, tmp) end
+        if k == 'char_264_f12yin_2' then log(663, score, white_num, tmp) end
+        -- exit()
+
+        if best_score > score then
+            best_score = score
+            best = k
+            best_w = white_num
+        end
+    end
+    log(2208, best_score, best, avatar2operator[best])
+    return best
 end
 
 initAvatarPngdata = function()
-  -- 读取图标图像，300个36x36的png，可能比较耗时
-  if avatarPngdata then return end
-  avatarPngdata = {}
+    -- 读取图标图像，300个36x36的png，可能比较耗时
+    if avatarPngdata then return end
+    avatarPngdata = {}
 
-  local s = ''
-  for _, v in pairs(avatarpng) do
-    local pngdata = avatarPngdata
-    -- local _, _, color = getImage(getWorkPath() .. '/skill/' .. v)
-    local _, _, color = getImage('/sdcard/png_noalpha3/' .. v .. '.png')
-    pngdata[v] = {}
-    for _, m in pairs(avatarIconMask) do
-      i, j = m[1], m[2]
-      b, g, r = colorToRGB(color[(w - i - 1) * w + j])
-      table.extend(pngdata[v], { r, g, b })
-      if nil and v == 'Bskill_man_exp2.png' then
-        -- if v == 'Bskill_ws_evolve2.png' then
-        r = string.format('%X', r):padStart(2, '0')
-        g = string.format('%X', g):padStart(2, '0')
-        b = string.format('%X', b):padStart(2, '0')
-        s = s .. i .. '|' .. j .. '|' .. r .. g .. b .. ','
-      end
+    local s = ''
+    for _, v in pairs(avatarpng) do
+        local pngdata = avatarPngdata
+        -- local _, _, color = getImage(getWorkPath() .. '/skill/' .. v)
+        local _, _, color = getImage('/sdcard/png_noalpha3/' .. v .. '.png')
+        pngdata[v] = {}
+        for _, m in pairs(avatarIconMask) do
+            i, j = m[1], m[2]
+            b, g, r = colorToRGB(color[(w - i - 1) * w + j])
+            table.extend(pngdata[v], { r, g, b })
+            if nil and v == 'Bskill_man_exp2.png' then
+                -- if v == 'Bskill_ws_evolve2.png' then
+                r = string.format('%X', r):padStart(2, '0')
+                g = string.format('%X', g):padStart(2, '0')
+                b = string.format('%X', b):padStart(2, '0')
+                s = s .. i .. '|' .. j .. '|' .. r .. g .. b .. ','
+            end
+        end
     end
-  end
 end
 
 chooseOperatorBeforeFight = function()
-  initAvatarPngdata()
+    initAvatarPngdata()
 
-  -- 两遍模式
-  -- 第一遍尽可能选作业中的干员
-  -- 第二遍选替换干员
+    -- 两遍模式
+    -- 第一遍尽可能选作业中的干员
+    -- 第二遍选替换干员
 
-  local maxSwipTimes = 10
-  local operator = {}
-  for i = 1, maxSwipTimes do
-    if discoverBeforeFight(operator, pngdata, i) then break end
-    log(operator)
-    log(map(function(x) return avatar2operator[x[1]] end, operator))
-    exit()
-    -- 三次重试
-    local state = sample("干员第一个")
-    for j = 1, 3 do
-      log("842尝试翻页", j)
-      swipo()
-      if not findOne(state) then break end
+    local maxSwipTimes = 10
+    local operator = {}
+    for i = 1, maxSwipTimes do
+        if discoverBeforeFight(operator, pngdata, i) then break end
+        log(operator)
+        log(map(function(x) return avatar2operator[x[1]] end, operator))
+        exit()
+        -- 三次重试
+        local state = sample("干员第一个")
+        for j = 1, 3 do
+            log("842尝试翻页", j)
+            swipo()
+            if not findOne(state) then break end
+        end
     end
-  end
-  swipo(true, true)
+    swipo(true, true)
 
-  local start_time = time()
+    local start_time = time()
 
-  log(671, operator)
+    log(671, operator)
 
-  -- 选择干员
-  -- operator = best
-  -- log(692, operator, best_score)
-  -- local pageid = 1
-  -- for i = 1, #operator do
-  --   log(i, operator[i])
-  --   while operator[i][5] > pageid do
-  --     local state = sample("干员第一个")
-  --     for j = 1, 3 do
-  --       log("844尝试翻页", j)
-  --       swipo()
-  --       if not findOne(state) then break end
-  --     end
-  --     pageid = pageid + 1
-  --   end
-  --   local p = operator[i][4]
-  --   tap({p[1] + scale(106), p[2]})
-  --   sleep(50)
-  -- end
-  swipo(true, true)
+    -- 选择干员
+    -- operator = best
+    -- log(692, operator, best_score)
+    -- local pageid = 1
+    -- for i = 1, #operator do
+    --   log(i, operator[i])
+    --   while operator[i][5] > pageid do
+    --     local state = sample("干员第一个")
+    --     for j = 1, 3 do
+    --       log("844尝试翻页", j)
+    --       swipo()
+    --       if not findOne(state) then break end
+    --     end
+    --     pageid = pageid + 1
+    --   end
+    --   local p = operator[i][4]
+    --   tap({p[1] + scale(106), p[2]})
+    --   sleep(50)
+    -- end
+    swipo(true, true)
 end

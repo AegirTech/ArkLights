@@ -151,12 +151,12 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
             ["＃"] = "#",
             ["\n"] = "",
             [" "] = "",
-            ["　"] = ""
+            ["　"] = "",
         })
         password = (_G["password" .. i] or ''):map({
             ["\n"] = "",
             [" "] = "",
-            ["　"] = ""
+            ["　"] = "",
         })
         server = _G["server" .. i] or 0
         usernote = ''
@@ -198,8 +198,7 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
         end
 
         -- 双休日不上号
-        if not isweekday() and
-            table.includes(multi_account_choice_weekday_only, i) then
+        if not isweekday() and table.includes(multi_account_choice_weekday_only, i) then
             skip_account = true
         end
 
