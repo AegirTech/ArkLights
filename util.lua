@@ -2360,10 +2360,10 @@ multi_account_num_get = function()
     end)
 
     local account = ''
-    for i = 1, multi_account_num do
-        local username = content['username' .. i]:trim():map({ [' '] = '' })
-        local password = content['password' .. i]:trim()
-        local server = content['server' .. i]
+    for i = 1, 30 do
+        local username = content['username' .. i] or ''
+        local password = content['password' .. i] or ''
+        local server = content['server' .. i] or 0
         if type(username) == 'string' and #username > 0 and type(password) ==
             'string' and #password > 0 then
             num = num + 1

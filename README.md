@@ -58,6 +58,11 @@ ArkLights is the <b> lightning fast</b> and <b> fully managed</b> Arknights game
 
 请详细的描述错误的复现场景并简明扼要的阐述你的问题，一个好的issue有助于开发者快速解决问题。
 
+## 数据收集协议
+使用本仓库的Release版本即视为您同意项目组收集以下信息用于数据统计
+- 唯一识别码
+- 多账号数量
+
 ## 其他相关项目
 
 - [伊比利亚审判庭](https://ark.aegirtech.com/) 在线全日制云端托管，解放你的双手，使用本服务亦是对开发的支持
