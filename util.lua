@@ -2349,6 +2349,29 @@ multi_account_config_export = function(simple)
     toast("多账号设置已复制" .. #content)
 end
 
+multi_account_num_get = function()
+    local layout = "multi_account"
+    local content = loadOneUIConfig(layout)
+    local num = 0
+
+    content = table.filterKV(content, function(k, v)
+        if #k == 32 and not k:find('_') then return false end
+        return true
+    end)
+
+    local account = ''
+    for i = 1, multi_account_num do
+        local username = content['username' .. i]:trim():map({ [' '] = '' })
+        local password = content['password' .. i]:trim()
+        local server = content['server' .. i]
+        if type(username) == 'string' and #username > 0 and type(password) ==
+            'string' and #password > 0 then
+            num = num + 1
+        end
+    end
+    return num or 0
+end
+
 parse_simple_config = function(data)
     data = data or ''
     local layout = 'multi_account'
@@ -2687,6 +2710,24 @@ updateSkill = function(update_info)
     return true
 end
 
+uploadStatistician = function(is_download)
+    local account_count = multi_account_num_get()
+    local uuid = loadConfig("uuid", "null")
+    local url = update_source ..
+        "/statistician?uuid=" ..
+        tostring(uuid) ..
+        "&account_count=" ..
+        tostring(account_count) ..
+        "&is_download=" ..
+        tostring(is_download)
+    local res, code = httpGet(url, 30)
+    local status, data = pcall(JsonDecode, res)
+    if data.data.uuid ~= uuid then
+        saveConfig("uuid", data.data.uuid)
+        log("uuid已更新 " .. data.data.uuid)
+    end
+end
+
 hotUpdate = function()
     if disable_hotupdate then
         log("热更新已禁用")
@@ -2695,10 +2736,12 @@ hotUpdate = function()
     local update_info = check_hot_update()
     if not update_info.updateLr and not update_info.updateSkill then
         toast("已经是最新版")
+        uploadStatistician(false)
         return true
     end
     updateLr(update_info)
     updateSkill(update_info)
+    uploadStatistician(true)
 
     sleep(1000)
     log("更新完成")

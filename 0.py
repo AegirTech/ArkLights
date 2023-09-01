@@ -213,6 +213,23 @@ def upload(md5, type, force):
 
     print(response.json().get("msg"))
 
+def statistician():
+    token = lc.token
+    if token == "":
+        print("token未配置，请配置token")
+        exit()
+    url = (
+        "http://ark.aegirtech.com:8080/getStatistician?token="
+        + token
+    )
+    response = requests.request("GET", url)
+    info = response.json()["data"]
+    print("============统计信息============")
+    print("24h下载量: \t" + str(info["downloadCount"]))
+    print("终端数量:  \t" + str(info["alCount"]))
+    print("账号数量:  \t" + str(info["accountCount"]))
+    print("活跃终端数量:  \t" + str(info["activeAlCount"]))
+    print("活跃账号数量:  \t" + str(info["activeAccountCount"]))
 
 if __name__ == "__main__":
     try:
@@ -227,6 +244,8 @@ if __name__ == "__main__":
             release("RELEASE")
         elif arg == "rs":
             release("SKILL")
+        elif arg == "s":
+            statistician()
 
     except Exception as e:
         print("缺少正确参数或没有启用管理员权限")
