@@ -4120,7 +4120,7 @@ path.活动 = function(x)
         end
         return true
     end
-    car_check()
+    -- car_check()
     local car_check = function()
         if car_checked then return end
         car_checked = true
