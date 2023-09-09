@@ -4126,8 +4126,8 @@ update_state_from_ui = function()
     -- log("fight", fight)
 
     -- 活动开放时间段
-    hd_open_time_end = parse_time("202309100400")
-    hd_shop_open_time_end = parse_time("202309140400")  -- 活动商店关闭时间
+    hd_open_time_end = parse_time("202309190400")
+    hd_shop_open_time_end = parse_time("202309260400")  -- 活动商店关闭时间
     hd2_open_time_end = parse_time("202303210400")
     hd2_shop_open_time_end = parse_time("202302240400") -- 活动2商店关闭时间
     hd_mod = "ss"                                       -- 活动类型 "故事集"/"ss" 区分活动任务和是否活动作战
