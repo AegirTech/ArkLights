@@ -650,6 +650,9 @@ path.login = {
         -- if not disappear("login") then
         --   tap("login")
         -- end
+        wait(function()
+            if findOne("防沉迷") then stop("防沉迷跳过", account_idx and 'next' or '') end
+        end,2)
         disappear("login")
         appear({ "captcha", "B服安全验证", "B服安全验证320DPI" })
     end),
@@ -657,6 +660,9 @@ path.login = {
     login_switch = disable_game_up_check_wrapper(function()
         check_login_frequency()
         tap("login")
+        wait(function()
+            if findOne("防沉迷") then stop("防沉迷跳过", account_idx and 'next' or '') end
+        end,2)
         disappear("login")
         appear({ "captcha", "B服安全验证", "B服安全验证320DPI" })
     end),
