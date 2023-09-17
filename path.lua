@@ -651,7 +651,7 @@ path.login = {
         --   tap("login")
         -- end
         wait(function()
-            if findOne("防沉迷") then stop("防沉迷跳过", account_idx and 'next' or '') end
+            if findNode(point["防沉迷"]) then stop("防沉迷跳过", account_idx and 'next' or '') end
         end,2)
         disappear("login")
         appear({ "captcha", "B服安全验证", "B服安全验证320DPI" })
@@ -661,7 +661,7 @@ path.login = {
         check_login_frequency()
         tap("login")
         wait(function()
-            if findOne("防沉迷") then stop("防沉迷跳过", account_idx and 'next' or '') end
+            if findNode(point["防沉迷"]) then stop("防沉迷跳过", account_idx and 'next' or '') end
         end,2)
         disappear("login")
         appear({ "captcha", "B服安全验证", "B服安全验证320DPI" })
