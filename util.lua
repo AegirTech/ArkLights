@@ -4092,6 +4092,99 @@ parse_fight_config = function(fight_ui)
         elseif table.includes({ 'HD1' }, v) then
             for i = 10, 1, -1 do table.insert(expand_fight, 'HD' .. '-' .. i) end
             table.insert(expand_fight, "BREAK")
+        elseif table.includes({ '扭转醇', '轻锰矿', 'RMA70-12', '固源岩组', '固源岩', '研磨石', '全新装置',
+                '装置',
+                '聚酸酯组', '聚酸酯', '糖组', '糖', '异铁组', '异铁', '酮凝集组', '酮凝集', '凝胶',
+                '炽合金', '晶体元件', '半自然溶剂', '化合切削液', '转质盐组' }, v) then
+            if v == '扭转醇' then
+                for _, i in pairs({ '6-11', '11-13' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '轻锰矿' then
+                for _, i in pairs({ '10-16', '3-2' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == 'RMA70-12' then
+                for _, i in pairs({ '9-19', '7-10', 'R8-9', '2-10' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '固源岩组' then
+                for _, i in pairs({ '10-6', '2-4' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '固源岩' then
+                for _, i in pairs({ '1-7' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '研磨石' then
+                for _, i in pairs({ 'HD-7', '10-12', '9-16', '5-7', '4-8', '3-3' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '全新装置' then
+                for _, i in pairs({ '11-7', 'M8-8', '9-10', '7-15', '3-4' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '聚酸酯组' then
+                for _, i in pairs({ '7-4', '2-6' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '聚酸酯' then
+                for _, i in pairs({ 'S3-2', '1-8' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '装置' then
+                for _, i in pairs({ 'S3-4', '1-12' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '糖组' then
+                for _, i in pairs({ 'HD-6', '2-5' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '糖' then
+                for _, i in pairs({ 'S3-1', '2-2' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '异铁组' then
+                for _, i in pairs({ '10-11', '7-18', '2-8' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '异铁' then
+                for _, i in pairs({ 'S3-3', '2-1' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '酮凝集组' then
+                for _, i in pairs({ '10-4', 'JT8-3', '3-1' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '酮凝集' then
+                for _, i in pairs({ '3-7', 'S2-1' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '凝胶' then
+                for _, i in pairs({ 'R8-8', 'JT8-2', 'S4-10' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '炽合金' then
+                for _, i in pairs({ 'S3-6' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '晶体元件' then
+                for _, i in pairs({ 'R8-11', 'S5-9', 'S3-7' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '半自然溶剂' then
+                for _, i in pairs({ '12-10', '9-18', '9-4' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '化合切削液' then
+                for _, i in pairs({ '10-17', '9-6' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            elseif v == '转质盐组' then
+                for _, i in pairs({ '11-3', 'S9-2' }) do
+                    for _ = 1, 99 do table.insert(expand_fight, i) end
+                end
+            end
         else
             table.insert(expand_fight, v)
         end
