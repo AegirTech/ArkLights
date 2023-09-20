@@ -942,19 +942,6 @@ path.fallback = {
             if appear("面板", 1) then return true end
         end, 5)
     end,
-	九色鹿签到返回 = function ()
-		wait(function()
-			tap("九色鹿签到")
-			ssleep(.2)
-		end, 1)
-		wait(function()
-			tap("九色鹿签到返回")
-			ssleep(.2)
-			tap("开包skip")
-			if not appear("面板") then tap("开包skip") end
-			if appear("面板", 1) then return true end
-		end, 5)
-	end,
     端午签到返回 = function()
         wait(function()
             tap("端午签到左")
@@ -1037,7 +1024,7 @@ path.限时活动 = function(retry)
         appear({
             '活动签到返回', '国庆签到返回', '抽签返回',
             '感谢庆典返回', '限时开放许可', "限时幸运签", "月饼",
-            '产业合作洽谈会', '红包', "祈愿牌返回","九色鹿签到返回",
+            '产业合作洽谈会', '红包', "祈愿牌返回",
         })
         if findOne('红包') then
             wait(function()
