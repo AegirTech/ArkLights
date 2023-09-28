@@ -367,12 +367,14 @@ path.base = {
         cloud.addLog("INFO", "开始登录", "正在尝试登录", "")
         auto(path.bilibili_login, nil, 0, default_auto_timeout_second, true)
         cloud.addLog("INFO", "登录成功", "已成功登录至游戏", "")
+        if new_change_account_plan then 快速切号功能状态 = false end
     end,
 
     framelayout_only = function()
         cloud.addLog("INFO", "开始登录", "正在尝试登录", "")
         auto(path.login, nil, 0, default_auto_timeout_second, true)
         cloud.addLog("INFO", "登录成功", "已成功登录至游戏", "")
+        if new_change_account_plan then 快速切号功能状态 = false end
     end,
 
 }
@@ -1123,6 +1125,29 @@ path.邮件收取 = function()
         -- if findOne("正在提交反馈至神经") then return path.邮件收取() end
         captureqqimagedeliver("INFO", "邮件收取前",
             table.join(qqmessage, ' ') .. " 邮件收取前")
+    end
+
+    if new_change_account_plan then 
+        if _G.快速切号功能状态 == false then
+            log("未查询到保存的登录数据或数据已经失效")
+            if appid ==  "com.hypergryph.arknights" and _G.切号登录结果 ~= true then
+                local user_token = official_get_last_login()
+                if user_token then
+                    log("官服登录保存登录数据ing")
+                    user_token = encodeBase64(user_token)
+                    save_local_config("account", username .. "token", user_token)
+                    save_local_config("account", username .. "hyperautologin", true)
+                 end
+            elseif appid ==  "com.hypergryph.arknights.bilibili" and _G.切号登录结果 ~= true then
+                local userid = bilibili_get_lastlogin_uid()
+                if userid then
+                    log("b服登录保存userid")
+                    save_local_config("account", username .. "userid", userid)
+                    save_local_config("account", username .. "biliautologin", true)
+                end
+            end
+        end
+        _G.切号登录结果 = _G.快速切号功能状态
     end
 
     path.跳转("邮件")

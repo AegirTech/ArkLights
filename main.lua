@@ -9,7 +9,7 @@
 -- disable_dorm_shift=true
 -- disable_manu_shift=true
 -- disable_overview_shift=true
--- disable_hotupdate = true
+disable_hotupdate = true
 -- disable_root_mode = true
 -- no_background_after_run = true
 -- fake_recruit = true
@@ -51,7 +51,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "09.22 19:26"
+release_date = "09.28 12:36"
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -88,6 +88,7 @@ setEventCallback()
 hotUpdate()
 -- fetchSkillIcon()
 check_root_mode()
+unpacking_library()
 enable_accessibility_service()
 enable_snapshot_service()
 remove_old_log()
@@ -178,7 +179,31 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
             job = { extra_mode }
         end
 
-        if #username > 0 and #password > 0 then
+        -- 无密码切号方案
+        if new_change_account_plan and root_mode then 
+            log("切号测试")
+            _G.快速切号功能状态 = false
+            closeapp(appid)
+            if server == 0 and read_local_config("account", username .. "hyperautologin") then
+                local user_token = read_local_config("account", username .. "token")
+                if user_token and #user_token > 10 then
+                    log("官服快速登录")
+                    user_token = decodeBase64(user_token)
+                    official_set_login_user(user_token)
+                    _G.快速切号功能状态 = true
+                end
+            elseif server ~=0 and read_local_config("account", username .. "biliautologin") then
+                local userid = read_local_config("account", username .. "userid")
+                if userid and #userid > 1 and bilibili_is_uid_exist(userid) then
+                    log("b服快速登录")
+                    log(userid)
+                    bilibili_set_login_uid(userid)
+                    _G.快速切号功能状态 = true
+                end
+            end
+        end
+
+        if #username > 0 and #password > 0 and _G.快速切号功能状态 ~=true then
             table.insert(job, 1, "退出账号")
         end
 
@@ -201,7 +226,7 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
         if not isweekday() and table.includes(multi_account_choice_weekday_only, i) then
             skip_account = true
         end
-
+		log(job)
         if not skip_account then run(job) end
     end
     saveConfig("continue_account", '')
