@@ -1759,11 +1759,12 @@ end
 
 -- 对b服数据库执行sqlite命令
 bilibili_database_parse = function (command)
-    
+    if sqlite3path == nil or fileExist(sqlite3path) == false then 
+        sqlite3path = "sqlite3"
+    end
     local command =  [[su root sh -c "]] .. sqlite3path .. [[ /data/user/0/com.hypergryph.arknights.bilibili/databases/users.db ']] .. command .. [['"]]
     log(command)
     ret = exec(command)
-    log(ret)
     return ret
 end
 
@@ -1776,7 +1777,7 @@ bilibili_set_login_uid= function (uid)
     local command = string.format("UPDATE users SET last_login = CASE WHEN uid = '%d' THEN 1 ELSE 0 END;", uid)
     local ret = bilibili_database_parse(command)
     log(ret)
-    return true
+    return ret
 end
 
 -- 获取自动登录账户的uid，也就是当前登录的账户，返回uid

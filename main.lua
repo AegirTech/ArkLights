@@ -9,7 +9,7 @@
 -- disable_dorm_shift=true
 -- disable_manu_shift=true
 -- disable_overview_shift=true
--- disable_hotupdate = true
+disable_hotupdate = true
 -- disable_root_mode = true
 -- no_background_after_run = true
 -- fake_recruit = true
@@ -51,7 +51,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "10.01 14:54"
+release_date = "10.01 15:15"
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
