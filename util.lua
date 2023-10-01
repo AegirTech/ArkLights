@@ -2646,6 +2646,16 @@ end
 --   return restartScript()
 -- end
 
+unpacking_library = function ()
+  if root_mode then
+    mkdir(getWorkPath() .. "/assets")
+    extractAssets("sqlite.rc",getWorkPath() .. "/assets")
+    exec("cp '" .. getWorkPath() .. "/assets/sqlite3.2"  .. "' '/data/local/tmp/sqlite3'")
+    setFilePremission("/data/local/tmp/sqlite3", 777)
+    _G.sqlite3path = "/data/local/tmp/sqlite3"
+  end
+end
+
 check_hot_update = function()
     toast("正在检查更新...")
 
@@ -3049,6 +3059,9 @@ show_debug_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "cloud_get_task", "审判庭接受任务", false)
+
+    newRow(layout)
+    ui.addCheckBox(layout, "new_change_account_plan", "新版切号方案（测试）", false)
 
     newRow(layout)
     addTextView(layout, "单号最大登录次数")

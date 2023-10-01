@@ -1756,3 +1756,136 @@ function parse_download_url(url)
         return redirect
     end
 end
+
+-- 对b服数据库执行sqlite命令
+bilibili_database_parse = function (command)
+    if sqlite3path == nil or fileExist(sqlite3path) == false then 
+        sqlite3path = "sqlite3"
+    end
+    local command =  [[su root sh -c "]] .. sqlite3path .. [[ /data/user/0/com.hypergryph.arknights.bilibili/databases/users.db ']] .. command .. [['"]]
+    log(command)
+    ret = exec(command)
+    return ret
+end
+
+-- 设置自动登录账户的uid
+bilibili_set_login_uid= function (uid)
+    if uid == nil then
+        log("uid为空")
+        return false
+    end
+    local command = string.format("UPDATE users SET last_login = CASE WHEN uid = '%d' THEN 1 ELSE 0 END;", uid)
+    local ret = bilibili_database_parse(command)
+    log(ret)
+    return ret
+end
+
+-- 获取自动登录账户的uid，也就是当前登录的账户，返回uid
+bilibili_get_lastlogin_uid= function ()
+    local command = "SELECT uid FROM users WHERE last_login = 1;"
+    return bilibili_database_parse(command)
+end
+
+-- 判断账户在数据库中是否存在
+bilibili_is_uid_exist= function (uid)
+    if uid == nil then
+        log("uid为空")
+        return false
+    end
+    local command = string.format("SELECT COUNT(*) FROM users WHERE uid=%d;", uid)
+    if tonumber(bilibili_database_parse(command)) == 1 then
+        return true
+    else
+        return false
+    end
+end
+
+-- 返回官服所有账户的登录数据
+official_get_user_cache = function ()
+    exec2(string.format([[su root sh -c "cp '/data/user/0/com.hypergryph.arknights/shared_prefs/HypergryphSdkPreferences.xml' '%s'"]], getWorkPath() .. "/HypergryphSdkPreferences.xml"))
+    setFilePremission(getWorkPath() .. "/HypergryphSdkPreferences.xml", nil)
+	local file = io.open(getWorkPath() .. "/HypergryphSdkPreferences.xml", "r")
+	local xml = file:read("*a")
+	file:close()
+	log(xml)
+   	return xml:match("<string%s+name=\"USER_CACHE\">(.-)</string>")
+end
+
+-- 返回最后登录的账户，string
+official_get_last_login = function ()
+    local data = official_get_user_cache()
+    data = data:gsub('&quot;', '"')
+    data = JsonDecode(data)
+	data = JsonEncode({data[1]})
+    data = data:gsub('"','&quot;')
+    return data
+end
+
+-- 设置官服登录账户
+official_set_login_user = function (data)
+    data = data or ""
+    if data == "" then
+        log("data为空")
+        return false
+    end
+    exec2(string.format([[su root sh -c "cp '/data/user/0/com.hypergryph.arknights/shared_prefs/HypergryphSdkPreferences.xml' '%s'"]], getWorkPath() .. "/HypergryphSdkPreferences.xml"))
+    setFilePremission(getWorkPath() .. "/HypergryphSdkPreferences.xml", nil)
+    local file = io.open(getWorkPath() .. "/HypergryphSdkPreferences.xml", "r+")
+    local xml = file:read("*a")
+    xml = xml:gsub("<string%s+name=\"USER_CACHE\">.-</string>", '<string name="USER_CACHE">' .. data .. '</string>')
+    log(xml)
+    file:seek("set", 0)
+    file:write(xml)
+    file:close()
+    exec2(string.format([[su root sh -c "cp '%s' '/data/user/0/com.hypergryph.arknights/shared_prefs/HypergryphSdkPreferences.xml'"]], getWorkPath() .. "/HypergryphSdkPreferences.xml"))
+    return true
+end
+
+exec2 = function(command)
+    local file = io.popen(command)
+    local ret = file:read("*a")
+    file:close()
+    return ret
+end
+
+-- 保存自定义配置
+save_local_config = function (filename, key, value)
+    local value = value or ""
+    local filePath = getWorkPath() .. "/" .. filename .. ".json"
+    local Config = {}
+    local file = io.open(filePath, "r")
+    if file then
+        local json = file:read("*a")
+        Config = JsonDecode(json)
+        file:close()
+    end
+    Config[key] = value
+    file = io.open(filePath, "w")
+    if file then
+        local json = JsonEncode(Config)
+        file:write(json)
+        file:close()
+        return true
+    else
+        return false
+    end
+end
+
+-- 读取自定义配置
+read_local_config = function (filename, key)
+    local filePath = getWorkPath() .. "/" .. filename .. ".json"
+    local file = io.open(filePath, "r")
+    if file then
+        local json = file:read("*a")
+        local config = JsonDecode(json)
+        file:close()
+        return config[key]
+    else
+        return nil
+    end
+end
+
+setFilePremission = function (filename, premission)
+    if premission == nil then premission = 777 end
+	exec('su root sh -c "chmod ' .. premission .. ' ' .. filename .. '"')
+end
