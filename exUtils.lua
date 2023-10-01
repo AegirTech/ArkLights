@@ -1769,11 +1769,17 @@ end
 
 -- 设置自动登录账户的uid
 bilibili_set_login_uid= function (uid)
+    if uid == nil then
+        log("uid为空")
+        return false
+    end
     local command = string.format("UPDATE users SET last_login = CASE WHEN uid = '%d' THEN 1 ELSE 0 END;", uid)
-    return bilibili_database_parse(command)
+    local ret = bilibili_database_parse(command)
+    log(ret)
+    return true
 end
 
--- 获取自动登录账户的uid，也就是当前登录的账户
+-- 获取自动登录账户的uid，也就是当前登录的账户，返回uid
 bilibili_get_lastlogin_uid= function ()
     local command = "SELECT uid FROM users WHERE last_login = 1;"
     return bilibili_database_parse(command)
@@ -1781,6 +1787,10 @@ end
 
 -- 判断账户在数据库中是否存在
 bilibili_is_uid_exist= function (uid)
+    if uid == nil then
+        log("uid为空")
+        return false
+    end
     local command = string.format("SELECT COUNT(*) FROM users WHERE uid=%d;", uid)
     if tonumber(bilibili_database_parse(command)) == 1 then
         return true
@@ -1812,6 +1822,11 @@ end
 
 -- 设置官服登录账户
 official_set_login_user = function (data)
+    data = data or ""
+    if data == "" then
+        log("data为空")
+        return false
+    end
     exec2(string.format([[su root sh -c "cp '/data/user/0/com.hypergryph.arknights/shared_prefs/HypergryphSdkPreferences.xml' '%s'"]], getWorkPath() .. "/HypergryphSdkPreferences.xml"))
     setFilePremission(getWorkPath() .. "/HypergryphSdkPreferences.xml", nil)
     local file = io.open(getWorkPath() .. "/HypergryphSdkPreferences.xml", "r+")
@@ -1822,6 +1837,7 @@ official_set_login_user = function (data)
     file:write(xml)
     file:close()
     exec2(string.format([[su root sh -c "cp '%s' '/data/user/0/com.hypergryph.arknights/shared_prefs/HypergryphSdkPreferences.xml'"]], getWorkPath() .. "/HypergryphSdkPreferences.xml"))
+    return true
 end
 
 exec2 = function(command)

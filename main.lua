@@ -51,7 +51,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "09.28 13:20"
+release_date = "10.01 14:54"
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -189,16 +189,14 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
                 if user_token and #user_token > 10 then
                     log("官服快速登录")
                     user_token = decodeBase64(user_token)
-                    official_set_login_user(user_token)
-                    _G.快速切号功能状态 = true
+                    _G.快速切号功能状态 = official_set_login_user(user_token)
                 end
             elseif server ~=0 and read_local_config("account", username .. "biliautologin") then
                 local userid = read_local_config("account", username .. "userid")
                 if userid and #userid > 1 and bilibili_is_uid_exist(userid) then
                     log("b服快速登录")
                     log(userid)
-                    bilibili_set_login_uid(userid)
-                    _G.快速切号功能状态 = true
+                    _G.快速切号功能状态 = bilibili_set_login_uid(userid)
                 end
             end
         end

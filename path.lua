@@ -1118,27 +1118,25 @@ path.限时活动 = function(retry)
 end
 
 path.账户数据保存 =function ()
-  if new_change_account_plan then 
-    if _G.快速切号功能状态 == false then
-      log("未查询到保存的登录数据或数据已经失效")
-      if appid ==  "com.hypergryph.arknights" then
+  if new_change_account_plan and _G.快速切号功能状态 == falsethen 
+    log("未查询到保存的登录数据或数据已经失效")
+    if appid ==  "com.hypergryph.arknights" then
         local user_token = official_get_last_login()
         if user_token then
-          log("官服登录保存登录数据ing")
-          user_token = encodeBase64(user_token)
-          save_local_config("account", username .. "token", user_token)
-          save_local_config("account", username .. "hyperautologin", true)
+            log("官服登录保存登录数据ing")
+            user_token = encodeBase64(user_token)
+            save_local_config("account", username .. "token", user_token)
+            save_local_config("account", username .. "hyperautologin", true)
         end
-      elseif appid ==  "com.hypergryph.arknights.bilibili" then
+    elseif appid ==  "com.hypergryph.arknights.bilibili" then
         local userid = bilibili_get_lastlogin_uid()
         if userid then
-          log("b服登录保存userid")
-          save_local_config("account", username .. "userid", userid)
-          save_local_config("account", username .. "biliautologin", true)
+            log("b服登录保存userid")
+            save_local_config("account", username .. "userid", userid)
+            save_local_config("account", username .. "biliautologin", true)
         end
       end
     end
-  end
 end
 
 path.邮件收取 = function()
