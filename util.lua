@@ -2734,6 +2734,7 @@ hotUpdate = function()
         return
     end
     local update_info = check_hot_update()
+	if not update_info then return false end
     if not update_info.updateLr and not update_info.updateSkill then
         toast("已经是最新版")
         uploadStatistician(false)
