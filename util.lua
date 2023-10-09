@@ -2649,8 +2649,8 @@ end
 unpacking_library = function ()
   if root_mode then
     mkdir(getWorkPath() .. "/assets")
-    extractAssets("sqlite.rc",getWorkPath() .. "/assets")
-    exec("cp '" .. getWorkPath() .. "/assets/sqlite3.2"  .. "' '/data/local/tmp/sqlite3'")
+    extractAssets("sqlite.rc", getWorkPath() .. "/assets")
+    exec(string.format([[su root sh -c "cp '%s/assets/sqlite3.2' '/data/local/tmp/sqlite3'"]], getWorkPath()))
     setFilePremission("/data/local/tmp/sqlite3", 777)
     _G.sqlite3path = "/data/local/tmp/sqlite3"
   end
