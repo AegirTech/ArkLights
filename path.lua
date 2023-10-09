@@ -961,6 +961,21 @@ path.fallback = {
             end
         end, 5)
     end,
+    战备支援签到返回 = function()
+        wait(function()
+            tap("战备支援签到")
+            toast("点击战备支援签到",0,0,12)
+            ssleep(.2)
+        end, 1)
+        wait(function()
+            toast("战备支援签到返回",0,0,12)
+            tap("战备支援签到返回")
+            ssleep(.2)
+            tap("开包skip")
+            if not appear("面板") then tap("开包skip") end
+            if appear("面板", 1) then return true end
+        end, 5)
+    end,
     端午签到返回 = function()
         wait(function()
             tap("端午签到左")
@@ -3254,6 +3269,8 @@ get_fight_type = function(x)
         return "物资芯片"
     elseif table.any({ "CW" }, f) then
         return "插曲"
+    elseif table.any({ "GT" }, f) then
+        return "别传"
     elseif table.any(table.values(jianpin2name), f) then
         return "剿灭"
     elseif f('HD') then
@@ -3777,6 +3794,46 @@ path.插曲 = function(x)
     end
     swip(x)
     ssleep(.5)
+    tap("作战列表" .. x)
+    if not appear("开始行动") then
+        wait(function()
+            if appear("主页") then return true end
+            back()
+        end, 30)
+    end
+    path.开始游戏(x)
+end
+
+path.别传 = function(x)
+    log("别传")
+    local chapter = x:find("-")
+    chapter = x:sub(1, chapter - 1)
+    if findOne("开始行动") then return path.开始游戏(x) end
+    path.跳转("首页")
+    tap("面板作战")
+    if not appear("主页") then return end
+    if not wait(function()
+        if findOne("别传界面") then return true end
+        tap("别传")
+    end) then
+        return
+    end
+    if not wait(function()
+        -- point模块加载时将GT打平到point,这里对应直接点击别传左侧具体是哪个别传类型的坐标,如骑兵与猎人或火蓝之心等
+        tap("别传列表" .. chapter)
+        if findOne("进入活动") then return true end
+    end) then
+        return
+    end
+    if not wait(function()
+        tap("进入活动")
+        if not appear("进入活动") then return true end
+    end) then
+        return
+    end
+    swip(x)
+    ssleep(.5)
+    -- point模块加载时将GT打平到point,这里对应直接点击具体的关卡坐标
     tap("作战列表" .. x)
     if not appear("开始行动") then
         wait(function()

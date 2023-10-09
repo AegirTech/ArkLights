@@ -4111,7 +4111,7 @@ parse_fight_config = function(fight_ui)
                 '聚酸酯组', '聚酸酯', '糖组', '糖', '异铁组', '异铁', '酮凝集组', '酮凝集', '凝胶',
                 '炽合金', '晶体元件', '半自然溶剂', '化合切削液', '转质盐组' }, v) then
             if v == '扭转醇' then
-                for _, i in pairs({ '6-11', '11-13' }) do
+                for _, i in pairs({ 'GT-5','6-11', '11-13' }) do
                     for _ = 1, 99 do table.insert(expand_fight, i) end
                 end
             elseif v == '轻锰矿' then
