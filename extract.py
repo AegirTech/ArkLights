@@ -358,7 +358,7 @@ def screencap_distance(path="screencap"):
     distance = defaultdict(int)
     shift_right = 0
     # 滑动到最右边时 hd-1的x坐标相距屏幕中心的距离
-    distance[1] = 385
+    distance[1] = 15
     for x in sorted(screencap.glob("*.jpg")):
         x = reader.readtext(str(x))
         print("x", x)
@@ -402,7 +402,7 @@ def screencap_distance(path="screencap"):
         print(f'["HD-{x}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
 
     # 距离膨胀系数，部分活动需要微调
-    distanceExpansionCoefficient = 1.14
+    distanceExpansionCoefficient = 1.10
     for x in sorted(distance):
         p = distance[x] - shift_right
         p = int(p * distanceExpansionCoefficient)
