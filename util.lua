@@ -2575,7 +2575,7 @@ notify_wechat = function(webhookurl, info, img, md5)
     local body = { msgtype = "text", text = { content = info } }
     local res, code = httpPost(webhookurl, JsonEncode(body), 15,
         "Content-Type: application/json;charset=UTF-8")
-    if code ~= 200 then print("Wechat text failed" .. status_code .. res) end
+    if code ~= 200 then print("Wechat text failed" .. code .. res) end
     -- 推送图片 因为markdown格式限制4kb 使用文件上传获取media麻烦，故图片文字分开发送
     if img ~= nil then
         local body = { msgtype = "image", image = { base64 = img, md5 = md5 } }
@@ -2584,7 +2584,7 @@ notify_wechat = function(webhookurl, info, img, md5)
         if code == 200 then
             print("Wechat notify successfully")
         else
-            print("Wechat picture failed" .. status_code .. res)
+            print("Wechat picture failed" .. code .. res)
         end
     end
 end
