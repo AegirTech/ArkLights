@@ -111,9 +111,13 @@ def save(forRelease):
             if not forRelease:
                 if re.match("-- disable_hotupdate = true", line):
                     line = "disable_hotupdate = true\n"
+                if re.match("-- always_enable_log = true", line):
+                    line = "always_enable_log = true\n"
             else:
                 if re.match("disable_hotupdate = true", line):
                     line = "-- disable_hotupdate = true\n"
+                if re.match("always_enable_log = true", line):
+                    line = "-- always_enable_log = true\n"
             if re.match('release_date = ".*"', line):
                 line = (
                     'release_date = "'

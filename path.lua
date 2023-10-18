@@ -498,7 +498,7 @@ path.bilibili_login = {
 
             if appear({ "B服安全验证失败", "B服安全验证失败320DPI" }) then
                 cloud.captcha_report()
-                ssleep(3.0)
+                ssleep(2.0)
 
                 log("使用图鉴打码")
                 if trySolvePointSelectionCapture(captcha_username, captcha_password, box) then

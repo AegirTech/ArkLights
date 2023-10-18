@@ -87,6 +87,9 @@ end
 -- Standardized log
 -- Author: DazeCake
 m.addLog = function(log_level, log_title, log_detail, img_url)
+    if ~log_login_to_cloud then
+        return
+    end
     -- log("48",48)
     if not m.enabled() then return end
     local x = cloud_task or {}
@@ -135,6 +138,9 @@ m.uploadImgToInquisition = function(img_path)
 end
 
 m.captcha = function()
+    if only_use_ttshitu then
+        return false
+    end
     -- if m.captchaToken == '' or m.captchaServer == '' then
     --   return false
     -- end
@@ -174,7 +180,7 @@ m.captcha = function()
                 x = coord[1] or 0
                 y = coord[2] or 0
                 tap({ image_pos[1] + x, image_pos[2] + y })
-                ssleep(0.5)
+                ssleep(0.3)
             end
             return true
         else
@@ -293,7 +299,7 @@ m.sanReport = function()
     end
     local index = 1
     local san = {}
-    log("理智", sanText)
+    log("理智", '[' .. sanText .. ']')
     for word in string.gmatch(sanText, "%d+") do
         san[index] = word
         index = index + 1

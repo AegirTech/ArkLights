@@ -3042,12 +3042,18 @@ show_debug_ui = function()
     ui.addEditText(layout, "captcha_password", "")
 
     newRow(layout)
+    ui.addCheckBox(layout, "only_use_ttshitu", "仅使用图鉴打码", false)
+
+    newRow(layout)
     addTextView(layout, "审判庭服务地址")
     ui.addEditText(layout, "cloud_server", "")
 
     newRow(layout)
     addTextView(layout, "审判庭设备标识")
     ui.addEditText(layout, "cloud_device_token", "")
+
+    newRow(layout)
+    ui.addCheckBox(layout, "log_login_to_cloud", "上报登录流程", false)
 
     newRow(layout)
     addTextView(layout, "审判庭打码地址")
