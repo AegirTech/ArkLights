@@ -87,9 +87,6 @@ end
 -- Standardized log
 -- Author: DazeCake
 m.addLog = function(log_level, log_title, log_detail, img_url)
-    if log_login_to_cloud ~= true then
-        return
-    end
     -- log("48",48)
     if not m.enabled() then return end
     local x = cloud_task or {}
