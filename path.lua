@@ -4460,12 +4460,16 @@ path.活动 = function(x)
       tap("活动导航2")
       if not appear("活动导航2", 1) then return true end
     end, 5) then return end
-    local paths = {
-      {point = {{scale(40), scale(600)}, {scale(40), scale(0)}}, duration = 500},
-    }
-    gesture(paths)
-    ssleep(1)
-    gesture(paths)
+
+    if x == "HD-6" or x == "HD-7" or x == "HD-8" or x == "HD-9" or x == "HD-10" then
+        local paths = {
+            { point = { { scale(40), scale(600) }, { scale(40), scale(0) } }, duration = 500 },
+        }
+        gesture(paths)
+        ssleep(1)
+        gesture(paths)
+    end
+
     ssleep(1.5)
     if not findTap(x) then return end
     if not appear("开始行动") then
