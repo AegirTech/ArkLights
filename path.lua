@@ -4449,11 +4449,9 @@ path.活动 = function(x)
         return
     end
 
-    -- ssleep(2)
-
+    --[[ssleep(2)
     swip(x)
-    ssleep(.5)
-    tap("作战列表" .. x)
+    ssleep(.5)]]
 
     appear("活动导航2")
     if not wait(function()
@@ -4470,6 +4468,7 @@ path.活动 = function(x)
         gesture(paths)
         ssleep(1.5)
     end
+    tap("作战列表" .. x)
     if not findTap(x) then return end
     if not appear("开始行动") then
         wait(function()
