@@ -4463,10 +4463,13 @@ path.活动 = function(x)
     local paths = {
       {point = {{scale(40), scale(600)}, {scale(40), scale(0)}}, duration = 500},
     }
-    gesture(paths)
-    ssleep(1)
-    gesture(paths)
-    ssleep(1.5)
+    local level = str2int(x:sub(#x), 1)
+    if level > 4 then -- 5-10关在下一页
+        gesture(paths)
+        ssleep(1)
+        gesture(paths)
+        ssleep(1.5)
+    end
     if not findTap(x) then return end
     if not appear("开始行动") then
         wait(function()
