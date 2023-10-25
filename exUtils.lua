@@ -57,7 +57,11 @@ checkPointColor = function(pInfo, confidence)
         keepCapture()
     end
 
-    local colorStr = pInfo[1] .. "|" .. pInfo[2] .. "|" .. pInfo[3]
+    if type(pInfo) == "table" then
+        colorStr = pInfo[1] .. "|" .. pInfo[2] .. "|" .. pInfo[3]
+    elseif type(pInfo) == "string" then
+        colorStr = pInfo
+    end
 
     -- 比色
     if cmpColorEx(colorStr, confidence) == 1 then

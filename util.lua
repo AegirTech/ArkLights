@@ -2049,6 +2049,7 @@ all_job = {
     "邮件收取", "轮次作战", "访问好友", "基建收获",
     "基建换班", "制造加速", "线索交流", "副手换人",
     "信用购买", "公开招募", "任务收集", "限时活动",
+    "商店搬空",
 }
 
 now_job = table.filter(all_job, function(x) return x ~= "副手换人" end)
@@ -3138,6 +3139,13 @@ show_debug_ui = function()
         "自动清理download文件夹", false)
 
     newRow(layout)
+    addTextView(layout, "搬商店时间在活动")
+    ui.addSpinner(layout, "shop_period", {"结束前", "结束后", "结束前后", "每一次"}, 1)
+    addTextView(layout, "的")
+    ui.addSpinner(layout, "shop_day", {"1", "2", "3", "4", "5"}, 0)
+    addTextView(layout, "天")
+
+    newRow(layout)
     addTextView(layout, "QQ通知账号")
     ui.addEditText(layout, "QQ", "")
 
@@ -4078,7 +4086,7 @@ parse_fight_config = function(fight_ui)
         elseif table.includes(table.keys(extrajianpin2name), v) then
             v = extrajianpin2name[v]
         end
-        if table.find({ '活动', 'IS', 'HD'}, startsWithX(v)) then
+        if table.find({ '活动', 'IS'}, startsWithX(v)) then
             local idx = v:gsub(".-(%d+)$", '%1')
             v = "HD-" .. (idx or '')
             -- log(2731, v, idx)

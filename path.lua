@@ -4813,6 +4813,92 @@ path.ss活动任务与商店 = function()
     end
 end
 
+path.商店搬空 = function()
+  local t = os.time()
+  local r = 0
+  interval = t - hd_open_time_end -- 搬商店时间判断
+  -- log(interval)
+  if shop_period == 0 then
+    if not (interval < 0 and math.abs(interval) < (86400*(shop_day+1))) then return end
+  elseif shop_period == 1 then
+    if not (interval > 0 and math.abs(interval) < 86400*(shop_day+1)) then return end
+  elseif shop_period == 2 then
+    if not (math.abs(interval) < 86400*(shop_day+1)) then return end
+  end
+  path.跳转("首页")
+  tap("面板活动")
+  if not wait(function()
+    disappear("正在提交反馈至神经", network_timeout)
+    tap("活动商店导航")
+    if appear("活动商店导航") then return true end
+    if not appear("活动导航0") then return true end
+    if findOne("跳过剧情") then path.跳过剧情() end
+  end, 10) then return path.跳过剧情() end
+  is_in_shop = function ()--判断是否进入商店
+    if string.find(table2string(ocr("商店OCR范围")), "关闭时间") then
+      log("已进入商店")
+      return true
+    else
+      log("未能进入商店")
+      return false
+    end
+  end
+  disappear("正在提交反馈至神经", network_timeout)
+  if is_in_shop() == false then return end
+  local 初始物品, 物品横间距, 物品纵间距 = {screen.width*0.1, screen.height*0.4}, screen.width*0.25, screen.height*0.2
+  for i = 0, 4 do
+    for x = 0, 3 do
+      for y = 0, 3 do
+        r = 0
+        if not wait(function ()
+            local sx = { 初始物品[1] + x*物品横间距, 初始物品[2] + y*物品纵间距}
+            log(x, y, sx)
+            local oricol = getColor(sx[1], sx[2])
+            tap(sx)
+            ssleep(0.2)
+            local col = getColor(sx[1], sx[2])
+            if col ~= oricol then
+                appear("商店购买页面", 3)
+                if checkPointColor(point.商店购买页面) then
+                    tap("商店最多")
+                    ssleep(0.2)
+                    tap("商店支付")
+                end
+                disappear("正在提交反馈至神经", network_timeout)
+                if checkPointColor(point.商店购买页面) == false then
+                    tap("商店购买确认")
+                    ssleep(0.5)
+                end
+            else
+                r = r+1
+                log("未能进入商品，大概是售空了吧~")
+                if r>3 then
+                    return true
+                end
+            end
+            end, 3) then
+        end
+      end
+    end
+    ssleep(1.5)
+    local sx = { screen.width*0.8, screen.height*0.5}
+    local oricol = getColor(sx[1], sx[2])
+    gesture({
+      {
+        point = {{screen.width*0.8, screen.height/2}, {screen.width*0.4, screen.height/2}},
+        start = 0,
+        duration = 250,
+      },
+    }) -- 滑动大约3个商品的距离
+    ssleep(2)
+    local col = getColor(sx[1], sx[2])
+    if col == oricol then
+        log("大概滑动到底了吧~")
+      return true
+    end
+  end
+end
+
 path.活动商店 = function()
     -- path.跳转("邮件")
     path.跳转("首页")
