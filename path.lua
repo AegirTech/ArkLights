@@ -4846,37 +4846,42 @@ path.商店搬空 = function()
   disappear("正在提交反馈至神经", network_timeout)
   if is_in_shop() == false then return end
   local 初始物品, 物品横间距, 物品纵间距 = {screen.width*0.1, screen.height*0.4}, screen.width*0.25, screen.height*0.2
-  for i = 0, 4 do
+  while true do
     for x = 0, 3 do
       for y = 0, 3 do
-        r = 0
+        local s = 0
         if not wait(function ()
             local sx = { 初始物品[1] + x*物品横间距, 初始物品[2] + y*物品纵间距}
-            log(x, y, sx)
-            local oricol = getColor(sx[1], sx[2])
-            tap(sx)
-            ssleep(0.2)
-            local col = getColor(sx[1], sx[2])
-            if col ~= oricol then
+            log(x, y,sx[1], sx[2])
+            tap("商店顶栏")
+            ssleep(0.5) --点太快就会有一堆问题,会有漏买的，买三次应该能买空
+            if tap_cmpcol(sx, nil, nil, 1) then
                 appear("商店购买页面", 3)
-                if checkPointColor(point.商店购买页面) then
-                    tap("商店最多")
-                    ssleep(0.2)
-                    tap("商店支付")
+                if checkPointColor(point.商店购买页面, 1) then
+                  tap("商店最多")
+                  ssleep(0.2)
+                  if not tap_cmpcol(point.商店支付) then
+                    log("购买失败，大抵是没钱了吧~")
+                    r = r+1
+                    tap("商店顶栏")
+                    return true
+                  end
                 end
                 disappear("正在提交反馈至神经", network_timeout)
-                if checkPointColor(point.商店购买页面) == false then
+                if checkPointColor(point.商店购买页面, 1) == false then
                     tap("商店购买确认")
                     ssleep(0.5)
-                end
-            else
-                r = r+1
-                log("未能进入商品，大概是售空了吧~")
-                if r>3 then
                     return true
                 end
+            else
+                log("未能进入商品，大概是售空了吧~")
+                return true
             end
             end, 3) then
+        end
+        if r>3 then
+          log("货币不足")
+          return true
         end
       end
     end
@@ -4891,9 +4896,8 @@ path.商店搬空 = function()
       },
     }) -- 滑动大约3个商品的距离
     ssleep(2)
-    local col = getColor(sx[1], sx[2])
-    if col == oricol then
-        log("大概滑动到底了吧~")
+    if getColor(sx[1], sx[2]) == oricol then
+      log("大概滑动到底了吧~")
       return true
     end
   end

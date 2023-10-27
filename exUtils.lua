@@ -1893,3 +1893,25 @@ setFilePremission = function (filename, premission)
     if premission == nil then premission = 777 end
 	exec('su root sh -c "chmod ' .. premission .. ' ' .. filename .. '"')
 end
+
+-- 从字符串中提取数字，返回table
+extractNumbers = function (str)
+    local pattern = "%d+"
+    local numbers = {}
+    for number in string.gmatch(str, pattern) do
+        table.insert(numbers, tonumber(number))
+    end
+    return numbers
+end
+
+-- 点击并判断前后颜色是否改变 默认比较点击位置
+tap_cmpcol = function (x, colorposition, confidence, wait_time)
+    if type(x) ~= "table" then return false end
+    wait_time = wait_time or 0.1
+    confidence = confidence or default_findcolor_confidence
+    colorposition = colorposition or x
+    local oricol = getColor(colorposition[1], colorposition[2])
+    tap(x)
+    ssleep(wait_time)
+    return (not compareColor(colorposition[1], colorposition[2], string.format("#%s", oricol), confidence))
+end
