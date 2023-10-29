@@ -235,6 +235,10 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 base = base + 0.3
             elseif icon == 'bskill_tra_spd1' then
                 base = base + 0.2
+            elseif icon == "bskill_tra_par&per1" then -- 赫德雷 伊内丝和W加成不考虑
+                base = base + 0.25
+            elseif icon == "bskill_tra_par&per2" then
+                base = base + 0.30
             elseif icon == 'bskill_tra_flow_gc2' then
                 base = base + 0.05
                 gold = gold + (gold // 2) * 2
@@ -281,6 +285,11 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 storage = storage + 4
                 base = base + 0.65
             end
+        end
+
+        -- 琳琅诗怀雅
+        if all["bskill_trade_ord_spd_variable"] then
+        base = base + storage*0.04
         end
 
         -- 雪雉
@@ -493,6 +502,8 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 -- 迷迭香不考虑
             elseif icon == 'bskill_man_spd_bd2' then
                 -- 迷迭香不考虑
+            elseif icon == "bskill_man_gold&blacksteel" then
+                -- 排除杏仁
             elseif icon == 'bskill_man_spd3' then
                 base = base + 0.30
             elseif icon == 'bskill_man_spd2' then
@@ -1064,7 +1075,7 @@ controlStationOperatorBest = function(operator)
         -- 'bskill_ctrl_token_p_spd', -- +小车,+制造2%
         -- 'bskill_ctrl_h_spd', -- 进驻控制中枢时，人力办公室联络速度小于30%时（其中包含基础联络速度5%），则联络速度额外+20%（该加成全局效果唯一，不受其它加成影响）
         'bskill_ctrl_psk',         -- 焰尾 进驻控制中枢时，每个进驻在制造站的红松骑士团干员，作战记录类配方的生产力+10%，贵金属类配方的生产力-10%
-        'bskill_ctrl_t_limit&spd.png', -- 灵知 进驻控制中枢时，每个进驻在贸易站的喀兰贸易干员，订单获取效率-15%，订单上限+6
+        'bskill_ctrl_t_limit&spd', -- 灵知 进驻控制中枢时，每个进驻在贸易站的喀兰贸易干员，订单获取效率-15%，订单上限+6
     }
 
     local manu_acc = false
