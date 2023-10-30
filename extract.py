@@ -409,5 +409,30 @@ def screencap_distance(path="screencap"):
         print(f'["HD-{x}"] = ' + "{ swip_right_max, -" + str(p) + "},")
 
 
+def process_transparent_pixels(input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
+                               output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill_new")):
+    # 用于处理技能图标背景 不知道为什么透明背景识别失败
+    import os
+    import shutil
+    from PIL import Image
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    for filename in os.listdir(input_folder):
+        input_path = os.path.join(input_folder, filename)
+        output_path = os.path.join(output_folder, filename)
+        if filename.endswith('.png'):
+            image = Image.open(input_path).convert('RGBA')
+            pixels = image.load()
+            for i in range(image.width):
+                for j in range(image.height):
+                    r, g, b, a = pixels[i, j]
+                    if a == 0:
+                        pixels[i, j] = (61, 61, 61, 255)
+            image.save(output_path)
+        else:
+            shutil.copy2(input_path, output_path)
+
+
 if __name__ == "__main__":
     fire.Fire()
