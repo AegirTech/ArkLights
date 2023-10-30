@@ -163,12 +163,12 @@ def skillicon2operator(
 
 
 def recruit(
-    char="../ArkAssetsTool/ArkAssets/gamedata/excel/[unpack]character_table/character_table.json",
-    gacha="../ArkAssetsTool/ArkAssets/gamedata/excel/[unpack]gacha_table/gacha_table.json",
-    to="lua",
+        char=os.path.join(os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"),
+        gacha=os.path.join(os.getcwd(), "ArknightsGameResource/gamedata/excel/gacha_table.json"),
+        to="lua",
 ):
-    char = json.loads(open(char).read())
-    gacha = json.loads(open(gacha).read())
+    char = json.loads(open(char, encoding='utf-8').read())
+    gacha = json.loads(open(gacha, encoding='utf-8').read())
     tag = [x["tagName"] for x in gacha["gachaTags"] if x["tagId"] < 100]
 
     recruit_char = gacha["recruitDetail"]
@@ -180,10 +180,10 @@ def recruit(
     char = {k: v for k, v in char.items() if v["name"] in recruit_char}
 
     # 排除6星干员，没有高级资深一定不出6星，没有资深可能出5星
-    char = {k: v for k, v in char.items() if v["rarity"] + 1 < 6}
+    char = {k: v for k, v in char.items() if int((v["rarity"])[-1]) < 6}
 
     # 排除12星干员，拉满9小时最低3星
-    char = {k: v for k, v in char.items() if v["rarity"] + 1 >= 3}
+    char = {k: v for k, v in char.items() if int((v["rarity"])[-1]) >= 3}
 
     profession2tag = defaultdict(
         lambda: "???",
@@ -213,7 +213,6 @@ def recruit(
             1: "支援机械",
         },
     )
-
     char2tag = {
         v["name"]: list(
             filter(
@@ -229,8 +228,7 @@ def recruit(
         for k, v in char.items()
     }
 
-    char2star = {v["name"]: v["rarity"] + 1 for k, v in char.items()}
-
+    char2star = {v["name"]: int((v["rarity"])[-1]) for k, v in char.items()}
     tag2char = defaultdict(set)
     for c, t in char2tag.items():
         for t in t:
