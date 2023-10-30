@@ -4817,6 +4817,8 @@ path.商店搬空 = function()
   local t = os.time()
   local r = 0
   interval = t - hd_open_time_end -- 搬商店时间判断
+  if _G.shop_period == nil or _G.shop_period>3 or _G.shop_period<0 then _G.shop_period = 1 end
+  if _G.shop_day == nil or _G.shop_day>4 or _G.shop_day<0 then _G.shop_day = 0 end
   -- log(interval)
   if shop_period == 0 then
     if not (interval < 0 and math.abs(interval) < (86400*(shop_day+1))) then return end
