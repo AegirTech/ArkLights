@@ -1,14 +1,16 @@
 #!/usr/bin/env python
-import os
-import fire
-from pathlib import Path
-import json
 import io
-from collections import defaultdict
-import re
 import itertools
-import tempfile
+import json
+import os
+import re
 import subprocess
+import tempfile
+from collections import defaultdict
+from pathlib import Path
+
+import fire
+
 
 # 请使用720p图像计算
 
@@ -137,12 +139,13 @@ def avator2operator(src="ArknightsGameData/zh_CN/gamedata/excel/character_table.
     return json.dumps(ans, ensure_ascii=False)
 
 
+# https://github.com/yuanyan3060/ArknightsGameResource 使用此解包仓库
 def skillicon2operator(
-    char="../ArkAssetsTool/ArkAssets/gamedata/excel/[unpack]character_table/character_table.json",
-    build="../ArkAssetsTool/ArkAssets/gamedata/excel/[unpack]building_data/building_data.json",
+        char=os.path.join(os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"),
+        build=os.path.join(os.getcwd(), "ArknightsGameResource/gamedata/excel/building_data.json"),
 ):
-    char = json.loads(open(char).read())
-    build = json.loads(open(build).read())
+    char = json.loads(open(char, encoding='utf-8').read())
+    build = json.loads(open(build, encoding='utf-8').read())
 
     char2name = {k: char[k]["name"] for k in char}
     buffid2name = {}
@@ -156,7 +159,7 @@ def skillicon2operator(
                 buffid = b2["buffId"]
                 buffname = buffid2name[buffid]
                 operator = char2name[c]
-                phase = b2["cond"]["phase"]
+                phase = (b2["cond"]["phase"])[-1]
                 ans[buffname].append(operator + str(phase))
 
     return json.dumps(ans, ensure_ascii=False)
@@ -338,7 +341,7 @@ def screencap(stem):
     serial = "127.0.0.1:5555"
     subprocess.run(["adb", "connect", serial])
     subprocess.Popen(
-        f"adb -s {serial} exec-out screencap -p > {screencap/stem}.jpg",
+        f"adb -s {serial} exec-out screencap -p > {screencap / stem}.jpg",
         shell=True,
     )
 
