@@ -1915,3 +1915,12 @@ tap_cmpcol = function (x, colorposition, confidence, wait_time)
     ssleep(wait_time)
     return (not compareColor(colorposition[1], colorposition[2], string.format("#%s", oricol), confidence))
 end
+
+contains_character = function(str, table)
+    for _, char in ipairs(table) do
+      if string.find(str, char) then
+        return char
+      end
+    end
+    return nil
+end

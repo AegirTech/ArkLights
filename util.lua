@@ -4086,7 +4086,7 @@ parse_fight_config = function(fight_ui)
         elseif table.includes(table.keys(extrajianpin2name), v) then
             v = extrajianpin2name[v]
         end
-        if table.find({ '活动', 'IS'}, startsWithX(v)) then
+        if table.find({ '活动', 'ZT'}, startsWithX(v)) then
             local idx = v:gsub(".-(%d+)$", '%1')
             v = "HD-" .. (idx or '')
             -- log(2731, v, idx)
@@ -4114,7 +4114,7 @@ parse_fight_config = function(fight_ui)
             for _ = 1, 99 do table.insert(expand_fight, '长期委托2') end
             for _ = 1, 99 do table.insert(expand_fight, '长期委托3') end
         elseif table.includes({ 'HD' }, v) then
-            for _, i in pairs({ 10, 9, 8 }) do
+            for _, i in pairs({ 9, 8, 7 }) do
                 for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
             end
         elseif table.includes({ 'HD1' }, v) then
