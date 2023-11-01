@@ -4393,49 +4393,7 @@ path.活动 = function(x)
             return
         end
     end
-    local car_check = function()
-        if car_checked then return end
-        car_checked = true
-        fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
-        if not appear("艺术评论", 1) then return end
 
-        if not wait(function()
-                tap("艺术评论")
-                if disappear("艺术评论", 1) then return true end
-            end, 5) then
-            return
-        end
-
-        wait(function() tap({ screen.width // 2, screen.height // 2 }) end, 1)
-
-        local ws = { 597, 1204, 1830 }
-
-        for _, w in pairs(ws) do
-            w = screen.width // 2 + scale(w - 1920 // 2)
-            for h = scale(211), scale(900), scale(52) do tap({ w, h }) end
-        end
-
-        local paths = {
-            {
-                point = { { screen.width // 2, scale(600) }, { screen.width // 2, scale(0) } },
-                duration = 500,
-            },
-        }
-        gesture(paths)
-        ssleep(1.5)
-
-        for _, w in pairs(ws) do
-            w = screen.width // 2 + scale(w - 1920 // 2)
-            for h = scale(211), scale(900), scale(52) do tap({ w, h }) end
-        end
-        if not wait(function()
-                if appear("活动导航0", 1) then return true end
-                tap("返回")
-            end, 5) then
-            return
-        end
-    end
-    car_check()
     if not findOne("活动导航0") then return end
     if not wait(function()
             -- local level = str2int(x:sub(#x), 1)
@@ -4454,21 +4412,11 @@ path.活动 = function(x)
     ssleep(.5)]]
 
     appear("活动导航2")
-    if not wait(function()
-      tap("活动导航2")
-      if not appear("活动导航2", 1) then return true end
-    end, 5) then return end
-    local paths = {
-      {point = {{scale(40), scale(600)}, {scale(40), scale(0)}}, duration = 500},
-    }
-    if str2int(x:sub(#x), 1) > 4 or str2int(x:sub(-2), 1) > 4 then -- 5-10关在下一页
-        gesture(paths)
-        ssleep(1)
-        gesture(paths)
-        ssleep(1.5)
-    end
+
+    swip(x)
+    ssleep(.5)
     tap("作战列表" .. x)
-    if not findTap(x) then return end
+
     if not appear("开始行动") then
         wait(function()
             if appear("主页") then return true end
