@@ -4394,14 +4394,14 @@ path.活动 = function(x)
         end
     end
 
-    local car_check = function()
-    -- if car_checked then return end
-    -- car_checked = true
+     local car_check = function(t)
+    if car_checked then return end
+    car_checked = true
 
     fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
+    
     if not appear("活动导航1", 1) then return end
     log(1)
-    if not findOne("循心") then return false end
 
     if not wait(function()
       tap("循心2")
@@ -4435,7 +4435,7 @@ path.活动 = function(x)
       end
     end
 
-    local 构建法术 = function (情绪, 欲念) -- sb活动,设计师mm了
+    local 构建法术 = function (情绪, 欲念) -- sb活动,设计师mm了 这里测试过没问题
       情绪 = 情绪 or "乐"
       欲念 = 欲念 or "权柄"
       -- local 乐 = point.循心tag[情绪]["乐"]
@@ -4451,7 +4451,11 @@ path.活动 = function(x)
         if not findOne("构建法术") then return true end
         tap("构建法术")
       end, 5) then end
-      tap("开包skip") -- 过新手引导
+      if not wait(function()
+        if findOne("未联结") then return true end
+        ssleep(1)
+        tap({screen.width*0.95,screen.height*0.95}) -- 过新手引导
+      end, 3) then end
       --选择情绪
       log(50)
       if not wait(function()
@@ -4513,7 +4517,7 @@ path.活动 = function(x)
       end
     end
 
-    local 寻找已有乐曲 = function ()
+    local 寻找已有乐曲 = function () -- 不在同一页可能有bug
       log(210)
       tap("开包skip")
       ssleep(0.5)
@@ -4538,12 +4542,48 @@ path.活动 = function(x)
 
     -- 构建法术("乐", nil) -- 如果为空 无法进行猜测
     -- ssleep(500)
+    local 进入查访 = function (v)
+      log(v)
+      tap(v)
+      disappear(v, 1)
+      if not findOne("构建法术") then
+        log(62)
+        return false
+      end
+      log("尝试进入乐曲选择")
+      if not wait(function() -- 跳过一直到选择乐曲界面
+        if findOne("选择心扉") then
+          tap("查访跳过")
+          disappear("选择心扉", 1)
+          return true end
+        if findOne("复现选择") then
+            return true end
+        tap("查访跳过")
+      end, 3) then end
+      log(63)
+      appear("复现选择",2)
+      ssleep(0.2)
+      local tr = ocr("空库存")
+      if string.find(table2string(tr),"暂无") then
+        log("库存为空")
+        返回初始页面()
+        ssleep(0.2)
+        构建法术("乐", nil)
+      end
+      tap("初始乐曲")
+      if appear("复现场景") then
+        log(64)
+        tap("复现场景")
+        disappear("复现场景")
+      end
+    end
+
     
     local task = {"密令查访","普通查访0","普通查访1","普通查访2"}
     for _, v in pairs(task) do
       log(61)
       -- local 法术构建状态 = false
-      ::start::
+      ::start:: -- 不知道为什么跳转有bug
       -- log(法术构建状态)
       log(v)
       tap(v)
@@ -4598,7 +4638,7 @@ path.活动 = function(x)
         log(需求情绪)
         if 需求情绪 == nil or 需求欲望 == nil then
           log("乐曲提示识别失败")
-          if r>6 then
+          if r>10 then
             log(102)
             返回初始页面()
             goto continue
@@ -4629,7 +4669,9 @@ path.活动 = function(x)
         -- ssleep(50)
         if 构建法术(需求情绪, 需求欲望) then
           log("构建法术成功")
-          goto checkin
+          进入查访(v)
+          ssleep(0.2)
+          goto startocr
         else
           log("构建法术失败")
           返回初始页面()
@@ -4710,9 +4752,7 @@ path.活动 = function(x)
     end
   end
   
-  if car_check() then
     car_check()
-  end
 
     if not findOne("活动导航0") then return end
     if not wait(function()

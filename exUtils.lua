@@ -1947,5 +1947,5 @@ find_color = function (v, color, dir, condifence)
     else
         return nil
     end
-  end
+end
   
