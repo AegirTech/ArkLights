@@ -4395,14 +4395,19 @@ path.活动 = function(x)
     end
 
     local car_check = function()
-    if car_checked then return end
-    car_checked = true
+    -- if car_checked then return end
+    -- car_checked = true
+
     fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
     if not appear("活动导航1", 1) then return end
+    log(1)
+    if not findOne("循心") then return false end
+
     if not wait(function()
-        tap("循心2")
-        if disappear("循心2", 2) then return true end
+      tap("循心2")
+      if disappear("循心2", 2) then return true end
     end, 5) then end
+    log(2)
     tap("开包skip") -- 过新手引导
     if not wait(function()
       if not findOne("构建法术") then
@@ -4410,8 +4415,9 @@ path.活动 = function(x)
       end
       ssleep(1)
     end, 5) then end
-    
+ 
     local 返回初始页面 = function ()
+      log("返回初始页面")
       if not wait(function()
         if findOne("循心主页判断") then return true end
         ssleep(1)
@@ -4493,15 +4499,52 @@ path.活动 = function(x)
       return true
     end
 
+    local 乐曲点击 = function (p) -- ntyj 乐曲卡片周围一圈点不了
+      log(300)
+      log(p)
+      for a = -1, 1 do
+        for b = -1, 1 do
+          local x = p[1] + a*30
+          local y =  p[2] + b*30
+          log(x,y)
+          tap({x,y})
+          ssleep(0.2)
+        end
+      end
+    end
+
+    local 寻找已有乐曲 = function ()
+      log(210)
+      tap("开包skip")
+      ssleep(0.5)
+      local x1 = find_color("左列乐章范围","EAEAE9",0,0.95)
+      if x1 ~= nil then
+        tap(x1)
+        log(211)
+        ssleep(0.5)
+        local x2 = find_color("乐曲总范围","F3F2ED",0,1)
+        log(212)
+        log(x2)
+        if x2 ~= nil then
+          x2 = {x2[1]+50,x2[2]+50}
+          return x2
+        else
+          return nil
+        end
+      else
+        return nil
+      end
+    end
+
     -- 构建法术("乐", nil) -- 如果为空 无法进行猜测
     -- ssleep(500)
     
     local task = {"密令查访","普通查访0","普通查访1","普通查访2"}
     for _, v in pairs(task) do
       log(61)
-      local 法术构建状态 = false
+      -- local 法术构建状态 = false
       ::start::
-      log(法术构建状态)
+      -- log(法术构建状态)
       log(v)
       tap(v)
       disappear(v, 1)
@@ -4527,93 +4570,149 @@ path.活动 = function(x)
       --   返回初始页面()
       --   goto start
       -- end
-
-      if not 法术构建状态 then
-        tap("初始乐曲")
-        if appear("复现场景") then
-          log(64)
-          tap("复现场景")
-          disappear("复现场景")
-          local r = 0
-          ::startocr::
-          local ts = ocr("乐曲提示ocr范围")
-          需求情绪 = contains_character(table2string(ts),{"乐", "怒", "哀", "惧"})
-          需求情绪2 = contains_character(table2string(ts),point.循心taglist)
-          需求欲望 = contains_character(table2string(ts),{"尘俗", "权柄", "智识"})
-          log(需求情绪)
-          log(需求欲望)
-          log(需求情绪2)
-          if 需求情绪 == nil then 需求情绪 = 需求情绪2 end
-          log(需求情绪)
-          if 需求情绪 == nil or 需求欲望 == nil then
-            log("乐曲提示识别失败")
-            if r>4 then
-              log(102)
-              返回初始页面()
-              goto continue
-            end
-            r = r + 1
-            ssleep(1)
-            tap("复现场景")
-            log(101)
-            goto startocr
-          end
-          返回初始页面()
-          log(103)
-          -- ssleep(50)
-          if 构建法术(需求情绪, 需求欲望) then
-            log("构建法术成功")
-            法术构建状态 = true
-            goto start
-          else
-            log("构建法术失败")
+      appear("复现选择",2)
+      ssleep(0.2)
+      local tr = ocr("空库存")
+      if string.find(table2string(tr),"暂无") then
+        log("库存为空")
+        返回初始页面()
+        ssleep(0.2)
+        构建法术("乐", nil)
+        goto start
+      end
+      tap("初始乐曲")
+      if appear("复现场景") then
+        log(64)
+        tap("复现场景")
+        disappear("复现场景")
+        local r = 0
+        ::startocr::
+        local ts = ocr("乐曲提示ocr范围")
+        需求情绪 = contains_character(table2string(ts),{"乐", "怒", "哀", "惧"})
+        需求情绪2 = contains_character(table2string(ts),point.循心taglist)
+        需求欲望 = contains_character(table2string(ts),{"尘俗", "权柄", "智识"})
+        log(需求情绪)
+        log(需求欲望)
+        log(需求情绪2)
+        if 需求情绪 == nil then 需求情绪 = 需求情绪2 end
+        log(需求情绪)
+        if 需求情绪 == nil or 需求欲望 == nil then
+          log("乐曲提示识别失败")
+          if r>6 then
+            log(102)
             返回初始页面()
             goto continue
           end
+          r = r + 1
+          ssleep(1)
+          tap("复现场景")
+          log(101)
+          goto startocr
         end
-      else
-        tap(需求情绪 .. "之章")
-        local 向下滑动 = function ()
-          log("滑动")
-          gesture({
-            {
-              point = {{screen.width*0.5, screen.height*0.2}, {screen.width*0.5, screen.height*0.61}},
-              start = 0,
-              duration = 250,
-            },
-          }) -- 滑动大约3个商品的距离
-          ssleep(2)
+        -- 识别成功
+        log(201)
+        local 已有 = 寻找已有乐曲()
+        if 已有 ~= nil then
+          log("已合成乐曲0")
+          乐曲点击(已有)
+          ssleep(0.3)
+          tap("复现场景")
+          disappear("复现场景")
+          tap("开包skip")
+          tap("开包skip")
+          log("203")
+          返回初始页面()
+          goto continue
         end
-        while true do
-          for y = 0, 1 do
-            for x = 0, 2 do
-              log(x,y)
-              local sx = { point.初始乐曲[1] + x*(screen.width*0.123), point.初始乐曲[2] + y*(screen.height*0.41)}
-              tap(sx)
-              log(71)
-              ssleep(0.5)
-              tap("复现场景")
-              disappear("复现场景")
-              if not wait(function()
-                if findOne("查访页面判断") then return true end
-                if findOne("复现场景") then return true end
-                tap("开包skip")
-              end, 5) then end
-              log(72)
-              if findOne("查访页面判断") then --领取完成
-                返回初始页面()
-                log("领取完成")
-                goto continue
-              end
-            end
-          end
-          向下滑动()
+        log(103)
+        返回初始页面()
+        -- ssleep(50)
+        if 构建法术(需求情绪, 需求欲望) then
+          log("构建法术成功")
+          goto checkin
+        else
+          log("构建法术失败")
+          返回初始页面()
+          goto continue
         end
       end
+      ::checkin::
+      log(56)
+      tap(v)
+      disappear(v, 1)
+      log("尝试进入乐曲选择")
+      if not wait(function()
+        if findOne("选择心扉") then
+          tap("查访跳过")
+          disappear("选择心扉", 1)
+          return true end
+        if findOne("复现选择") then
+            return true end
+        tap("查访跳过")
+      end, 3) then end
+      local 已有 = 寻找已有乐曲()
+      if 已有 ~= nil then
+        log("已合成乐曲1")
+        乐曲点击(已有)
+        ssleep(0.3)
+        tap("复现场景")
+        disappear("复现场景")
+        tap("开包skip")
+        tap("开包skip")
+        log("203")
+        返回初始页面()
+        goto continue
+      else 
+      end
+      if appear("复现场景") then
+        log(64)
+        tap("复现场景")
+        disappear("复现场景")
+      end
+        -- -- tap(需求情绪 .. "之章")
+        -- local 向下滑动 = function ()
+        --   log("滑动")
+        --   gesture({
+        --     {
+        --       point = {{screen.width*0.5, screen.height*0.2}, {screen.width*0.5, screen.height*0.61}},
+        --       start = 0,
+        --       duration = 250,
+        --     },
+        --   }) -- 滑动大约3个商品的距离
+        --   ssleep(2)
+        -- end
+        -- while true do
+        --   for y = 0, 1 do
+        --     for x = 0, 2 do
+        --       log(x,y)
+        --       local sx = { point.初始乐曲[1] + x*(screen.width*0.123), point.初始乐曲[2] + y*(screen.height*0.41)}
+        --       tap(sx)
+        --       log(71)
+        --       ssleep(0.5)
+        --       tap("复现场景")
+        --       disappear("复现场景")
+        --       if not wait(function()
+        --         if findOne("查访页面判断") then return true end
+        --         if findOne("复现场景") then return true end
+        --         tap("开包skip")
+        --       end, 5) then end
+        --       log(72)
+        --       if findOne("查访页面判断") then --领取完成
+        --         返回初始页面()
+        --         log("领取完成")
+        --         goto continue
+        --       end
+        --     end
+        --   end
+        --   向下滑动()
+        -- end
     ::continue::
     end
   end
-    --car_check()
+  
+  if car_check() then
+    car_check()
+  end
 
     if not findOne("活动导航0") then return end
     if not wait(function()

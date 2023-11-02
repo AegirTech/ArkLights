@@ -1924,3 +1924,28 @@ contains_character = function(str, table)
     end
     return nil
 end
+
+find_color = function (v, color, dir, condifence)
+    color = color or "000000"
+    if v == nil then v = {0,0,0,0} end
+    if v == true then return true end
+    if type(v) == "function" then return v() end
+    if type(v) == "string" and not v:find(coord_delimeter) then v = point[v] end
+    if type(v) == "string" and v:find(coord_delimeter) then return nil end
+    if #v ~= 4 then return nil end
+    dir = dir or 1
+    -- 0: 表示从左上向右下；
+    -- 1: 表示从中心往四周查找；
+    -- 2: 表示从右下向左上查找；
+    -- 3: 表示从左下向右上查找；
+    -- 4：表示从右上向左下查找
+    condifence = condifence or 1
+    local index, x, y= findColor(v[1],v[2],v[3],v[4],color,dir,condifence)
+    log(index, x, y)
+    if x>-1 and y>-1 then
+        return {x,y}
+    else
+        return nil
+    end
+  end
+  
