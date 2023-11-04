@@ -178,6 +178,7 @@ def recruit(
     recruit_char = re.sub(r"<[^>]+>", "", recruit_char, 0)
     recruit_char = re.findall(r"\\n(.*)", recruit_char)
     recruit_char = set(y.strip() for x in recruit_char for y in x.split("/"))
+    print(recruit_char)
 
     # 排除非公招干员
     char = {k: v for k, v in char.items() if v["name"] in recruit_char}
