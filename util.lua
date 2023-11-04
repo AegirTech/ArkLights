@@ -4459,7 +4459,12 @@ hideControlBar = function() showControlBar(false) end
 
 ocr = function(r, max_height)
     -- releaseCapture()
-    r = point[r]
+    if type(r) == 'string' then
+        r = point[r]
+    end
+    if type(r) ~= 'table' then
+        return {}
+    end
     log("ocrinput", r, max_height)
     local d1 = scale(math.random(-1, 1))
     local d2 = scale(math.random(-1, 1))

@@ -1747,7 +1747,7 @@ delele_download_file = function()
 end
 
 -- 解析官服重定向地址
-function parse_download_url(url)
+parse_download_url = function(url)
     local http = require("socket.http")
     local url = url
     local response, code, headers, status = http.request {
