@@ -4532,6 +4532,7 @@ path.活动 = function(x)
       log(51.2)
       if not findOne("联结洞悉") then
         log("可能情绪全部被用完了")
+        情绪不足 = true
         return false
       end
       tap("联结洞悉")
@@ -4719,19 +4720,21 @@ path.活动 = function(x)
       --   返回循心初始页面()
       -- end,
       乐曲提示 = function ()
+        总次数 = 总次数+1
         if 乐曲提示识别() then
           tap("开包skip")
           if 寻找已有乐曲() == nil then
             tap("开包skip")
+            if 需求情绪 ~= nil and 需求欲望 ~= nil then
+              总次数 = 总次数-1
+              log(801)
+              构建状态 = false
+              构建法术(需求情绪,需求欲望)
+            end
             if 待查访干员 ~= nil then
               log(800)
               构建状态 = false
               构建法术(point["char2tag"][待查访干员]["情绪"],point["char2tag"][待查访干员]["欲望"])
-            end
-            if 需求情绪 ~= nil and 需求欲望 ~= nil then
-              log(801)
-              构建状态 = false
-              构建法术(需求情绪,需求欲望)
             end
             ssleep(0.5)
           else
@@ -4761,6 +4764,11 @@ path.活动 = function(x)
         end
       end,
       复现场景 = function ()
+        if 总次数 > 30 then
+          log("超过限制识别次数")
+          return true
+        end
+        if 情绪不足 then return true end
         log(170)
         tap("复现选择")
         ssleep(0.3)
