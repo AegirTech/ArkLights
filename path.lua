@@ -4597,10 +4597,10 @@ path.活动 = function(x)
                     if findOne("心绪相符") then
                         --心绪相符的时候，点击完会有一个奖励箱子出现，
                         --不知道为什么会卡住，加了点判断
+                        tap("心绪相符")
                         if not wait(function()
                                 if findOne("选择心扉之乐界面") then return true end
-                                tap("心绪相符")
-                                tap({ 639, 644 })
+                                tap("开包skip")
                                 ssleep(.2)
                             end, 3) then
                         end
