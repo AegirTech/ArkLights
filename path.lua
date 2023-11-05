@@ -4400,6 +4400,20 @@ path.活动 = function(x)
 
         fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
 
+        向下滑动 = function()
+            log("滑动")
+            ssleep(1.5)
+            gesture({
+                {
+                    point = { { screen.width * 0.5, screen.height * 0.95 },
+                        { screen.width * 0.5, screen.height * 0.95 - point["向上滑动距离"][2] } },
+                    start = 0,
+                    duration = 1500,
+                },
+            })
+            ssleep(1)
+        end
+
         返回循心初始页面 = function()
             log("回到循心初始页面")
             path.跳转("首页")
@@ -4441,21 +4455,16 @@ path.活动 = function(x)
                     if findOne("联结第一步") then return true end
                     tap(情绪)
                     ssleep(.1)
-                end, 6) then
+                end, 3) then
             end
             ssleep(.5)
             tap("联结第一步")
 
-            if not wait(function()
-                    if findOne("联结第一步") then return true end
-                    tap(情绪)
-                    ssleep(.1)
-                end, 6) then
-            end
-
             appear("联结第二步")
 
             -- 联结第二步，选择欲念
+            if not findOne("联结第二步") then return false end -- 库存不足
+
             ssleep(.5)
             if 欲念 == "尘俗" then
                 tap("欲念左")
@@ -4475,15 +4484,18 @@ path.活动 = function(x)
 
         已经构建法术 = false
         local ocr查访 = { "普通查访0范围", "普通查访1范围", "普通查访2范围" }
-        --local ocr查访突发 = {"没有号","没有号","没有号"}
+        local ocr查访突发 = { "突发查访0范围", "突发查访1范围", "突发查访2范围" }
         local 等待查访角色 = {}
-
+        log(1)
         wait(function()
             返回循心初始页面()
             log(70)
 
             --突发事件时候，把上面【ocr查访】改成【ocr查访突发】
-            --if findOne("突发查访") then   ocr查访 =  ocr查访突发    end
+            if findOne("突发查访") then
+                ocr查访 = ocr查访突发
+                if findOne("突发例行查访完成") then return true end
+            end
 
             if findOne("例行查访完成") then return true end
 
@@ -4501,15 +4513,23 @@ path.活动 = function(x)
             end
             log(71)
 
+            if #等待查访角色 == 0 then
+                return true
+            end
+
             --第二步，根据名字构建相应的法术
             --合成只做一次，默认当数量足够来做，卡住的话超时跳出
             if not 已经构建法术 then
                 for _, v in pairs(等待查访角色) do
                     local 等待查访名字 = v[1]
-                    构建法术(point.char2tag[等待查访名字].情绪, point.char2tag[等待查访名字].欲望)
+                    if 构建法术(point.char2tag[等待查访名字].情绪, point.char2tag[等待查访名字].欲望) == false then
+                        log("构建法术失败,情绪不足")
+                        return true -- 情绪不足
+                    end
                     ssleep(.5)
                     返回循心初始页面()
                 end
+                已经构建法术 = true
             end
             log(72)
 
@@ -4548,12 +4568,13 @@ path.活动 = function(x)
                 ssleep(1)
 
                 --不考虑心情，三种欲望都去尝试点击
-                for i = 1, 9 do
+
+                for i = 1, 18 do
                     if not wait(function()
                             --写死的坐标，点击相应的“欲望”时候，
                             --第一个到第9个挨个尝试
-                            tap({ scale(point.心扉之乐内9种欲望[i][1])
-                            , scale(point.心扉之乐内9种欲望[i][2]) })
+                            tap({ scale(point.心扉之乐内9种欲望[(i % 6) == 0 and 6 or (i % 6)][1])
+                            , scale(point.心扉之乐内9种欲望[(i % 6) == 0 and 6 or (i % 6)][2]) })
                             if findOne("复现场景") then return true end
                             ssleep(.2)
                         end, 10) then
@@ -4588,8 +4609,18 @@ path.活动 = function(x)
                         break
                     end
 
+                    if (i % 6) == 0 then
+                        log("当前页无匹配")
+                        if not wait(function()
+                                if not findOne("心绪不符") then return true end
+                                tap("心绪不符")
+                            end, 3) then
+                        end
+                        向下滑动()
+                    end
                     ssleep(1)
                 end
+                --返回循心初始页面() -- 9次均尝试后 无论是否成功，回到主页
             end
         end, 90)
         log(666)
