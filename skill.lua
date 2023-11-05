@@ -193,7 +193,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
     local score = function(icons)
         base = 0
         storage = 0 -- 容量
-        extra = 0 -- 额外加成
+        extra = 0   -- 额外加成
         gold = goldStationNum
         all = {}
         only_need = {}
@@ -207,7 +207,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
             elseif icon == 'bskill_tra_spd&formula1' then
                 base = base + 0.3 + 0.04 -- 近似两种产物
             elseif icon == 'bskill_tra_spd&meet1' then
-                base = base + 0.4 -- 近似满级会客厅
+                base = base + 0.4        -- 近似满级会客厅
             elseif icon == 'bskill_tra_spd&cost' then
                 base = base + 0.3
             elseif icon == 'bskill_tra_spd&limit7' then
@@ -239,7 +239,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 base = base + 0.25
             elseif icon == "bskill_tra_par&per2" then
                 base = base + 0.30
-             elseif icon == "bskill_trade_ord_spd_variable" then
+            elseif icon == "bskill_trade_ord_spd_variable" then
                 -- 排除琳琅诗怀雅
             elseif icon == 'bskill_tra_flow_gc2' then
                 base = base + 0.05
@@ -464,10 +464,10 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
 
     local score = function(icons)
         base = 0
-        robot = 0        -- 工程机器人
-        storage = {}     -- 容量效果
-        standard = 0     -- 标准化技能数量
-        station = 0      -- 根据设施加成
+        robot = 0            -- 工程机器人
+        storage = {}         -- 容量效果
+        standard = 0         -- 标准化技能数量
+        station = 0          -- 根据设施加成
         station_only = false -- 是否只根据设施加成
         all = {}
         only_need = {}
@@ -1067,19 +1067,19 @@ controlStationOperatorBest = function(operator)
     local best_score = -1
     local remain = {}
     local goodicon = {
-        'bskill_ctrl_t_spd',    -- +贸易7%
-        'bskill_ctrl_p_spd',    -- +制造2%
-        'bskill_ctrl_c_spd',    -- +线索25%
+        'bskill_ctrl_t_spd',        -- +贸易7%
+        'bskill_ctrl_p_spd',        -- +制造2%
+        'bskill_ctrl_c_spd',        -- +线索25%
         'bskill_ctrl_cost_bd1&bd2', -- 令 进驻控制中枢时，当自身心情大于12时，人间烟火+15；当自身心情处于12以下时，感知信息+10
-        'bskill_ctrl_cost_bd1', -- 夕 进驻控制中枢时，控制中枢内所有干员的心情每小时恢复+0.05；当自身心情处于12以下时，人间烟火+15
-        'bskill_ctrl_cost_bd2', -- 夕 进驻控制中枢时，自身心情每小时消耗+0.5；当自身心情大于12时，感知信息+10
-        'bskill_ctrl_ash',      -- ash
-        'bskill_ctrl_tachanka', -- 机枪
+        'bskill_ctrl_cost_bd1',     -- 夕 进驻控制中枢时，控制中枢内所有干员的心情每小时恢复+0.05；当自身心情处于12以下时，人间烟火+15
+        'bskill_ctrl_cost_bd2',     -- 夕 进驻控制中枢时，自身心情每小时消耗+0.5；当自身心情大于12时，感知信息+10
+        'bskill_ctrl_ash',          -- ash
+        'bskill_ctrl_tachanka',     -- 机枪
         -- 'bskill_ctrl_p_bot', -- +小车,加发电站数
         -- 'bskill_ctrl_token_p_spd', -- +小车,+制造2%
         -- 'bskill_ctrl_h_spd', -- 进驻控制中枢时，人力办公室联络速度小于30%时（其中包含基础联络速度5%），则联络速度额外+20%（该加成全局效果唯一，不受其它加成影响）
-        'bskill_ctrl_psk',         -- 焰尾 进驻控制中枢时，每个进驻在制造站的红松骑士团干员，作战记录类配方的生产力+10%，贵金属类配方的生产力-10%
-        'bskill_ctrl_t_limit&spd', -- 灵知 进驻控制中枢时，每个进驻在贸易站的喀兰贸易干员，订单获取效率-15%，订单上限+6
+        'bskill_ctrl_psk',             -- 焰尾 进驻控制中枢时，每个进驻在制造站的红松骑士团干员，作战记录类配方的生产力+10%，贵金属类配方的生产力-10%
+        'bskill_ctrl_t_limit&spd',     -- 灵知 进驻控制中枢时，每个进驻在贸易站的喀兰贸易干员，订单获取效率-15%，订单上限+6
         'bskill_ctrl_fraction_knight', -- 薇薇安娜 进驻控制中枢时，每个进驻在制造站的骑士干员生产力 +7%
     }
 
