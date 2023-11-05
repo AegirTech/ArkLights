@@ -4400,152 +4400,63 @@ path.活动 = function(x)
 
         fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
 
-        返回循心初始页面 = function(t)
-            local k = "循心2"
-            if t then
-                k = "循心"
+        返回循心初始页面 = function()
+            log("回到循心初始页面")
+            path.跳转("首页")
+            tap("面板活动")
+            if not wait(function()
+                    if findOne("查访初始页面") then return true end
+                    ssleep(.2)
+                    tap("招募说明关闭")
+                    if findOne("活动导航0") then tap("进入循心觅迹") end
+                end, 10) then
             end
-            local enter = function(p)
-                log(2)
-                if not wait(function()
-                        tap(p)
-                        if findOne("构建法术") then
-                            return true
-                        else
-                            tap("开包skip")
-                        end
-                        ssleep(0.5)
-                    end, 5) then
-                end
-            end
-            if not appear(k, 1) then
-                return false
-            end
-            if appear("活动导航1", 1) then
-                enter(k)
-                return true
-            else
-                path.跳转("首页")
-                tap("面板活动")
-                enter(k)
-                return true
-            end
-            -- log("返回初始页面")
-            -- if not wait(function()
-            --   if findOne("循心主页判断") then return true end
-            --   ssleep(1)
-            --   tap("左上返回")
-            -- end, 5) then end
-
-            -- if appear("活动导航1", 1) then
-            --   if not wait(function()
-            --     if not findOne("构建法术") then
-            --       tap("循心2")
-            --       if disappear("循心2", 2) then return true end
-            --     end
-            --     ssleep(1)
-            --   end, 5) then end
-            -- end
+            --return
         end
 
-        向下滑动 = function()
-            log("滑动")
-            gesture({
-                {
-                    point = { { screen.width * 0.5, screen.height * 0.6 }, { screen.width * 0.5, screen.height * 0.2 } },
-                    start = 0,
-                    duration = 250,
-                },
-            })
-            ssleep(2)
-        end
-
-        构建法术 = function(情绪, 欲念) -- sb活动,设计师mm了 这里测试过没问题
+        --空库存未做
+        构建法术 = function(情绪, 欲念)
             情绪 = 情绪 or "乐"
             欲念 = 欲念 or "权柄"
-            -- local 乐 = point.循心tag[情绪]["乐"]
-            -- local 怒 = point.循心tag[情绪]["怒"]
-            -- local 哀 = point.循心tag[情绪]["哀"]
-            -- local 惧 = point.循心tag[情绪]["惧"]
-            -- log(乐,怒,哀,惧)
             log("构建法术开始")
-            log(构建状态)
-            if 构建状态 then
-                return false
-            end
-            -- 界面判断
-            log(81)
-            if findOne("复现选择") or findOne("复现场景") then
-                log(82)
-                if not wait(function()
-                        tap("左下法术构建")
-                        if findOne("未联结", 0.95) then return true end
-                    end, 2) then
-                end
-            elseif findOne("构建法术") then
-                log(83)
-                if not wait(function()
-                        if not findOne("构建法术") then return true end
-                        tap("构建法术")
-                    end, 5) then
-                end
-            elseif findOne("未联结") then
-                log(84)
-            else
-                log(86)
-                返回循心初始页面()
-                ssleep(1)
-                构建法术(情绪, 欲念)
-            end
-
             log(情绪)
             log(欲念)
-            appear("构建法术")
-            if not wait(function()
-                    if not findOne("构建法术") then return true end
-                    tap("构建法术")
-                end, 5) then
+
+            -- 界面判断
+            log(81)
+            if findOne("查访初始页面") then
+                tap("前往构建法术")
             end
-            log(49)
+
+            --初次进入到【构建法术页面】时，可能会出现教程
             if not wait(function()
-                    if findOne("未联结") then return true end
+                    if findOne("构建法术页面") then return true end
                     ssleep(1)
-                    tap({ screen.width * 0.95, screen.height * 0.95 }) -- 过新手引导
+                    tap("招募说明关闭")
                 end, 3) then
             end
-            if not findOne("未联结") then return false end
-            --选择情绪
-            log(50)
+
+            --联结第一步，选择情绪
             if not wait(function()
-                    if findOne("联结洞悉") then return true end
-                    -- tap(情绪)
-                end, 3) then
-            end
-            log(51)
-            local list = { "乐", "怒", "哀", "惧" }
-            for _, v in pairs(list) do
-                log(v)
-                local t = point.循心tag[情绪][v]
-                if t ~= 0 then
-                    log(t)
-                    for i = 1, t do
-                        tap(v)
-                        ssleep(.2)
-                    end
-                end
+                    if findOne("联结第一步") then return true end
+                    tap(情绪)
+                    ssleep(.1)
+                end, 6) then
             end
             ssleep(.5)
-            log(51.2)
-            if not findOne("联结洞悉") then
-                log("可能情绪全部被用完了")
-                情绪不足 = true
-                return false
+            tap("联结第一步")
+
+            if not wait(function()
+                    if findOne("联结第一步") then return true end
+                    tap(情绪)
+                    ssleep(.1)
+                end, 6) then
             end
-            tap("联结洞悉")
-            appear("联结上一步")
-            log(52)
-            -- 选择欲念
-            ssleep(1)
+
+            appear("联结第二步")
+
+            -- 联结第二步，选择欲念
+            ssleep(.5)
             if 欲念 == "尘俗" then
                 tap("欲念左")
             elseif 欲念 == "智识" then
@@ -4553,307 +4464,139 @@ path.活动 = function(x)
             end
             log(53)
             ssleep(0.5)
-            tap("联结洞悉")
+            tap("联结第二步")
+            ssleep(1.5)
             if not wait(function()
-                    if findOne("未联结") then return true end
-                    tap("开包skip")
+                    if findOne("构建法术页面") then return true end
+                    tap("联结成功勾")
                 end, 6) then
             end
-            log(54)
-            if not findOne("未联结") then return false end
+        end
+
+        已经构建法术 = false
+        local ocr查访 = { "普通查访0范围", "普通查访1范围", "普通查访2范围" }
+        --local ocr查访突发 = {"没有号","没有号","没有号"}
+        local 等待查访角色 = {}
+
+        wait(function()
             返回循心初始页面()
-            -- return true
-            构建状态 = true
-            库存 = true
-            待查访干员 = nil
-            需求情绪 = nil
-            需求欲望 = nil
-        end
+            log(70)
 
-        乐曲点击 = function(p) -- ntyj 乐曲卡片周围一圈点不了
-            log(300)
-            log(p)
-            local t = getScreen().width == "1920" and 26 or math.floor((26 / 1920) * getScreen().width) --1080p下间隔 转换
-            for a = -1, 1 do
-                for b = -1, 1 do
-                    local x = p[1] + a * t
-                    local y = p[2] + b * t
-                    log(x, y)
-                    tap({ x, y })
-                    --ssleep(0.2)
+            --突发事件时候，把上面【ocr查访】改成【ocr查访突发】
+            --if findOne("突发查访") then   ocr查访 =  ocr查访突发    end
+
+            if findOne("例行查访完成") then return true end
+
+
+            --第一步，ocr识别所需要的查访对象名字和坐标,
+            --有时候识别出问题，放这里进行多次循环
+            for _, v in pairs(ocr查访) do
+                local cf = ocr(v)
+                local 待查访干员 = contains_character(table2string(cf), point.循心角色)
+                if 待查访干员 ~= nil then
+                    --插入{"名字,坐标x，坐标y"},名字用来查表合成乐章，坐标拿来点击
+                    table.insert(等待查访角色, { 待查访干员, cf[1].l, cf[1].b })
+                end
+                log(待查访干员)
+            end
+            log(71)
+
+            --第二步，根据名字构建相应的法术
+            --合成只做一次，默认当数量足够来做，卡住的话超时跳出
+            if not 已经构建法术 then
+                for _, v in pairs(等待查访角色) do
+                    local 等待查访名字 = v[1]
+                    构建法术(point.char2tag[等待查访名字].情绪, point.char2tag[等待查访名字].欲望)
+                    ssleep(.5)
+                    返回循心初始页面()
                 end
             end
-        end
+            log(72)
 
-        乐曲提示识别 = function()
-            local ts = ocr("乐曲提示ocr范围")
-            需求情绪 = contains_character(table2string(ts), { "乐", "怒", "哀", "惧" })
-            需求情绪2 = contains_character(table2string(ts), point.循心taglist)
-            需求欲望 = contains_character(table2string(ts), { "尘俗", "权柄", "智识" })
-            log(需求情绪)
-            log(需求欲望)
-            log(需求情绪2)
-            if 需求情绪 == nil then 需求情绪 = 需求情绪2 end
-            log(需求情绪)
-            if 需求情绪 == nil or 需求欲望 == nil then
-                log("乐曲提示识别失败")
-                tap("开包skip")
-                return false
-            end
-            log("乐曲提示识别成功")
-            tap("开包skip")
-            寻找已有乐曲()
-            return true
-        end
+            --第三步，挨个去给予法术
+            for _, v in pairs(等待查访角色) do
+                local 等待查访名字 = v[1]
+                local 情绪 = point.char2tag[v[1]].情绪
+                local 欲望 = point.char2tag[v[1]].欲望
+                log(等待查访名字 .. " " .. 情绪 .. " " .. 欲望)
 
-        寻找已有乐曲 = function() -- 不在同一页可能有bug
-            log(282)
-            -- 循心觅迹.查访页面判断()
-            if not wait(function()
-                    if findOne("复现场景") or findOne("复现选择") then return true end
-                    tap("开包skip")
-                    ssleep(0.5)
-                    tap("心绪不符")
-                    if findOne("心绪不符") then
-                        tap("心绪不符")
-                    end
-                end, 5) then
-            end
-            ssleep(0.5)
-            log(284)
-            local x1 = find_color("左列乐章范围", "EAEAE9", 1, 0.92)
-            log(x1)
-            log(285)
-            if x1 ~= nil then
-                log(286)
-                tap(x1)
-                ssleep(0.5)
-                for i = 0, 6 do
-                    -- local x2 = find_color("乐曲总范围","F0EDED",0,1)
-                    local col = { "FBFAFA", "EFECE7" }
-                    for _, v in pairs(col) do
-                        x2 = find_color("乐曲总范围", v, 0, 1)
-                        if x2 ~= nil then break end
-                    end
-                    log(212)
-                    log()
-                    if x2 ~= nil then
-                        x2 = { x2[1] + 50, x2[2] + 50 }
-                        ssleep(0.5)
-                        乐曲点击(x2)
-                        return x2
-                    else
-                        ssleep(0.5)
-                        向下滑动()
-                    end
-                end
-                return nil
-            else
-                return nil
-            end
-        end
-
-        循心觅迹 = {
-            查访跳过黄 = function()
-                tap("查访跳过黄")
-            end,
-            查访完成 = true,
-            合成卡住 = function()
-                if not wait(function()
-                        if not findOne("合成卡住") then return true end
-                        tap("乐之章")
-                    end, 3) then
-                end
-            end,
-            新手教程 = function()
-                if not wait(function()
-                        if not findOne("新手教程") then return true end
-                        tap("新手教程")
-                        tap("开包skip")
-                    end, 3) then
-                end
-            end,
-            普通查访0 = function()
-                log("普通查访0")
-                local ts = ocr("普通查访0范围")
-                待查访干员 = contains_character(table2string(ts), point.循心角色)
-                if 待查访干员 == nil then return false end
-                log(待查访干员)
-                if not wait(function()
-                        if not findOne("普通查访0") then return true end
-                        tap("普通查访0")
-                    end, 3) then
-                end
-            end,
-            普通查访1 = function()
-                log("普通查访1")
-                local ts = ocr("普通查访1范围")
-                待查访干员 = contains_character(table2string(ts), point.循心角色)
-                if 待查访干员 == nil then return false end
-                log(待查访干员)
-                if not wait(function()
-                        if not findOne("普通查访1") then return true end
-                        tap("普通查访1")
-                    end, 3) then
-                end
-            end,
-            普通查访2 = function()
-                log("普通查访2")
-                local ts = ocr("普通查访2范围")
-                待查访干员 = contains_character(table2string(ts), point.循心角色)
-                if 待查访干员 == nil then return false end
-                log(待查访干员)
-                if not wait(function()
-                        if not findOne("普通查访2") then return true end
-                        tap("普通查访2")
-                    end, 3) then
-                end
-            end,
-            密令查访 = function()
-                log("密令查访")
-                local ts = ocr("密令查访范围")
-                待查访干员 = contains_character(table2string(ts), point.循心角色)
-                if 待查访干员 == nil then return false end
-                log(待查访干员)
-                if not wait(function()
-                        if not findOne("密令查访") then return true end
-                        tap("开始查访")
-                    end, 3) then
-                end
-            end,
-            密令查访2 = function()
-                tap("密令查访2")
-                log("密令查访2")
-                if not wait(function()
-                        if not findOne("密令查访2") then return true end
-                        tap("密令查访2")
-                    end, 3) then
-                end
-                循心觅迹.密令查访()
-            end,
-            -- 未联结 = function ()
-            --   返回循心初始页面()
-            -- end,
-            乐曲提示 = function()
-                总次数 = (总次数 or 0) + 1
-                if 乐曲提示识别() then
-                    tap("开包skip")
-                    if 寻找已有乐曲() == nil then
-                        tap("开包skip")
-                        if 需求情绪 ~= nil and 需求欲望 ~= nil then
-                            log(801)
-                            构建状态 = false
-                            构建法术(需求情绪, 需求欲望)
-                        end
-                        if 待查访干员 ~= nil then
-                            log(800)
-                            构建状态 = false
-                            构建法术(point["char2tag"][待查访干员]["情绪"], point["char2tag"][待查访干员]
-                                ["欲望"])
-                        end
-                        ssleep(0.5)
-                    else
-                        ssleep(0.5)
-                    end
-                end
-            end,
-            复现选择 = function()
-                log(190)
-                local ts = ocr("空库存")
-                if string.find(table2string(ts), "暂无") then
-                    log("库存为空")
-                    if 库存 ~= true then
-                        库存 = false
-                        -- 返回初始页面()
-                        ssleep(0.2)
-                        log(807)
-                        构建状态 = false
-                        构建法术("乐", nil)
-                    end
+                --在查访初始页面，点击前面查找好的人物查访
+                if findOne("查访初始页面") then
+                    tap({ v[2], v[3] })
                 else
-                    log(192)
+                    返回循心初始页面()
+                end
+                ssleep(.5)
+
+                --把问题问完，进入到"选择心扉之乐界面"
+                if not wait(function()
+                        if findOne("选择心扉之乐界面") then return true end
+                        tap("查访内跳过")
+                        tap("查访内继续提问")
+                        tap("查访内选择乐章")
+                    end, 10) then
+                    return false
+                end
+                if not findOne("选择心扉之乐界面") then return false end
+                ssleep(.5)
+
+
+                --点击到相应的"X之章",
+                local X之章 = 情绪 .. "之章"
+                tap(X之章)
+                log(82)
+                ssleep(1)
+
+                --不考虑心情，三种欲望都去尝试点击
+                for i = 1, 9 do
                     if not wait(function()
+                            --写死的坐标，点击相应的“欲望”时候，
+                            --第一个到第9个挨个尝试
+                            tap({ scale(point.心扉之乐内9种欲望[i][1])
+                            , scale(point.心扉之乐内9种欲望[i][2]) })
                             if findOne("复现场景") then return true end
-                            tap("初始乐曲")
+                            ssleep(.2)
+                        end, 10) then
+                        return false
+                    end
+                    ssleep(.1)
+                    tap("复现场景")
+
+                    if not wait(function()
+                            if findOne("心绪相符") then return true end
+                            if findOne("心绪不符") then
+                                tap("心绪不符")
+                                return true
+                            end
+                            ssleep(.2)
                         end, 3) then
                     end
-                    if not findOne("复现场景") then return true end
-                end
-            end,
-            复现场景 = function()
-                if 总次数 > 15 then
-                    log("超过限制识别次数")
-                    return true
-                end
-                if 情绪不足 then return true end
-                log(170)
-                tap("复现选择")
-                ssleep(0.3)
-                log(176)
-                if not wait(function()
-                        if findOne("复现场景") then return true end
-                        ssleep(0.3)
-                        tap("开包skip")
-                    end, 3) then
-                end
-                log(177)
-                if 寻找已有乐曲() then
-                    ssleep(0.5)
-                    循心觅迹.复现场景()
-                end
-                if not wait(function()
-                        if findOne("复现选择") then return true end
-                        if findOne("复现场景") then return true end
-                        tap("开包skip")
-                        tap("心绪不符")
-                    end, 3) then
-                end
-                if 寻找已有乐曲() then
-                    ssleep(0.5)
-                    循心觅迹.复现场景()
-                end
-                if 待查访干员 ~= nil then
-                    log(803)
-                    构建状态 = false
-                    构建法术(point["char2tag"][待查访干员]["情绪"], point["char2tag"][待查访干员]["欲望"])
-                end
-                if 需求情绪 ~= nil and 需求欲望 ~= nil then
-                    log(804)
-                    构建状态 = false
-                    构建法术(需求情绪, 需求欲望)
-                end
-            end,
-            查访页面判断 = function()
-                log(150)
-                if not wait(function() -- 跳过一直到选择乐曲界面
-                        if findOne("选择心扉") then
-                            tap("查访跳过")
-                            disappear("选择心扉", 1)
-                            return true
-                        end
-                        if findOne("复现选择") then
-                            return true
-                        end
-                        tap("查访跳过")
-                    end, 3) then
-                end
-            end,
-            未联结 = function() 返回循心初始页面() end,
-            选择心扉 = function() 循心觅迹.查访页面判断() end,
-            术法集谱 = function() 返回循心初始页面() end
-        }
 
-        if 返回循心初始页面(true) then
-            总次数 = 0
-            ssleep(0.5)
-            auto(循心觅迹, nil, 0, 60, false)
-            return false
-        else
-            return false
-        end
+
+                    if findOne("心绪相符") then
+                        --心绪相符的时候，点击完会有一个奖励箱子出现，
+                        --不知道为什么会卡住，加了点判断
+                        if not wait(function()
+                                if findOne("选择心扉之乐界面") then return true end
+                                tap("心绪相符")
+                                tap({ 639, 644 })
+                                ssleep(.2)
+                            end, 3) then
+                        end
+                        返回循心初始页面()
+                        log(81)
+                        break
+                    end
+
+                    ssleep(1)
+                end
+            end
+        end, 90)
+        log(666)
+        返回循心初始页面()
     end
 
-    -- car_check()
+    car_check()
 
     if not findOne("活动导航0") then return end
     if not wait(function()
