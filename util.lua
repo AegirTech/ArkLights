@@ -2647,14 +2647,14 @@ end
 --   return restartScript()
 -- end
 
-unpacking_library = function ()
-  if root_mode then
-    mkdir(getWorkPath() .. "/assets")
-    extractAssets("sqlite.rc", getWorkPath() .. "/assets")
-    exec(string.format([[su root sh -c "cp '%s/assets/sqlite3.2' '/data/local/tmp/sqlite3'"]], getWorkPath()))
-    setFilePremission("/data/local/tmp/sqlite3", 777)
-    _G.sqlite3path = "/data/local/tmp/sqlite3"
-  end
+unpacking_library = function()
+    if root_mode then
+        mkdir(getWorkPath() .. "/assets")
+        extractAssets("sqlite.rc", getWorkPath() .. "/assets")
+        exec(string.format([[su root sh -c "cp '%s/assets/sqlite3.2' '/data/local/tmp/sqlite3'"]], getWorkPath()))
+        setFilePremission("/data/local/tmp/sqlite3", 777)
+        _G.sqlite3path = "/data/local/tmp/sqlite3"
+    end
 end
 
 check_hot_update = function()
@@ -2740,12 +2740,12 @@ uploadStatistician = function(is_download)
 end
 
 hotUpdate = function()
-    if disable_hotupdate then
+    if disable_hotupdate or dev_mode then
         log("热更新已禁用")
         return
     end
     local update_info = check_hot_update()
-	if not update_info then return false end
+    if not update_info then return false end
     if not update_info.updateLr and not update_info.updateSkill then
         toast("已经是最新版")
         uploadStatistician(false)
@@ -3140,9 +3140,9 @@ show_debug_ui = function()
 
     newRow(layout)
     addTextView(layout, "搬商店时间在活动")
-    ui.addSpinner(layout, "shop_period", {"结束前", "结束后", "结束前后", "每一次"}, 1)
+    ui.addSpinner(layout, "shop_period", { "结束前", "结束后", "结束前后", "每一次" }, 1)
     addTextView(layout, "的")
-    ui.addSpinner(layout, "shop_day", {"1", "2", "3", "4", "5"}, 0)
+    ui.addSpinner(layout, "shop_day", { "1", "2", "3", "4", "5" }, 0)
     addTextView(layout, "天")
 
     newRow(layout)
@@ -4086,7 +4086,7 @@ parse_fight_config = function(fight_ui)
         elseif table.includes(table.keys(extrajianpin2name), v) then
             v = extrajianpin2name[v]
         end
-        if table.find({ '活动', 'ZT'}, startsWithX(v)) then
+        if table.find({ '活动', 'ZT' }, startsWithX(v)) then
             local idx = v:gsub(".-(%d+)$", '%1')
             v = "HD-" .. (idx or '')
             -- log(2731, v, idx)
@@ -4125,7 +4125,7 @@ parse_fight_config = function(fight_ui)
                 '聚酸酯组', '聚酸酯', '糖组', '糖', '异铁组', '异铁', '酮凝集组', '酮凝集', '凝胶',
                 '炽合金', '晶体元件', '半自然溶剂', '化合切削液', '转质盐组' }, v) then
             if v == '扭转醇' then
-                for _, i in pairs({ 'GT-5','6-11', '11-13' }) do
+                for _, i in pairs({ 'GT-5', '6-11', '11-13' }) do
                     for _ = 1, 99 do table.insert(expand_fight, i) end
                 end
             elseif v == '轻锰矿' then
