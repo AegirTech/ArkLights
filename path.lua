@@ -733,6 +733,7 @@ path.fallback = {
         if not appear("面板") then tap("开包skip") end
     end,
     产业合作洽谈会 = function()
+        ssleep(1)
         wait(function() tap("产业合作洽谈会策略") end, 2)
         wait(function()
             tap('返回')
@@ -872,6 +873,7 @@ path.fallback = {
         return path.fallback.签到返回()
     end,
     活动签到返回 = function()
+        ssleep(0.5) -- 等待签到界面加载
         for u = screen.width // 2 + scale(825 - 1920 // 2), screen.width // 2 +
         scale(1730 - 1920 // 2), scale(100) do tap({ u, scale(500) }) end
         for v = screen.height // 2 + scale(180 - 1080 // 2), screen.height // 2 +
@@ -1060,7 +1062,7 @@ path.限时活动 = function(retry)
 
     -- 只包含主页红点
     retry = retry or 0
-    if retry > 5 then return end
+    if retry > 10 then return end
     path.跳转("首页")
     local p = findAny({
         "面板限时活动", "面板限时活动2", "面板限时活动3",
@@ -4607,6 +4609,13 @@ path.活动 = function(x)
                         返回循心初始页面()
                         log(81)
                         break
+                    end
+
+                    if not wait(function()
+                            if findOne("选择心扉之乐界面") then return true end
+                            if findOne("复现场景") then return true end
+                            tap("开包skip")
+                        end, 10) then
                     end
 
                     if (i % 6) == 0 then
