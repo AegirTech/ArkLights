@@ -431,6 +431,18 @@ server=]] .. server
         str(get(config, 'daily', 'offer', 'enable'))
     hook = hook .. [[;now_job_ui11=]] .. str(get(config, 'daily', 'task'))
     hook = hook .. [[;now_job_ui12=]] .. str(get(config, 'daily', 'activity'))
+    --审判庭配置提前写在这里里,如果需要对接审判庭,青在daily属性中添加shopping
+    local shopping_cloud_switch=str(get(config, 'daily', 'shopping'))
+
+    local main_config = loadOneUIConfig("main")
+
+    local shopping_ui_switch=main_config["now_job_ui13"]
+    --如果速通没开启,后续审判庭有开启依然可以生效
+    if shopping_ui_switch==false then
+        shopping_ui_switch=shopping_cloud_switch
+    end
+
+    hook = hook .. [[;now_job_ui13=]] ..tostring(shopping_ui_switch)
 
     hook = hook .. [[;auto_recruit0=]] ..
         str(get(config, 'daily', 'offer', 'other'))
