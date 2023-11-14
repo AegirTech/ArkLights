@@ -104,6 +104,19 @@ def run(now=True):
 
 def save():
     """保存到懒人精灵工程文件夹"""
+    with open("main.lua", "r", encoding="utf-8") as f:
+        lines = f.readlines()
+        ss = ""
+        for line in lines:
+            if re.match('release_date = ".*"', line):
+                line = (
+                    'release_date = "'
+                    + str(datetime.datetime.now().strftime("%m.%d %H:%M"))
+                    + '"\n'
+                )
+            ss += line
+    with open("main.lua", "w", encoding="utf-8") as f:
+        f.write(ss)
 
     # 获取当前目录下所有的.lua文件
     lua_files = [f for f in os.listdir(".") if f.endswith(".lua")]
@@ -217,7 +230,7 @@ if __name__ == "__main__":
         if arg == "run":
             run()
         elif arg == "save":
-            save(False)
+            save()
         elif arg == "saverun":
             saverun()
         elif arg == "r":

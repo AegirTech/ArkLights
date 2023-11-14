@@ -5007,92 +5007,101 @@ end
 
 path.商店搬空 = function()
     local t = os.time()
-    local r = 0
-    interval = t - hd_open_time_end -- 搬商店时间判断
     if _G.shop_period == nil or _G.shop_period > 3 or _G.shop_period < 0 then _G.shop_period = 1 end
     if _G.shop_day == nil or _G.shop_day > 4 or _G.shop_day < 0 then _G.shop_day = 0 end
-    -- log(interval)
-    if shop_period == 0 then
-        if not (interval < 0 and math.abs(interval) < (86400 * (shop_day + 1))) then return end
-    elseif shop_period == 1 then
-        if not (interval > 0 and math.abs(interval) < 86400 * (shop_day + 1)) then return end
-    elseif shop_period == 2 then
-        if not (math.abs(interval) < 86400 * (shop_day + 1)) then return end
+
+    -- 搬商店时间
+    interval = t - hd_open_time_end
+    if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) then
+        return
+    elseif shop_period == 1 and not (interval > 0 and t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day) then
+        return
+    elseif shop_period == 2 and not ((t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) or (t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day)) then
+        return
     end
+    log("商店清空任务")
     path.跳转("首页")
+    -- 进入商店
     tap("面板活动")
     if not wait(function()
             disappear("正在提交反馈至神经", network_timeout)
             tap("活动商店导航")
-            if appear("活动商店导航") then return true end
-            if not appear("活动导航0") then return true end
+            if not appear("活动商店导航") then return true end
             if findOne("跳过剧情") then path.跳过剧情() end
         end, 10) then
         return path.跳过剧情()
     end
-    is_in_shop = function() --判断是否进入商店
-        if string.find(table2string(ocr("商店OCR范围")), "关闭时间") then
-            log("已进入商店")
-            return true
-        else
-            log("未能进入商店")
-            return false
+
+    disappear("正在提交反馈至神经", network_timeout)
+
+    -- 防止各种掉帧等导致卡在领取等页面
+    回到商店主页 = function()
+        if not wait(function()
+                if findOne("商店主页") then return true end
+                tap("商店顶栏")
+                ssleep(0.2)
+            end, 10) then
+            return
         end
     end
-    disappear("正在提交反馈至神经", network_timeout)
-    if is_in_shop() == false then return end
-    local 初始物品, 物品横间距, 物品纵间距 = { screen.width * 0.1, screen.height * 0.4 }, screen.width *
-        0.25, screen.height * 0.2
-    while true do
-        for x = 0, 3 do
-            for y = 0, 3 do
-                local s = 0
-                if not wait(function()
-                        local sx = { 初始物品[1] + x * 物品横间距, 初始物品[2] + y * 物品纵间距 }
-                        log(x, y, sx[1], sx[2])
-                        tap("商店顶栏")
-                        ssleep(0.5) --点太快就会有一堆问题,会有漏买的，买三次应该能买空
-                        if tap_cmpcol(sx, nil, nil, 1) then
-                            appear("商店购买页面", 3)
-                            if checkPointColor(point.商店购买页面, 1) then
-                                tap("商店最多")
-                                ssleep(0.2)
-                                if not tap_cmpcol(point.商店支付) then
-                                    log("购买失败，大抵是没钱了吧~")
-                                    r = r + 1
-                                    tap("商店顶栏")
-                                    return true
-                                end
-                            end
-                            disappear("正在提交反馈至神经", network_timeout)
-                            if checkPointColor(point.商店购买页面, 1) == false then
-                                tap("商店购买确认")
-                                ssleep(0.5)
-                                return true
-                            end
-                        else
-                            log("未能进入商品，大概是售空了吧~")
-                            return true
-                        end
-                    end, 3) then
-                end
-                if r > 3 then
-                    log("货币不足")
-                    return true
-                end
-            end
-        end
-        ssleep(1.5)
-        local sx = { screen.width * 0.8, screen.height * 0.5 }
-        local oricol = getColor(sx[1], sx[2])
+
+    向左滑动 = function()
         gesture({
             {
-                point = { { screen.width * 0.8, screen.height / 2 }, { screen.width * 0.4, screen.height / 2 } },
+                point = { { screen.width * 0.95, screen.height / 2 }, { screen.width * 0.95 - point["商店滑动距离"][1], screen.height / 2 } },
                 start = 0,
-                duration = 250,
+                duration = 1500,
             },
         }) -- 滑动大约3个商品的距离
-        ssleep(2)
+    end
+
+    if not findOne("商店主页") then return end
+
+    local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], point["商店物品间隔"][1], point["商店物品间隔"][2]
+    while true do
+        for x = 0, 3 do -- 3*3商品进行购买
+            for y = 0, 3 do
+                local sx = { 初始物品[1] + x * 物品横间距, 初始物品[2] + y * 物品纵间距 }
+                log(x, y, sx[1], sx[2])
+                回到商店主页()
+                ssleep(0.5)
+                -- 点击商品，进入购买页面判断
+                if not wait(function()
+                        tap(sx)
+                        if findOne("商店购买页面") then return true end
+                    end, 1) then
+                end
+                if not findOne("商店购买页面") then
+                    log("未能进入商品，大概是售空了吧~")
+                    goto continue
+                end
+
+                -- 点击购买
+                if not wait(function()
+                        tap("商店最多")
+                        ssleep(0.3)
+                        tap("商店支付")
+                        if not findOne("商店购买页面", 1) then return true end
+                    end, 3) then
+                end
+
+                if findOne("商店购买页面", 1) then
+                    log("购买失败，大抵是没钱了吧~")
+                    return true
+                end
+                disappear("正在提交反馈至神经", network_timeout)
+
+                ::continue::
+                回到商店主页()
+                log("开始下一个商品")
+            end
+        end
+        回到商店主页()
+        ssleep(1)
+        local sx = { screen.width * 0.8, screen.height * 0.5 }
+        local oricol = getColor(sx[1], sx[2])
+        向左滑动()
+        ssleep(3)
         if getColor(sx[1], sx[2]) == oricol then
             log("大概滑动到底了吧~")
             return true
