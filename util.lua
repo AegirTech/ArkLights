@@ -3080,7 +3080,7 @@ show_debug_ui = function()
 
     newRow(layout)
     addTextView(layout, "单关卡最大连续代理/导航失败次数")
-    ui.addEditText(layout, "max_fight_failed_times", "2")
+    ui.addEditText(layout, "max_fight_failed_times", "3")
 
     newRow(layout)
     addTextView(layout, "单号最大成功剿灭次数")
