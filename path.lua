@@ -5065,6 +5065,7 @@ path.商店搬空 = function()
                 log(x, y, sx[1], sx[2])
                 回到商店主页()
                 ssleep(0.5)
+                if not findOne("商店主页") then return end -- 防止跳到其他页面
                 -- 点击商品，进入购买页面判断
                 if not wait(function()
                         tap(sx)
@@ -5098,6 +5099,7 @@ path.商店搬空 = function()
         end
         回到商店主页()
         ssleep(1)
+        if not findOne("商店主页") then return end -- 防止跳到其他页面
         local sx = { screen.width * 0.8, screen.height * 0.5 }
         local oricol = getColor(sx[1], sx[2])
         向左滑动()
