@@ -3043,7 +3043,7 @@ show_debug_ui = function()
     ui.addEditText(layout, "captcha_password", "")
 
     newRow(layout)
-    ui.addCheckBox(layout, "only_use_ttshitu", "仅使用图鉴打码", false)
+    ui.addCheckBox(layout, "only_use_ttshitu", "仅使用图鉴打码", true)
 
     newRow(layout)
     addTextView(layout, "审判庭服务地址")

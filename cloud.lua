@@ -6,7 +6,7 @@ m = cloud
 m.deviceToken = ''
 m.captchaToken = ''
 m.server = ''
-m.captchaServer = 'https://captcha-arkrec.ngworks.cn'
+m.captchaServer = ''
 m.heartBeatTid = -1
 m.status = 1
 
