@@ -5022,14 +5022,17 @@ path.商店搬空 = function()
     log("商店清空任务")
     path.跳转("首页")
     -- 进入商店
-    tap("面板活动")
+    tap("面板活动2")
     if not wait(function()
-            disappear("正在提交反馈至神经", network_timeout)
-            tap("活动商店导航")
-            if not appear("活动商店导航") then return true end
-            if findOne("跳过剧情") then path.跳过剧情() end
+            if findOne("活动导航0") then return true end
         end, 10) then
         return path.跳过剧情()
+    end
+
+    if not wait(function()
+            tap("活动商店导航")
+            if findOne("商店主页") then return true end
+        end, 5) then
     end
 
     disappear("正在提交反馈至神经", network_timeout)
