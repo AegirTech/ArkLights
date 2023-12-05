@@ -102,22 +102,12 @@ def run(now=True):
             )
 
 
-def save(forRelease):
+def save():
     """保存到懒人精灵工程文件夹"""
     with open("main.lua", "r", encoding="utf-8") as f:
         lines = f.readlines()
         ss = ""
         for line in lines:
-            if not forRelease:
-                if re.match("-- disable_hotupdate = true", line):
-                    line = "disable_hotupdate = true\n"
-                if re.match("-- always_enable_log = true", line):
-                    line = "always_enable_log = true\n"
-            else:
-                if re.match("disable_hotupdate = true", line):
-                    line = "-- disable_hotupdate = true\n"
-                if re.match("always_enable_log = true", line):
-                    line = "-- always_enable_log = true\n"
             if re.match('release_date = ".*"', line):
                 line = (
                     'release_date = "'
@@ -151,13 +141,13 @@ def save(forRelease):
 
 def saverun():
     """保存并运行"""
-    save(False)
+    save()
     run()
 
 
 def release(type):
     if type == "RELEASE":
-        save(True)
+        save()
         run(False)
 
         newLrMD5 = input("请输入md5值: ")
@@ -240,7 +230,7 @@ if __name__ == "__main__":
         if arg == "run":
             run()
         elif arg == "save":
-            save(False)
+            save()
         elif arg == "saverun":
             saverun()
         elif arg == "r":
