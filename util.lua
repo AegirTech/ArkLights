@@ -4086,7 +4086,7 @@ parse_fight_config = function(fight_ui)
         elseif table.includes(table.keys(extrajianpin2name), v) then
             v = extrajianpin2name[v]
         end
-        if table.find({ '活动', 'ZT' }, startsWithX(v)) then
+        if table.find({ '活动', 'RS' }, startsWithX(v)) then
             local idx = v:gsub(".-(%d+)$", '%1')
             v = "HD-" .. (idx or '')
             -- log(2731, v, idx)
@@ -4114,11 +4114,11 @@ parse_fight_config = function(fight_ui)
             for _ = 1, 99 do table.insert(expand_fight, '长期委托2') end
             for _ = 1, 99 do table.insert(expand_fight, '长期委托3') end
         elseif table.includes({ 'HD' }, v) then
-            for i = 9, 1, -1 do
+            for i = 8, 1, -1 do
                 for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
             end
         elseif table.includes({ 'HD1' }, v) then
-            for i = 10, 1, -1 do table.insert(expand_fight, 'HD' .. '-' .. i) end
+            for i = 8, 1, -1 do table.insert(expand_fight, 'HD' .. '-' .. i) end
             table.insert(expand_fight, "BREAK")
         elseif table.includes({ '扭转醇', '轻锰矿', 'RMA70-12', '固源岩组', '固源岩', '研磨石', '全新装置',
                 '装置',
@@ -4247,7 +4247,7 @@ update_state_from_ui = function()
     -- log("fight", fight)
 
     -- 活动开放时间段
-    hd_open_time_end = parse_time("202311220400")
+    hd_open_time_end = parse_time("202312190400")
     hd_shop_open_time_end = parse_time("202309260400")  -- 活动商店关闭时间
     hd2_open_time_end = parse_time("202303210400")
     hd2_shop_open_time_end = parse_time("202302240400") -- 活动2商店关闭时间

@@ -4636,7 +4636,7 @@ path.活动 = function(x)
         返回循心初始页面()
     end
 
-    car_check()
+    -- car_check()
 
     if not findOne("活动导航0") then return end
     if not wait(function()
@@ -5022,7 +5022,7 @@ path.商店搬空 = function()
     log("商店清空任务")
     path.跳转("首页")
     -- 进入商店
-    tap("面板活动2")
+    tap("面板活动")
     if not wait(function()
             if findOne("活动导航0") then return true end
         end, 10) then
