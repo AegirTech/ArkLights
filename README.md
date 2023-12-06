@@ -48,8 +48,8 @@ ArkLights is the <b> lightning fast</b> and <b> fully managed</b> Arknights game
     # 提取公招保底组合
     ./0.sh recruit
     # 提取活动关卡坐标
-    ./extracy.py screencap 1,2,3
-    ./extracy.py screencap_distance
+    ./extract.py screencap 1,2,3
+    ./extract.py screencap_distance
     ```
     
     更多说明请参考 [开发与贡献指南](./docs/development.md)
