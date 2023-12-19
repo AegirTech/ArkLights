@@ -5024,7 +5024,7 @@ path.商店搬空 = function()
     -- 进入商店
     tap("面板活动")
     if not wait(function()
-            if findOne("活动导航0") then return true end
+            if findOne("活动商店导航") then return true end
         end, 10) then
         return path.跳过剧情()
     end
@@ -5059,11 +5059,11 @@ path.商店搬空 = function()
     end
 
     if not findOne("商店主页") then return end
-
     local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], point["商店物品间隔"][1], point["商店物品间隔"][2]
     while true do
         for x = 0, 3 do -- 3*3商品进行购买
             for y = 0, 3 do
+                ::startshop::
                 local sx = { 初始物品[1] + x * 物品横间距, 初始物品[2] + y * 物品纵间距 }
                 log(x, y, sx[1], sx[2])
                 回到商店主页()
@@ -5094,6 +5094,8 @@ path.商店搬空 = function()
                     return true
                 end
                 disappear("正在提交反馈至神经", network_timeout)
+
+                goto startshop -- 重复购买此商品 直到售空
 
                 ::continue::
                 回到商店主页()
