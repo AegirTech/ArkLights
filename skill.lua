@@ -239,8 +239,16 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 base = base + 0.25
             elseif icon == "bskill_tra_par&per2" then
                 base = base + 0.30
-            elseif icon == "bskill_trade_ord_spd_variable" then
-                -- 排除琳琅诗怀雅
+            elseif icon == "bskill_tra_spd&limit_down1" then -- 锏
+                base = base + 0.20
+                storage = storage - 2
+            elseif icon == "bskill_tra_spd&limit_down2" then
+                base = base + 0.25
+                storage = storage - 6
+            elseif icon == "bskill_tra_limit2spd" then
+                base = base + math.floor(storage / 5) * 0.25
+            elseif icon == "bskill_trade_ord_spd_variable" then -- 琳琅诗怀雅
+                base = base + storage * 0.04
             elseif icon == 'bskill_tra_flow_gc2' then
                 base = base + 0.05
                 gold = gold + (gold // 2) * 2
@@ -288,11 +296,6 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 base = base + 0.65
             end
         end
-
-        -- 琳琅诗怀雅
-        -- if all["bskill_trade_ord_spd_variable"] then
-        --     base = base + storage*0.04
-        -- end
 
         -- 雪雉
         if all['bskill_tra_spd_variable22'] then
