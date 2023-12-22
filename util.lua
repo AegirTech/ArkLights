@@ -2904,7 +2904,7 @@ make_ui_title = function(layout, name)
     local screen = getScreen()
     local resolution = screen.width .. 'x' .. screen.height
     name = name or ''
-    local title = name .. " " .. getApkVerInt() .. "-" ..
+    local title = name .. " " .. getApkVerInt() .. "-LTS " ..
         release_date:gsub(' ', '-') .. ' ' .. resolution
     ui.setTitleText(layout, is_apk_old() and apk_old_warning or title)
 end
@@ -4086,7 +4086,7 @@ parse_fight_config = function(fight_ui)
         elseif table.includes(table.keys(extrajianpin2name), v) then
             v = extrajianpin2name[v]
         end
-        if table.find({ '活动', 'RS' }, startsWithX(v)) then
+        if table.find({ '活动', 'FC' }, startsWithX(v)) then
             local idx = v:gsub(".-(%d+)$", '%1')
             v = "HD-" .. (idx or '')
             -- log(2731, v, idx)
@@ -4114,12 +4114,23 @@ parse_fight_config = function(fight_ui)
             for _ = 1, 99 do table.insert(expand_fight, '长期委托2') end
             for _ = 1, 99 do table.insert(expand_fight, '长期委托3') end
         elseif table.includes({ 'HD' }, v) then
-            for i = 8, 1, -1 do
+            for i = 7, 1, -1 do
                 for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
             end
         elseif table.includes({ 'HD1' }, v) then
-            for i = 8, 1, -1 do table.insert(expand_fight, 'HD' .. '-' .. i) end
+            for i = 7, 1, -1 do table.insert(expand_fight, 'HD' .. '-' .. i) end
             table.insert(expand_fight, "BREAK")
+        elseif table.includes({ 'HD2' }, v) then                --【速通输入，“hd3”“HD3”】都会插入16个关卡坐标
+            for i = 1, 8 do
+                table.insert(expand_fight, 'HD-EX' .. '-' .. i) --插入ex普通关卡
+                table.insert(expand_fight, 'HD-EX' .. '-' .. i) --插入ex突袭关卡，做两次检测
+            end
+        elseif table.includes({ 'HD3' }, v) then                --【速通输入，“hd3”“HD3”】都会插入16个关卡坐标
+            for i = 1, 4 do
+                table.insert(expand_fight, 'HD-S' .. '-' .. i)  --插入ex普通关卡
+                table.insert(expand_fight, 'HD-S' .. '-' .. i)  --插入ex突袭关卡，做两次检测
+            end
+            table.insert(expand_fight, 'HD-MO-1')               --插入MO
         elseif table.includes({ '扭转醇', '轻锰矿', 'RMA70-12', '固源岩组', '固源岩', '研磨石', '全新装置',
                 '装置',
                 '聚酸酯组', '聚酸酯', '糖组', '糖', '异铁组', '异铁', '酮凝集组', '酮凝集', '凝胶',
@@ -4247,7 +4258,7 @@ update_state_from_ui = function()
     -- log("fight", fight)
 
     -- 活动开放时间段
-    hd_open_time_end = parse_time("202312190400")
+    hd_open_time_end = parse_time("202401010400")
     hd_shop_open_time_end = parse_time("202309260400")  -- 活动商店关闭时间
     hd2_open_time_end = parse_time("202303210400")
     hd2_shop_open_time_end = parse_time("202302240400") -- 活动2商店关闭时间

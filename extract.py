@@ -14,6 +14,7 @@ import fire
 
 # 请使用720p图像计算
 
+
 def unpack(source_folder="arknights", destination_folder="arknights_extract"):
     import UnityPy
 
@@ -141,11 +142,15 @@ def avator2operator(src="ArknightsGameData/zh_CN/gamedata/excel/character_table.
 
 # https://github.com/yuanyan3060/ArknightsGameResource 使用此解包仓库
 def skillicon2operator(
-        char=os.path.join(os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"),
-        build=os.path.join(os.getcwd(), "ArknightsGameResource/gamedata/excel/building_data.json"),
+    char=os.path.join(
+        os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"
+    ),
+    build=os.path.join(
+        os.getcwd(), "ArknightsGameResource/gamedata/excel/building_data.json"
+    ),
 ):
-    char = json.loads(open(char, encoding='utf-8').read())
-    build = json.loads(open(build, encoding='utf-8').read())
+    char = json.loads(open(char, encoding="utf-8").read())
+    build = json.loads(open(build, encoding="utf-8").read())
 
     char2name = {k: char[k]["name"] for k in char}
     buffid2name = {}
@@ -166,12 +171,16 @@ def skillicon2operator(
 
 
 def recruit(
-        char=os.path.join(os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"),
-        gacha=os.path.join(os.getcwd(), "ArknightsGameResource/gamedata/excel/gacha_table.json"),
-        to="lua",
+    char=os.path.join(
+        os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"
+    ),
+    gacha=os.path.join(
+        os.getcwd(), "ArknightsGameResource/gamedata/excel/gacha_table.json"
+    ),
+    to="lua",
 ):
-    char = json.loads(open(char, encoding='utf-8').read())
-    gacha = json.loads(open(gacha, encoding='utf-8').read())
+    char = json.loads(open(char, encoding="utf-8").read())
+    gacha = json.loads(open(gacha, encoding="utf-8").read())
     tag = [x["tagName"] for x in gacha["gachaTags"] if x["tagId"] < 100]
 
     recruit_char = gacha["recruitDetail"]
@@ -184,10 +193,10 @@ def recruit(
     char = {k: v for k, v in char.items() if v["name"] in recruit_char}
 
     # 排除6星干员，没有高级资深一定不出6星，没有资深可能出5星
-    char = {k: v for k, v in char.items() if v["rarity"]+1 < 6}
+    char = {k: v for k, v in char.items() if v["rarity"] + 1 < 6}
 
     # 排除12星干员，拉满9小时最低3星
-    char = {k: v for k, v in char.items() if v["rarity"]+1 >= 3}
+    char = {k: v for k, v in char.items() if v["rarity"] + 1 >= 3}
 
     profession2tag = defaultdict(
         lambda: "???",
@@ -232,7 +241,7 @@ def recruit(
         for k, v in char.items()
     }
 
-    char2star = {v["name"]: v["rarity"]+1 for k, v in char.items()}
+    char2star = {v["name"]: v["rarity"] + 1 for k, v in char.items()}
     tag2char = defaultdict(set)
     for c, t in char2tag.items():
         for t in t:
@@ -360,7 +369,7 @@ def screencap_distance(path="screencap"):
     distance = defaultdict(int)
     shift_right = 0
     # 滑动到最右边时 hd-1的x坐标相距屏幕中心的距离
-    distance[1] = 140
+    distance[1] = -260
     for x in sorted(screencap.glob("*.jpg")):
         x = reader.readtext(str(x))
         print("x", x)
@@ -379,7 +388,10 @@ def screencap_distance(path="screencap"):
             text = text.replace("B12", "BI-2")
             text = text.replace(" ", "")
             text = text.replace("1C", "IC")
+            text = text.replace("EX", "")
+            text = text.replace("--", "-")
             m = re.search("^.?.-(\d+)$", text)
+            print("m", m)
             if not m:
                 continue
             print("m", m)
@@ -411,20 +423,23 @@ def screencap_distance(path="screencap"):
         print(f'["HD-{x}"] = ' + "{ swip_right_max, -" + str(p) + "},")
 
 
-def process_transparent_pixels(input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
-                               output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill_new")):
+def process_transparent_pixels(
+    input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
+    output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill_new"),
+):
     # 用于处理技能图标背景 不知道为什么透明背景识别失败
     import os
     import shutil
     from PIL import Image
+
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
     for filename in os.listdir(input_folder):
         input_path = os.path.join(input_folder, filename)
         output_path = os.path.join(output_folder, filename)
-        if filename.endswith('.png'):
-            image = Image.open(input_path).convert('RGBA')
+        if filename.endswith(".png"):
+            image = Image.open(input_path).convert("RGBA")
             pixels = image.load()
             for i in range(image.width):
                 for j in range(image.height):

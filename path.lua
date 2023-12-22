@@ -4191,6 +4191,12 @@ path.活动 = function(x)
     end
     path.跳转("首页")
     tap("面板活动")
+    log(x)
+    if string.find(x, "HD-EX") then
+        point["活动导航0"] = point["活动导航EX"]
+    elseif string.find(x, "HD-S") then
+        point["活动导航0"] = point["活动导航S"]
+    end
     if not wait(function()
             if findOne("活动导航0") then return true end
             -- if findOne("跳过剧情") then path.跳过剧情() end
@@ -4639,23 +4645,37 @@ path.活动 = function(x)
     -- car_check()
 
     if not findOne("活动导航0") then return end
-    if not wait(function()
-            -- local level = str2int(x:sub(#x), 1)
-            -- local level2nav = {3, 1, 1, 1, 1, 1, 2, 2, 2, 3}
-            -- tap("活动导航" .. level2nav[level + 1])
-
-            tap("活动导航1")
-            ssleep(.5)
-            if not appear("活动导航0", 1) then return true end
-        end, 5) then
-        return
+    if utf8.left(x, 5) == "HD-EX" then --提取x的前面五个，如果是"HD-EX"，则进入活动的ex界面
+        if not wait(function()
+                tap("活动导航EX")
+                ssleep(.5)
+                if not appear("活动导航0", 1) then return true end
+            end, 5) then
+            return
+        end
+    elseif utf8.left(x, 4) == "HD-S" or utf8.left(x, 5) == "HD-MO" then --提取x的前面4个，如果是"HD-S"，则进入活动的S界面
+        if not wait(function()
+                tap("活动导航S")
+                ssleep(.5)
+                if not appear("活动导航0", 1) then return true end
+            end, 5) then
+            return
+        end
+    else --正常流程进入活动的第一阶段界面
+        if not wait(function()
+                tap("活动导航1")
+                ssleep(.5)
+                if not appear("活动导航0", 1) then return true end
+            end, 5) then
+            return
+        end
     end
 
     --[[ssleep(2)
     swip(x)
     ssleep(.5)]]
 
-    appear("活动导航2")
+    -- appear("活动导航2")
 
     swip(x)
     ssleep(.5)
