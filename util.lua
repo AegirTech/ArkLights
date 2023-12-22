@@ -2095,9 +2095,9 @@ make_account_ui = function(layout, prefix)
 
     newRow(layout)
     addTextView(layout, "信用多买")
-    ui.addEditText(layout, prefix .. "high_priority_goods", "")
+    ui.addEditText(layout, prefix .. "high_priority_goods", "招募 土 装置")
     addTextView(layout, "信用少买")
-    ui.addEditText(layout, prefix .. "low_priority_goods", "")
+    ui.addEditText(layout, prefix .. "low_priority_goods", "碳 碳素")
 
     newRow(layout)
     addTextView(layout, "自动招募")
