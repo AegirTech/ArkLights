@@ -4190,7 +4190,7 @@ path.活动 = function(x)
         return
     end
     path.跳转("首页")
-    tap("面板活动")
+    tap("面板活动2")
     log(x)
     if string.find(x, "HD-EX") then
         point["活动导航0"] = point["活动导航EX"]
