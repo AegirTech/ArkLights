@@ -1713,6 +1713,73 @@ path.宿舍清空 = function()
     for i = 1, 4 do f(i) end
 end
 
+path.基建筛选 = function(tap_list) -- 需要点击筛选名称的列表 ["未进驻","产出设施"]
+    -- 进入筛选界面
+    local all_list = { "未进驻", "产出设施", "功能设施", "自定义设施", "控制中枢", "生产类后勤", "功能类后勤", "恢复类后勤" }
+    if not wait(function()
+            if findOne("筛选取消") then return true end
+            tap("筛选")
+        end, 5) then
+        return
+    end
+
+    if not appear({ "筛选未进驻选中", "筛选未进驻" }, 5) then
+        return
+    end
+
+    if not findOne("筛选未进驻选中") then
+        if not wait(function()
+                if findOne("筛选未进驻选中") then return true end
+                tap("筛选未进驻选中")
+                appear("筛选未进驻选中", .5)
+            end, 5) then
+            return
+        end
+    end
+
+    local 交集 = table.intersect(all_list, tap_list) -- 选中对象
+    local 补集 = table.subtract(all_list, tap_list) -- 不选中对象
+    for _, v in pairs(交集) do
+        -- tap("筛选" .. v)
+        -- tap ("筛选" .. v .. "选中")
+        if not findOne("筛选" .. v .. "选中") then
+            if not wait(function()
+                    if findOne("筛选" .. v .. "选中") then return true end
+                    tap("筛选" .. v)
+                    appear("筛选" .. v .. "选中", .5)
+                end, 5) then
+                return
+            end
+        end
+    end
+
+    for _, v in pairs(补集) do
+        if findOne("筛选" .. v .. "选中") then
+            if not wait(function()
+                    if not findOne("筛选" .. v .. "选中") then return true end
+                    tap("筛选" .. v .. "选中")
+                    appear("筛选" .. v, .5)
+                end, 5) then
+                return
+            end
+        end
+    end
+
+    if not wait(function()
+            if findOne("心情降序") then return true end
+            tap("心情")
+        end, 5) then
+        return
+    end
+
+    if not wait(function()
+            if not findOne("筛选确认") then return true end
+            tap("筛选确认")
+        end, 5) then
+        return
+    end
+end
+
 path.宿舍换班 = function()
     if disable_dorm_shift then return end
     local f
