@@ -5163,9 +5163,29 @@ path.ss活动任务与商店 = function()
     end
 end
 
+path.活动页面寻找 = function(n)
+    local n = n or 1
+    if n > 3 then return false end
+    path.跳转("首页")
+    local l = { "面板活动", "面板活动2", "面板作战" }
+    tap(l[n])
+    disappear("主页", 2)
+    if not wait(function()
+            if findOne("活动导航0") or findOne("活动商店导航") then return true end
+            if l[n] == "面板作战" then
+                tap("面板活动3")
+                ssleep(0.1)
+            end
+            if findOne("跳过剧情") then path.跳过剧情() end
+        end, 5) then
+        path.活动页面寻找(n + 1)
+    end
+    if findOne("活动导航0") or findOne("活动商店导航") then return true end
+end
+
 path.商店搬空 = function()
     local t = os.time()
-    if _G.shop_period == nil or _G.shop_period > 3 or _G.shop_period < 0 then _G.shop_period = 1 end
+    if _G.shop_period == nil or _G.shop_period > 3 or _G.shop_period < 0 then _G.shop_period = 0 end
     if _G.shop_day == nil or _G.shop_day > 4 or _G.shop_day < 0 then _G.shop_day = 0 end
 
     -- 搬商店时间
@@ -5178,9 +5198,9 @@ path.商店搬空 = function()
         return
     end
     log("商店清空任务")
-    path.跳转("首页")
-    -- 进入商店
-    tap("面板活动2")
+
+    if not path.活动页面寻找(3) then return end
+
     if not wait(function()
             if findOne("活动商店导航") then return true end
         end, 10) then
