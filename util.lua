@@ -4080,16 +4080,26 @@ parse_fight_config = function(fight_ui)
 
     -- LMSQ => 龙门市区
     expand_fight = {}
+    local xk2 = table.keys(XinPian)
     for k, v in pairs(fight) do
         if table.includes(table.keys(jianpin2name), v) then
             v = jianpin2name[v]
         elseif table.includes(table.keys(extrajianpin2name), v) then
             v = extrajianpin2name[v]
+        elseif table.includes(table.keys(chinese2name), v) then
+            v = chinese2name[v]
         end
         if table.find({ '活动', 'FC' }, startsWithX(v)) then
             local idx = v:gsub(".-(%d+)$", '%1')
             v = "HD-" .. (idx or '')
             -- log(2731, v, idx)
+        end
+
+        -- 芯片
+        if table.includes(xk2, v) then
+            for _ = 1, 99 do
+                table.extend(expand_fight, XinPian[v])
+            end
         end
 
         -- special fight expand
