@@ -2664,6 +2664,8 @@ check_hot_update = function()
     local skill_md5 = loadConfig("skill_md5", "null")
 
     -- 检查是否需要更新
+    update_source = (custom_update_source and #custom_update_source > 1) and custom_update_source or update_source
+    update_source = update_source:trim()
     local res, code = httpGet(
         update_source .. "/checkUpdate?lr_md5=" .. tostring(file_md5) ..
         "&skill_md5=" .. tostring(skill_md5), 30)
@@ -3044,6 +3046,10 @@ show_debug_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "only_use_ttshitu", "仅使用图鉴打码", true)
+
+    newRow(layout)
+    addTextView(layout, "更新源")
+    ui.addEditText(layout, "custom_update_source", nil)
 
     newRow(layout)
     addTextView(layout, "审判庭服务地址")
