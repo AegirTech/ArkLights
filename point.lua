@@ -88,6 +88,8 @@ point = {
         level = "17",
         package = "com.hypergryph.arknights.bilibili",
     },
+    b服年度报告 = { package = "com.hypergryph.arknights.bilibili", text = "该内容不再展示" },
+    b服年度报告关闭 = { class = "android.widget.ImageView", id = "com.hypergryph.arknights.bilibili:id/iv_gs_announcement_close", level = "5", package = "com.hypergryph.arknights.bilibili" },
     -- B服安全验证关闭 = {text = "关闭验证"},
     -- 选点验证码识别区域 = {794, 348, 1138, 745},
     月饼确认 = "1012|967|FF6411",

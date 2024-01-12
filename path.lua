@@ -394,7 +394,11 @@ path.base = {
 }
 
 path.bilibili_login = {
-
+    b服年度报告 = function()
+        tap("b服年度报告")
+        ssleep(0.5)
+        tap("b服年度报告关闭")
+    end,
     同意协议 = function() return path.fallback.同意协议() end,
     活动公告返回 = function() return path.fallback.活动公告返回() end,
     同意并继续 = function()
@@ -602,6 +606,11 @@ path.bilibili_login_change = update(path.bilibili_login, {
 }, nil, true)
 
 path.login = {
+    b服年度报告 = function()
+        tap("b服年度报告")
+        ssleep(0.5)
+        tap("b服年度报告关闭")
+    end,
     同意协议 = function() return path.fallback.同意协议() end,
     活动公告返回 = function() return path.fallback.活动公告返回() end,
 
