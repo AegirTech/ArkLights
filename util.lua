@@ -3140,7 +3140,7 @@ show_debug_ui = function()
 
     newRow(layout)
     addTextView(layout, "搬商店时间在活动")
-    ui.addSpinner(layout, "shop_period", { "结束前", "结束后", "结束前后", "每一次" }, 1)
+    ui.addSpinner(layout, "shop_period", { "结束前", "结束后", "结束前后", "每一次" }, 0)
     addTextView(layout, "的第")
     ui.addSpinner(layout, "shop_day", { "1", "2", "3", "4", "5" }, 0)
     addTextView(layout, "天当天")
