@@ -1858,7 +1858,15 @@ path.宿舍换班 = function()
                 -- 慢机仍会漏换， miui13也是
                 -- 加了心情检测这儿还要等？
                 ssleep(0.25)
-                tapAll(operator)
+                -- tapAll(operator)
+                for _, v in pairs(operator) do
+                    tap(v)
+                    training_check_time = training_check_time or 0.15
+                    ssleep(training_check_time)
+                    if disable_training_shift and is_training() then -- 训练室干员跳过
+                        tap(v)
+                    end
+                end
                 disappear("干员未选中", 2)
             end, 5) then
             return

@@ -3229,6 +3229,16 @@ show_debug_ui = function()
         "基建离开前加一次基建收获", true)
 
     newRow(layout)
+    addTextView(layout, "--------------------基建设置--------------------")
+
+    newRow(layout)
+    ui.addCheckBox(layout, "disable_training_shift", "基建换班忽略训练室", false)
+
+    newRow(layout)
+    addTextView(layout, "基建训练室检测延迟")
+    ui.addEditText(layout, "training_check_time", '0.15')
+
+    newRow(layout)
     addTextView(layout, "基建换班心情阈值")
     ui.addEditText(layout, "shift_min_mood", '12')
 

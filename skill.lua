@@ -1128,3 +1128,9 @@ ygStaitonColor = {
     -- 'ffffffff', -- 控制,
     -- 'ffffffff', -- 会客,
 }
+
+is_training = function()
+    local ret = find_color({ scale(46), scale(642), scale(172), scale(1026) }, "72001F", 0, 1)
+    ret = ret and true or false
+    return ret
+end
