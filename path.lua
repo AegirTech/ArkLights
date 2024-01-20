@@ -5302,6 +5302,93 @@ path.商店搬空 = function()
     end
 end
 
+path.故事解锁 = function()
+    log("故事集剧情解锁")
+    if not path.活动页面寻找(3) then return end
+    if not wait(function()
+            if findOne("故事集导航") then return true end
+        end, 10) then
+        return path.跳过剧情()
+    end
+
+    if not wait(function()
+            tap("故事集导航")
+            if not findOne("故事集导航") then return true end
+        end, 5) then
+    end
+
+    disappear("正在提交反馈至神经", network_timeout)
+
+    -- 进入故事集页面
+
+    -- 边栏宽度 0-260 143-底
+    ssleep(1)
+    if not wait(function()
+            local tc = getColor(360, 940)
+            log(tc)
+            if tc == "EDEDED" or tc == "313131" then return true end
+        end, 5) then
+    end
+    local 故事集页面左列特征点 = { math.random(10, scale(260)), math.random(scale(145), screen.height) }
+    local 故事集主页颜色 = getColor(故事集页面左列特征点[1], 故事集页面左列特征点[2])
+    log(故事集页面左列特征点, 故事集主页颜色)
+    -- 防止各种掉帧等导致卡在领取等页面
+    回到故事集主页 = function()
+        if not wait(function()
+                if cmpColorEx(故事集页面左列特征点[1], 故事集页面左列特征点[2], str(故事集主页颜色), default_findcolor_confidence) then return true end
+                tap(故事集页面左列特征点)
+                ssleep(0.2)
+            end, 10) then
+        end
+    end
+
+    local 向左滑动 = function() -- 左边3个 右边3个 直接滑动到底
+        gesture({
+            {
+                point = { { screen.width * 0.95, screen.height / 2 }, { screen.width * 0.1, screen.height / 2 } },
+                start = 0,
+                duration = 1500,
+            },
+        })
+    end
+    -- 未解锁颜色 313131 起始 360,940 间隔 485 结束 1720 940
+    -- 边栏宽度 0-260 143-底
+    local t = os.time()
+    local gy = scale(940)
+    for i = 0, 5 do
+        if os.time() - t > 2 * 60 then -- 任务总时长2分钟
+            log("故事集任务超时")
+            return
+        end
+        回到故事集主页()
+
+        -- if getColor(故事集页面左列特征点[1], 故事集页面左列特征点[2]) ~= 故事集主页颜色 then
+        --     log("故事集主页颜色异常")
+        --     return
+        -- end
+
+        if i == 3 then
+            ssleep(1)
+            向左滑动()
+            ssleep(2)
+        end
+        ssleep(1)
+        local gx = i < 3 and scale(360) + scale(485) * i or scale(1720) - scale(485) * (5 - i)
+        local tap_color = getColor(gx, gy)
+        log(gx, gy, tap_color)
+        if tap_color == "313131" then -- 未解锁
+            log(i, "未解锁")
+            tap({ gx, gy })
+            disappear("正在提交反馈至神经", network_timeout)
+            if appear("故事集解锁确认页面", 3) then
+                tap("故事集解锁确认按钮")
+            end
+            disappear("故事集解锁确认按钮", network_timeout)
+        end
+    end
+end
+
+
 path.活动商店 = function()
     -- path.跳转("邮件")
     path.跳转("首页")
