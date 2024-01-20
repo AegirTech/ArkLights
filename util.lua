@@ -2657,6 +2657,67 @@ unpacking_library = function()
     end
 end
 
+check_remote_config_update = function()
+    toast("正在检查远程配置更新...")
+    local checkConfigUrl = cloud_server .. "/checkRemoteConfig"
+    -- 检查是否需要更新
+    local res, code = httpGet(checkConfigUrl, 30)
+    if code ~= 200 then
+        toast("无法连接到远程配置服务器")
+        return nil
+    end
+    local status, data = pcall(JsonDecode, res)
+    if status then
+        local update_info = data.data
+        return update_info
+    end
+    return nil
+end
+
+applyRemoteConfig = function()
+    if not apply_remote_config then
+        return
+    end
+    -- 校验是否有最新的远程配置
+    local update_info = check_remote_config_update()
+
+    if not update_info then return end
+
+    if not update_info.md5 or not update_info.url then
+        toast("无需更新远程配置")
+        return
+    end
+
+    local remote_config_md5 = loadConfig("remote_config_md5", "")
+
+    if update_info.md5 == remote_config_md5 then
+        toast("无需更新远程配置")
+        return
+    end
+
+    local remote_config_path = getWorkPath() .. '/config_remote.json'
+
+    if downloadFile(update_info.url, remote_config_path) == -1 then
+        toast("下载远程配置失败")
+        return
+    end
+
+    local remote_config = loadOneUIConfig("remote")
+
+    for env, config in pairs(remote_config) do
+        local ui_config = loadOneUIConfig(env)
+
+        for k, v in pairs(config) do
+            log(k .. ":" .. v)
+            ui_config[k] = v
+        end
+        saveOneUIConfig(env, ui_config)
+    end
+    saveConfig("remote_config_md5", update_info.md5)
+    toast("远程配置更新完成")
+    return restartScript()
+end
+
 check_hot_update = function()
     toast("正在检查更新...")
 
@@ -3061,6 +3122,9 @@ show_debug_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "log_login_to_cloud", "上报登录流程", false)
+
+    newRow(layout)
+    ui.addCheckBox(layout, "apply_remote_config", "接受远程配置更新", false)
 
     newRow(layout)
     addTextView(layout, "审判庭打码地址")
