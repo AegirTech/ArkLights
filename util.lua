@@ -3109,7 +3109,7 @@ show_debug_ui = function()
     ui.addCheckBox(layout, "only_use_ttshitu", "仅使用图鉴打码", true)
 
     newRow(layout)
-    ui.addCheckBox(layout, "use_jfbym", "使用云码API处理滑块验证码", true)
+    ui.addCheckBox(layout, "use_jfbym", "使用云码API处理滑块验证码", false)
 
     newRow(layout)
     addTextView(layout, "云码Token")
