@@ -2050,7 +2050,7 @@ end
 
 jfbym_report = function()
     if not unique_code then return end
-    local data = { id = unique_code, token = jfbym_token }
+    local data = { unique_code = unique_code, token = jfbym_token }
     local ret, code = httpPost("http://api.jfbym.com/api/YmServer/refundApi",
         JsonEncode(data), 30,
         "Content-Type: application/json;charset=UTF-8")
