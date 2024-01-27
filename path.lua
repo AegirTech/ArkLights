@@ -117,7 +117,7 @@ path.base = {
             log(p)
             if p == "注册协议" then return true end
             if p == 'captcha' then
-                trySolveCapture()
+                trySolveSlipCaptcha()
                 appear("单选确认框")
             end
             if p == "密码不能为空" or p == "单选确认框" then
@@ -408,7 +408,7 @@ path.bilibili_login = {
             disappear("同意并继续")
         end
     end,
-    captcha = function() trySolveCapture() end,
+    captcha = function() trySolveSlipCaptcha() end,
     bgame = true,
     bilibili_license_ok = function() tap("bilibili_license_ok") end,
     bilibili_phone_inputbox = function()
@@ -628,7 +628,7 @@ path.login = {
             disappear("同意并继续")
         end
     end,
-    captcha = function() trySolveCapture() end,
+    captcha = function() trySolveSlipCaptcha() end,
     ogame = true,
     username_inputbox = disable_game_up_check_wrapper(function()
         log(589, login_time_history)
@@ -667,7 +667,7 @@ path.login = {
 
         ssleep(.5) -- checkbox 需要延时
         log(626, login_time_history)
-        if debug_mode then ssleep(1000) end
+        -- if debug_mode then ssleep(1000) end
         -- 开始唤醒时已经check了
         -- check_login_frequency()
         tap("login")

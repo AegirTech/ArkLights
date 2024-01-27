@@ -62,6 +62,7 @@ point = {
     产业合作洽谈会 = "175|114|1FBCB4,1788|139|FFFFFF",
     产业合作洽谈会策略 = { 1674, 945 },
     -- "1012|969|FF671D",
+    滑块验证节点 = { class = "android.widget.Image" },
     B服安全验证框 = { class = "android.widget.RelativeLayout" },
     B服安全验证 = { text = "安全验证" },
     B服安全验证320DPI = "894|168|23ADE5,876|168|FFFFFF,891|159|FFFFFF,895|177|FFFFFF,907|165|FFFFFF,942|163|23ADE5",
@@ -513,8 +514,8 @@ point = {
     --   package = "com.hypergryph.arknights",
     -- },
     captcha = function()
-        if findOne({ id = 'captcha', package = appid }) then
-            return findOne({ class = "android.webkit.WebView", package = appid })
+        if findOne({ id = 'captcha' }) then
+            return findOne({ class = "android.webkit.WebView" })
         end
     end,
     -- captcha = "604|721|00D266,612|721|F9F9F9,594|721|F9F9F9",

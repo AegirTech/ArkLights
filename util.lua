@@ -1631,7 +1631,7 @@ wait_game_up = function(retry)
         "同意并继续",
     }, 5)
     if p == "同意并继续" then path.bilibili_login[p]() end
-    trySolveCapture()
+    trySolveSlipCaptcha()
     checkScreenLock()
     log("wait_game_up next", retry)
     disable_game_up_check = prev
@@ -3107,6 +3107,13 @@ show_debug_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "only_use_ttshitu", "仅使用图鉴打码", true)
+
+    newRow(layout)
+    ui.addCheckBox(layout, "use_jfbym", "使用云码API处理滑块验证码", true)
+
+    newRow(layout)
+    addTextView(layout, "云码Token")
+    ui.addEditText(layout, "jfbym_token", "")
 
     newRow(layout)
     addTextView(layout, "更新源")

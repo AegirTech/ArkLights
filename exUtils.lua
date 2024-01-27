@@ -1955,3 +1955,104 @@ find_color = function(v, color, dir, condifence)
         return nil
     end
 end
+
+getCaptchaBox = function()
+    if findOne("滑块验证节点") then
+        local box = findOne("滑块验证节点")
+        log("box", box)
+        if not box then return end
+        box = box.bounds
+        return box
+    end
+    if findOne("captcha") then
+        local box = findOne("captcha")
+        log("box", box)
+        if not box then return end
+        box = box.bounds
+        return box
+    end
+end
+
+trySolveSlipCaptcha = function()
+    if not use_jfbym then trySolveCapture() end
+    if not findOne("captcha") then return end
+    SolveSlipCaptcha(jfbym_token, getCaptchaBox())
+    if not disappear("captcha", 5) then
+        SolveSlipCaptcha(jfbym_token, getCaptchaBox())
+    end
+    if not appear("realgame", 5) then
+        jfbym_report()
+        local msg =
+        "请在2分钟内手动滑动验证码，超时将暂时跳过该账号"
+        toast(msg)
+        captureqqimagedeliver("WARN", "触发图灵测试",
+            table.join(qqmessage, ' ') .. ' ' .. msg)
+        if not appear("realgame", 120) then
+            back()
+            if not appear("realgame", 5) then closeapp(appid) end
+            stop("验证码", 'next')
+        end
+    end
+end
+
+-- 滑块验证码使用 https://console.jfbym.com/
+SolveSlipCaptcha = function(token, rect)
+    if not rect then return end
+    if not token then return end
+    local img = getWorkPath() .. "/Captcha.jpg"
+    snapShot(img, rect.l, rect.t, rect.r, rect.b)
+    local img_base64 = base64(img)
+    local data = {
+        extra = false,
+        token = token,
+        type = "22222",
+        image = img_base64,
+    }
+    local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
+        30, "Content-Type: application/json;charset=UTF-8")
+    local distance = 0
+    local status, data = pcall(JsonDecode, res)
+    data = data or {}
+    if get(data, "code") ~= 10000 then
+        return
+    end
+    unique_code = get(data, "data", "unique_code") or ""
+    distance = tonumber(get(data, "data", "data")) or 0
+    log(distance)
+    if distance == 0 then return end
+    local sx, sy = scale(702), scale(686)
+    --  修正偏移
+    distance = distance + scale(5)
+    log(sx, sy)
+    -- 用于模拟滑动轨迹
+    gesture({
+        {
+            point = {
+                { sx,                                        sy }, { sx + distance, sy },
+                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance + scale(math.random(5, 20)), sy },
+                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance + scale(math.random(5, 20)), sy },
+                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance - scale(math.random(5, 20)), sy },
+                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance - scale(math.random(5, 20)), sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+                { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+                { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+                { sx + distance, sy },
+            },
+            start = 0,
+            duration = 1000,
+        },
+    })
+    ssleep(1.5) -- 等待验证码关闭或者重试
+end
+
+jfbym_report = function()
+    if not unique_code then return end
+    local data = { id = unique_code, token = jfbym_token }
+    local ret, code = httpPost("http://api.jfbym.com/api/YmServer/refundApi",
+        JsonEncode(data), 30,
+        "Content-Type: application/json;charset=UTF-8")
+    log(ret, code)
+end
