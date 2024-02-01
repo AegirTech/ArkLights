@@ -4809,7 +4809,7 @@ path.活动 = function(x)
         end
     else --正常流程进入活动的第一阶段界面
         if not wait(function()
-                tap("活动导航1")
+                tap("活动导航0")
                 ssleep(.5)
                 if not appear("活动导航0", 1) then return true end
             end, 5) then
@@ -5248,6 +5248,7 @@ path.商店搬空 = function()
 
     if not findOne("商店主页") then return end
     local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], point["商店物品间隔"][1], point["商店物品间隔"][2]
+    回到商店主页()
     while true do
         if os.time() - t > 4 * 60 then -- 任务总时长4分钟
             log("商店任务超时")
