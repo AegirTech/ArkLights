@@ -3566,25 +3566,53 @@ show_extra_ui = function()
     -- addTextView(layout,
     --             [[用于刷黄绿票，或刷出指定标签。使用加急券在第一个公招位反复执行“公开招募”任务，沿用脚本主页的“自动招募”设置。“自动招募”只勾“其他”时，刷出保底标签就停；只勾“其他”、“4”时，刷出保底小车、保底5星、资深就停；其余同理。如果想刷到指定标签就停，则“保留标签”填期望标签（例如填“削弱 快速复活”）。]])
 
-    -- newRow(layout)
-    -- addButton(layout, layout .. "_hd2_shop", "遗尘漫步任务与商店",
-    --           make_jump_ui_command(layout, nil,
-    --                                "extra_mode='活动任务与商店';lock:remove(main_ui_lock)"))
-    --
-    -- addButton(layout, layout .. "_hd2_shop_multi",
-    --           "遗尘漫步任务与商店多号",
-    --           make_jump_ui_command(layout, nil,
-    --                                "extra_mode='活动任务与商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addTextView(layout, [[===========采购中心===========]])
 
-    -- newRow(layout)
-    -- addButton(layout, layout .. "_hd3_shop", "吾导先路任务与商店",
-    --           make_jump_ui_command(layout, nil,
-    --                                "extra_mode='活动2任务与商店';lock:remove(main_ui_lock)"))
-    --
-    -- addButton(layout, layout .. "_hd3_shop_multi",
-    --           "吾导先路任务与商店多号",
-    --           make_jump_ui_command(layout, nil,
-    --                                "extra_mode='活动2任务与商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addTextView(layout, ">>>>>>>>>>>绿票商店购买")
+    ui.addCheckBox(layout, "green_ticket_shop", "", true)
+
+    green_ticket_shop_good = { "寻访凭证", "合成玉", "龙门币", "家具零件", "招聘许可", "中级作战记录", "赤金", "寻访凭证2" }
+
+    local max_checkbox_one_row = 4
+    for k, v in pairs(green_ticket_shop_good) do
+        if k % max_checkbox_one_row == 1 or k == 8 then
+            newRow(layout, "green_ticket_shop_row" .. k)
+        end
+        ui.addCheckBox(layout, "green_ticket_shop_" .. k, v, true)
+    end
+
+    newRow(layout)
+    addTextView(layout, ">>>>>>>>>>>黄票商店购买")
+    ui.addCheckBox(layout, "yellow_ticket_shop", "", false)
+
+    yellow_ticket_shop_good = { "寻访凭证", "中坚寻访凭证", "模组数据块" }
+
+    for k, v in pairs(yellow_ticket_shop_good) do
+        if k % max_checkbox_one_row == 1 then
+            newRow(layout, "yellow_ticket_shop_row" .. k)
+        end
+        ui.addCheckBox(layout, "yellow_ticket_shop_" .. k, v, false)
+    end
+
+    newRow(layout)
+    addTextView(layout, ">>>>>>>>>>>红票商店购买")
+    ui.addCheckBox(layout, "red_ticket_shop", "", false)
+
+    red_ticket_shop_good = { "模组数据块" }
+
+    for k, v in pairs(red_ticket_shop_good) do
+        if k % max_checkbox_one_row == 1 then
+            newRow(layout, "red_ticket_shop_row" .. k)
+        end
+        ui.addCheckBox(layout, "red_ticket_shop_" .. k, v, false)
+    end
+
+    newRow(layout)
+    addButton(layout, nil, "执行采购中心商店购买",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='采购中心商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     -- newRow(layout)
     -- addButton(layout, layout .. "_speedrun", "每日任务速通（待修）",
