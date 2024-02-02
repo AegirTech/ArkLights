@@ -63,6 +63,10 @@ ArkLights is the <b> lightning fast</b> and <b> fully managed</b> Arknights game
 - 唯一识别码
 - 多账号数量
 
+## 注意事项
+
+从2024/2/1起，后续的更新将不再开源，错误反馈依旧可以在issue中提出。
+
 ## 其他相关项目
 
 - [伊比利亚审判庭](https://ark.aegirtech.com/) 在线全日制云端托管，解放你的双手，使用本服务亦是对开发的支持
