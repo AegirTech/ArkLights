@@ -4336,7 +4336,7 @@ path.活动 = function(x)
         return
     end
     path.跳转("首页")
-    tap("面板活动")
+    tap("面板活动2")
     log(x)
     if string.find(x, "HD-EX") then
         point["活动导航0"] = point["活动导航EX"]
@@ -7975,4 +7975,9 @@ path.采购中心商店 = function()
     绿票商店购买()
     黄票商店购买()
     红票商店购买()
+end
+
+path.生息沙洲遗闻 = function()
+    load(sand_code)()
+    -- 沙洲遗闻()
 end

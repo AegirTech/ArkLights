@@ -3493,9 +3493,21 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "sand_fire_unstop", "打满也不结束", false)
     newRow(layout)
 
-    addButton(layout, nil, "活动任务与商店（尖灭）",
+    -- addButton(layout, nil, "活动任务与商店（尖灭）",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='活动任务与商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addButton(layout, nil, "生息盐酸-沙洲遗闻",
         make_jump_ui_command(layout, nil,
-            "extra_mode='活动任务与商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+            "extra_mode='生息沙洲遗闻';lock:remove(main_ui_lock)"))
+
+    newRow(layout)
+    ui.addCheckBox(layout, "sand_checkpoint", "进入关卡", true)
+    ui.addCheckBox(layout, "sand_missions", "做奇遇任务", false)
+
+    newRow(layout)
+    addTextView(layout, "CODE")
+    ui.addEditText(layout, "sand_code", "")
 
     newRow(layout)
     addButton(layout, nil, "傀影与猩红孤钻",
