@@ -29,7 +29,11 @@
     if 检查代币数量() then
         return true
     end
-    开始演算()
+    if not request_memory_clean() then
+        Tales_within_the_sand.开始演算()
+    else
+        path.跳转("首页")
+    end
 end
 
 生息跳转 = function()
