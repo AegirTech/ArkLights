@@ -19,6 +19,7 @@
         tap("生息演算主页进入")
         删除存档()
     end
+    掉线状态判断()
     if 检查代币数量() then
         return true
     end
@@ -36,6 +37,7 @@ end
             tap("主页长期探索_生息演算")
             if findOne("生息演算主页进入") then return true end
         end, 5) then
+        log(55)
         path.跳过剧情()
     end
     if findOne("生息演算主页进入") then return true end
@@ -50,8 +52,11 @@ end
     -- 剧情部分
     会聚之地()
     appear("生息底栏烹饪按钮", 3)
-
+    掉线状态判断()
     if sand_missions then
+        if not appear("生息底栏烹饪按钮", 10) then
+            return 沙洲遗闻()
+        end
         -- 重置地图位置
         if not wait(function()
                 tap("生息演算左上角返回")
@@ -66,8 +71,12 @@ end
         end
         生息演算奇遇节点()
     end
+    掉线状态判断()
 
     if sand_checkpoint then
+        if not appear("生息底栏烹饪按钮", 10) then
+            return 沙洲遗闻()
+        end
         -- 重置地图位置
         if not wait(function()
                 tap("生息演算左上角返回")
@@ -106,16 +115,52 @@ end
     -- ssleep(1000)
 end
 
-开始演算_剧情跳过 = function()
+开始演算_新手教程跳过 = function()
 
+end
+
+掉线状态判断 = function()
+    if findOne("生息演算关卡左上角退出") then
+        -- 不清楚某些情况会没结束的
+        if not wait(function()
+                if findOne("生息底栏烹饪按钮") then
+                    return true
+                end
+                appearTap("生息演算关卡左上角退出", 0.1)
+                tap("生息演算_确认按钮")
+                if findOne("生息底栏烹饪按钮") then
+                    return true
+                end
+            end, 20) then
+        end
+        return path.生息沙洲遗闻()
+    end
+    if findOne("生息演算开始行动") then
+        tap("生息演算_全局_返回")
+        return path.生息沙洲遗闻()
+    end
+    if findAny({
+            "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+            "手机验证码登录",
+        }) then
+        return path.生息沙洲遗闻()
+    end
+    if not findAny({ "生息演算主页进入", "生息底栏烹饪按钮", }) then
+        -- 未知页面
+        return path.生息沙洲遗闻()
+    end
 end
 
 删除存档 = function()
     log("删除存档")
+    掉线状态判断()
     if not findOne("生息底栏烹饪按钮") then
         tap("生息演算主页进入")
     end
     appear("生息底栏烹饪按钮", 3)
+    if not appear("生息底栏烹饪按钮", 10) then
+        return 沙洲遗闻()
+    end
     if not wait(function()
             if not appear("生息底栏弹出页面", 0.1) then
                 tap("生息底栏更多按钮")
@@ -163,6 +208,7 @@ end
 end
 
 生息演算奇遇节点 = function()
+    掉线状态判断()
     生息演算地图缩放(true)
     ssleep(0.5)
     if not findOne("生息底栏烹饪按钮") then
@@ -202,6 +248,7 @@ end
 end
 
 灌木区 = function()
+    掉线状态判断()
     if not appear("生息演算灌木区", 3) then
         return
     end
@@ -229,10 +276,6 @@ end
             end
         end, 20) then
     end
-end
-
-进入下一天 = function()
-
 end
 
 会聚之地 = function()
@@ -282,13 +325,13 @@ end
 
 下一天至结算 = function()
     log("下一天至结算")
-
+    掉线状态判断()
     if not appear("生息底栏烹饪按钮", 5) then
         return
     end
     t = os.time()
     while true do
-        if os.time() - t > 200 then -- 防止超时
+        if os.time() - t > 30 then -- 防止超时
             log("超时")
             break
         end
