@@ -5,9 +5,12 @@
 
 沙洲遗闻 = function()
     log("沙洲遗闻开始")
-    if findOne("生息演算左上角返回") then
+    if findOne("生息底栏烹饪按钮") then
         log("检测到在游戏内")
         tap("生息演算左上角返回")
+        if findOne("生息底栏烹饪按钮") then
+            tap("生息演算_全局_返回")
+        end
         appear("生息演算主页进入")
     end
     if not findOne("生息演算主页进入") then
@@ -91,7 +94,27 @@ end
         end
 
         -- 进入任意一个关卡
-        灌木区()
+        生息关卡进入("生息演算灌木区")
+
+        if not appear("生息底栏烹饪按钮", 10) then
+            return 沙洲遗闻()
+        end
+
+        掉线状态判断()
+
+        -- 重置地图位置
+        if not wait(function()
+                tap("生息演算左上角返回")
+                if findOne("生息演算主页进入") then return true end
+            end, 5) then
+        end
+        if not wait(function()
+                if findOne("生息底栏烹饪按钮") then return true end
+                tap("生息演算主页进入")
+                ssleep(0.3)
+            end, 5) then
+        end
+        生息关卡进入("生息演算捕猎区")
     end
 
     -- 检查
@@ -247,12 +270,13 @@ end
     end
 end
 
-灌木区 = function()
+生息关卡进入 = function(关卡)
     掉线状态判断()
-    if not appear("生息演算灌木区", 3) then
+    log(关卡)
+    if not appear(关卡, 3) then
         return
     end
-    tap("生息演算灌木区")
+    tap(关卡)
     -- 进入关卡
     if not wait(function()
             appearTap("生息演算进入关卡", 0.1)
