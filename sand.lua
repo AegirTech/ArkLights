@@ -2,6 +2,7 @@
 --               生息演算
 --               沙洲遗闻
 -- ===========================================
+Tales_within_the_sand = {}
 
 沙洲遗闻 = function()
     log("沙洲遗闻开始")
@@ -18,15 +19,15 @@
     end
     if not findOne("生息演算主页进入") then
         log("未找到主页，从头开始")
-        生息跳转()
+        Tales_within_the_sand.生息跳转()
     end
     if findOne("生息演算未结算") then
         log("存在未结算")
         tap("生息演算主页进入")
-        删除存档()
+        Tales_within_the_sand.删除存档()
     end
-    掉线状态判断()
-    if 检查代币数量() then
+    Tales_within_the_sand.掉线状态判断()
+    if Tales_within_the_sand.检查代币数量() then
         return true
     end
     if not request_memory_clean() then
@@ -36,7 +37,7 @@
     end
 end
 
-生息跳转 = function()
+Tales_within_the_sand.生息跳转 = function()
     path.跳转("首页")
     tap("面板作战")
     -- disappear("主页", 3)
@@ -51,15 +52,15 @@ end
     if findOne("生息演算主页进入") then return true end
 end
 
-开始演算 = function()
+Tales_within_the_sand.开始演算 = function()
     log("开始演算")
     if findOne("生息演算主页进入") then
         tap("生息演算主页进入")
     end
     -- 剧情部分
-    会聚之地()
+    Tales_within_the_sand.会聚之地()
     appear("生息底栏烹饪按钮", 3)
-    掉线状态判断()
+    Tales_within_the_sand.掉线状态判断()
     if sand_missions then
         if not appear("生息底栏烹饪按钮", 10) then
             return 沙洲遗闻()
@@ -76,9 +77,9 @@ end
                 ssleep(0.3)
             end, 5) then
         end
-        生息演算奇遇节点()
+        Tales_within_the_sand.生息演算奇遇节点()
     end
-    掉线状态判断()
+    Tales_within_the_sand.掉线状态判断()
 
     if sand_checkpoint then
         if not appear("生息底栏烹饪按钮", 10) then
@@ -98,12 +99,12 @@ end
         end
 
         -- 进入任意一个关卡
-        生息关卡进入("生息演算灌木区")
+        Tales_within_the_sand.生息关卡进入("生息演算灌木区")
         if not appear("生息底栏烹饪按钮", 10) then
             return 沙洲遗闻()
         end
 
-        掉线状态判断()
+        Tales_within_the_sand.掉线状态判断()
 
         -- 重置地图位置
         if not wait(function()
@@ -117,7 +118,7 @@ end
                 ssleep(0.3)
             end, 5) then
         end
-        生息关卡进入("生息演算捕猎区")
+        Tales_within_the_sand.生息关卡进入("生息演算捕猎区")
     end
 
     -- 检查
@@ -126,11 +127,11 @@ end
     end
 
     -- 结算
-    下一天至结算()
+    Tales_within_the_sand.下一天至结算()
 
     -- 退出活动重开
     if appear("生息底栏烹饪按钮", 5) then
-        删除存档()
+        Tales_within_the_sand.删除存档()
     else
         return 沙洲遗闻()
     end
@@ -141,13 +142,13 @@ end
     -- ssleep(1000)
 end
 
-掉线状态判断 = function()
+Tales_within_the_sand.掉线状态判断 = function()
     if findOne("生息演算_其他界面1") then
-        return path.生息沙洲遗闻()
+        return 沙洲遗闻()
     end
     if findOne("主页长期探索_生息演算") then
         tap("主页长期探索_生息演算")
-        return path.生息沙洲遗闻()
+        return 沙洲遗闻()
     end
     if findOne("生息演算关卡左上角退出") then
         -- 不清楚某些情况会没结束的
@@ -162,27 +163,27 @@ end
                 end
             end, 20) then
         end
-        return path.生息沙洲遗闻()
+        return 沙洲遗闻()
     end
     if findOne("生息演算开始行动") then
         tap("生息演算_全局_返回")
-        return path.生息沙洲遗闻()
+        return 沙洲遗闻()
     end
     if findAny({
             "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
             "手机验证码登录",
         }) then
-        return path.生息沙洲遗闻()
+        return 沙洲遗闻()
     end
     if not findAny({ "生息演算主页进入", "生息底栏烹饪按钮", }) then
         -- 未知页面
-        return path.生息沙洲遗闻()
+        return 沙洲遗闻()
     end
 end
 
-删除存档 = function()
+Tales_within_the_sand.删除存档 = function()
     log("删除存档")
-    掉线状态判断()
+    Tales_within_the_sand.掉线状态判断()
     if not findOne("生息底栏烹饪按钮") then
         tap("生息演算主页进入")
     end
@@ -199,11 +200,11 @@ end
             appearTap("生息演算确认删除存档", 0.1)
             if appear("生息演算主页进入", 0.5) then return true end
         end, 5) then
-        删除存档()
+        Tales_within_the_sand.删除存档()
     end
 end
 
-检查代币数量 = function()
+Tales_within_the_sand.检查代币数量 = function()
     log("获取代币数量")
     if not findOne("生息演算主页进入") then
         return false
@@ -220,7 +221,7 @@ end
     end
 end
 
-生息演算地图缩放 = function(min)
+Tales_within_the_sand.生息演算地图缩放 = function(min)
     log("生息演算地图缩放", min)
     if min then
         Apoint = { point["生息演算缩放开始"], point["生息演算缩放结束"], point["生息演算缩放结束"] }
@@ -236,9 +237,9 @@ end
     })
 end
 
-生息演算奇遇节点 = function()
-    掉线状态判断()
-    生息演算地图缩放(true)
+Tales_within_the_sand.生息演算奇遇节点 = function()
+    Tales_within_the_sand.掉线状态判断()
+    Tales_within_the_sand.生息演算地图缩放(true)
     ssleep(0.5)
     if not findOne("生息底栏烹饪按钮") then
         log("生息演算奇遇节点未找到底栏")
@@ -276,8 +277,8 @@ end
     end
 end
 
-生息关卡进入 = function(关卡)
-    掉线状态判断()
+Tales_within_the_sand.生息关卡进入 = function(关卡)
+    Tales_within_the_sand.掉线状态判断()
     log(关卡)
     if not appear(关卡, 3) then
         return
@@ -314,7 +315,7 @@ end
     end
 end
 
-会聚之地 = function()
+Tales_within_the_sand.会聚之地 = function()
     log("会聚之地")
     -- 等待加载到会聚之地
     appear("生息演算会聚之地", 10)
@@ -359,9 +360,9 @@ end
     log("会聚之地结束")
 end
 
-下一天至结算 = function()
+Tales_within_the_sand.下一天至结算 = function()
     log("下一天至结算")
-    掉线状态判断()
+    Tales_within_the_sand.掉线状态判断()
     if not appear("生息底栏烹饪按钮", 5) then
         return
     end
