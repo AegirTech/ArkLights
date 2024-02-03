@@ -5,6 +5,9 @@
 
 沙洲遗闻 = function()
     log("沙洲遗闻开始")
+    if findOne("主页长期探索_生息演算") then
+        tap("主页长期探索_生息演算", 0.1)
+    end
     if findOne("生息底栏烹饪按钮") then
         log("检测到在游戏内")
         tap("生息演算左上角返回")
@@ -32,19 +35,16 @@ end
 生息跳转 = function()
     path.跳转("首页")
     tap("面板作战")
-    disappear("主页", 3)
-    tap("主页长期探索")
+    -- disappear("主页", 3)
     if not wait(function()
-            tap("主页长期探索")
-            appear("主页长期探索_生息演算", 3)
-            tap("主页长期探索_生息演算")
+            appearTap("主页长期探索", 0.1)
+            appearTap("主页长期探索_生息演算", 0.1)
             if findOne("生息演算主页进入") then return true end
-        end, 5) then
+        end, 10) then
         log(55)
         path.跳过剧情()
     end
     if findOne("生息演算主页进入") then return true end
-    log(1)
 end
 
 开始演算 = function()
@@ -95,7 +95,6 @@ end
 
         -- 进入任意一个关卡
         生息关卡进入("生息演算灌木区")
-
         if not appear("生息底栏烹饪按钮", 10) then
             return 沙洲遗闻()
         end
@@ -138,11 +137,14 @@ end
     -- ssleep(1000)
 end
 
-开始演算_新手教程跳过 = function()
-
-end
-
 掉线状态判断 = function()
+    if findOne("生息演算_其他界面1") then
+        return path.生息沙洲遗闻()
+    end
+    if findOne("主页长期探索_生息演算") then
+        tap("主页长期探索_生息演算")
+        return path.生息沙洲遗闻()
+    end
     if findOne("生息演算关卡左上角退出") then
         -- 不清楚某些情况会没结束的
         if not wait(function()
@@ -285,7 +287,7 @@ end
             if findOne("生息演算关卡左上角退出") then
                 return true
             end
-        end, 5) then
+        end, 10) then
     end
 
     -- 退出关卡
@@ -294,11 +296,17 @@ end
                 return true
             end
             appearTap("生息演算关卡左上角退出", 0.1)
+            -- tap("生息演算_全局_返回")
             tap("生息演算_确认按钮")
+
+            if findOne("生息演算主页进入") then
+                return true
+            end
+
             if findOne("生息底栏烹饪按钮") then
                 return true
             end
-        end, 20) then
+        end, 30) then
     end
 end
 
@@ -381,6 +389,13 @@ end
         if m > 1 then
             break
         end
+
+        if findOne("生息演算主页进入") then
+            break
+        end
+        if findOne("生息演算_其他界面1") then
+            return true
+        end
     end
     if not wait(function()
             if findOne("生息底栏烹饪按钮") then
@@ -389,6 +404,12 @@ end
             tap("生息演算总结页面")
             tap("生息演算_确认按钮")
             tap("生息演算第四天_开启")
+            if findOne("生息演算主页进入") then
+                return true
+            end
+            if findOne("生息演算_其他界面1") then
+                return true
+            end
         end, 30) then
     end
     log("下一天至结算结束")
