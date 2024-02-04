@@ -38,6 +38,11 @@ Tales_within_the_sand = {}
 end
 
 Tales_within_the_sand.生息跳转 = function()
+    appear("生息演算_主页导航", 1)
+    if not findOne("生息演算_主页导航") then
+        -- 游戏内卡死则直接重启游戏
+        restartapp(appid)
+    end
     path.跳转("首页")
     tap("面板作战")
     -- disappear("主页", 3)
@@ -146,6 +151,9 @@ Tales_within_the_sand.掉线状态判断 = function()
     if findOne("生息演算_其他界面1") then
         return 沙洲遗闻()
     end
+    if findAny({ "生息演算会聚之地判断", }) then
+        return Tales_within_the_sand.会聚之地()
+    end
     if findOne("主页长期探索_生息演算") then
         tap("主页长期探索_生息演算")
         return 沙洲遗闻()
@@ -215,6 +223,9 @@ Tales_within_the_sand.检查代币数量 = function()
     end
 
     local nx = str2int(get(nn, 1, "text"))
+    if nx > 100000 then
+        nx = nx - 100000
+    end
     if nx > 80000 then
         log("代币数量大于80000")
         return true
