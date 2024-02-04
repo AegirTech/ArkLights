@@ -214,12 +214,6 @@ Tales_within_the_sand.删除存档 = function()
 end
 
 Tales_within_the_sand.检查代币数量 = function()
-    last_count = last_count or 0         -- 最大代币数量
-    max_game_count = max_game_count or 0 --达到最大代币数量的次数
-    if max_game_count > 5 then
-        log("连续5局代币数量未变化 结束")
-        return true
-    end
     log("获取代币数量")
     if not findOne("生息演算主页进入") then
         return false
@@ -230,17 +224,23 @@ Tales_within_the_sand.检查代币数量 = function()
     end
 
     local nx = str2int(get(nn, 1, "text"))
-    if nx ~= last_count then
-        last_count = nx
-        max_game_count = 0
-    else
-        max_game_count = max_game_count + 1
-    end
     if nx > 100000 then
         nx = nx - 100000
     end
-    if nx >= 82400 then
-        log("代币数量大于82400")
+    --繁荣度和上一次一样的话，记录
+    if prosperity_temp == nx then
+        Prosperity_same_number = Prosperity_same_number + 1
+    end
+    prosperity_temp = nx
+    -- 连续5次没有繁荣增长,认为已打满,防止部分客户提前消耗了代币,无法打到82500,导致无法提前结束,释放设备
+    if nx > 82500 or Prosperity_same_number > 5 then
+        if cloud.getTaskEnabled() and cloud_task then
+            captureqqimagedeliver("INFO", "生息任务结束", info, true)
+            releaseDeviceByTaskInfo()
+        else
+            stop("生息演算任务完成,繁荣度已大于82500", '', true, false)
+        end
+        log("代币数量大于82500")
         return true
     end
 end

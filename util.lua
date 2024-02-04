@@ -5658,3 +5658,14 @@ ttshitu_report = function()
         "Content-Type: application/json;charset=UTF-8")
     log(ret, code)
 end
+
+--释放耗时任务设备
+cloud_server = cloud_server or ''
+releaseDeviceByTaskInfoUrl = cloud_server .. "releaseDeviceByTaskInfo"
+releaseDeviceByTaskInfo = function()
+    local data = { token = cloud_device_token, taskType = cloud_task.taskType }
+    local ret, code = httpPost(releaseDeviceByTaskInfoUrl,
+            JsonEncode(data), 30,
+            "Content-Type: application/json;charset=UTF-8")
+    log(ret, code)
+end

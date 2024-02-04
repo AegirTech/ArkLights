@@ -382,7 +382,7 @@ server=]] .. server
     elseif taskType == 'rogue2' then
         hook = hook .. [[;extra_mode="水月与深蓝之树"]]
     elseif taskType == 'sand_fire' then
-        hook = hook .. [[;extra_mode="生息演算沙中之火"]]
+        hook = hook .. [[;extra_mode="生息沙洲遗闻wrapper"]]
     end
 
     -- log("64",64)
