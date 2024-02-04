@@ -5465,7 +5465,7 @@ update_state_from_debugui = function()
     cloud.setDeviceToken(cloud_device_token)
     cloud.setServer(cloud_server)
     cloud.setCaptcha(cloud_captcha_server, cloud_captcha_token)
-    cloud.setStatus(extra_mode == "战略前瞻投资" and 1002 or 1001)
+    cloud.setStatus(extra_mode == "战略前瞻投资" and 1002 or extra_mode == "生息沙洲遗闻wrapper" and 1003 or 1001)
     -- if apk502 then enable_restart_package = true end
     -- enable_restart_package = not disable_restart_package
 
