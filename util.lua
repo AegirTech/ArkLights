@@ -3486,16 +3486,18 @@ show_extra_ui = function()
     newRow(layout)
     addTextView(layout, [[以下功能将沿用脚本主页设置]])
 
-    newRow(layout)
-    addButton(layout, nil, "生息演算(仅720p)",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='生息演算沙中之火';lock:remove(main_ui_lock)"))
-    ui.addCheckBox(layout, "sand_fire_unstop", "打满也不结束", false)
-    newRow(layout)
+    -- newRow(layout)
+    -- addButton(layout, nil, "生息演算(仅720p)",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='生息演算沙中之火';lock:remove(main_ui_lock)"))
+    -- ui.addCheckBox(layout, "sand_fire_unstop", "打满也不结束", false)
 
     -- addButton(layout, nil, "活动任务与商店（尖灭）",
     --     make_jump_ui_command(layout, nil,
     --         "extra_mode='活动任务与商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addTextView(layout, "===========沙洲遗闻-测试===========")
+
     newRow(layout)
     addButton(layout, nil, "生息盐酸-沙洲遗闻",
         make_jump_ui_command(layout, nil,
@@ -3509,8 +3511,16 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "sand_missions", "做奇遇任务", false)
 
     newRow(layout)
+    addTextView(layout, "调试选项")
+    ui.addCheckBox(layout, "sand_distrust_ocr", "不信任OCR结果", true)
+    ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
+
+    newRow(layout)
     addTextView(layout, "CODE")
     ui.addEditText(layout, "sand_code", "")
+
+    newRow(layout)
+    addTextView(layout, "===========肉鸽相关===========")
 
     newRow(layout)
     addButton(layout, nil, "傀影与猩红孤钻",
@@ -5665,7 +5675,7 @@ releaseDeviceByTaskInfoUrl = cloud_server .. "releaseDeviceByTaskInfo"
 releaseDeviceByTaskInfo = function()
     local data = { token = cloud_device_token, taskType = cloud_task.taskType }
     local ret, code = httpPost(releaseDeviceByTaskInfoUrl,
-            JsonEncode(data), 30,
-            "Content-Type: application/json;charset=UTF-8")
+        JsonEncode(data), 30,
+        "Content-Type: application/json;charset=UTF-8")
     log(ret, code)
 end

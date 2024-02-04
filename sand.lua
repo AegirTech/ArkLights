@@ -214,6 +214,7 @@ Tales_within_the_sand.删除存档 = function()
 end
 
 Tales_within_the_sand.检查代币数量 = function()
+    if sand_nostop then return end
     log("获取代币数量")
     if not findOne("生息演算主页进入") then
         return false
@@ -233,7 +234,7 @@ Tales_within_the_sand.检查代币数量 = function()
     end
     prosperity_temp = nx
     -- 连续5次没有繁荣增长,认为已打满,防止部分客户提前消耗了代币,无法打到82500,导致无法提前结束,释放设备
-    if nx > 82500 or Prosperity_same_number > 5 then
+    if (not sand_distrust_ocr and nx > 82500) or Prosperity_same_number > 5 then
         if cloud.getTaskEnabled() and cloud_task then
             captureqqimagedeliver("INFO", "生息任务结束", info, true)
             releaseDeviceByTaskInfo()
