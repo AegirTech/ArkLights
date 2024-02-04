@@ -3500,6 +3500,9 @@ show_extra_ui = function()
     addButton(layout, nil, "生息盐酸-沙洲遗闻",
         make_jump_ui_command(layout, nil,
             "extra_mode='生息沙洲遗闻';lock:remove(main_ui_lock)"))
+    addButton(layout, nil, "沙洲遗闻-商店购买",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='生息沙洲遗闻商店';lock:remove(main_ui_lock)"))
 
     newRow(layout)
     ui.addCheckBox(layout, "sand_checkpoint", "进入关卡", true)

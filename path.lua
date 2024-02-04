@@ -7981,3 +7981,7 @@ path.生息沙洲遗闻 = function()
     load(sand_code)()
     -- 沙洲遗闻()
 end
+
+path.生息沙洲遗闻商店 = function()
+    Tales_within_the_sand.商店购买()
+end
