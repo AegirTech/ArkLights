@@ -213,6 +213,12 @@ Tales_within_the_sand.删除存档 = function()
 end
 
 Tales_within_the_sand.检查代币数量 = function()
+    last_count = last_count or 0         -- 最大代币数量
+    max_game_count = max_game_count or 0 --达到最大代币数量的次数
+    if max_game_count > 5 then
+        log("连续5局代币数量未变化 结束")
+        return true
+    end
     log("获取代币数量")
     if not findOne("生息演算主页进入") then
         return false
@@ -223,11 +229,17 @@ Tales_within_the_sand.检查代币数量 = function()
     end
 
     local nx = str2int(get(nn, 1, "text"))
+    if nx ~= last_count then
+        last_count = nx
+        max_game_count = 0
+    else
+        max_game_count = max_game_count + 1
+    end
     if nx > 100000 then
         nx = nx - 100000
     end
-    if nx > 80000 then
-        log("代币数量大于80000")
+    if nx >= 82400 then
+        log("代币数量大于82400")
         return true
     end
 end
