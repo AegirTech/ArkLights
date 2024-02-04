@@ -214,6 +214,8 @@ Tales_within_the_sand.删除存档 = function()
 end
 
 Tales_within_the_sand.检查代币数量 = function()
+    Prosperity_same_number = Prosperity_same_number or 0
+    prosperity_temp = prosperity_temp or 0
     if sand_nostop then return end
     log("获取代币数量")
     if not findOne("生息演算主页进入") then
