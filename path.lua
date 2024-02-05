@@ -7987,5 +7987,6 @@ path.生息沙洲遗闻商店 = function()
 end
 
 path.生息沙洲遗闻wrapper = function()
+    path.跳转("首页")
     沙洲遗闻()
 end
