@@ -3,7 +3,6 @@
 --               沙洲遗闻
 -- ===========================================
 Tales_within_the_sand = {}
-
 沙洲遗闻 = function()
     log("沙洲遗闻开始")
     if findOne("主页长期探索_生息演算") then
@@ -139,6 +138,9 @@ Tales_within_the_sand.开始演算 = function()
     if appear("生息底栏烹饪按钮", 5) then
         Tales_within_the_sand.删除存档()
     else
+        -- 次数统计
+        All_count = All_count or 0
+        All_count = All_count + 1
         return 沙洲遗闻()
     end
     log("结束演算")
@@ -221,6 +223,10 @@ Tales_within_the_sand.删除存档 = function()
 end
 
 Tales_within_the_sand.检查代币数量 = function()
+    if not Prosperity_same_number then
+        -- 未声明变量时候为第一次启动
+        captureqqimagedeliver("INFO", "生息任务开始", "生息任务开始", true)
+    end
     Prosperity_same_number = Prosperity_same_number or 0
     prosperity_temp = prosperity_temp or 0
     if sand_nostop then return end
@@ -268,10 +274,10 @@ Tales_within_the_sand.检查代币数量 = function()
     -- 连续5次没有繁荣增长,认为已打满,防止部分客户提前消耗了代币,无法打到82500,导致无法提前结束,释放设备
     if (not sand_distrust_ocr and nx > 82500) or Prosperity_same_number > 5 then
         if cloud.getTaskEnabled() and cloud_task then
-            captureqqimagedeliver("INFO", "生息任务结束", info, true)
+            captureqqimagedeliver("INFO", "生息任务结束", "生息任务执行次数" .. All_count, true)
             releaseDeviceByTaskInfo()
         else
-            stop("生息演算任务完成,繁荣度已大于82500", '', true, false)
+            stop("生息演算任务完成,繁荣度已大于82500,总运行次数" .. All_count, '', true, false)
         end
         log("代币数量大于82500")
         return true
