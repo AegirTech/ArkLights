@@ -3516,8 +3516,8 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
 
     newRow(layout)
-    addTextView(layout, "CODE")
-    ui.addEditText(layout, "sand_code", "")
+    addTextView(layout, "此功能如有问题请在Github反馈")
+    -- ui.addEditText(layout, "sand_code", "")
 
     newRow(layout)
     addTextView(layout, "===========肉鸽相关===========")

@@ -7978,8 +7978,8 @@ path.采购中心商店 = function()
 end
 
 path.生息沙洲遗闻 = function()
-    load(sand_code)()
-    -- 沙洲遗闻()
+    -- load(sand_code)()
+    沙洲遗闻()
 end
 
 path.生息沙洲遗闻商店 = function()
