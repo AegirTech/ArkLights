@@ -152,6 +152,10 @@ Tales_within_the_sand.掉线状态判断 = function()
     if findOne("生息演算_其他界面1") then
         return 沙洲遗闻()
     end
+    if findOne("主页长期探索_生息演算") then
+        tap("主页长期探索_生息演算", 0.1)
+        return 沙洲遗闻()
+    end
     if findAny({ "生息演算会聚之地判断", }) then
         return Tales_within_the_sand.会聚之地()
     end
@@ -180,12 +184,15 @@ Tales_within_the_sand.掉线状态判断 = function()
     end
     if findAny({
             "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
-            "手机验证码登录",
+            "手机验证码登录", "生息演算_游戏设置页面", "生息演算_游戏设置弹窗",
         }) then
+        path.跳转("首页")
         return 沙洲遗闻()
     end
     if not findAny({ "生息演算主页进入", "生息底栏烹饪按钮", }) then
         -- 未知页面
+        restartapp(appid)
+        path.跳转("首页")
         return 沙洲遗闻()
     end
 end
