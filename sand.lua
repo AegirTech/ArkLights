@@ -269,6 +269,8 @@ Tales_within_the_sand.检查代币数量 = function()
     --繁荣度和上一次一样的话，记录
     if prosperity_temp == nx then
         Prosperity_same_number = Prosperity_same_number + 1
+    else
+        Prosperity_same_number = 0
     end
     prosperity_temp = nx
     -- 连续5次没有繁荣增长,认为已打满,防止部分客户提前消耗了代币,无法打到82500,导致无法提前结束,释放设备
