@@ -228,12 +228,35 @@ Tales_within_the_sand.检查代币数量 = function()
     if not findOne("生息演算主页进入") then
         return false
     end
-    local nn = ocr("生息演算代币范围")
-    if not nn then
+    -- local nn = ocr("生息演算代币范围")
+    -- if not nn then
+    --     return false
+    -- end
+
+    local nx = nil
+    local handle = createOcr()
+    if handle ~= nil then
+        local text = ocrTextEx(handle, point["生息演算代币范围"][1],
+            point["生息演算代币范围"][2],
+            point["生息演算代币范围"][3],
+            point["生息演算代币范围"][4])
+        if text ~= nil then
+            text = text:gsub(" ", "")
+            text = text:gsub("O", "0")
+            text = text:gsub("l", "1")
+            nx = str2int(text:match("%d+"))
+            log("识别结果：" .. text)
+            log("匹配结果：" .. nx)
+        else
+            x = -1
+            return false
+        end
+        releaseOcr(handle)
+    else
         return false
     end
 
-    local nx = str2int(get(nn, 1, "text"))
+    -- local nx = str2int(get(nn, 1, "text"))
     if nx > 100000 then
         nx = nx - 100000
     end
