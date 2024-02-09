@@ -3514,9 +3514,10 @@ show_extra_ui = function()
     addTextView(layout, "调试选项")
     ui.addCheckBox(layout, "sand_distrust_ocr", "不信任OCR结果", true)
     ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
+    ui.addCheckBox(layout, "sand_noincrease_stop", "代币不增加则停止", true)
 
     newRow(layout)
-    addTextView(layout, "此功能如有问题请在Github反馈")
+    addTextView(layout, "支持大部分分辨率,此功能如有问题请在Github反馈")
     -- ui.addEditText(layout, "sand_code", "")
 
     newRow(layout)

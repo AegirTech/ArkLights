@@ -20,7 +20,7 @@ Tales_within_the_sand = {}
         log("未找到主页，从头开始")
         Tales_within_the_sand.生息跳转()
     end
-    if findOne("生息演算未结算") then
+    if not findOne("生息演算未结算_反") then
         log("存在未结算")
         tap("生息演算主页进入")
         Tales_within_the_sand.删除存档()
@@ -239,7 +239,7 @@ Tales_within_the_sand.检查代币数量 = function()
     --     return false
     -- end
 
-    local nx = nil
+    local nx = 0
     local handle = createOcr()
     if handle ~= nil then
         local text = ocrTextEx(handle, point["生息演算代币范围"][1],
@@ -263,9 +263,6 @@ Tales_within_the_sand.检查代币数量 = function()
     end
 
     -- local nx = str2int(get(nn, 1, "text"))
-    if nx > 100000 then
-        nx = nx - 100000
-    end
     --繁荣度和上一次一样的话，记录
     if prosperity_temp == nx then
         Prosperity_same_number = Prosperity_same_number + 1
@@ -273,15 +270,34 @@ Tales_within_the_sand.检查代币数量 = function()
         Prosperity_same_number = 0
     end
     prosperity_temp = nx
+    All_count = All_count or 0
     -- 连续5次没有繁荣增长,认为已打满,防止部分客户提前消耗了代币,无法打到82500,导致无法提前结束,释放设备
-    if (not sand_distrust_ocr and nx > 82500) or Prosperity_same_number > 5 then
-        if cloud.getTaskEnabled() and cloud_task then
-            captureqqimagedeliver("INFO", "生息任务结束", "生息任务执行次数" .. All_count, true)
+    if nx > 120000 then
+        nx = 0 -- 识别错误
+    end
+    if sand_distrust_ocr and nx >= 112500 then
+        log("代币数量大于112500")
+        if cloud_get_task then
+            log("云控上报")
+            captureqqimagedeliver("INFO", "生息任务结束1", "生息任务执行次数" .. All_count .. "繁荣值" .. nx, true)
             releaseDeviceByTaskInfo()
         else
-            stop("生息演算任务完成,繁荣度已大于82500,总运行次数" .. All_count, '', true, false)
+            log("非云控")
+            stop("生息演算任务完成,任务执行次数" .. All_count .. "繁荣值" .. nx, '', true, false)
         end
-        log("代币数量大于82500")
+        return true
+    end
+
+    if sand_noincrease_stop and Prosperity_same_number > 5 then
+        log("连续5次未增加")
+        if cloud_get_task then
+            log("云控上报")
+            captureqqimagedeliver("INFO", "生息任务结束2", "生息任务执行次数" .. All_count .. "繁荣值" .. nx, true)
+            releaseDeviceByTaskInfo()
+        else
+            log("非云控")
+            stop("生息演算任务完成,总运行次数" .. All_count .. "繁荣值" .. nx, '', true, false)
+        end
         return true
     end
 end
