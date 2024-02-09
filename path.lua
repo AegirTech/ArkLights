@@ -986,6 +986,25 @@ path.fallback = {
             end
         end, 5)
     end,
+    新年祝福返回 = function()
+        wait(function()
+            tap("新年祝福签到")
+        end, 1.5)
+        wait(function()
+            if findAny({ "新年祝福返回", "面板" }) then return true end
+            tap("开包skip")
+        end, 2)
+        wait(function()
+            for h = 200, 951, 150 do
+                if findOne("新年祝福返回") then
+                    tap({ scale(1300), scale(h) })
+                    ssleep(.5)
+                end
+            end
+            tap("开包skip")
+            if findAny({ "新年祝福返回", "面板" }) then return true end
+        end, 10)
+    end,
     战备支援签到返回 = function()
         wait(function()
             tap("战备支援签到")
@@ -1052,7 +1071,7 @@ path.fallback = {
             "签到返回", "签到返回黄", "活动签到返回",
             "国庆签到返回", "抽签返回", "战略返回",
             '感谢庆典返回', '限时开放许可', "限时幸运签",
-            "线索传递界面", "阿米娅", "可露希尔",
+            "线索传递界面", "阿米娅", "可露希尔", "新年祝福返回",
         }, .1)
         log(251, x)
         if x then return tap(path.fallback[x]) end
@@ -1081,7 +1100,7 @@ path.限时活动 = function(retry)
         appear({
             '活动签到返回', '国庆签到返回', '抽签返回',
             '感谢庆典返回', '限时开放许可', "限时幸运签", "月饼",
-            '产业合作洽谈会', '红包', "祈愿牌返回",
+            '产业合作洽谈会', '红包', "祈愿牌返回", "新年祝福返回",
         })
         if findOne('红包') then
             wait(function()
