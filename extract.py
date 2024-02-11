@@ -10,6 +10,7 @@ from collections import defaultdict
 from pathlib import Path
 
 import fire
+import requests
 
 
 # 请使用720p图像计算
@@ -356,20 +357,43 @@ def screencap(stem):
     )
 
 
+def get_level_info() -> list:
+    #
+    url = ("https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel"
+           "/story_review_table.json")
+    response = requests.get(url=url)
+    if response.status_code != 200:
+        return []
+    data = response.json()
+    latest_act = max(data, key=lambda k: int(data[k]["startTime"]))
+    level_list = data[latest_act]["infoUnlockDatas"]
+    ret_list = []
+    for level_info in level_list:
+        if (storyCode := level_info["storyCode"]) and storyCode not in ret_list:
+            ret_list.append(storyCode)
+    print(latest_act, ret_list)
+    return ret_list
+
+
 def screencap_distance(path="screencap"):
     screencap = Path(path)
     import torch
 
     torch.backends.cudnn.enabled = False
     import easyocr
-    from PIL import Image
 
     reader = easyocr.Reader(["en", "ch_sim"])
     point = defaultdict(int)
     distance = defaultdict(int)
-    shift_right = 0
+    online = True
+    if online:
+        all_list = get_level_info()
+    else:
+        all_list = ["HS-ST-1", "HS-1", "HS-TR-1", "HS-2", "HS-3", "HS-4", "HS-TR-2", "HS-5", "HS-ST-2", "HS-6", "HS-7", "HS-8", "HS-9", "HS-ST-3"]
+
+    shift_right = -86
     # 滑动到最右边时 hd-1的x坐标相距屏幕中心的距离
-    distance[1] = -260
+    distance[1] = 0
     for x in sorted(screencap.glob("*.jpg")):
         x = reader.readtext(str(x))
         print("x", x)
@@ -381,21 +405,30 @@ def screencap_distance(path="screencap"):
             text = text.replace("-g", "-9")
             text = text.replace("IIW", "IW")
             text = text.replace("IB", "WB")
-            text = text.replace("I", "1")
-            text = text.replace("l", "1")
+            text = text.replace("I", "-1")
+            text = text.replace("l", "-1")
             text = text.replace("- ", "-")
             text = text.replace(" ", "-")
             text = text.replace("B12", "BI-2")
             text = text.replace(" ", "")
             text = text.replace("1C", "IC")
+            # text = text.replace("ST-1", "")
+            # text = text.replace("ST-2", "")
+            # text = text.replace("ST-3", "")
+            # text = text.replace("TR-1", "")
             text = text.replace("EX", "")
             text = text.replace("--", "-")
             m = re.search("^.?.-(\d+)$", text)
-            print("m", m)
+            n = re.search("^.?.-.?.-(\d+)$", text)
+            # print("m", m, n)
+            m = m or n
             if not m:
                 continue
+            if m.group(0) not in all_list:
+                continue
             print("m", m)
-            m = int(m.group(1))
+            m = all_list.index(m.group(0)) + 1
+            # m = int(m.group(1))
             visible_point[m] = loc[0][0]
             if point[m]:
                 continue
@@ -413,14 +446,21 @@ def screencap_distance(path="screencap"):
         p = point[x]
         p = [x * 1080 // 720 for x in p]
         p[0] = 960 + shift_right * 1080 // 720
-        print(f'["HD-{x}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
+        # print(f'["HD-{x}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
+        print(f'["HD{all_list[x-1][2:]}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
 
     # 距离膨胀系数，部分活动需要微调
-    distanceExpansionCoefficient = 1.10
+    distanceExpansionCoefficient = 1.12
     for x in sorted(distance):
-        p = distance[x] - shift_right
+        p = distance[x] + shift_right
         p = int(p * distanceExpansionCoefficient)
-        print(f'["HD-{x}"] = ' + "{ swip_right_max, -" + str(p) + "},")
+        # 教程剧情关坐标修正
+        if "TR" in all_list[x-1] or "ST" in all_list[x-1]:
+            p = p + 15
+        if p < 0:
+            p = 0
+        # print(f'["HD-{x}"] = ' + "{ swip_right_max, -" + str(p) + "},")
+        print(f'["HD{all_list[x-1][2:]}"] = ' + "{ swip_right_max, -" + str(p) + "},")
 
 
 def process_transparent_pixels(
