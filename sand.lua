@@ -37,13 +37,27 @@ Tales_within_the_sand = {}
 end
 
 Tales_within_the_sand.生息跳转 = function()
-    tap("面板作战")
-    appear("生息演算_主页导航", 1)
-    if not findOne("生息演算_主页导航") then
-        -- 游戏内卡死则直接重启游戏
+    -- tap("面板作战")
+    -- appear("生息演算_主页导航", 5)
+    -- if not findOne("生息演算_主页导航") then
+    --     -- 游戏内卡死则直接重启游戏
+    --     captureqqimagedeliver("INFO", "即将重启游戏", "导航失败，重启游戏", true)
+    --     restartapp(appid)
+    -- end
+    if not wait(function()
+            if findOne("生息演算_公告弹窗") then
+                tap("生息演算_公告弹窗关闭")
+            end
+            if findAny({ "生息演算_主页导航", "生息演算_游戏主页", "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                    "手机验证码登录", "生息演算_游戏设置页面", "生息演算_游戏设置弹窗", "主页长期探索", "主页长期探索_生息演算", "生息演算主页进入" }) then
+                return true
+            end
+        end, 60) then
         restartapp(appid)
+        captureqqimagedeliver("INFO", "即将重启游戏", "导航失败", true)
     end
     path.跳转("首页")
+    -- Tales_within_the_sand.掉线状态判断()
     tap("面板作战")
     -- disappear("主页", 3)
     if not wait(function()
@@ -155,15 +169,11 @@ Tales_within_the_sand.掉线状态判断 = function()
         return 沙洲遗闻()
     end
     if findOne("主页长期探索_生息演算") then
-        tap("主页长期探索_生息演算", 0.1)
+        tap("主页长期探索_生息演算")
         return 沙洲遗闻()
     end
     if findAny({ "生息演算会聚之地判断", }) then
         return Tales_within_the_sand.会聚之地()
-    end
-    if findOne("主页长期探索_生息演算") then
-        tap("主页长期探索_生息演算")
-        return 沙洲遗闻()
     end
     if findOne("生息演算关卡左上角退出") then
         -- 不清楚某些情况会没结束的
