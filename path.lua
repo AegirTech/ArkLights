@@ -988,7 +988,8 @@ path.fallback = {
     end,
     新年祝福返回 = function()
         wait(function()
-            tap("新年祝福签到")
+            --tap("新年祝福签到")
+            if not findOne("新年祝福奖励领取界面") then tap("新年祝福签到") end
         end, 1.5)
         wait(function()
             if findAny({ "新年祝福返回", "面板" }) then return true end
