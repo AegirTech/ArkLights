@@ -2729,7 +2729,7 @@ check_hot_update = function()
     update_source = update_source:trim()
     local res, code = httpGet(
         update_source .. "/checkUpdate?lr_md5=" .. tostring(file_md5) ..
-        "&skill_md5=" .. tostring(skill_md5), 30)
+        "&skill_md5=" .. tostring(skill_md5) .. "&apk_ver=" .. tostring(getApkVerInt()), 30)
     if code == -1 then
         toast("无法连接到热更新服务器")
         ssleep(3)
@@ -2809,6 +2809,11 @@ hotUpdate = function()
     end
     local update_info = check_hot_update()
     if not update_info then return false end
+    if get(update_info, "isOldApk") then
+        toast("当前APK版本过旧，请更新！")
+        sleep(1000)
+        exit()
+    end
     if not update_info.updateLr and not update_info.updateSkill then
         toast("已经是最新版")
         uploadStatistician(false)
