@@ -6524,7 +6524,10 @@ path.前瞻投资 = function(lighter)
         end
 
         if not wait(function()
-                if findOne("傀影") then return true end
+                if findOne("集成战略_查看全部主题") then
+                    tap("集成战略_查看全部主题")
+                    return true
+                end
                 tap("集成战略")
             end, 5) then
             return
@@ -6533,7 +6536,7 @@ path.前瞻投资 = function(lighter)
         if not wait(function()
                 if findOne("常规行动") then return true end
                 if findOne("傀影与猩红孤钻") then
-                    tap("进入主题")
+                    tap("傀影与猩红孤钻")
                 else
                     tap("集成战略列表1")
                 end

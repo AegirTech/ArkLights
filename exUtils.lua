@@ -302,7 +302,7 @@ mizuki_navigation = function()
         -- end, 5) then return false end
 
         if not wait(function()
-                if findOne("傀影") then return true end
+                if findOne("集成战略_查看全部主题") then return true end
                 tap("集成战略")
             end, 5) then
             return false
