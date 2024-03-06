@@ -1901,6 +1901,68 @@ setFilePremission = function(filename, premission)
     exec('su root sh -c "chmod ' .. premission .. ' ' .. filename .. '"')
 end
 
+    local curlCommand = string.format("%s --cacert '%s' -X POST '%s'", curlpath, cacertpath, url)
+    if headers then
+        for k, v in pairs(headers) do
+            local header = string.format("-H '%s: %s'", k, v)
+            curlCommand = string.format("%s %s", curlCommand, header)
+        end
+    end
+    if postData then
+        curlCommand = string.format("%s -d '%s'", curlCommand, postData)
+    end
+    timeout = timeout or 5
+    curlCommand = string.format("%s -m %s", curlCommand, timeout)
+    if arguments then
+        curlCommand = string.format("%s %s", curlCommand, arguments)
+    end
+    log(curlCommand)
+    return exec2(curlCommand)
+end
+
+curl_get = function(url, headers, timeout)
+    local curlCommand = string.format("%s --cacert '%s' -X GET '%s'", curlpath, cacertpath, url)
+    if headers then
+        for k, v in pairs(headers) do
+            local header = string.format("-H '%s: %s'", k, v)
+            curlCommand = string.format("%s %s", curlCommand, header)
+        end
+    end
+    timeout = timeout or 5
+    curlCommand = string.format("%s -m %s", curlCommand, timeout)
+    log(curlCommand)
+    return exec2(curlCommand)
+end
+
+curl_custom = function(command)
+    local curlCommand = string.format("%s --cacert '%s' ", curlpath, cacertpath)
+    curlCommand = curlCommand .. command
+    return exec2(curlCommand)
+end
+
+folder_exists = function(folderpath)
+    local ret = exec2(string.format([[su root sh -c 'if [ -d "%s" ]; then echo "true"; else echo "false"; fi']],
+        folderpath))
+    if string.find(ret, "true") then
+        return true
+    else
+        return false
+    end
+end
+
+file_exists = function(filepath)
+    local ret = exec2(string.format([[su root sh -c 'if [ -f "%s" ]; then echo "true"; else echo "false"; fi']], filepath))
+    if string.find(ret, "true") then
+        return true
+    else
+        return false
+    end
+end
+
+copy_files = function(s, d)
+    exec(string.format([[su root sh -c 'cp -r "%s" "%s"']], s, d))
+end
+
 -- 从字符串中提取数字，返回table
 extractNumbers = function(str)
     local pattern = "%d+"

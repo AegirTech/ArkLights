@@ -166,16 +166,6 @@ end
 -- 根据材料生成需要刷的关卡 默认缺一个材料刷一次关
 raise_generate_fight_plan = function(materials)
     local plan = {}
-    for k, v in pairs(materials) do
-        local material_name = raise_item_id_to_name(k)
-        local stage_id = item_table["items"][k]["stageDropList"][1]["stageId"]
-        if stage_plan[stage_id] then
-            stage_plan[stage_id] = stage_plan[stage_id] + v
-        else
-            stage_plan[stage_id] = v
-        end
-    end
-    return stage_plan
 end
 
 
