@@ -2917,7 +2917,7 @@ make_jump_ui = function(layout)
     -- end
 
     local buttons = {
-        { nil, "多号", make_jump_ui_command(layout, 'multi_account') },
+        { nil, "多账户", make_jump_ui_command(layout, 'multi_account') },
         -- jump_btn, --
         { nil, "解锁", make_jump_ui_command(layout, 'gesture_capture') }, -- {
         --   layout .. "crontab", "定时执行",
@@ -2937,6 +2937,7 @@ make_jump_ui = function(layout)
         readme_btn, "必读", make_jump_ui_command(layout, nil,
         "saveConfig('readme_already_read','1');jump_readme()"),
     }, { nil, "高级设置", make_jump_ui_command(layout, "debug") },
+        { nil, "测试功能", make_jump_ui_command(layout, "auto") },
         -- {
         --   layout .. "demo", "视频演示",
         --   make_jump_ui_command(layout, nil, "jump_bilibili()"),
@@ -3663,6 +3664,72 @@ show_extra_ui = function()
     -- ui.addButton(layout, layout .. "_1-12", "克洛丝单人1-12（没写）")
     -- ui.setOnClick(layout .. "_1-12", make_jump_ui_command(layout, nil,
     --                                                       "extra_mode='克洛丝单人1-12';lock:remove(main_ui_lock)"))
+
+    ui.loadProfile(getUIConfigPath(layout))
+    ui.show(layout, false)
+end
+
+-- auto_raise_move_up = function(index)
+--     log("上移")
+--     log(index)
+--     local cur_level = index
+--     local last_level = index - 1
+--     log(last_level)
+--     local 上一级干员 = _G["plan_char" .. last_level]
+--     local 上一级目标 = _G["plan_target" .. last_level]
+--     local 上一级目标等级 = _G["plan_level" .. last_level]
+--     log(plan_char2, plan_target2, plan_level2)
+--     log(上一级干员, 上一级目标, 上一级目标等级)
+--     log(_G["plan_char" .. index], _G["plan_target" .. index], _G["plan_level" .. index])
+--     ui.setText("plan_char" .. last_level, _G["plan_char" .. index])
+--     ui.setSpinner("plan_target" .. last_level, { "精英化", "技能1", "技能2", "技能3" }, _G["plan_target" .. index])
+--     ui.setSpinner("plan_level" .. last_level, { "0", "1", "2", "3" }, _G["plan_level" .. index])
+-- end
+
+-- auto_raise_move_down = function(index)
+
+-- end
+
+show_auto_ui = function()
+    local layout = "auto"
+    ui.newLayout(layout, ui_page_width, -2)
+    ui.setTitleText(layout, "测试功能")
+
+    newRow(layout)
+    addTextView(layout, "以下功能均为测试功能，如果有bug请在GitHub上提交issue反馈")
+
+    newRow(layout)
+    addTextView(layout, "仓库地址 https://github.com/AegirTech/ArkLights")
+
+    newRow(layout)
+    addButton(layout, nil, "返回",
+        make_jump_ui_command(layout, loadConfig("last_layout", "main")),
+        nil, nil)
+    newRow(layout)
+    addTextView(layout, "--------------------自动养成相关--------------------")
+
+    newRow(layout)
+    addTextView(layout, "接口选择")
+    ui.addSpinner(layout, "auto_raise_api_select", { "第三方", "森空岛", "自定义" }, 0)
+
+    newRow(layout)
+    addTextView(layout, "自定义接口地址")
+    ui.addEditText(layout, "auto_raise_api", "")
+
+    newRow(layout)
+    addTextView(layout, "官服请求Token")
+    ui.addEditText(layout, "a60_token_offcial", "")
+    addTextView(layout, "B服请求Token")
+    ui.addEditText(layout, "a60_token_bili", "")
+
+    newRow(layout)
+    addButton(layout, nil, "仓库识别(未完成)", "raise_storage_dentify")
+
+    newRow(layout)
+    addTextView(layout, "--------------------自动作战相关--------------------")
+
+    newRow(layout)
+    ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", True)
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
