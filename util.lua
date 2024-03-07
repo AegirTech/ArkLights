@@ -2919,7 +2919,8 @@ make_jump_ui = function(layout)
     local buttons = {
         { nil, "多账户", make_jump_ui_command(layout, 'multi_account') },
         -- jump_btn, --
-        { nil, "解锁", make_jump_ui_command(layout, 'gesture_capture') }, -- {
+        { nil, "测试功能", make_jump_ui_command(layout, "auto") },
+        -- { nil, "解锁", make_jump_ui_command(layout, 'gesture_capture') }, -- {
         --   layout .. "crontab", "定时执行",
         --   make_jump_ui_command(layout, 'crontab'),
         -- },
@@ -2937,7 +2938,6 @@ make_jump_ui = function(layout)
         readme_btn, "必读", make_jump_ui_command(layout, nil,
         "saveConfig('readme_already_read','1');jump_readme()"),
     }, { nil, "高级设置", make_jump_ui_command(layout, "debug") },
-        { nil, "测试功能", make_jump_ui_command(layout, "auto") },
         -- {
         --   layout .. "demo", "视频演示",
         --   make_jump_ui_command(layout, nil, "jump_bilibili()"),
@@ -3102,6 +3102,9 @@ show_debug_ui = function()
     -- ui.setBackground(layout .. "_stop", ui_cancel_color)
     -- ui.setOnClick(layout .. "_stop",
     --               make_jump_ui_command(layout, ))
+
+    newRow(layout)
+    addButton(layout, nil, "解锁", make_jump_ui_command(layout, 'gesture_capture'))
 
     newRow(layout)
     addTextView(layout, "图鉴用户名")
@@ -3723,13 +3726,17 @@ show_auto_ui = function()
     ui.addEditText(layout, "a60_token_bili", "")
 
     newRow(layout)
+    ui.addCheckBox(layout, "raise_fight_plan", "作战计划(未完成)", true)
+    ui.addCheckBox(layout, "raise_material", "材料合成（未完成）", false)
+
+    newRow(layout)
     addButton(layout, nil, "仓库识别(未完成)", "raise_storage_dentify")
 
     newRow(layout)
     addTextView(layout, "--------------------自动作战相关--------------------")
 
     newRow(layout)
-    ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", True)
+    ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", true)
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
