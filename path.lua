@@ -8062,3 +8062,23 @@ path.生息沙洲遗闻wrapper = function()
     path.跳转("首页")
     沙洲遗闻()
 end
+
+path.森空岛签到 = function()
+    if _G["username"] ~= nil and _G["password"] ~= nil then
+        if isPhoneNumber(_G["username"]) and server == 0 then
+            skland_daily_checkin(_G["username"], _G["password"])
+        else
+            table.insert(qqmessage, "不符合签到条件跳过")
+        end
+        return true
+    end
+end
+
+isPhoneNumber = function(str)
+    local str = str:gsub("%D", "")
+    if #str == 11 then
+        return true
+    else
+        return false
+    end
+end

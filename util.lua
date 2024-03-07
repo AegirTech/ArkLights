@@ -2049,7 +2049,7 @@ all_job = {
     "邮件收取", "轮次作战", "访问好友", "基建收获",
     "基建换班", "制造加速", "线索交流", "副手换人",
     "信用购买", "公开招募", "任务收集", "限时活动",
-    "商店搬空", "故事解锁",
+    "商店搬空", "故事解锁", "森空岛签到",
 }
 
 now_job = table.filter(all_job, function(x) return x ~= "副手换人" end)
@@ -3717,6 +3717,22 @@ show_auto_ui = function()
     addButton(layout, nil, "返回",
         make_jump_ui_command(layout, loadConfig("last_layout", "main")),
         nil, nil)
+
+    newRow(layout)
+    addTextView(layout, "--------------------单账户设置--------------------")
+
+    newRow(layout)
+    addTextView(layout, "此账户用户单账户模式下的森空岛及其他需要账密的API请求使用")
+
+    newRow(layout)
+    addTextView(layout, "账户")
+    ui.addEditText(layout, "single_account", "")
+
+    newRow(layout)
+    addTextView(layout, "密码")
+    ui.addEditText(layout, "single_password", "")
+
+
     newRow(layout)
     addTextView(layout, "--------------------自动养成相关--------------------")
 
@@ -3986,7 +4002,7 @@ end
 
 loadUIConfig = function(layouts)
     if not layouts then
-        layouts = { "multi_account", "gesture_capture", "extra", "debug", "main" }
+        layouts = { "multi_account", "gesture_capture", "extra", "debug", "main", "auto" }
     end
     for _, layout in pairs(layouts) do
         assignGlobalVariable(loadOneUIConfig(layout))
