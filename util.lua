@@ -4302,7 +4302,7 @@ parse_fight_config = function(fight_ui)
         elseif table.includes(table.keys(chinese2name), v) then
             v = chinese2name[v]
         end
-        if table.find({ '活动', 'HS' }, startsWithX(v)) then
+        if table.find({ '活动', 'CR' }, startsWithX(v)) then
             local idx = v:gsub(".-(%d+)$", '%1')
             v = "HD-" .. (idx or '')
             -- log(2731, v, idx)
@@ -4337,7 +4337,7 @@ parse_fight_config = function(fight_ui)
             for _ = 1, 99 do table.insert(expand_fight, '长期委托2') end
             for _ = 1, 99 do table.insert(expand_fight, '长期委托3') end
         elseif table.includes({ 'HD' }, v) then
-            for i = 9, 1, -1 do
+            for i = 8, 1, -1 do
                 for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
             end
         elseif table.includes({ 'HD1' }, v) then
@@ -4481,7 +4481,7 @@ update_state_from_ui = function()
     -- log("fight", fight)
 
     -- 活动开放时间段
-    hd_open_time_end = parse_time("202402220400")
+    hd_open_time_end = parse_time("202403210400")
     hd2_open_time_end = parse_time("202401160400") -- 故事集开放时间段
     hd_mod = "SS"
 
