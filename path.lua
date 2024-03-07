@@ -6570,12 +6570,24 @@ path.前瞻投资 = function(lighter)
             return
         end
 
+        --滑动到最左边
+
         if not wait(function()
                 if findOne("常规行动") then return true end
                 if findOne("傀影与猩红孤钻") then
                     tap("傀影与猩红孤钻")
                 else
-                    tap("集成战略列表1")
+                    gesture({
+                        {
+                            point = { { screen.width * 0.1,   scale(800) },
+                                { screen.width * 0.9,             scale(800) },
+                                { screen.width * 0.9 - scale(10), scale(800) },
+                                { screen.width * 0.9 + scale(10), scale(800) } },
+                            start = 0,
+                            duration = 300,
+                        },
+                    })
+                    ssleep(1)
                 end
             end, 5) then
             return
