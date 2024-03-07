@@ -2649,11 +2649,17 @@ end
 
 unpacking_library = function()
     if root_mode then
-        mkdir(getWorkPath() .. "/assets")
-        extractAssets("sqlite.rc", getWorkPath() .. "/assets")
-        exec(string.format([[su root sh -c "cp '%s/assets/sqlite3.2' '/data/local/tmp/sqlite3'"]], getWorkPath()))
-        setFilePremission("/data/local/tmp/sqlite3", 777)
-        _G.sqlite3path = "/data/local/tmp/sqlite3"
+        if use_system_library then
+            _G.sqlite3path = "sqlite3"
+            _G.curlpath = "curl"
+        else
+            mkdir(getWorkPath() .. "/assets")
+            extractAssets("sqlite.rc", getWorkPath() .. "/assets")
+            exec(string.format([[su root sh -c "cp '%s/assets/sqlite3.2' '/data/local/tmp/sqlite3'"]], getWorkPath()))
+            setFilePremission("/data/local/tmp/sqlite3", 777)
+            _G.sqlite3path = "/data/local/tmp/sqlite3"
+            _G.curlpath = "curl"
+        end
     end
 end
 
@@ -3386,6 +3392,9 @@ show_debug_ui = function()
     -- newRow(layout)
     -- addTextView(layout, "前瞻投资重启游戏间隔(游戏有内存泄漏)")
     -- ui.addEditText(layout, "zl_restart_interval1", "3600")
+
+    newRow(layout)
+    ui.addCheckBox(layout, "use_system_library", "使用系统支持库", false)
 
     newRow(layout)
     addTextView(layout, "游戏重启间隔(s)")

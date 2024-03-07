@@ -1902,7 +1902,7 @@ setFilePremission = function(filename, premission)
 end
 
 curl_post = function(url, headers, postData, timeout, arguments)
-    local curlCommand = string.format("%s --cacert '%s' -X POST '%s'", curlpath, cacertpath, url)
+    local curlCommand = string.format("%s -X POST '%s'", curlpath, url)
     if headers then
         for k, v in pairs(headers) do
             local header = string.format("-H '%s: %s'", k, v)
@@ -1922,7 +1922,7 @@ curl_post = function(url, headers, postData, timeout, arguments)
 end
 
 curl_get = function(url, headers, timeout)
-    local curlCommand = string.format("%s --cacert '%s' -X GET '%s'", curlpath, cacertpath, url)
+    local curlCommand = string.format("%s -X GET '%s'", curlpath, url)
     if headers then
         for k, v in pairs(headers) do
             local header = string.format("-H '%s: %s'", k, v)
@@ -1936,8 +1936,7 @@ curl_get = function(url, headers, timeout)
 end
 
 curl_custom = function(command)
-    local curlCommand = string.format("%s --cacert '%s' ", curlpath, cacertpath)
-    curlCommand = curlCommand .. command
+    local curlCommand = curlpath .. " " .. command
     return exec2(curlCommand)
 end
 
