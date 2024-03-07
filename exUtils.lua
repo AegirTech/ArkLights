@@ -1901,6 +1901,7 @@ setFilePremission = function(filename, premission)
     exec('su root sh -c "chmod ' .. premission .. ' ' .. filename .. '"')
 end
 
+curl_post = function(url, headers, postData, timeout, arguments)
     local curlCommand = string.format("%s --cacert '%s' -X POST '%s'", curlpath, cacertpath, url)
     if headers then
         for k, v in pairs(headers) do

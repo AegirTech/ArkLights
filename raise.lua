@@ -171,7 +171,7 @@ end
 
 -- 生成刷图计划 传入干员名和计划名 返回作战列表
 raise_generate_fight_plan = function(待养成干员, 养成计划)
-    local stage_plan = {}
+    local fight_plan = {}
     local char_id = raise_character_name_to_id(待养成干员)
     if char_id == nil then return end
     if 养成计划.plan == "精英化" then
@@ -239,8 +239,10 @@ raise_find_material = function(area)
     local skip = false
     for k, v in pairs(材料颜色点) do
         local material_level = 材料等级[k]
-        if material_level ~= "灰色材料" and find_color(area, 材料等级颜色[material_level]) == nil then
-            goto continue
+        if material_level ~= "灰色材料" then
+            if find_color(area, 材料等级颜色[material_level]) == nil then
+                goto continue
+            end
         else
             -- 灰色的直接判断不存在其他的颜色
             local is_material_level_0 = true
@@ -261,13 +263,13 @@ raise_find_material = function(area)
                 break
             end
         end
-
         if not skip then
             material = k -- 已经找到，后续不再查找
             break
         end
         ::continue::
     end
+    return material
 end
 
 -- 仓库识别
