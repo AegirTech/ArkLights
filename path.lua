@@ -1347,6 +1347,16 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
         path.基建收获()
     end
 
+    --彩六主大厅适配
+
+    if findOne("彩六主大厅") then
+        if not wait(function()
+                if not findOne("彩六主大厅") then return true end
+                tap("生息演算_全局_返回")
+            end, 5) then
+        end
+    end
+
     -- 退出基建前截图
     if prev_jump == "基建" and x ~= "基建" and qqnotify_beforeleaving and
         not_first_time_jump then
