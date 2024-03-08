@@ -230,7 +230,6 @@ end
     褐素纤维 = {},
     环烃聚质 = {},
     ["RMA70-12"] = {}
-
 }
 
 -- 在指定区域内寻找，存在所有特征点，返回材料名 根据材料等级判断用于降低错误率，查找时颜色可信度均为1
@@ -274,6 +273,16 @@ end
 
 -- 仓库识别
 raise_storage_dentify = function()
+
+end
+
+-- 材料识别
+raise_material_identify = function()
+    -- 从x 945/1686  y=120 开始y++ 识别 22BBFF 减去一定x值得到区域初始坐标
+end
+
+-- 向上滑动
+raise_swipe_up = function()
 
 end
 
