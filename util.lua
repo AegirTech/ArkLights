@@ -1423,7 +1423,7 @@ deploy = function(x1, x2, y2, d)
     d = d or 2
     d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d]
     d = { d[1] * 500, d[2] * 500 }
-    local dragd = 500
+    local dragd = 800
     local dird = 200
     local delay = 150 -- 有人卡这儿？
     local x3 = x2 - scale(5)
@@ -1433,7 +1433,8 @@ deploy = function(x1, x2, y2, d)
     local finger = {
         {
             point = {
-                { x1, y1 }, { x2, y2 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                { x1, y1 }, { x1, y1 - 60 }, { (x1 + x2) / 3 * 2, (y1 + y2) / 3 * 2, }, --{x2, y2-40},
+                { x2, y2 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x2, y2 },
                 { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
                 { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
                 { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
@@ -1452,7 +1453,8 @@ deploy = function(x1, x2, y2, d)
                 { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
                 { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
                 { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x2, y2 }, { x4, y2 }, { x2, y3 },
+                { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
                 { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
                 { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
                 { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
@@ -1462,21 +1464,8 @@ deploy = function(x1, x2, y2, d)
                 { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
                 { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
                 { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                { x4, y2 }, { x2, y3 }, { x2, y4 }, { x2, y2 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
                 { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
                 { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
                 { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
                 { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
@@ -1490,7 +1479,21 @@ deploy = function(x1, x2, y2, d)
                 { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
                 { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
                 { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                { x2, y4 }, { x2, y2 },
+                { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                { x4, y2 }, { x2, y3 }, { x2, y2 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y2 },
             },
             duration = dragd,
         }, {
@@ -3519,10 +3522,10 @@ show_extra_ui = function()
     newRow(layout)
     addButton(layout, nil, "生息盐酸-沙洲遗闻",
         make_jump_ui_command(layout, nil,
-            "extra_mode='生息沙洲遗闻';lock:remove(main_ui_lock)"))
+            "extra_mode='生息沙洲遗闻';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     addButton(layout, nil, "沙洲遗闻-商店购买",
         make_jump_ui_command(layout, nil,
-            "extra_mode='生息沙洲遗闻商店';lock:remove(main_ui_lock)"))
+            "extra_mode='生息沙洲遗闻商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     newRow(layout)
     ui.addCheckBox(layout, "sand_checkpoint", "进入关卡", true)

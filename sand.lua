@@ -71,9 +71,34 @@ Tales_within_the_sand.生息跳转 = function()
     if findOne("生息演算主页进入") then return true end
 end
 
+Tales_within_the_sand.切换难度 = function()
+    if findOne("沙洲遗闻标准模式") then return true end
+    if findOne("生息演算主页进入") and findOne("沙洲遗闻挑战模式") then
+        tap("沙洲遗闻挑战模式")
+        appearTap("沙洲遗闻切换确认")
+        appear("生息演算主页进入", .5)
+    end
+end
+
+Tales_within_the_sand.重置地图位置 = function()
+    log("重置地图位置")
+    if not wait(function()
+            tap("生息演算左上角返回")
+            if findOne("生息演算主页进入") then return true end
+        end, 5) then
+    end
+    if not wait(function()
+            if findOne("生息底栏烹饪按钮") then return true end
+            tap("生息演算主页进入")
+            ssleep(0.3)
+        end, 5) then
+    end
+end
+
 Tales_within_the_sand.开始演算 = function()
     log("开始演算")
     if findOne("生息演算主页进入") then
+        Tales_within_the_sand.切换难度()
         tap("生息演算主页进入")
     end
     -- 剧情部分
@@ -84,19 +109,7 @@ Tales_within_the_sand.开始演算 = function()
         if not appear("生息底栏烹饪按钮", 10) then
             return 沙洲遗闻()
         end
-        -- 重置地图位置
-        if not wait(function()
-                tap("生息演算左上角返回")
-                if findOne("生息演算主页进入") then return true end
-            end, 5) then
-        end
-        if not wait(function()
-                if findOne("生息底栏烹饪按钮") then return true end
-                tap("生息演算主页进入")
-                ssleep(0.3)
-            end, 5) then
-        end
-        Tales_within_the_sand.生息演算奇遇节点()
+        --Tales_within_the_sand.生息演算奇遇节点()
     end
     Tales_within_the_sand.掉线状态判断()
 
@@ -104,40 +117,21 @@ Tales_within_the_sand.开始演算 = function()
         if not appear("生息底栏烹饪按钮", 10) then
             return 沙洲遗闻()
         end
-        -- 重置地图位置
-        if not wait(function()
-                tap("生息演算左上角返回")
-                if findOne("生息演算主页进入") then return true end
-            end, 5) then
-        end
-        if not wait(function()
-                if findOne("生息底栏烹饪按钮") then return true end
-                tap("生息演算主页进入")
-                ssleep(0.3)
-            end, 5) then
-        end
 
-        -- 进入任意一个关卡
-        Tales_within_the_sand.生息关卡进入("生息演算灌木区")
+        Tales_within_the_sand.重置地图位置()
+
+        Tales_within_the_sand.生息关卡进入("沙洲遗闻丰饶灌木林")
+
         if not appear("生息底栏烹饪按钮", 10) then
             return 沙洲遗闻()
         end
-
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.下一天()
         Tales_within_the_sand.掉线状态判断()
 
-        -- 重置地图位置
-        if not wait(function()
-                tap("生息演算左上角返回")
-                if findOne("生息演算主页进入") then return true end
-            end, 5) then
-        end
-        if not wait(function()
-                if findOne("生息底栏烹饪按钮") then return true end
-                tap("生息演算主页进入")
-                ssleep(0.3)
-            end, 5) then
-        end
-        Tales_within_the_sand.生息关卡进入("生息演算捕猎区")
+        Tales_within_the_sand.敌袭1()
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.四到七天()
     end
 
     -- 检查
@@ -231,6 +225,49 @@ Tales_within_the_sand.删除存档 = function()
         Tales_within_the_sand.删除存档()
     end
 end
+Tales_within_the_sand.四到七天 = function()
+    log("四到七天")
+    Tales_within_the_sand.重置地图位置()
+    Tales_within_the_sand.生息关卡进入("沙洲遗闻聚羽之地")
+    Tales_within_the_sand.生息关卡进入("沙洲遗闻直奔深渊")
+    Tales_within_the_sand.下一天()
+    Tales_within_the_sand.生息关卡进入("沙洲遗闻参差林木")
+    Tales_within_the_sand.生息关卡进入("沙洲遗闻原始奔腾")
+    Tales_within_the_sand.下一天()
+    Tales_within_the_sand.生息关卡进入("沙洲遗闻林中寻宝")
+    Tales_within_the_sand.下一天()
+    Tales_within_the_sand.回到三天前存档()
+end
+
+Tales_within_the_sand.回到三天前存档 = function()
+    log("回档")
+    Tales_within_the_sand.掉线状态判断()
+    if not findOne("生息底栏烹饪按钮") then
+        tap("生息演算主页进入")
+    end
+    if not appear("生息底栏烹饪按钮", 10) then
+        return 沙洲遗闻()
+    end
+    if not wait(function()
+            if not findOne("生息底栏弹出页面") then
+                tap("生息底栏更多按钮")
+            end
+            if findOne("生息底栏弹出页面") then tap("生息底栏更多_读取存档") end
+            appearTap("生息读取存档确认", .1)
+            if findOne("生息读取存档确认红") then
+                tap("生息读取存档确认红")
+                ssleep(1)
+            end
+            appearTap("生息左边存档", .1)
+            ssleep(1)
+            appearTap("生息左边存档确认", .1)
+            if findOne("沙洲遗闻开启今日") then
+                tap("沙洲遗闻开启今日")
+                return true
+            end
+        end, 15) then
+    end
+end
 
 Tales_within_the_sand.检查代币数量 = function()
     if not Prosperity_same_number then
@@ -282,10 +319,10 @@ Tales_within_the_sand.检查代币数量 = function()
     prosperity_temp = nx
     All_count = All_count or 0
     -- 连续5次没有繁荣增长,认为已打满,防止部分客户提前消耗了代币,无法打到82500,导致无法提前结束,释放设备
-    if nx > 120000 then
+    if nx > 140000 then
         nx = 0 -- 识别错误
     end
-    if sand_distrust_ocr and nx >= 112500 then
+    if sand_distrust_ocr and nx >= 136900 then
         log("代币数量大于112500")
         if cloud_get_task then
             log("云控上报")
@@ -368,6 +405,136 @@ Tales_within_the_sand.生息演算奇遇节点 = function()
     end
 end
 
+Tales_within_the_sand.敌袭1 = function()
+    Tales_within_the_sand.掉线状态判断()
+    log("敌袭1")
+    if not appear("沙洲遗闻敌袭1", 5) then
+        return
+    end
+    ssleep(.1)
+    tap("沙洲遗闻敌袭1")
+    appearTap("沙洲遗闻敌袭开始行动")
+    appear("生息演算开始行动", 0.8)
+    tap("沙洲遗闻快捷编队")
+    appear("沙洲遗闻编入队伍", 0.8)
+    tap("生息演算编队清空选择")
+    ssleep(.2)
+    if not findOne("生息演算职业选择") then tap("生息演算职业选择") end
+    if not appear("生息演算近卫选择", .5) then
+        tap("生息演算近卫选择")
+        appear("生息演算近卫选择", .5)
+    end
+    tap("生息演算干员选择列表" .. 1)
+    tap("生息演算干员选择列表" .. 2)
+    tap("生息演算干员选择列表" .. 3)
+    tap("生息演算干员选择列表" .. 4)
+    if not wait(function()
+            if not findOne("沙洲遗闻编入队伍") then return true end
+            tap("沙洲遗闻编入队伍")
+        end, 10) then
+        return
+    end
+    appear("生息演算开始行动")
+    if not wait(function()
+            tap("生息演算开始行动")
+            if not findOne("生息演算开始行动") then return true end
+            -- 出现过在这儿卡死的
+            if not disappear("正在提交反馈至神经", network_timeout) then
+                return true
+            end
+        end, 10) then
+        return
+    end
+    -- 游戏界面
+    if not wait(function()
+            if findOne("单选确认框") then return true end
+            if findOne("生命值") then return true end
+        end, 30) then
+        return
+    end
+
+    if not findOne("生命值") then return end
+
+    -- 需要等等才能点
+    appearTap("两倍速", 3)
+    ssleep(.3)
+
+    -- 向左滑动
+    gesture({
+        {
+            point = { { screen.width * 0.95, screen.height / 2 }, { screen.width / 2, screen.height / 2 } },
+            start = 0,
+            duration = 500,
+        },
+    })
+    sleep(500)
+
+    for i = 1, 4 do
+        if not wait(function()
+                if findOne("生息演算干员费用够列表1") then
+                    local p = point["沙洲遗闻敌袭1部署列表" .. i]
+                    log(p)
+                    deploy(screen.width - scale(210), p[1], p[2], 4)
+                    return true
+                end
+                if not findOne("生命值") then
+                    log(462)
+                    -- return true
+                end
+            end, 30) then
+            return
+        end
+    end
+    -- 退出关卡
+    if not wait(function()
+            if findOne("生息底栏烹饪按钮") then
+                return true
+            end
+
+            if findOne("生息演算行动结束") then
+                tap("生息演算_确认按钮")
+            end
+
+            if findOne("生息演算主页进入") then
+                return true
+            end
+            ssleep(1)
+        end, 130) then
+    end
+end
+
+Tales_within_the_sand.制作饮料 = function()
+    log("制作饮料")
+    tap("生息演算缺少饮料")
+    --if not wait(function()
+    appearTap("生息演算制作饮料确认", 1)
+    appearTap("生息演算制作饮料auto1", 1)
+    tap("生息演算制作饮料auto1")
+    ssleep(.2)
+    tap("生息演算制作饮料auto1")
+    ssleep(.2)
+    tap("生息演算制作饮料auto1")
+    ssleep(.2)
+
+
+    appearTap("生息演算投入食料", .5)
+    if not wait(function()
+            if findOne("生息演算获得饮料") then
+                tap("生息演算获得饮料")
+            end
+            if findOne("生息演算烹饪台") then
+                tap("生息演算左上角返回")
+                return true
+            end
+        end, 5) then
+    end
+    --end, 15) then
+    --end
+
+    return true
+end
+
+
 Tales_within_the_sand.生息关卡进入 = function(关卡)
     Tales_within_the_sand.掉线状态判断()
     log(关卡)
@@ -378,30 +545,26 @@ Tales_within_the_sand.生息关卡进入 = function(关卡)
     -- 进入关卡
     if not wait(function()
             appearTap("生息演算进入关卡", 0.1)
+            if findOne("生息演算缺少饮料") then
+                if not Tales_within_the_sand.制作饮料() then return false end
+            end
             appearTap("生息演算开始行动", 0.1)
             appearTap("生息演算开始行动红色确认", 0.1)
             if findOne("生息演算关卡左上角退出") then
                 return true
             end
-        end, 10) then
+        end, 20) then
     end
 
     -- 退出关卡
     if not wait(function()
-            if findOne("生息底栏烹饪按钮") then
-                return true
-            end
-            appearTap("生息演算关卡左上角退出", 0.1)
-            -- tap("生息演算_全局_返回")
-            tap("生息演算_确认按钮")
-
-            if findOne("生息演算主页进入") then
-                return true
-            end
-
-            if findOne("生息底栏烹饪按钮") then
-                return true
-            end
+            if findOne("生息底栏烹饪按钮") then return true end
+            if findOne("生息演算关卡左上角退出") then tap("生息演算关卡左上角退出") end
+            if findOne("生息演算_确认按钮") then tap("生息演算_确认按钮") end
+            if findOne("生息演算行动结束") then tap("生息演算_确认按钮") end
+            if findOne("生息演算剧情中") then tap("生息演算_确认按钮") end
+            if findOne("生息演算主页进入") then return true end
+            ssleep(.1)
         end, 30) then
     end
 end
@@ -449,6 +612,35 @@ Tales_within_the_sand.会聚之地 = function()
         end, 20) then
     end
     log("会聚之地结束")
+end
+
+Tales_within_the_sand.下一天 = function()
+    log("下一天")
+    Tales_within_the_sand.掉线状态判断()
+    if not appear("生息底栏烹饪按钮", 5) then
+        return
+    end
+    if not findOne("生息演算消磨时间") then
+        tap("生息演算右上角生息日")
+    end
+    if not wait(function()
+            if findOne("生息演算消磨时间") then tap("生息演算消磨时间") end
+            if findOne("生息演算跳过当日确认") then tap("生息演算跳过当日确认") end
+            if findOne("生息演算进入下一天") then tap("生息演算进入下一天") end
+            if findOne("生息演算完成生存周期") then tap("沙洲遗闻开启今日") end
+            if findOne("沙洲遗闻开启今日") then
+                ssleep(.3)
+                tap("沙洲遗闻开启今日")
+                return true
+            end
+            if findOne("沙洲遗闻基地产出") then
+                ssleep(.4)
+                tap("生息演算进入下一天")
+                return true
+            end
+        end, 20) then
+    end
+    appear("生息底栏烹饪按钮", 5)
 end
 
 Tales_within_the_sand.下一天至结算 = function()
