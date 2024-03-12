@@ -2118,3 +2118,15 @@ jfbym_report = function()
         "Content-Type: application/json;charset=UTF-8")
     log(ret, code)
 end
+
+-- 去除sb懒人新版广告
+remove_lr_ad = function()
+    local ad = string.gsub(getWorkPath(), "assistdir/[0-9a-f]+/root", "") .. "files/adcache"
+    if root_mode then
+        exec("su root rm -rf " .. ad)
+        exec("su root mkdir " .. ad)
+        setFilePremission(ad, "000")
+    else
+        delfile(ad)
+    end
+end

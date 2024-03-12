@@ -1,5 +1,5 @@
 -- predebug = true
-always_enable_log = true
+-- always_enable_log = true
 -- test_fight = true
 -- fake_fight = true
 -- prefer_bapp = true
@@ -56,7 +56,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "03.12 05:05"
+release_date = "03.13 01:44"
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -94,13 +94,14 @@ load(after_require_hook or '')()
 consoleInit()
 showControlBar(true)
 setEventCallback()
---hotUpdate()
--- fetchSkillIcon()
+hotUpdate()
+fetchSkillIcon()
 check_root_mode()
 unpacking_library()
 enable_accessibility_service()
 enable_snapshot_service()
 remove_old_log()
+remove_lr_ad()
 detectServer()
 predebug_hook()
 showUI()
@@ -111,14 +112,15 @@ update_state_from_debugui()
 check_crontab_on_start()
 cloud.startHeartBeat()
 
-debug_mode = true
+-- debug_mode=true
 if debug_mode then
     log("debug_mode")
-    sleep(1500)
-    Tales_within_the_sand.四到七天()
-
-    --沙洲遗闻()
-    exit()
+    -- log(findOne("活动公告返回"))
+    -- log(findOne("framelayout_only"))
+    -- log(findOne("login"))
+    -- ssleep(1)
+    -- tap("login")
+    -- exit()
 end
 
 load(before_account_hook or '')()

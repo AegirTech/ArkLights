@@ -102,6 +102,28 @@ def run(now=True):
             )
 
 
+def resave():
+    """从懒人精灵工程文件夹保存到此目录"""
+    # 获取懒人目录下所有的.lua文件
+    lua_files = [
+        f for f in os.listdir(os.path.join(path, "脚本")) if f.endswith(".lua")
+    ]
+    for lua_file in lua_files:
+        # 以GB18030的格式打开lua_file，然后以utf-8的格式写入到当前目录下
+        with open(os.path.join(path, "脚本", lua_file), "r", encoding="GB18030") as f:
+            with open(os.path.join(os.getcwd(), lua_file), "w", encoding="utf-8") as f1:
+                f1.write(f.read())
+
+    # 获取懒人目录下所有的.ui文件
+    ui_files = [f for f in os.listdir(os.path.join(path, "界面")) if f.endswith(".ui")]
+    for ui_file in ui_files:
+        # 以GB18030的格式打开ui_file，然后以utf-8的格式写入到当前目录下
+        with open(os.path.join(path, "界面", ui_file), "r", encoding="GB18030") as f:
+            with open(os.path.join(os.getcwd(), ui_file), "w", encoding="utf-8") as f1:
+                f1.write(f.read())
+    print("反向保存完成")
+
+
 def save():
     """保存到懒人精灵工程文件夹"""
     with open("main.lua", "r", encoding="utf-8") as f:
@@ -229,6 +251,8 @@ if __name__ == "__main__":
         arg = sys.argv[1]
         if arg == "run":
             run()
+        elif arg == "resave":
+            resave()
         elif arg == "save":
             save()
         elif arg == "saverun":

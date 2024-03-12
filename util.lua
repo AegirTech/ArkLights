@@ -3725,7 +3725,7 @@ show_auto_ui = function()
     addTextView(layout, "--------------------单账户设置--------------------")
 
     newRow(layout)
-    addTextView(layout, "此账户用户单账户模式下的森空岛及其他需要账密的API请求使用")
+    addTextView(layout, "此账户用于单账户模式下的森空岛及其他需要账密的API请求使用")
 
     newRow(layout)
     addTextView(layout, "账户")
