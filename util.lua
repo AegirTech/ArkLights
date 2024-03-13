@@ -3530,6 +3530,7 @@ show_extra_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "sand_checkpoint", "进入关卡", true)
     ui.addCheckBox(layout, "sand_missions", "做奇遇任务", false)
+    ui.addCheckBox(layout, "sand_no_delete", "不删存档从当前开始", false)
 
     newRow(layout)
     addTextView(layout, "调试选项")

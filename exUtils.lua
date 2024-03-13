@@ -1974,11 +1974,19 @@ extractNumbers = function(str)
 end
 
 -- 点击并判断前后颜色是否改变 默认比较点击位置
-tap_cmpcol = function(x, colorposition, confidence, wait_time)
+tap_cmpcolor = function(x, colorposition, confidence, wait_time)
+    if type(x) == "string" and not x:find(coord_delimeter) then
+        x = point[x]
+        if type(x) == "string" then
+            local p = x:find(coord_delimeter)
+            local q = x:find(coord_delimeter, p + 1)
+            x = map(tonumber, { x:sub(1, p - 1), x:sub(p + 1, q - 1) })
+        end
+    end
     if type(x) ~= "table" then return false end
-    wait_time = wait_time or 0.1
-    confidence = confidence or default_findcolor_confidence
-    colorposition = colorposition or x
+    local wait_time = wait_time or 0.1
+    local confidence = confidence or default_findcolor_confidence
+    local colorposition = colorposition or x
     local oricol = getColor(colorposition[1], colorposition[2])
     tap(x)
     ssleep(wait_time)
