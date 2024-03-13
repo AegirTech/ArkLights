@@ -119,7 +119,9 @@ end
 Tales_within_the_sand.识别点数 = function()
     local ret = ocr("沙洲遗闻点数范围")
     if ret then
-        return tonumber(ret[1]["text"])
+        local str = ret[1]["text"]
+        str = str:gsub("%D", "")
+        return tonumber(str)
     end
 end
 
@@ -705,7 +707,7 @@ Tales_within_the_sand.下一天 = function()
             end
         end, 20) then
     end
-    appear("生息底栏烹饪按钮", 5)
+    appear("生息底栏烹饪按钮", 6)
     ssleep(.2)
 end
 
