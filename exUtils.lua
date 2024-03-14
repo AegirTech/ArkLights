@@ -1974,11 +1974,19 @@ extractNumbers = function(str)
 end
 
 -- 点击并判断前后颜色是否改变 默认比较点击位置
-tap_cmpcol = function(x, colorposition, confidence, wait_time)
+tap_cmpcolor = function(x, colorposition, confidence, wait_time)
+    if type(x) == "string" and not x:find(coord_delimeter) then
+        x = point[x]
+        if type(x) == "string" then
+            local p = x:find(coord_delimeter)
+            local q = x:find(coord_delimeter, p + 1)
+            x = map(tonumber, { x:sub(1, p - 1), x:sub(p + 1, q - 1) })
+        end
+    end
     if type(x) ~= "table" then return false end
-    wait_time = wait_time or 0.1
-    confidence = confidence or default_findcolor_confidence
-    colorposition = colorposition or x
+    local wait_time = wait_time or 0.1
+    local confidence = confidence or default_findcolor_confidence
+    local colorposition = colorposition or x
     local oricol = getColor(colorposition[1], colorposition[2])
     tap(x)
     ssleep(wait_time)
@@ -2010,7 +2018,7 @@ find_color = function(v, color, dir, condifence)
     -- 4：表示从右上向左下查找
     local condifence = condifence or 1
     local index, x, y = findColor(v[1], v[2], v[3], v[4], color, dir, condifence)
-    log(index, x, y)
+    -- log("find_color", v, index, x, y)
     if x > -1 and y > -1 then
         return { x, y }
     else
@@ -2123,8 +2131,8 @@ end
 remove_lr_ad = function()
     local ad = string.gsub(getWorkPath(), "assistdir/[0-9a-f]+/root", "") .. "files/adcache"
     if root_mode then
-        exec("su root rm -rf " .. ad)
-        exec("su root mkdir " .. ad)
+        exec("su root sh -c 'rm -rf " .. ad .. "'")
+        exec("su root sh -c 'mkdir " .. ad .. "'")
         setFilePremission(ad, "000")
     else
         delfile(ad)

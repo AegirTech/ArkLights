@@ -1348,10 +1348,19 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
     end
 
     --彩六主大厅适配
-
     if findOne("彩六主大厅") then
         if not wait(function()
                 if not findOne("彩六主大厅") then return true end
+                tap("生息演算_全局_返回")
+            end, 5) then
+        end
+    end
+
+    -- 生息演算页面适配
+    if findOne("生息底栏干员按钮") then
+        log("生息")
+        if not wait(function()
+                if not findOne("生息底栏干员按钮") then return true end
                 tap("生息演算_全局_返回")
             end, 5) then
         end

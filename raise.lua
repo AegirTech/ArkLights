@@ -189,85 +189,244 @@ raise_generate_fight_plan = function(待养成干员, 养成计划)
 end
 
 高级材料2低级材料 = {
+    烧结核凝晶 = { 转质盐聚块 = 1, 切削原液 = 1, 精炼溶剂 = 1 }
 
 }
 
 材料等级 = {
+    金色材料 = {
+        "烧结核凝晶",
+        "晶体电子单元",
+        "D32钢",
+        "双极纳米片",
+        "聚合剂",
+    },
+    紫色材料 = {
+        "转质盐聚块",
+        "环烃预制体",
+        "切削原液",
+        "固化纤维板",
+        "精炼溶剂",
+        "晶体电路",
+        "炽合金块",
+        "聚合凝胶",
+        "三水锰矿",
+        "五水研磨石",
+        "RMA70-24",
+        "提纯源岩",
+        "改量装置",
+        "聚酸酯块",
+        "糖聚块",
+        "异铁块",
+        "白马醇",
+        "酮阵列",
+    },
+    绿色材料 = {
+        "异铁",
+        "糖",
+        "聚酸酯",
+        "酮凝集",
+        "固源岩",
+        "装置",
+    },
+    灰色材料 = {
+        "源岩",
+        "破损装置",
+        "酯原料",
+        "代糖",
+        "异铁碎片",
+        "双酮",
+    },
+    蓝色材料 = {
+        "半自然溶剂",
+        "炽合金",
+        "晶体元件",
+        "凝胶",
+        "扭转醇",
+        "轻锰矿",
+        "研磨石",
+        "RMA70-12",
+        "固源岩组",
+        "全新装置",
+        "聚酸酯组",
+        "糖组",
+        "异铁组",
+        "酮凝集组",
+        "环烃聚质",
+        "转质盐组",
+        "化合切削液",
+        "褐素纤维",
+    }
 
 }
 
 材料等级颜色 = {
     -- 灰色材料可信度很低，因为游戏多处用到灰色
     -- 灰色材料 = "A0A0A0",
-    绿色材料 = "DCE537",
-    蓝色材料 = "00B3FD",
     紫色材料 = "332344",
-    金色材料 = "FBC913",
+    绿色材料 = "DEE639",
+    蓝色材料 = "00ACF0",
+    金色材料 = "FCC708",
 }
 
 材料颜色点 = { -- 点位需要尽可能多，且保证准确
+    源岩 = { "C9B888", "374040", "9D8D65" },
+    破损装置 = { "3E3E36", "B86B6B", "752020", "812727" },
+    酯原料 = { "7CA639", "F7FF83", "417A30" },
+    代糖 = { "A0876E", "AAB5BA" },
+    异铁碎片 = { "4F6073", "96C8E3", "1E2626" },
+    双酮 = { "E8B331", "AC8A57" },
+
+    异铁 = { "5385BE", "545C5C", "6188A1" },
+    糖 = { "91C31E", "8F765D" },
+    聚酸酯 = { "B7D92F", "B4C4BC", "6A9B18" },
+    酮凝集 = { "A46A11", "779898", "F5E921" },
+    固源岩 = { "7A7251", "202830", "D7C7A6" },
+    装置 = { "414949", "912B2B", "B23636" },
+
+    环烃聚质 = { "454555", "74749D", "0E0E15", "ACACB3" },
+    转质盐组 = { "E9E9E9", "787878", "6993B4", "324354" },
+    化合切削液 = { "45688B", "45B8FA", "1727F5" },
+    褐素纤维 = { "CDAB4E", "938271", "0B0804" },
+    半自然溶剂 = { "E877A0", "FDF5ED", "FECCC8" },
+    炽合金 = { "D6C9BC", "647495", "203051", "A48B7B" },
+    晶体元件 = { "19B98A", "56674E", "0F1818" },
+    凝胶 = { "A1FDFD", "005A8B", "12C7FF" },
+    扭转醇 = { "C2631C", "CD3604", "FEDB15", "F5BB68" },
+    轻锰矿 = { "4C339E", "A29AB6", "3B3257", "595182" },
+    研磨石 = { "CB9797", "CB999B", "35364F" },
+    ["RMA70-12"] = { "FFFED5", "AFAF8E", "503727", "9D7453" },
+    固源岩组 = { "424242", "D9C18F", "B79F65" },
+    全新装置 = { "CB3636", "BB2F2F", "641A1A" },
+    聚酸酯组 = { "96C72A", "EAF287", "A5CE39" },
+    糖组 = { "927958", "1CAECF", "684F2E" },
+    异铁组 = { "6BA9D2", "517BA4", "2A3A42", "C1CAB9" },
+    酮凝集组 = { "DCCC38", "324B5C", "553C1B" },
+
+    烧结核凝晶 = { "292931", "CAB9E8", "2A2A4B", "6D5E73" },
+    晶体电子单元 = { "284949", "D37046", "1F1616" },
+    D32钢 = { "E8F6F9", "387283", "2A637C" },
+    双极纳米片 = { "450505", "EABE95", "D30906", "FFEF95" },
+    聚合剂 = { "435454", "2C878F", "3DAA04" },
+
+    转质盐聚块 = { "9D5295", "3B333E", "BEAFB6" },
+    环烃预制体 = { "8989AA", "C5C5CD", "626293" },
+    切削原液 = { "3E7DFC", "45454D", "438FFE" },
+    固化纤维板 = { "93835A", "A8A697", "B39258", "CAB24F", "787026" },
+    精炼溶剂 = { "FF71A7", "FFFCFC" },
+    晶体电路 = { "8CA988", "ECAA5F", "388B72" },
+    炽合金块 = { "D0F8F8", "FBC23E", "55869F" },
+    聚合凝胶 = { "0386BE", "9BFFFF", "DEFFFF" },
+    白马醇 = { "727A82", "BF2222", "CC8282" },
+    三水锰矿 = { "7D7D95", "0000E7" },
+    五水研磨石 = { "D19E7C", "7E9494", "AC6846" },
+    ["RMA70-24"] = { "D6B5B5", "DD0700", "CFB6B7" },
+    提纯源岩 = { "CFB68D", "D4B381", "755C3B" },
+    改量装置 = { "3E4646", "B63535", "A93131" },
+    聚酸酯块 = { "BFDD50", "92BB1F", "245E35" },
+    糖聚块 = { "5C4C33", "9A8261", "EFEFEF", "F0CE03" },
+    异铁块 = { "4677AE", "66A8E1", "273748" },
+    酮阵列 = { "D26E00", "415149", "F7DC00" },
+}
+
+材料颜色点_不存在 = { -- 极少数的可能存在误判
+    源岩 = {},
+    破损装置 = {},
+    酯原料 = {},
+    代糖 = { "8F4A00" },
+    异铁碎片 = {},
+    双酮 = {},
+
+    异铁 = {},
+    糖 = { "D7EB5B" },
+    聚酸酯 = {},
+    酮凝集 = {},
+    固源岩 = {},
+    装置 = {},
+
+    环烃聚质 = { "4089E3" },
+    转质盐组 = { "D9A8B0", "129675", "8C6B28", "3587EE" },
+    化合切削液 = {},
+    褐素纤维 = {},
+    半自然溶剂 = {},
+    炽合金 = {},
+    晶体元件 = {},
+    凝胶 = {},
     扭转醇 = {},
     轻锰矿 = {},
     研磨石 = {},
-    固源岩组 = {},
-    固源岩 = {},
-    全新装置 = { "9A2626", "CC3737", "A62A2A" },
-    装置 = {},
-    糖组 = {},
-    糖 = {},
+    ["RMA70-12"] = { "8C6B28" },
+    固源岩组 = { "BB8833" },
+    全新装置 = {},
     聚酸酯组 = {},
-    聚酸酯 = {},
+    糖组 = { "D5C430", "C33501" },
     异铁组 = {},
-    异铁 = {},
     酮凝集组 = {},
-    酮凝集 = {},
-    凝胶 = {},
-    炽合金 = {},
-    晶体元件 = {},
-    半自然溶剂 = {},
-    化合切削液 = {},
-    转质盐组 = {},
-    褐素纤维 = {},
-    环烃聚质 = {},
-    ["RMA70-12"] = {}
+
+    烧结核凝晶 = {},
+    晶体电子单元 = { "A92111" },
+    D32钢 = {},
+    双极纳米片 = {},
+    聚合剂 = {},
+
+    转质盐聚块 = { "FF72A5" },
+    环烃预制体 = { "398BFE", "0000AD" },
+    切削原液 = {},
+    固化纤维板 = { "C38F21" },
+    精炼溶剂 = {},
+    晶体电路 = {},
+    炽合金块 = {},
+    聚合凝胶 = {},
+    白马醇 = { "E80202" },
+    三水锰矿 = {},
+    五水研磨石 = {},
+    ["RMA70-24"] = { "D53838" },
+    提纯源岩 = {},
+    改量装置 = { "EB6704", "E50707" },
+    聚酸酯块 = {},
+    糖聚块 = { "D26E00" },
+    异铁块 = {},
+    酮阵列 = {},
 }
 
 -- 在指定区域内寻找，存在所有特征点，返回材料名 根据材料等级判断用于降低错误率，查找时颜色可信度均为1
 raise_find_material = function(area)
     local material = ""
     local skip = false
-    for k, v in pairs(材料颜色点) do
-        local material_level = 材料等级[k]
-        if material_level ~= "灰色材料" then
-            if find_color(area, 材料等级颜色[material_level]) == nil then
-                goto continue
-            end
-        else
-            -- 灰色的直接判断不存在其他的颜色
-            local is_material_level_0 = true
-            for _, v in pairs(材料等级颜色) do
-                if find_color(area, v, 1, 1) ~= nil then
-                    is_material_level_0 = false
-                    break
-                end
-            end
-            if not is_material_level_0 then
-                goto continue
-            end
+    local material_level = ""
+    for k, v in pairs(材料等级颜色) do
+        if find_color(area, v, 1, 0.98) ~= nil then
+            material_level = k
+            break
         end
-
-        for _, j in pairs(v) do
-            if find_color(area, j, 1, 1) == nil then
+    end
+    if material_level == "" then material_level = "灰色材料" end
+    -- log("material_level", material_level)
+    for k, v in pairs(材料等级[material_level]) do
+        skip = false
+        -- log("开始尝试" .. v)
+        for _, j in pairs(材料颜色点[v]) do
+            if find_color(area, j, 1, 0.98) == nil then
                 skip = true
                 break
             end
         end
         if not skip then
-            material = k -- 已经找到，后续不再查找
-            break
+            if 材料颜色点_不存在[v] ~= {} then
+                for _, j in pairs(材料颜色点_不存在[v]) do
+                    if find_color(area, j, 1, 0.98) ~= nil then
+                        skip = true
+                        break
+                    end
+                end
+            end
+            if not skip then
+                material = v
+                break
+            end
         end
-        ::continue::
     end
+    -- log("material", material)
     return material
 end
 
@@ -298,3 +457,45 @@ end
 -- 技能升级
 
 -- 技能专精
+
+-- 仓库识别 测试
+raise_test = function()
+    ssleep(1)
+    -- local area = { 469, 722, 710, 969 }
+    -- local material = raise_find_material(area)
+    -- log(material)
+
+    log("start")
+    local ms = {}
+    local sx, sy = 25, 184
+    for x = 0, 7 do
+        for y = 0, 2 do
+            area = { sx + x * 230, sy + y * 280, sx + x * 230 + 200, sy + y * 280 + 200 }
+            local material = raise_find_material(area)
+            -- log(x, y, material)
+            table.insert(ms, { x, y, material })
+        end
+    end
+    log("end")
+    log(ms)
+    ssleep(300)
+end
+
+
+-- 基建合成识别
+raise_test2 = function()
+    ssleep(1)
+    local ms = {}
+    local sx, sy = 378, 132
+    for x = 0, 1 do
+        for y = 0, 2 do
+            area = { sx + x * 740, sy + y * 270, sx + x * 740 + 250, sy + y * 270 + 250 }
+            local material = raise_find_material(area)
+            -- log(x, y, material)
+            table.insert(ms, { x, y, material })
+        end
+    end
+    log("end")
+    log(ms)
+    ssleep(300)
+end
