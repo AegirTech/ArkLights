@@ -118,9 +118,8 @@ end
 
 Tales_within_the_sand.识别点数 = function()
     local ret = ocr("沙洲遗闻点数范围")
-    if ret then
+    if ret and #ret > 0 then
         local str = ret[1]["text"]
-        log("ocr结果" .. str)
         str = str:gsub("%D", "")
         return tonumber(str)
     end
@@ -436,14 +435,8 @@ end
 Tales_within_the_sand.生息演算奇遇 = function(关卡)
     log("生息演算奇遇")
     Tales_within_the_sand.掉线状态判断()
-    if not wait(function()
-            if findOne(关卡) then
-                tap(关卡)
-                return true
-            end
-        end, 3) then
-        return
-    end
+    if not appear(关卡, 3) then return end
+    tap(关卡)
     ssleep(.5)
     for i = 1, 2 do
         local q = false
@@ -473,7 +466,7 @@ Tales_within_the_sand.生息演算奇遇 = function(关卡)
                 end
             end, 5) then
         end
-        if q then return end
+        if q then break end
     end
     appear("生息底栏烹饪按钮", 5)
     ssleep(.2)
