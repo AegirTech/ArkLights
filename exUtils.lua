@@ -2018,7 +2018,7 @@ find_color = function(v, color, dir, condifence)
     -- 4：表示从右上向左下查找
     local condifence = condifence or 1
     local index, x, y = findColor(v[1], v[2], v[3], v[4], color, dir, condifence)
-    log(index, x, y)
+    -- log("find_color", v, index, x, y)
     if x > -1 and y > -1 then
         return { x, y }
     else
@@ -2131,8 +2131,8 @@ end
 remove_lr_ad = function()
     local ad = string.gsub(getWorkPath(), "assistdir/[0-9a-f]+/root", "") .. "files/adcache"
     if root_mode then
-        exec("su root rm -rf " .. ad)
-        exec("su root mkdir " .. ad)
+        exec("su root sh -c 'rm -rf " .. ad .. "'")
+        exec("su root sh -c 'mkdir " .. ad .. "'")
         setFilePremission(ad, "000")
     else
         delfile(ad)
