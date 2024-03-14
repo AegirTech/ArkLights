@@ -2868,7 +2868,7 @@ make_jump_ui_command = function(cur, next, extra)
         -- 'log(ui.getData())',
         "ui.saveProfile('" .. getUIConfigPath(cur) .. "')",
         "ui.dismiss('" .. cur .. "');", next and "show_" .. next .. "_ui()" or '',
-        extra or '',
+        extra or '', "sync_ui_config('" .. cur .. "')",
     }
     return table.join(cmd, ';')
 end
@@ -3516,6 +3516,15 @@ show_extra_ui = function()
     -- addButton(layout, nil, "活动任务与商店（尖灭）",
     --     make_jump_ui_command(layout, nil,
     --         "extra_mode='活动任务与商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+
+    newRow(layout)
+    addTextView(layout, "===========多账户设置(同步)===========")
+
+    newRow(layout)
+    -- log(multi_account_enable, multi_account_choice)
+    ui.addCheckBox(layout, "extra_multi_account_enable", "启用账号", false)
+    ui.addEditText(layout, "extra_multi_account_choice", "")
+
     newRow(layout)
     addTextView(layout, "===========沙洲遗闻-测试===========")
 
@@ -3684,6 +3693,23 @@ show_extra_ui = function()
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
 end
+
+sync_ui_config = function(layout)
+    if layout == "multi_account" then
+        local ui_config = loadOneUIConfig("extra")
+        local ui_config2 = loadOneUIConfig("multi_account")
+        ui_config["extra_multi_account_enable"] = ui_config2["multi_account_enable"]
+        ui_config["extra_multi_account_choice"] = ui_config2["multi_account_choice"]
+        saveOneUIConfig("extra", ui_config)
+    elseif layout == "extra" then
+        local ui_config = loadOneUIConfig("multi_account")
+        local ui_config2 = loadOneUIConfig("extra")
+        ui_config["multi_account_enable"] = ui_config2["extra_multi_account_enable"]
+        ui_config["multi_account_choice"] = ui_config2["extra_multi_account_choice"]
+        saveOneUIConfig("multi_account", ui_config)
+    end
+end
+
 
 -- auto_raise_move_up = function(index)
 --     log("上移")
