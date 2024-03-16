@@ -56,7 +56,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "03.14 14:36"
+release_date = "03.16 14:57"
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -112,15 +112,23 @@ update_state_from_debugui()
 check_crontab_on_start()
 cloud.startHeartBeat()
 
--- debug_mode=true
+--debug_mode = true
 if debug_mode then
     log("debug_mode")
-    -- log(findOne("活动公告返回"))
-    -- log(findOne("framelayout_only"))
-    -- log(findOne("login"))
-    -- ssleep(1)
-    -- tap("login")
-    -- exit()
+    sleep(1500)
+    local oper_selected = 0
+    for i = 1, 8 do
+        tap("生息演算干员选择列表" .. i)
+        oper_selected = oper_selected + 1
+        ssleep(.1)
+        if findOne("生息演算干员选择阻挡1") then
+            tap("生息演算干员选择列表" .. i)
+            ssleep(.1)
+            oper_selected = oper_selected - 1
+        end
+        if oper_selected == 4 then break end
+    end
+    exit()
 end
 
 load(before_account_hook or '')()

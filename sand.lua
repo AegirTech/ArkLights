@@ -510,10 +510,17 @@ Tales_within_the_sand.敌袭1 = function()
         tap("生息演算近卫选择")
         appear("生息演算近卫选择", .5)
     end
-    tap("生息演算干员选择列表" .. 1)
-    tap("生息演算干员选择列表" .. 2)
-    tap("生息演算干员选择列表" .. 3)
-    tap("生息演算干员选择列表" .. 4)
+    local oper_selected = 0
+    for i = 1, 8 do
+        tap("生息演算干员选择列表" .. i)
+        oper_selected = oper_selected + 1
+        ssleep(.1)
+        if findOne("生息演算干员选择阻挡1") then
+            tap("生息演算干员选择列表" .. i)
+            oper_selected = oper_selected - 1
+        end
+        if oper_selected == 4 then break end
+    end
     if not wait(function()
             if not findOne("沙洲遗闻编入队伍") then return true end
             tap("沙洲遗闻编入队伍")
