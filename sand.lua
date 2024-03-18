@@ -351,7 +351,7 @@ Tales_within_the_sand.检查代币数量 = function()
             releaseDeviceByTaskInfo()
         else
             log("非云控")
-            stop("生息演算任务完成,繁荣值" .. nx, '', true, false)
+            log("生息演算任务完成,繁荣值" .. nx)
         end
         return true
     end
@@ -364,7 +364,7 @@ Tales_within_the_sand.检查代币数量 = function()
             releaseDeviceByTaskInfo()
         else
             log("非云控")
-            stop("生息演算任务完成,繁荣值" .. nx, '', true, false)
+            log("生息演算任务完成,繁荣值" .. nx)
         end
         return true
     end
