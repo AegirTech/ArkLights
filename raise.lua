@@ -499,3 +499,72 @@ raise_test2 = function()
     log(ms)
     ssleep(300)
 end
+
+raise_test3 = function()
+    -- local pixel = getPixelColor(279, 792)
+    -- print(pixel)
+    -- local r, g, b = colorToRGB(pixel)
+    -- print(r, g, b)
+
+    -- local iswhite, isdis = false, false
+
+    local area = { 199, 451, 435, 698 }
+    local sx, sy = 213, 184
+    local ms = {}
+
+    function getcent(area)
+        local 绿色, 蓝色 = 0, 0, 0, 0
+        local pixel, r, g, b = "", 0, 0, 0
+        local cx, cy = nil, nil
+        local 蓝色区域差值 = 0
+        for y = area[2], area[4], 1 do
+            iswhite, isdis = false, false
+            for x = area[1], area[3], 1 do
+                pixel = getPixelColor(x, y)
+                b, g, r = colorToRGB(pixel)
+                --[[
+            绿色，用于确定是否为小芯片
+            28-103,35-120,20-73
+
+            蓝色 用于确认芯片背景
+            2-70,70-138,95-150
+
+            蓝色之间的其他颜色为白色
+            ]]
+                --
+                -- log(r, g, b)
+                if r > 28 and r < 103 and g > 35 and g < 120 and b > 20 and b < 73 then
+                    绿色 = 绿色 + 1
+                elseif r > 2 and r < 70 and g > 70 and g < 138 and b > 95 and b < 150 then
+                    蓝色 = 蓝色 + 1
+                    if not cx then
+                        cx = x
+                        cy = y
+                    end
+                    蓝色区域差值 = 蓝色区域差值 + x - cx + y - cy
+                end
+            end
+        end
+        return 绿色, 蓝色, 蓝色区域差值
+    end
+
+    -- area = { 1506, 449, 1752, 695 }
+    -- local 绿色, 蓝色 = getcent(area)
+    -- local 比例 = 蓝色 / (scale(200) * scale(200))
+    -- table.insert(ms, { x, y, 蓝色, 比例 })
+
+    for x = 0, 3 do
+        for y = 0, 2 do
+            area = { sx + x * 230, sy + y * 280, sx + x * 230 + 200, sy + y * 280 + 200 }
+            local 绿色, 蓝色, 蓝色差 = getcent(area)
+            local 比例 = 蓝色 / (scale(200) * scale(200))
+            -- log(x, y, material)
+            table.insert(ms, { x, y, 蓝色, 比例, 蓝色差 / 蓝色 })
+        end
+    end
+
+    -- local 比例 = 白色 / (绿色 + 蓝色 + 白色)
+    -- log(绿色, 蓝色, 白色, 比例)
+    log(ms)
+    ssleep(2000)
+end

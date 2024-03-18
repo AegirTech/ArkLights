@@ -594,10 +594,26 @@ Tales_within_the_sand.敌袭1 = function()
                 { screen.width * 0.2 - scale(10), screen.height / 2 },
                 { screen.width * 0.2 + scale(10), screen.height / 2 } },
             start = 0,
-            duration = 300,
+            duration = 500,
         },
     })
-    sleep(310)
+    sleep(550)
+
+    gesture({
+        {
+            point = { { screen.width * 0.95,  screen.height / 2 },
+                { screen.width * 0.2,             screen.height / 2 },
+                { screen.width * 0.2 - scale(10), screen.height / 2 },
+                { screen.width * 0.2 + scale(10), screen.height / 2 },
+                { screen.width * 0.2 - scale(10), screen.height / 2 },
+                { screen.width * 0.2 + scale(10), screen.height / 2 } },
+            start = 0,
+            duration = 500,
+        },
+    })
+    sleep(550)
+
+    -- 总有滑动不到底的情况，滑动2次
 
     for i = 1, 4 do
         if not wait(function()
