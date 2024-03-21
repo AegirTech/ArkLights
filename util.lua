@@ -4364,7 +4364,7 @@ parse_fight_config = function(fight_ui)
         elseif table.includes(table.keys(chinese2name), v) then
             v = chinese2name[v]
         end
-        if table.find({ '活动', 'OD' }, startsWithX(v)) then
+        if table.find({ '活动', hd_nickname, }, startsWithX(v)) then
             local idx = v:gsub(".-(%d+)$", '%1')
             v = "HD-" .. (idx or '')
             -- log(2731, v, idx)
@@ -4399,11 +4399,11 @@ parse_fight_config = function(fight_ui)
             for _ = 1, 99 do table.insert(expand_fight, '长期委托2') end
             for _ = 1, 99 do table.insert(expand_fight, '长期委托3') end
         elseif table.includes({ 'HD' }, v) then
-            for i = 8, 1, -1 do
+            for i = hd_max_stage, 1, -1 do
                 for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
             end
         elseif table.includes({ 'HD1' }, v) then
-            for i = 9, 1, -1 do table.insert(expand_fight, 'HD' .. '-' .. i) end
+            for i = hd_max_stage, 1, -1 do table.insert(expand_fight, 'HD' .. '-' .. i) end
             table.insert(expand_fight, "BREAK")
         elseif table.includes({ 'HD2' }, v) then                --【速通输入，“hd3”“HD3”】都会插入16个关卡坐标
             for i = 1, 8 do
@@ -4539,13 +4539,16 @@ update_state_from_ui = function()
     appid = server == 0 and oppid or bppid
     job = parse_from_ui("now_job_ui", all_job)
 
-    fight = parse_fight_config(fight_ui)
-    -- log("fight", fight)
+
 
     -- 活动开放时间段
-    hd_open_time_end = parse_time("202403310400")
+    hd_nickname = "OD"
+    hd_max_stage = 8
     hd2_open_time_end = parse_time("202401160400") -- 故事集开放时间段
     hd_mod = "SS"
+
+    fight = parse_fight_config(fight_ui)
+    -- log("fight", fight)
 
     -- hd_shop_open_time_end = parse_time("202309260400")  -- 活动商店关闭时间
     -- hd2_shop_open_time_end = parse_time("202302240400") -- 活动2商店关闭时间
