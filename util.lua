@@ -4366,8 +4366,20 @@ parse_fight_config = function(fight_ui)
         end
         if table.find({ '活动', hd_nickname, }, startsWithX(v)) then
             local idx = v:gsub(".-(%d+)$", '%1')
+            idx = tonumber(idx) or 0
+            if idx > hd_max_stage then
+                idx = hd_max_stage
+            end
             v = "HD-" .. (idx or '')
             -- log(2731, v, idx)
+        end
+
+        if table.find({ 'HD-', }, startsWithX(v)) then
+            local idx = v:gsub(".-(%d+)$", '%1')
+            idx = tonumber(idx) or 0
+            if idx > hd_max_stage then
+                v = "HD-" .. (hd_max_stage or '')
+            end
         end
 
         -- 芯片
@@ -4544,6 +4556,7 @@ update_state_from_ui = function()
     -- 活动开放时间段
     hd_nickname = "OD"
     hd_max_stage = 8
+    hd_open_time_end = parse_time("202403310400")
     hd2_open_time_end = parse_time("202401160400") -- 故事集开放时间段
     hd_mod = "SS"
 
