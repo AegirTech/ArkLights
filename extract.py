@@ -143,12 +143,12 @@ def avator2operator(src="ArknightsGameData/zh_CN/gamedata/excel/character_table.
 
 # https://github.com/yuanyan3060/ArknightsGameResource 使用此解包仓库
 def skillicon2operator(
-        char=os.path.join(
-            os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"
-        ),
-        build=os.path.join(
-            os.getcwd(), "ArknightsGameResource/gamedata/excel/building_data.json"
-        ),
+    char=os.path.join(
+        os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"
+    ),
+    build=os.path.join(
+        os.getcwd(), "ArknightsGameResource/gamedata/excel/building_data.json"
+    ),
 ):
     char = json.loads(open(char, encoding="utf-8").read())
     build = json.loads(open(build, encoding="utf-8").read())
@@ -172,13 +172,13 @@ def skillicon2operator(
 
 
 def recruit(
-        char=os.path.join(
-            os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"
-        ),
-        gacha=os.path.join(
-            os.getcwd(), "ArknightsGameResource/gamedata/excel/gacha_table.json"
-        ),
-        to="lua",
+    char=os.path.join(
+        os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"
+    ),
+    gacha=os.path.join(
+        os.getcwd(), "ArknightsGameResource/gamedata/excel/gacha_table.json"
+    ),
+    to="lua",
 ):
     char = json.loads(open(char, encoding="utf-8").read())
     gacha = json.loads(open(gacha, encoding="utf-8").read())
@@ -358,20 +358,31 @@ def screencap(stem):
 
 
 def get_level_info() -> list:
-    response = requests.get(url="https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
-                                "/excel/story_review_table.json")
+    response = requests.get(
+        url="https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
+        "/excel/story_review_table.json"
+    )
     if response.status_code != 200:
         return []
     data = response.json()
     latest_act = max(data, key=lambda k: int(data[k]["startTime"]))
-    response = requests.get(url="https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
-                                "/excel/stage_table.json")
+    latest_remakeact = max(data, key=lambda k: int(data[k]["remakeStartTime"]))
+    if data[latest_remakeact]["remakeStartTime"] > data[latest_act]["startTime"]:
+        latest_act = latest_remakeact
+    response = requests.get(
+        url="https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
+        "/excel/stage_table.json"
+    )
     if response.status_code != 200:
         return []
     data = response.json()["stages"]
     ret_list = []
     for k, v in data.items():
-        if (latest_act in k) and (story_code := v["code"]) and (story_code not in ret_list):
+        if (
+            (latest_act in k)
+            and (story_code := v["code"])
+            and (story_code not in ret_list)
+        ):
             ret_list.append(story_code)
     # print(latest_act, ret_list)
     return ret_list
@@ -391,8 +402,22 @@ def screencap_distance(path="screencap"):
     if online:
         all_list = get_level_info()
     else:
-        all_list = ["HS-ST-1", "HS-1", "HS-TR-1", "HS-2", "HS-3", "HS-4", "HS-TR-2", "HS-5", "HS-ST-2", "HS-6",
-                    "HS-7", "HS-8", "HS-9", "HS-ST-3"]
+        all_list = [
+            "HS-ST-1",
+            "HS-1",
+            "HS-TR-1",
+            "HS-2",
+            "HS-3",
+            "HS-4",
+            "HS-TR-2",
+            "HS-5",
+            "HS-ST-2",
+            "HS-6",
+            "HS-7",
+            "HS-8",
+            "HS-9",
+            "HS-ST-3",
+        ]
         # all_list = ["DH-S-1", "DH-S-2", "DH-S-3", "DH-S-4", "DH-MO-1"]
     print(all_list)
 
@@ -419,6 +444,7 @@ def screencap_distance(path="screencap"):
             text = text.replace(" ", "-")
             text = text.replace("B12", "BI-2")
             text = text.replace(" ", "")
+            text = text.replace("00-", "OD-")
             text = text.replace("1C", "IC")
             # text = text.replace("ST-1", "")
             # text = text.replace("ST-2", "")
@@ -455,7 +481,9 @@ def screencap_distance(path="screencap"):
         if not same_page:
             p[0] = 960 + shift_right * 1080 // 720
         # print(f'["HD-{x}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
-        print(f'["HD{all_list[x - 1][2:]}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
+        print(
+            f'["HD{all_list[x - 1][2:]}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},"
+        )
 
     # 距离膨胀系数，部分活动需要微调
     distanceExpansionCoefficient = 1.12
@@ -470,13 +498,18 @@ def screencap_distance(path="screencap"):
         if same_page:
             print(f'["HD{all_list[x - 1][2:]}"] = ' + "{ swip_right_max, -0 },")
         else:
-            print(f'["HD{all_list[x - 1][2:]}"] = ' + "{ swip_right_max, -" + str(p) + "},")
+            print(
+                f'["HD{all_list[x - 1][2:]}"] = '
+                + "{ swip_right_max, -"
+                + str(p)
+                + "},"
+            )
         # print(f'["HD-{x}"] = ' + "{ swip_right_max, -" + str(p) + "},")
 
 
 def process_transparent_pixels(
-        input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
-        output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill_new"),
+    input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
+    output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill_new"),
 ):
     # 用于处理技能图标背景 不知道为什么透明背景识别失败
     import os
