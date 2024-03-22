@@ -168,6 +168,12 @@ def saverun():
 
 
 def release(type):
+    with open("main.lua", "r", encoding="utf-8") as f:
+        lines = f.readlines()
+        for line in lines:
+            if re.match("--\s*hotUpdate\(\)", line):
+                print("检测到热更新被注释,请重新打包")
+                return
     if type == "RELEASE":
         save()
         run(False)
