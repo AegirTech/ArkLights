@@ -4551,8 +4551,6 @@ update_state_from_ui = function()
     appid = server == 0 and oppid or bppid
     job = parse_from_ui("now_job_ui", all_job)
 
-
-
     -- 活动开放时间段
     hd_nickname = "OD"
     hd_max_stage = 8

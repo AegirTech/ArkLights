@@ -1583,6 +1583,7 @@ update_state = function()
     no_friend = false
     cur_fight = ''
     fight_failed_times = {}
+    hd_failed_times = 0
     fight_hard_mode = {}
     zero_san = false
     login_error_times = 0
@@ -3472,7 +3473,16 @@ path.轮次作战 = function()
         -- 导航/代理失败3次就删除
         fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) + 1
 
+
         if fight_failed_times[cur_fight] >= max_fight_failed_times then
+            -- 活动关卡另外计算
+            if string.find(cur_fight, "hd-") then
+                hd_failed_times = (hd_failed_times or 0) + 1
+                if hd_failed_times >= 3 then
+                    clean_hdfight()
+                end
+            end
+
             -- 有磨难关卡，切换至磨难再试
             if get_fight_type(cur_fight) == "主线" and
                 get_fight_special_type(cur_fight) == "磨难" and
@@ -4260,6 +4270,12 @@ clean_jmfight = function()
         return get_fight_type(v) == '剿灭'
     end)
     log("after jmfight clean", fight, fight_tick)
+end
+
+clean_hdfight = function()
+    fight, fight_tick = clean_table(fight, fight_tick, function(v)
+        return get_fight_type(v) == '活动'
+    end)
 end
 
 clean_fight = function(x)
