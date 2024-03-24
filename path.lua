@@ -4272,12 +4272,6 @@ clean_jmfight = function()
     log("after jmfight clean", fight, fight_tick)
 end
 
-clean_hdfight = function()
-    fight, fight_tick = clean_table(fight, fight_tick, function(v)
-        return get_fight_type(v) == '活动'
-    end)
-end
-
 clean_fight = function(x)
     log("before fight clean", fight, fight_tick)
     fight, fight_tick = clean_table(fight, fight_tick,
@@ -5275,13 +5269,13 @@ end
 
 path.商店搬空 = function()
     local t = os.time()
-    if _G.shop_period == nil or _G.shop_period > 3 or _G.shop_period < 0 then _G.shop_period = 0 end
-    if _G.shop_day == nil or _G.shop_day > 4 or _G.shop_day < 0 then _G.shop_day = 0 end
+    if not shop_period then shop_period = 0 end
+    if not shop_day then shop_day = 0 end
 
     local hd_open_time_end = hd_mod == "故事集" and hd2_open_time_end or hd_open_time_end
 
     -- 搬商店时间
-    interval = t - hd_open_time_end
+    local interval = t - hd_open_time_end
     if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) then
         return
     elseif shop_period == 1 and not (interval > 0 and t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day) then
@@ -5396,8 +5390,24 @@ path.商店搬空 = function()
 end
 
 path.故事解锁 = function()
+    local t = os.time()
+    if not shop_period then shop_period = 0 end
+    if not shop_day then shop_day = 0 end
+    local hd_open_time_end = hd2_open_time_end
+    -- 搬商店时间
+    local interval = t - hd_open_time_end
+    if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) then
+        return
+    elseif shop_period == 1 and not (interval > 0 and t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day) then
+        return
+    elseif shop_period == 2 and not ((t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) or (t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day)) then
+        return
+    end
+
     log("故事集剧情解锁")
-    if not path.活动页面寻找(3) then return end
+
+    if not path.活动页面寻找(1) then return end
+
     if not wait(function()
             if findOne("故事集导航") then return true end
         end, 10) then
