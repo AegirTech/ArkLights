@@ -3476,7 +3476,7 @@ path.轮次作战 = function()
 
         if fight_failed_times[cur_fight] >= max_fight_failed_times then
             -- 活动关卡另外计算
-            if string.find(cur_fight, "hd-") then
+            if get_fight_type(cur_fight) == "活动" then
                 hd_failed_times = (hd_failed_times or 0) + 1
                 if hd_failed_times >= 3 then
                     clean_hdfight()

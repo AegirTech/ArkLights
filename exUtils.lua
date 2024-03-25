@@ -1678,7 +1678,11 @@ game_check_version = function(pkg)
     local ret = httpGet("https://ak-conf.hypergryph.com/config/prod/official/Android/version")
     local status
     status, ret = pcall(JsonDecode, ret)
+    if not status then
+        return
+    end
     latestVersion = string.gsub(get(ret, 'clientVersion'), "%.", "")
+    latestVersion = latestVersion or current_version
     if math.abs(current_version - latestVersion) < 5 then -- 鹰角有时候偷偷更新导致版本号不一致
         log(pkg .. "已安装最新版本", latestVersion)
         return true
