@@ -4367,9 +4367,6 @@ parse_fight_config = function(fight_ui)
         if table.find({ '活动', hd_nickname, }, startsWithX(v)) then
             local idx = v:gsub(".-(%d+)$", '%1')
             idx = tonumber(idx) or 0
-            if idx > hd_max_stage then
-                idx = hd_max_stage
-            end
             v = "HD-" .. (idx or '')
             -- log(2731, v, idx)
         end
@@ -4411,7 +4408,7 @@ parse_fight_config = function(fight_ui)
             for _ = 1, 99 do table.insert(expand_fight, '长期委托2') end
             for _ = 1, 99 do table.insert(expand_fight, '长期委托3') end
         elseif table.includes({ 'HD' }, v) then
-            for i = hd_max_stage, 1, -1 do
+            for i = hd_max_stage, hd_max_stage - 3, -1 do
                 for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
             end
         elseif table.includes({ 'HD1' }, v) then

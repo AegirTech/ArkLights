@@ -1583,7 +1583,6 @@ update_state = function()
     no_friend = false
     cur_fight = ''
     fight_failed_times = {}
-    hd_failed_times = 0
     fight_hard_mode = {}
     zero_san = false
     login_error_times = 0
@@ -3475,14 +3474,6 @@ path.轮次作战 = function()
 
 
         if fight_failed_times[cur_fight] >= max_fight_failed_times then
-            -- 活动关卡另外计算
-            if get_fight_type(cur_fight) == "活动" then
-                hd_failed_times = (hd_failed_times or 0) + 1
-                if hd_failed_times >= 3 then
-                    clean_hdfight()
-                end
-            end
-
             -- 有磨难关卡，切换至磨难再试
             if get_fight_type(cur_fight) == "主线" and
                 get_fight_special_type(cur_fight) == "磨难" and
@@ -4412,7 +4403,7 @@ path.活动 = function(x)
         return
     end
     path.跳转("首页")
-    tap("面板活动")
+    tap("面板活动2")
     log(x)
     if string.find(x, "HD-EX") then
         point["活动导航0"] = point["活动导航EX"]
@@ -5285,7 +5276,7 @@ path.商店搬空 = function()
     end
     log("商店清空任务")
 
-    if not path.活动页面寻找(1) then return end
+    if not path.活动页面寻找(2) then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
