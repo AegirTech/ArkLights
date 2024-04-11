@@ -4549,9 +4549,9 @@ update_state_from_ui = function()
     job = parse_from_ui("now_job_ui", all_job)
 
     -- 活动开放时间段
-    hd_nickname = "OD"
+    hd_nickname = "BB"
     hd_max_stage = 8
-    hd_open_time_end = parse_time("202403310400")
+    hd_open_time_end = parse_time("202405030400")
     hd2_open_time_end = parse_time("202401160400") -- 故事集开放时间段
     hd_mod = "SS"
 
@@ -4564,8 +4564,8 @@ update_state_from_ui = function()
     -- hd2_mod = "故事集"
 
     -- 资源关全天开放时间段
-    all_open_time_start = parse_time("202311211600")
-    all_open_time_end = parse_time("202312050400")
+    all_open_time_start = parse_time("202403281600")
+    all_open_time_end = parse_time("202404110400")
     update_open_time()
 
     -- 危机合约时间段，只为加速平时的信用交易所
