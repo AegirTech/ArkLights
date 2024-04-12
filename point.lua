@@ -2319,7 +2319,7 @@ distance = {
     ["HD-4"] = { swip_right_max, -728 },
     ["HD-5"] = { swip_right_max, -781 },
     ["HD-6"] = { swip_right_max, -855 },
-    ["HD-7"] = { swip_right_max, -945 },
+    ["HD-7"] = { swip_right_max, -955 },
     ["HD-8"] = { swip_right_max, -976 },
     ["HD-9"] = { swip_right_max, -1420 },
 
