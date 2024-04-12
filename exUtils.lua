@@ -1723,18 +1723,41 @@ auto_update_game = function()
 end
 
 --下载并安装游戏
+-- install_game = function(url)
+--     console.show()
+--     os.execute("mkdir " .. getWorkPath() .. '/apk/')
+--     downloadpath = getWorkPath() .. '/apk/arknights.apk'
+--     log("开始下载", url, downloadpath)
+--     if downloadFile(url, downloadpath, function(process)
+--             if process % 5 == 0 then toast("下载进度：" .. process .. "%") end
+--         end) == 0 then --下载进度
+--         --使用root权限安装
+--         exec("su root sh -c 'pm install -r " .. downloadpath .. "'")
+--         --删除apk
+--         exec("su root rm -rf " .. downloadpath)
+--         --log("install finish",downloadpath)
+--     else
+--         log("下载失败，请检查网络连接")
+--     end
+--     console.dismiss()
+-- end
+
+-- 使用curl下载并安装
 install_game = function(url)
     console.show()
-    os.execute("mkdir " .. getWorkPath() .. '/apk/')
-    downloadpath = getWorkPath() .. '/apk/arknights.apk'
+    exec("mkdir " .. getWorkPath() .. '/apk/')
+    local downloadpath = getWorkPath() .. '/apk/arknights.apk'
+    local curlCommand = curlpath .. ' -o "' .. downloadpath .. '" "' .. url .. '"'
+    if (folder_exists("/data/user/0/com.hypergryph.arknights/files/AB")) then
+        exec("su root sh -c 'rm -rf /data/user/0/com.hypergryph.arknights/files/'")
+    end
     log("开始下载", url, downloadpath)
-    if downloadFile(url, downloadpath, function(process)
-            if process % 5 == 0 then toast("下载进度：" .. process .. "%") end
-        end) == 0 then --下载进度
+    log(curlCommand)
+    if exec(curlCommand) == true then
         --使用root权限安装
         exec("su root sh -c 'pm install -r " .. downloadpath .. "'")
         --删除apk
-        exec("su root rm -rf " .. downloadpath)
+        exec("su root rm -rf " .. getWorkPath() .. '/apk/arknights.apk')
         --log("install finish",downloadpath)
     else
         log("下载失败，请检查网络连接")
