@@ -2165,3 +2165,29 @@ remove_lr_ad = function()
         delfile(ad)
     end
 end
+
+-- 给定需要导航的活动坐标，判断是否已经三星通关，需要滑动后判断
+fight_perfect_pass = function(tap_coordinate)
+    -- 宽200 高50 00B2FF
+    area = { tap_coordinate[1] - scale(130), tap_coordinate[2] - scale(50), tap_coordinate[1] + scale(130),
+        tap_coordinate[2] + scale(50) }
+    log(area)
+    local count, b, g, r = 0, 0, 0, 0
+    for y = area[2], area[4], 1 do
+        for x = area[1], area[3], 1 do
+            ori_color = getPixelColor(x, y)
+            b, g, r = colorToRGB(ori_color)
+            if r >= 0 and r <= 8 and g >= 134 and g <= 178 and b >= 198 and b <= 255 then
+                count = count + 1
+            end
+        end
+    end
+    log(count, count / (scale(100) * scale(50)))
+    log(count, count / scale(scale(1300)))
+    local x = count / scale(scale(1300))
+    if math.abs(x - 1) <= 0.03 then
+        return true
+    else
+        return false
+    end
+end
