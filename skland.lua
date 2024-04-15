@@ -13,8 +13,6 @@ Skland_sign_token = "" -- 新版森空岛签名使用
 
 Headers = {
     ["User-Agent"] = 'Skland/1.0.1 (com.hypergryph.skland; build:100001047; Android 33; ) Okhttp/4.11.0',
-    ["Accept-Encoding"] = 'gzip',
-    ["Connection"] = 'close',
     ["Content-Type"] = "application/json"
 }
 
@@ -118,12 +116,16 @@ end
 skland_get_bind_info = function()
     local url = API .. "/game/player/binding"
     skland_sign("/game/player/binding", "")
-    local ret = curl_get(url, Headers, 5)
+    local ret = curl_get(url, Headers, 5, nil)
     local status, ret = pcall(JsonDecode, ret)
     if status then
         if get(ret, 'code') == 0 then
-            ret = ret["data"]["list"][1]["bindingList"]
-            return ret
+            for i, v in pairs(ret["data"]["list"]) do
+                if v["appCode"] == "arknights" then
+                    return v["bindingList"]
+                end
+            end
+            return nil
         else
             return nil
         end
@@ -167,7 +169,7 @@ skland_refresh_token = function()
     headers["sign_enable"] = false
     -- headers["timestamp"] = os.time()
     headers["sign"] = nil
-    local ret = curl_get(url, headers, 5)
+    local ret = curl_get(url, headers, 5, nil)
     log(ret)
     local status, ret = pcall(JsonDecode, ret)
     if status then
@@ -187,7 +189,7 @@ end
 skland_get_account_info = function(cred)
     local url = API .. "/user"
     skland_sign("/user", "")
-    local ret = curl_get(url, Headers, 5)
+    local ret = curl_get(url, Headers, 5, nil)
     log(ret)
     local status, ret = pcall(JsonDecode, ret)
     if status then
@@ -262,25 +264,9 @@ skland_daily_checkin = function(account, password)
     end
 end
 
--- 获取森空岛账户信息
-get_account_info = function(cred)
-    local url = api .. "user"
-    local headers = {}
-    headers["Content-Type"] = "application/json"
-    headers["cred"] = cred
-    local ret = LuaEngine.httpGet(url, headers, 5)
-    local status, ret = pcall(JsonDecode, ret)
-    if status then
-        return ret
-    else
-        log("json解析失败" .. ret)
-        return 0
-    end
-end
-
 -- 返回签到所有签到的结果
 skland_get_checkin_result = function(cred, uid, server)
-    local url = api .. "game/attendance?gameId=" .. server .. "&uid=" .. uid
+    local url = API .. "game/attendance?gameId=" .. server .. "&uid=" .. uid
     local headers = {}
     headers["cred"] = cred
     headers["Content-Type"] = "application/json"
@@ -288,12 +274,9 @@ skland_get_checkin_result = function(cred, uid, server)
     log(ret)
 end
 
-skland_account_check = function(cred)
-    local url = api .. "user/check"
-    local headers = {
-        ["Content-Type"] = "application/json",
-        ["cred"] = cred
-    }
+skland_account_check = function()
+    local url = API .. "/user/check"
+    skland_sign("/user/check", "")
     local result = curl_get(url, headers)
     local status, result = pcall(JsonDecode, result)
     log(result)
@@ -302,12 +285,10 @@ skland_account_check = function(cred)
         local msg = get(result, "message")
         local ret = get(result, 'data', 'isNewUser')
         -- log(ret)
-        if code == 0 then
-            return ret
-        elseif string.find(msg, "用户未登录") then
-            return 1
+        if string.find(msg, "用户未登录") then
+            return false
         else
-            return 2
+            return true
         end
     else
         log("json解析失败")
@@ -336,4 +317,81 @@ get_timestamp_oneline = function(v)
         log("json解析失败")
         return 0
     end
+end
+
+-- 森空岛初始化
+skland_init = function(account, password)
+    log("森空岛初始化")
+    local cred = read_local_config("account", account .. "cred")
+    if cred == nil or cred == "" or #cred < 5 then
+        log("cred无效，等待重新获取")
+        cred = skland_get_cred(account, password)
+        if cred ~= 0 then
+            save_local_config("account", account .. "cred", cred)
+            log("cred获取完成" .. cred)
+        else
+            log("cred无效，登录存在错误，请联系开发者")
+        end
+    end
+    log("从配置中读取cred" .. cred)
+    Headers["cred"] = cred
+    skland_refresh_token()
+end
+
+-- 获取绑定的游戏信息
+skland_get_game_info = function(uid)
+    local url = API .. "/game/player/info"
+    params = {
+        ["uid"] = uid
+    }
+    skland_refresh_token()
+    skland_sign("/game/player/info", "uid=" .. uid)
+    local ret = curl_get(url .. "?uid=" .. uid, Headers, 10, nil)
+    log(ret)
+    local status
+    status, ret = pcall(JsonDecode, ret)
+    log(ret)
+    if status then
+        if get(ret, 'code') == 0 then
+            return ret
+        else
+            return {}
+        end
+    else
+        log("json解析失败" .. ret)
+        return {}
+    end
+end
+
+-- 获取游戏信息 完整流程 如果账户绑定了多个b服则需要指定，大部分情况不用考虑
+game_game_info = function(account, password, equire_uid, require_server)
+    require_uid = require_uid or 0
+    require_server = require_server or 0
+    skland_init(account, password)
+    list = skland_get_bind_info()
+    if list == nil then
+        log("绑定列表获取失败")
+        return false
+    end
+    log(list)
+    for i, v in pairs(list) 
+        local gameuid = list[i]["uid"]
+        if require_uid ~= 0 and require_uid ~= gameuid then
+            log("uid不匹配，跳过")
+            goto countinue
+        end
+        local server = list[i]["channelMasterId"]
+        if require_server ~= 0 and require_server ~= server then
+            log("server不匹配，跳过")
+            goto countinue
+        end
+        log(i, gameuid, server)
+        ret = skland_get_game_info(gameuid)
+        if ret ~= {} then
+            log("获取完成，后续跳过")
+            return ret["data"]
+        end
+        ::countinue::
+    end
+    return {}
 end

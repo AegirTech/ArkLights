@@ -1948,7 +1948,7 @@ curl_post = function(url, headers, postData, timeout, arguments)
     return exec2(curlCommand)
 end
 
-curl_get = function(url, headers, timeout)
+curl_get = function(url, headers, timeout, arguments)
     local curlCommand = string.format("%s -X GET '%s'", curlpath, url)
     if headers then
         for k, v in pairs(headers) do
@@ -1958,6 +1958,9 @@ curl_get = function(url, headers, timeout)
     end
     timeout = timeout or 5
     curlCommand = string.format("%s -m %s", curlCommand, timeout)
+    if arguments then
+        curlCommand = string.format("%s %s", curlCommand, arguments)
+    end
     log(curlCommand)
     return exec2(curlCommand)
 end
@@ -2173,6 +2176,7 @@ fight_perfect_pass = function(tap_coordinate)
         tap_coordinate[2] + scale(50) }
     log(area)
     local count, b, g, r = 0, 0, 0, 0
+    keepCapture()
     for y = area[2], area[4], 1 do
         for x = area[1], area[3], 1 do
             ori_color = getPixelColor(x, y)
@@ -2182,9 +2186,11 @@ fight_perfect_pass = function(tap_coordinate)
             end
         end
     end
-    log(count, count / (scale(100) * scale(50)))
-    log(count, count / scale(scale(1300)))
+    releaseCapture()
+    -- log(count, count / (scale(100) * scale(50)))
+    -- log(count, count / scale(scale(1300)))
     local x = count / scale(scale(1300))
+    log(count, x)
     if math.abs(x - 1) <= 0.03 then
         return true
     else
