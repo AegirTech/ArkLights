@@ -146,13 +146,13 @@ path.base = {
         fight_start_time = fight_start_time or time()
         local elapsed = time() - fight_start_time
         local fight_type = get_fight_type(cur_fight)
-
-        -- 一般10分钟，剿灭40分钟
+        log("接管作战")
+        -- 一般15分钟，剿灭40分钟
         local fight_timeout = (table.includes({ "剿灭" }, fight_type) and elapsed >
                 40 * 60 * 1000) or
             (not table.includes({ "剿灭" }, fight_type) and
-                elapsed > 10 * 60 * 1000)
-
+                elapsed > 15 * 60 * 1000)
+        log(fight_timeout)
         -- 超时跳过当前关
         if fight_timeout then
             local info = table.join(qqmessage, ' ') .. " [" .. cur_fight ..
@@ -164,15 +164,16 @@ path.base = {
             return
         end
 
-        -- 超时5分钟后重启游戏
+        -- 超时15分钟后重启游戏
         if not wait(function()
                 if not findOne("接管作战") then return true end
                 -- log(126)
+                --if findOne("跳过剧情") then path.跳过剧情() end
                 if findOne("暂停中") and not disappear("暂停中", 5) then
                     tap("开包skip")
                     disappear("暂停中")
                 end
-            end, 5 * 60) then
+            end, 15 * 60) then
             return restartapp(appid)
         end
         -- log(127)
@@ -194,6 +195,7 @@ path.base = {
 
         if not wait(disable_log_wrapper(function()
                 if findOne("行动结束") then see_end = true end
+                if copy_homework and findOne("返回") then return true end
                 if findOne("行动结束") and findOne("零星代理") then
                     first_time_see_zero_star = first_time_see_zero_star or time()
                     -- 实测560秒，给两倍
@@ -392,6 +394,140 @@ path.base = {
     end,
 
 }
+
+auto_skill = function()
+    --自己手打的时候自动放技能
+    local skillArray = {}
+    local skillUseOnce = { 横扫架势 = 0, }
+    local skillFind
+    local sameSkillInterval
+    local blackList = { { -1, -1 } }
+    local timeTick = os.time()
+    print(blackList)
+    local skillRelease = function()
+        print("try skillRelease")
+        wait(function()
+            tap("开技能")
+            if disappear("生命值蓝", 1) then
+                return true
+            else
+                tap("点cost")
+                disappear("生命值蓝", 1)
+            end
+        end)
+    end
+
+    local isInBlackList = function(tb1, tb2)
+        if tb2 and #tb2 > 0 then
+            for _, v in ipairs(tb2) do
+                if math.abs(tb1[1] - v[1]) + math.abs(tb1[2] - v[2]) < 20 then
+                    return true
+                end
+            end
+        end
+    end
+
+
+    while true do
+        skillFind1 = findOne("技能亮", 0.93)
+        skillFindAll = findOnes("技能亮", 0.93)
+        --[===[        if skillFind then
+		log(skillFind)
+		log(skillFindAll)
+		end]===]
+
+
+        startBattle = findOne("开始行动")
+        --startBattle = false
+        if startBattle then
+            blackList = { { -1, -1 } }
+            skillArray = {}
+            log("重新开始战斗，清理")
+        end
+
+
+
+        log(skillFindAll)
+
+        for i = 1, #skillFindAll do
+            skillFind = { skillFindAll[i]["x"], skillFindAll[i]["y"] }
+            log(skillFind)
+
+            -- xy坐标 + 时间戳
+            local skillUse = { skillFind[1], skillFind[2], os.time() }
+
+            -- 时间差
+            local usedTimeGap = -1
+            -- 查到的下标
+            local findIndex = 0
+
+            for i = 1, #skillArray do
+                --计算坐标绝对值差
+                local dx = skillArray[i][1] - skillUse[1]
+                local dy = skillArray[i][2] - skillUse[2]
+                log("坐标差")
+                log(math.abs(dx) + math.abs(dy))
+                if math.abs(dx) + math.abs(dy) < 10 then
+                    log("搜索到历史使用记录")
+                    findIndex = i
+                    usedTimeGap = skillUse[3] - skillArray[i][3]
+                    log("使用时间差")
+                    log(usedTimeGap)
+                    goto searchResult
+                end
+            end
+
+            ::searchResult::
+
+
+            if usedTimeGap ~= -1 and usedTimeGap < 10 then
+                log("时间差过小跳过执行,忽略本次查找到的结果")
+                goto continue
+            end
+
+            if findIndex == 0 then
+                -- 存入使用记录
+                log("新增使用记录")
+                table.insert(skillArray, skillUse)
+            end
+
+            if findIndex ~= 0 then
+                -- 存入使用记录
+                log("存入使用记录")
+                skillArray[findIndex] = skillUse
+            end
+
+
+            if not isInBlackList(skillFind, blackList) then
+                tap({ skillFind[1], skillFind[2] + scale(140) })
+                -- appear("技能ready", 5)
+                ssleep(0.1)
+                appear("生命值蓝", 5)
+                --ocr 干员技能名字
+                local skillName = ocr("技能名称范围")
+                if skillName and #skillName > 0 then
+                    print(blackList, skillFind)
+                    if skillName[1]["text"] == "横扫架势" then
+                        table.insert(blackList, skillFind)
+                        if skillUseOnce["横扫架势"] == 0 then
+                            skillUseOnce["横扫架势"] = 1
+                            print(blackList)
+                        else
+                            tap("点cost")
+                            disappear("生命值蓝", 1)
+                            goto noSkillRelease
+                        end
+                    end
+                end
+                skillRelease()
+                ::noSkillRelease::
+            end
+            ::continue::
+        end
+        ssleep(0.2)
+    end
+    exit()
+end
 
 path.bilibili_login = {
     b服年度报告 = function()
@@ -1049,6 +1185,29 @@ path.fallback = {
         -- disappear("祈愿牌确认", 10)
         return path.fallback.签到返回()
     end,
+    新年祝福返回 = function()
+        wait(function()
+            appearTap("新年祝福收下", 3)
+            appearTap("获得物资", 3)
+        end, 3)
+        wait(function()
+            tap("新年祝福签到")
+        end, 1.5)
+        wait(function()
+            if findAny({ "新年祝福返回", "面板" }) then return true end
+            tap("开包skip")
+        end, 2)
+        wait(function()
+            for h = 200, 951, 150 do
+                if findOne("新年祝福返回") then
+                    tap({ scale(1300), scale(h) })
+                    ssleep(.5)
+                end
+            end
+            tap("开包skip")
+            if findAny({ "新年祝福返回", "面板" }) then return true end
+        end, 10)
+    end,
     限时开放许可 = function()
         wait(function() tap("开始作业") end, 1)
         wait(function()
@@ -1415,7 +1574,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
         return true
     end
 
-    log(218)
+    log(218, x, home_target)
 
     local bypass = function(t)
         log("bypass 基建返回确认", prev_jump)
@@ -1456,7 +1615,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
                         if table.includes({ "任务", "好友", "首页" }, home_target) then
                             ssleep(.2)
                         end
-
+                        log(home_target)
                         -- 一直按直到出现新状态
                         tap("主页列表" .. home_target)
                         tap("主页列表" .. home_target)
@@ -3398,6 +3557,279 @@ path.信用购买 = function()
     -- for _, i in pairs(range(20)) do if f() then break end end
 end
 
+path.采购中心商店 = function()
+    if not green_ticket_shop and not yellow_ticket_shop and not red_ticket_shop then return end
+
+    local yellow_ticket_shop_good_need = {}
+    local red_ticket_shop_good_need = {}
+
+    local buy_good = function(good)
+        if not findOne(good) then return end
+
+        if not wait(function()
+                tap(good)
+                if findOne("购买物品面板") then return true end
+            end, 5) then
+        end
+        -- 点击购买
+        if not wait(function()
+                if findOne("购买物品面板", 3) then
+                    tap("交易所商品最多")
+                    ssleep(0.5)
+                    tap("商店支付")
+                end
+                disappear("正在提交反馈至神经", network_timeout)
+
+                if findOne("凭证交易所进入") then return true end
+                if not findOne("购买物品面板") then return true end
+            end, 3) then
+        end
+
+        -- 购买后判断
+        if findOne("购买物品面板", 3) then
+            log("购买失败，大抵是没钱了吧~")
+            return true
+        end
+        disappear("正在提交反馈至神经", network_timeout)
+        appearTap("获得物资", 3)
+    end
+
+    path.跳转("采购中心")
+    if not wait(function()
+            if findOne("凭证交易所进入确认") then return true end
+            tap("凭证交易所进入")
+        end, 5) then
+        return
+    end
+    disappear("正在提交反馈至神经", network_timeout)
+    appear("绿票商店选中", 3)
+    sleep(500)
+    if findOne("绿票第1层确认") then
+        for i = 1, 7 do
+            if _G["green_ticket_shop_" .. i] == true then
+                appear("绿票第1层确认", 3)
+                buy_good("凭证交易所购买列表" .. i)
+            end
+        end
+    end
+    sleep(500)
+
+    for i = 8, 9, 1 do
+        if _G["green_ticket_shop_" .. i] == true then
+            tap("绿票第2层确认")
+            appear("绿票第2层确认", 4)
+            if i == 8 then
+                buy_good("凭证交易所购买列表2")
+            elseif i == 9 then
+                appear("绿票第2层确认", 4)
+                buy_good("凭证交易所购买列表6")
+            end
+        end
+    end
+    --[===[log(green_ticket_shop_good_need)
+	log(green_ticket_shop_good_need2)]===]
+
+    for i = 1, #yellow_ticket_shop_good do
+        if _G["yellow_ticket_shop_" .. i] == true then
+            if i == 1 then
+                for j = 1, 5 do
+                    table.insert(yellow_ticket_shop_good_need, "黄票商店寻访凭证")
+                end
+            elseif i == 2 then
+                for j = 1, 5 do
+                    table.insert(yellow_ticket_shop_good_need, "黄票商店中中坚寻访凭证")
+                end
+            elseif i == 3 then
+                for j = 1, 4 do
+                    table.insert(yellow_ticket_shop_good_need, "黄票商店模组数据块")
+                end
+            end
+        end
+    end
+    log(yellow_ticket_shop_good_need)
+
+    for i = 1, #red_ticket_shop_good do
+        if _G["red_ticket_shop_" .. i] == true then
+            if i == 1 then
+                table.insert(red_ticket_shop_good_need, "模组数据块")
+            elseif i == 2 then
+                table.insert(red_ticket_shop_good_need, "干员")
+            end
+        end
+    end
+    log(red_ticket_shop_good_need)
+
+
+    local 指定商店购买 = function(good_need)
+        if #good_need == 0 then
+            return
+        end
+
+        for k, v in pairs(good_need) do
+            -- 点击商品
+            tap("商店顶栏")
+            ssleep(0.1)
+            if not wait(function()
+                    tap(v)
+                    if findOne("购买物品面板") then return true end
+                end, 5) then
+            end
+
+            if findOne("凭证交易所进入") then
+                log("未能进入商品，大概是售空了吧~")
+                goto continue
+            end
+
+            -- 点击购买
+            if not wait(function()
+                    if findOne("购买物品面板", 3) then
+                        tap("交易所商品最多")
+                        ssleep(0.5)
+                        tap("商店支付")
+                    end
+                    ssleep(1)
+                    -- tap("商店顶栏")
+                    if findOne("凭证交易所进入") then return true end
+                    if not findOne("购买物品面板") then return true end
+                end, 3) then
+            end
+            disappear("正在提交反馈至神经", network_timeout)
+            -- 购买后判断
+            if findOne("购买物品面板", 3) then
+                log("购买失败，大抵是没钱了吧~")
+                return true
+            end
+
+
+
+            ::continue::
+        end
+    end
+
+
+    local 黄票商店购买 = function()
+        if not yellow_ticket_shop then return end
+        if #yellow_ticket_shop_good_need == 0 then return end
+        if not wait(function()
+                if findOne("黄票商店选中") then
+                    return true
+                end
+                tap("黄票商店选中")
+            end, 10) then
+            return
+        end
+        if appear("黄票商店选中") then
+            log("黄票")
+            指定商店购买(yellow_ticket_shop_good_need)
+        end
+    end
+
+    local 向左滑动 = function()
+        gesture({
+            {
+                point = { { screen.width * 0.95, screen.height / 2 }, { screen.width * 0.95 - scale(1000), screen.height / 2 } },
+                start = 0,
+                duration = 1500,
+            },
+        }) -- 滑动大约3个商品的距离
+    end
+
+    local 红票商店购买 = function()
+        if not red_ticket_shop then return end
+        if #red_ticket_shop_good_need == 0 then return end
+
+        -- DCBB0C
+        if not wait(function()
+                if findOne("红票商店选中") then
+                    return true
+                end
+                tap("红票商店选中")
+            end, 10) then
+            return
+        end
+        disappear("正在提交反馈至神经", network_timeout)
+        if not appear("红票商店面板") then return end
+        if table.search(red_ticket_shop_good_need, "模组数据块") then
+            local zx
+            for i = 0, 3 do
+                zx = findOne("红票商店模组", 1)
+                print(zx)
+                if zx then
+                    break
+                end
+                向左滑动()
+                ssleep(1.5)
+            end
+            if not zx then return end
+
+            if not wait(function()
+                    tap(zx)
+                    if findOne("购买物品面板") then
+                        return true
+                    end
+                end, 5) then
+            end
+            if findOne("凭证交易所进入") then
+                log("未能进入商品，大概是售空了吧~")
+                return
+            end
+            -- 点击购买
+            if not wait(function()
+                    if findOne("购买物品面板", 3) then
+                        tap("交易所商品最多")
+                        ssleep(0.5)
+                        tap("商店支付")
+                        -- tap("商店顶栏")
+                    end
+                    ssleep(1)
+                    if findOne("凭证交易所进入") then return true end
+                    if not findOne("购买物品面板") then return true end
+                end, 3) then
+            end
+            if findOne("购买物品面板", 3) then
+                log("购买失败，大抵是没钱了吧~")
+                return true
+            end
+            disappear("正在提交反馈至神经", network_timeout)
+            appearTap("获得物资", 3)
+        end
+        if table.search(red_ticket_shop_good_need, "干员") then
+            local red_ticket_shop_char = { "跃跃", "折光", "石英", "雪绒", "布丁", "蜜莓", "伊桑", "微风" }
+            local char_exist = true
+            local ret
+            while char_exist do
+                ssleep(.5)
+                ret = ocrex("红票商店干员范围")
+                print(JsonEncode(ret))
+                if ret and #ret ~= 0 then
+                    if table.search(red_ticket_shop_char, ret[1]["text"]) then
+                        tap({ ret[1]["l"], ret[1]["b"] })
+                        appearTap("红票商店干员聘用")
+                        disappear("正在提交反馈至神经", network_timeout)
+                        ssleep(2)
+                        if not wait(function()
+                                tap("开包skip")
+                                ssleep(1)
+                                if findOne("凭证交易所进入") then return true end
+                                if findOne("购买物品面板") then return false end
+                            end, 10) then
+                            char_exist = false
+                        end
+                    else
+                        char_exist = false
+                    end
+                else
+                    char_exist = false
+                end
+            end
+        end
+    end
+
+    --绿票商店购买()
+    黄票商店购买()
+    红票商店购买()
+end
+
 get_fight_type = function(x)
     local f = startsWithX(x)
     if table.any({ "上一次" }, f) then
@@ -3612,7 +4044,7 @@ XinPian = {
 path.开始游戏 = function(x, disable_ptrs_check)
     -- 记录石头数量
     save_run_state()
-
+    local need_copy_homework = nil
     log("开始游戏", fight_tick, x)
     if not findOne("开始行动") then return end
     if x == "1-11" then return path["1-11"] end
@@ -3626,6 +4058,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
     -- log(findOne("开始行动"))
     -- safeexit()
 
+    log(copy_homework, homework[x])
     if not appear("代理指挥开", .5) then
         tap("代理指挥开1")
         if not appear("代理指挥开", .5) then
@@ -4866,7 +5299,7 @@ path.活动 = function(x)
             end, 5) then
             return
         end
-    elseif utf8.left(x, 4) == "HD-S" or utf8.left(x, 5) == "HD-MO" then --提取x的前面4个，如果是"HD-S"，则进入活动的S界面
+    elseif utf8.left(x, 5) == "HD-S-" or utf8.left(x, 6) == "HD-MO-" then --提取x的前面4个，如果是"HD-S"，则进入活动的S界面
         if not wait(function()
                 tap("活动导航S")
                 ssleep(.5)
@@ -4892,8 +5325,31 @@ path.活动 = function(x)
 
     swip(x)
     ssleep(.5)
+    last_guide = x
+    if x:includes({ "ST-", "TR-" }) then
+        --教学关和剧情关只打一遍
+        if findOne("作战列表" .. x) then return true end
+    end
     tap("作战列表" .. x)
 
+    if appear("开始剧情", 1) then
+        if not wait(function()
+                tap("开始剧情")
+                sleep(1000)
+                if findOne("跳过剧情") then
+                    path.跳过剧情()
+                    disappear("正在提交反馈至神经", network_timeout)
+                end
+                if findOne("获得物资") then
+                    tap("获得物资")
+                    disappear("获得物资", 1.5)
+                    return true
+                end
+            end, 25) then
+            return
+        end
+        return true
+    end
     if not appear("开始行动") then
         wait(function()
             if appear("主页") then return true end
