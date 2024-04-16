@@ -344,6 +344,7 @@ string.commonmap = function(str, extra_map)
         ["|"] = " ",
         ["@"] = "@",
         ["#"] = "#",
+        ["&"] = "&",
         ["\n"] = " ",
         ["\t"] = " ",
 
@@ -353,7 +354,7 @@ string.commonmap = function(str, extra_map)
         ["＄"] = " ",
         ["％"] = " ",
         ["＾"] = " ",
-        ["＆"] = " ",
+        ["＆"] = "&",
         ["＊"] = "*",
         ["（"] = " ",
         ["）"] = " ",
@@ -455,6 +456,14 @@ table.remove_duplicate = function(t)
     return ans
 end
 
+table.removev = function(t, v)
+    for i = #t, 1, -1 do
+        if t[i] == v then
+            table.remove(t, i)
+        end
+    end
+end
+
 -- 出现n次的元素
 table.appear_times = function(t, times)
     local ans = {}
@@ -524,8 +533,22 @@ table.all = function(t, f)
     return true
 end
 
+table.findk = function(t, s)
+    for k, _ in pairs(t) do if s == k then return true end end
+end
+
+table.search = function(t, s)
+    for k, v in ipairs(t) do if s == v then return k end end
+end
+
 table.findv = function(t, f)
-    for k, v in pairs(t) do if f(v) then return v end end
+    for k, v in pairs(t) do
+        if type(f) == "string" then
+            if v == f then return true end
+        elseif f(v) then
+            return v
+        end
+    end
 end
 
 table.filter = function(t, f)
@@ -579,6 +602,14 @@ table.cat = function(t)
     local ans = {}
     for _, v in pairs(t) do for _, n in pairs(v) do table.insert(ans, n) end end
     return ans
+end
+
+function copyArray(a)
+    local b = {}
+    for i, v in ipairs(a) do
+        b[i] = v
+    end
+    return b
 end
 
 --  in = {
@@ -1507,7 +1538,10 @@ deploy = function(x1, x2, y2, d)
     --   ssleep(.5)
     -- end
     gesture(finger)
-    sleep(dragd + delay + dird + delay)
+    sleep(250)
+    back()
+    sleep(dragd + delay + dird + delay - 250)
+    back()
     log("deploy", finger)
 end
 
@@ -2100,7 +2134,7 @@ make_account_ui = function(layout, prefix)
     addTextView(layout, "信用多买")
     ui.addEditText(layout, prefix .. "high_priority_goods", "招募 土 装置")
     addTextView(layout, "信用少买")
-    ui.addEditText(layout, prefix .. "low_priority_goods", "碳 碳素")
+    ui.addEditText(layout, prefix .. "low_priority_goods", "碳 家 急")
 
     newRow(layout)
     addTextView(layout, "自动招募")
@@ -3219,6 +3253,9 @@ show_debug_ui = function()
     end
 
     newRow(layout)
+    ui.addCheckBox(layout, "continuous_battle", "自动使用最大连战次数,会导致作战次数错乱",
+        true)
+    newRow(layout)
     ui.addCheckBox(layout, "zero_san_after_fight", "使用1-7清空剩余理智",
         true)
     newRow(layout)
@@ -3657,7 +3694,7 @@ show_extra_ui = function()
     addTextView(layout, ">>>>>>>>>>>红票商店购买")
     ui.addCheckBox(layout, "red_ticket_shop", "", false)
 
-    red_ticket_shop_good = { "模组数据块" }
+    red_ticket_shop_good = { "模组数据块", "干员" }
 
     for k, v in pairs(red_ticket_shop_good) do
         if k % max_checkbox_one_row == 1 then
@@ -4290,6 +4327,40 @@ test_fight_hook = function()
     exit()
 end
 
+maa_copliot = function(x)
+    log("开始抄作业", x)
+    local headers = "Content-Type: application/json" --post请求头
+    --[===[local resp  ]===]
+    log(homework_folder .. "\\" .. x .. ".json")
+    --通过接口调用抄作业
+    local t2 = { id = simulator_id, type = "Copilot", params = { enable = true, filename = homework_folder .. "\\" .. x .. ".json", formation = true } }
+    log(JsonEncode(t2))
+    log("post作业，唤起抄作业流程")
+    function callback(response, code)
+        print(response)
+        resp = response
+    end
+
+    --[===[asynHttpPost(callback,"http://" .. pc_ipv4 .. ":8848/API/V1/appendTaskAndStart",JsonEncode(t2),30,headers)
+	while not resp ==true do
+	ssleep (1)
+	end]===]
+    local res, code = httpPost("http://" .. ip .. ":8848/API/V1/appendTaskAndStart", JsonEncode(t2), 100, headers)
+    log("post结束")
+    log("延时100s防止乱点")
+    ssleep(100) --延时100s防止乱点
+    for i = 1, 260 do
+        local state = findAny({ "作战中", "暂停中", "行动结束", "跳过剧情" })
+        if state == "作战中" or state == "暂停中" then
+        elseif state == "行动结束" then
+            break
+        elseif state == "跳过剧情" then
+            path.跳过剧情()
+        end
+        ssleep(5)
+    end
+end
+
 predebug_hook = function()
     if not predebug then return end
     tap_interval = -1
@@ -4342,10 +4413,18 @@ parse_fight_config = function(fight_ui)
 
     -- expand LS-5x999
     local expanded_fight = {}
+    homework = {}
     for _, v in pairs(fight) do
         local cur_fight, times = v:match('(.+)[xX*](%d+)')
         if not cur_fight then
-            table.insert(expanded_fight, v)
+            local cur_fight, secret_code = v:match('(.+)&MAA://(%d+)')
+            if secret_code then
+                copy_homework = true
+                homework[cur_fight] = secret_code
+                table.insert(expanded_fight, cur_fight)
+            else
+                table.insert(expanded_fight, v)
+            end
         else
             for _ = 1, times do table.insert(expanded_fight, cur_fight) end
         end
