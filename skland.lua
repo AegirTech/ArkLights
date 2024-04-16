@@ -374,7 +374,7 @@ game_game_info = function(account, password, equire_uid, require_server)
         return false
     end
     log(list)
-    for i, v in pairs(list) 
+    for i, v in pairs(list) do
         local gameuid = list[i]["uid"]
         if require_uid ~= 0 and require_uid ~= gameuid then
             log("uid不匹配，跳过")
