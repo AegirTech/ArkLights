@@ -4060,12 +4060,30 @@ path.开始游戏 = function(x, disable_ptrs_check)
 
     log(copy_homework, homework[x])
     if not appear("代理指挥开", .5) then
+        if copy_homework and findOne("突袭模式") then
+            tap("突袭模式")
+            appear("开始突袭", 3)
+            if findOne("突袭未三星") or not copy_homework_only then
+                tap("开始突袭")
+                appear("开始行动突袭", 3)
+                goto wait_for_maa
+            else
+                return true
+            end
+        end
         tap("代理指挥开1")
         if not appear("代理指挥开", .5) then
-            -- clean_fight(x)
-            fight_failed_times[cur_fight] = max_fight_failed_times
-            if not appear("主页") then back() end
-            return path.跳转("首页")
+            if copy_homework and homework[x] then
+                need_copy_homework = true
+                --ssleep (6)--等待右上角提示消失
+            else
+                -- clean_fight(x)
+                fight_failed_times[cur_fight] = max_fight_failed_times
+                if not appear("主页") then back() end
+                return path.跳转("首页")
+            end
+        elseif copy_homework_only then
+            return
         end
         -- if not wait(function()
         --   if findOne("代理指挥开") and not disappear("代理指挥开", .5) then
@@ -4074,6 +4092,28 @@ path.开始游戏 = function(x, disable_ptrs_check)
         --   tap("代理指挥开")
         --   appear("代理指挥开", .5)
         -- end, 5) then return end
+    end
+    if appear("代理指挥开", .5) then
+        ssleep(.8)
+        if (not copy_homework_only) and copy_homework and homework[x] then
+            tap("代理指挥开1")
+            need_copy_homework = true
+            disappear("代理指挥开", .5)
+        elseif not findOne("连战次数面板") and findOne("连战按钮") and continuous_battle then
+            appearTap("连战按钮")
+            appear("连战次数面板", 4)
+            local battle_times = 1
+            for i = 2, 6 do
+                battle_times = i
+                if findOne("连战次数列表" .. i) then
+                    battle_times = i - 1
+                    break
+                end
+            end
+            rfg["连战次数白"][2] = (876 - 92 * battle_times) * hscale
+            print(findOne("连战次数白"))
+            tap(findOne("连战次数白"))
+        end
     end
 
     if is_jmfight_enough(x) then return end
@@ -4087,11 +4127,13 @@ path.开始游戏 = function(x, disable_ptrs_check)
     end, 1)
     if fake_fight then return end
 
+    ::wait_for_maa::
+
     local state = nil
     local start_time = time()
     if not wait(function(reset_wait_start_time)
             state = findAny({
-                "开始行动红", "源石恢复理智取消", "药剂恢复理智取消",
+                "开始行动突袭", "开始行动红", "源石恢复理智取消", "药剂恢复理智取消",
                 "单选确认框", "源石恢复理智不足", "当期委托侧边栏",
                 "行动结束",
             })
@@ -4103,11 +4145,12 @@ path.开始游戏 = function(x, disable_ptrs_check)
 
             if state == "单选确认框" then return true end
             if state == "开始行动红" then return true end
+            if state == "开始行动突袭" then return true end --我也没看懂这是干嘛的,先加着
             if state == "行动结束" then return true end
             if state and not disappear(state, .5) then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
 
-            local p = findAny({ "开始行动", "全权委托确认使用" })
+            local p = findAny({ "开始行动", "全权委托确认使用", "开始突袭" })
             if p then
                 tap("开始行动蓝")
                 -- TODO 2秒太慢 => 一开始就用0秒, 2秒内增加至2秒
@@ -4123,40 +4166,50 @@ path.开始游戏 = function(x, disable_ptrs_check)
     if state == "行动结束" then
         no_success_one_loop = 0
         return path.base.接管作战()
-    elseif state == "开始行动红" then
+    elseif state == "开始行动红" or (state == "开始行动突袭" and not copy_homework) then
         no_success_one_loop = 0
-        if fake_fight then
-            log("debug0415", x)
+        if need_copy_homework then
+            ssleep(0.5)
+            auto_prts(homework[x], true)
+        else
+            if fake_fight then
+                log("debug0415", x)
+                if not wait(function()
+                        if not findOne(state) and not appear(state, 1) then return true end
+                        tap("返回")
+                        disappear(state, 1)
+                    end, 5) then
+                    return
+                end
+                return path.base.接管作战()
+            end
             if not wait(function()
-                    if not findOne(state) and not appear(state, 1) then return true end
-                    tap("返回")
-                    disappear(state, 1)
-                end, 5) then
+                    if not findOne(state) then return true end
+                    tap("开始行动红按钮")
+                end, 10) then
                 return
             end
-            return path.base.接管作战()
-        end
-        if not wait(function()
-                if not findOne(state) then return true end
-                tap("开始行动红按钮")
-            end, 10) then
-            return
-        end
-        if not wait(function()
-                if findAny({ "接管作战", "单选确认框", "剿灭接管作战" }) then
-                    return true
-                end
-            end, 60) then
-            -- if findOne("跳过剧情2") and not disappear("跳过剧情2", 10) then
-            path.跳过剧情()
+            if not wait(function()
+                    if findAny({ "接管作战", "单选确认框", "剿灭接管作战" }) then
+                        return true
+                    end
+                end, 60) then
+                -- if findOne("跳过剧情2") and not disappear("跳过剧情2", 10) then
+                path.跳过剧情()
+                -- end
+                return
+            end
+            -- if not appear({"接管作战", "单选确认框"}, 60) then
+            --   log(1430)
+            --   return
             -- end
-            return
+            if findOne("单选确认框") then return end
         end
-        -- if not appear({"接管作战", "单选确认框"}, 60) then
-        --   log(1430)
-        --   return
-        -- end
-        if findOne("单选确认框") then return end
+        return path.base.接管作战()
+    elseif state == "开始行动突袭" then
+        no_success_one_loop = 0
+        ssleep(0.5)
+        auto_prts(homework[x], true)
         return path.base.接管作战()
     elseif stone_times < max_stone_times and state == "源石恢复理智取消" or
         drug_times < max_drug_times and state == "药剂恢复理智取消" then
@@ -4835,6 +4888,16 @@ path.活动 = function(x)
         clean_hdfight()
         return
     end
+
+    local removeTrailingDigits = function(str)
+        -- 使用模式匹配去除末尾的数字
+        local pattern = "(.-)%-?%d+$"
+        local trimmedStr = string.match(str, pattern)
+        print(trimmedStr)
+        return trimmedStr
+    end
+
+    --if last_guide==nil or removeTrailingDigits(last_guide)~=removeTrailingDigits(x) then
     path.跳转("首页")
     tap("面板活动2")
     log(x)
@@ -5317,7 +5380,8 @@ path.活动 = function(x)
         end
     end
 
-    --[[ssleep(2)
+    --[[end
+    ssleep(2)
     swip(x)
     ssleep(.5)]]
 
