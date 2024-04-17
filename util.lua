@@ -604,14 +604,6 @@ table.cat = function(t)
     return ans
 end
 
-function copyArray(a)
-    local b = {}
-    for i, v in ipairs(a) do
-        b[i] = v
-    end
-    return b
-end
-
 --  in = {
 --    "A" = {1,4,5,7},
 --    "B" = {1,2,5,6},
