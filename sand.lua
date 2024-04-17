@@ -127,12 +127,6 @@ Tales_within_the_sand.开始演算 = function()
         Tales_within_the_sand.会聚之地()
         appear("生息底栏烹饪按钮", 3)
         Tales_within_the_sand.掉线状态判断()
-        if sand_missions then
-            if not appear("生息底栏烹饪按钮", 10) then
-                return 沙洲遗闻()
-            end
-            --Tales_within_the_sand.生息演算奇遇节点()
-        end
         Tales_within_the_sand.掉线状态判断()
 
         if not appear("生息底栏烹饪按钮", 10) then
@@ -343,7 +337,7 @@ Tales_within_the_sand.检查代币数量 = function()
     if nx > maxpoint then
         nx = 0 -- 识别错误
     end
-    if sand_distrust_ocr and nx == maxpoint then
+    if nx == maxpoint then
         log("代币数量大于" .. maxpoint)
         if cloud_get_task then
             log("云控上报")
@@ -428,7 +422,6 @@ end
 
 Tales_within_the_sand.生息演算奇遇 = function(关卡)
     log("生息演算奇遇")
-    --if not sand_missions then return end
     Tales_within_the_sand.掉线状态判断()
     if not appear(关卡, 3) then return end
     tap(关卡)

@@ -1,6 +1,5 @@
 -- predebug = true
 -- always_enable_log = true
--- test_fight = true
 -- fake_fight = true
 -- prefer_bapp = true
 -- zl_disable_log = true
@@ -12,15 +11,12 @@
 -- disable_hotupdate = true
 -- disable_root_mode = true
 -- no_background_after_run = true
--- fake_recruit = true
--- debug_tag = true
 -- during_crisis_contract =true
 -- disable_communication_check=true
 -- speedrun=true
 -- debug = true
 -- disable_log = true
 -- unsafe_tap = true
--- zl_disable_fight_drop = true
 if getPackageName() == "com.nx.nxproj.assist" then
     print("开发模式")
     dev_mode = true
@@ -40,7 +36,6 @@ crontab_enable = true
 -- test_some = true
 -- ok_time = 1000
 -- ignore_jmfight_enough_check=true
--- use_zhuzhu_game = true
 -- no_config_cache = true
 -- prefer_bapp_on_android7 = true
 -- debug0721 = true
@@ -57,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "04.17 21:28"
+release_date = "04.18 00:01"
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -119,10 +114,13 @@ cloud.startHeartBeat()
 --debug_mode = true
 if debug_mode then
     log("debug_mode")
-    sleep(1500)
-    point.干员上 = { 167, 527, 1677, 565 }
-    print(ocrex("干员上"))
-    exit()
+    -- ssleep(1)
+    -- rr = { 315, 675, 515, 665 }
+    -- -- ocr(rr)
+    -- --ocrex(rr)
+    -- raise_inventory_identify({ "转质盐聚块", "聚酸酯", "固源岩组", "全新装置" })
+    -- -- swip_inventory()
+    -- ssleep(1000)
 end
 
 load(before_account_hook or '')()
@@ -249,7 +247,6 @@ elseif not crontab_enable_only then
     -- 单帐号模式
     transfer_global_variable("multi_account_user0")
     update_state_from_ui()
-    test_fight_hook()
     if extra_mode then
         no_extra_job = job
         job = { extra_mode }
