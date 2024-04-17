@@ -364,7 +364,7 @@ skland_get_game_info = function(uid)
 end
 
 -- 获取游戏信息 完整流程 如果账户绑定了多个b服则需要指定，大部分情况不用考虑
-game_game_info = function(account, password, equire_uid, require_server)
+get_game_info = function(account, password, require_uid, require_server)
     require_uid = require_uid or 0
     require_server = require_server or 0
     skland_init(account, password)
