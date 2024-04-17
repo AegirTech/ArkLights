@@ -3681,7 +3681,7 @@ show_extra_ui = function()
     addTextView(layout, ">>>>>>>>>>>绿票商店购买")
     ui.addCheckBox(layout, "green_ticket_shop", "", true)
 
-    green_ticket_shop_good = { "寻访凭证", "合成玉", "龙门币", "家具零件", "招聘许可", "中级作战记录", "赤金", "寻访凭证2" }
+    green_ticket_shop_good = { "寻访凭证", "合成玉", "龙门币", "家具零件", "招聘许可", "中级作战记录", "赤金", "2层寻访凭证", "2层招聘许可" }
 
     local max_checkbox_one_row = 4
     for k, v in pairs(green_ticket_shop_good) do
@@ -3708,7 +3708,7 @@ show_extra_ui = function()
     addTextView(layout, ">>>>>>>>>>>红票商店购买")
     ui.addCheckBox(layout, "red_ticket_shop", "", false)
 
-    red_ticket_shop_good = { "模组数据块", "干员" }
+    red_ticket_shop_good = { "模组数据块", "干员(请单独勾选,买所有干员)" }
 
     for k, v in pairs(red_ticket_shop_good) do
         if k % max_checkbox_one_row == 1 then
