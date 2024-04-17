@@ -459,6 +459,56 @@ end
 raise_material_make = function()
 
 end
+-- 选择干员
+char_choose = function(char_name)
+    local character_type = JsonDecode(readFile("character_type_list.json"))
+    local 干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SUPPORT", "SPECIAL" }
+    path.跳转("干员")
+    ssleep(.3)
+    if not findOne("干员等级降序") then
+        tap("干员等级降序")
+        appear("干员等级降序", 2)
+    end
+
+    for i = 1, 8 do
+        if character_type[char_name] == 干员类别[i] then
+            if not findOne("普通作战编队列表" .. i) then
+                tap("普通作战编队列表" .. i)
+                appear("普通作战编队列表" .. i)
+                sleep(200)
+            end
+        end
+    end
+
+    local last_char = {}
+    local char_found = false
+    while not char_found do
+        local ret = 干员名ocr校正(ocrex("干员上"))
+        log(ret)
+        for i = 1, #ret do
+            if ret[i]["text"] == char_name then
+                char_found = true
+                tap({ (ret[i]["l"] + ret[i]["r"]) / 2, ret[i]["t"] - scale(200) })
+                appear("干员档案", 5)
+                break
+            end
+        end
+        if char_found then break end
+
+        ret = 干员名ocr校正(ocrex("干员下"))
+        log(ret)
+        for i = 1, #ret do
+            if ret[i]["text"] == char_name then
+                char_found = true
+                tap({ (ret[i]["l"] + ret[i]["r"]) / 2, ret[i]["t"] - scale(200) })
+                appear("干员档案", 5)
+                break
+            end
+        end
+        if char_found then break end
+        if ret[-1]["text"] == last_char then break else last_char = ret[-1]["text"] end
+        swip_char() --仿照swip_inventory,没改坐标
+end
 
 -- 干员升级
 
@@ -583,6 +633,41 @@ raise_test3 = function()
 end
 
 swip_inventory = function(left)
+    local duration
+    local finger
+    local delay
+    if left then
+        local x1 = scale(600)
+        local x2 = scale(10000 / 720 * 1080)
+        local y1 = scale(533)
+        duration = 400
+        finger = { { point = { { x1, y1 }, { x2, y1 } }, duration = duration } }
+        delay = 750
+    else
+        local x = scale(94)
+        local y = scale(400)
+        local y2 = scale(700)
+        local x2 = scale(1720)
+        local y3 = scale(700)
+        local slids = 50
+        local slidd = 200
+        local taps = slids + slidd + 150
+        local tapd = 200
+        local downd = taps + 100
+        duration = downd
+        finger = {
+            { point = { { x, y }, { x, y2 } },   start = 0,     duration = downd },
+            { point = { { x2, y }, { x2, y3 } }, start = slids, duration = slidd },
+            { point = { { x2, y }, { x2, y } },  start = taps,  duration = tapd },
+        }
+        delay = 250
+    end
+    log(JsonEncode(finger))
+    gesture(finger)
+    sleep(duration + delay)
+end
+
+swip_char = function(left)
     local duration
     local finger
     local delay

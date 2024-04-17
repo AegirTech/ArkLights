@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "04.18 01:07"
+release_date = "04.18 02:01"
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -114,13 +114,8 @@ cloud.startHeartBeat()
 --debug_mode = true
 if debug_mode then
     log("debug_mode")
-    -- ssleep(1)
-    -- rr = { 315, 675, 515, 665 }
-    -- -- ocr(rr)
-    -- --ocrex(rr)
-    -- raise_inventory_identify({ "转质盐聚块", "聚酸酯", "固源岩组", "全新装置" })
-    -- -- swip_inventory()
-    -- ssleep(1000)
+    char_choose("凯尔希")
+    exit()
 end
 
 load(before_account_hook or '')()
