@@ -25,6 +25,7 @@ if getPackageName() == "com.nx.nxproj.assist" then
     print("开发模式")
     dev_mode = true
     always_enable_log = true
+    debug_mode = true
 end
 zl_enable_tap_before_drag = true
 zero_wait_click = true
@@ -257,9 +258,12 @@ elseif not crontab_enable_only then
         username = username:trim()
         password = password:trim()
         table.insert(job, 1, "退出账号")
-    else
+    elseif #strOr(single_account) > 0 and #strOr(single_password) > 0 then
         username = single_account
         password = single_password
+        if single_account_login then
+            table.insert(job, 1, "退出账号")
+        end
     end
     run(job)
     cloud.completeTask(last_upload_img)

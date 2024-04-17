@@ -3563,6 +3563,20 @@ show_extra_ui = function()
     ui.addEditText(layout, "extra_multi_account_choice", "")
 
     newRow(layout)
+    addTextView(layout, "===========单账户设置(同步)===========")
+
+    newRow(layout)
+    ui.addCheckBox(layout, "extra_single_account_login", "启用此账户登录", false)
+
+    newRow(layout)
+    addTextView(layout, "账户")
+    ui.addEditText(layout, "extra_single_account", "")
+
+    newRow(layout)
+    addTextView(layout, "密码")
+    ui.addEditText(layout, "extra_single_password", "")
+
+    newRow(layout)
     addTextView(layout, "===========沙洲遗闻-测试===========")
 
     newRow(layout)
@@ -3732,21 +3746,28 @@ show_extra_ui = function()
 end
 
 sync_ui_config = function(layout)
+    local ui_config_extra = loadOneUIConfig("extra")
+    local ui_config_multi = loadOneUIConfig("multi_account")
+    local ui_config_auto = loadOneUIConfig("auto")
     if layout == "multi_account" then
-        local ui_config = loadOneUIConfig("extra")
-        local ui_config2 = loadOneUIConfig("multi_account")
-        ui_config["extra_multi_account_enable"] = ui_config2["multi_account_enable"]
-        ui_config["extra_multi_account_choice"] = ui_config2["multi_account_choice"]
-        saveOneUIConfig("extra", ui_config)
+        ui_config_extra["extra_multi_account_enable"] = ui_config_multi["multi_account_enable"]
+        ui_config_extra["extra_multi_account_choice"] = ui_config_multi["multi_account_choice"]
+        saveOneUIConfig("extra", ui_config_extra)
     elseif layout == "extra" then
-        local ui_config = loadOneUIConfig("multi_account")
-        local ui_config2 = loadOneUIConfig("extra")
-        ui_config["multi_account_enable"] = ui_config2["extra_multi_account_enable"]
-        ui_config["multi_account_choice"] = ui_config2["extra_multi_account_choice"]
-        saveOneUIConfig("multi_account", ui_config)
+        ui_config_multi["multi_account_enable"] = ui_config_extra["extra_multi_account_enable"]
+        ui_config_multi["multi_account_choice"] = ui_config_extra["extra_multi_account_choice"]
+        ui_config_auto["single_account"] = ui_config_extra["extra_single_account"]
+        ui_config_auto["single_password"] = ui_config_extra["extra_single_password"]
+        ui_config_auto["single_account_login"] = ui_config_extra["extra_single_account_login"]
+        saveOneUIConfig("multi_account", ui_config_multi)
+        saveOneUIConfig("auto", ui_config_auto)
+    elseif layout == "auto" then
+        ui_config_extra["extra_single_account"] = ui_config_auto["single_account"]
+        ui_config_extra["extra_single_password"] = ui_config_auto["single_password"]
+        ui_config_extra["extra_single_account_login"] = ui_config_auto["single_account_login"]
+        saveOneUIConfig("extra", ui_config_extra)
     end
 end
-
 
 -- auto_raise_move_up = function(index)
 --     log("上移")
@@ -3790,6 +3811,9 @@ show_auto_ui = function()
 
     newRow(layout)
     addTextView(layout, "此账户用于单账户模式下的森空岛及其他需要账密的API请求使用")
+
+    newRow(layout)
+    ui.addCheckBox(layout, "single_account_login", "启用此账户登录", false)
 
     newRow(layout)
     addTextView(layout, "账户")
