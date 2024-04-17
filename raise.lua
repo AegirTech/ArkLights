@@ -582,6 +582,107 @@ raise_test3 = function()
     ssleep(2000)
 end
 
+swip_inventory = function(left)
+    local duration
+    local finger
+    local delay
+    if left then
+        local x1 = scale(600)
+        local x2 = scale(10000 / 720 * 1080)
+        local y1 = scale(533)
+        duration = 400
+        finger = { { point = { { x1, y1 }, { x2, y1 } }, duration = duration } }
+        delay = 750
+    else
+        local x = scale(94)
+        local y = scale(400)
+        local y2 = scale(700)
+        local x2 = scale(1720)
+        local y3 = scale(700)
+        local slids = 50
+        local slidd = 200
+        local taps = slids + slidd + 150
+        local tapd = 200
+        local downd = taps + 100
+        duration = downd
+        finger = {
+            { point = { { x, y }, { x, y2 } },   start = 0,     duration = downd },
+            { point = { { x2, y }, { x2, y3 } }, start = slids, duration = slidd },
+            { point = { { x2, y }, { x2, y } },  start = taps,  duration = tapd },
+        }
+        delay = 250
+    end
+    log(JsonEncode(finger))
+    gesture(finger)
+    sleep(duration + delay)
+end
+
+is_last_page = function()
+    -- 检测最后一页 1710 y =240-600是否为空白
+    local sx = scale(1710)
+    keepCapture()
+    for y = scale(240), scale(600), 1 do
+        pixel = getPixelColor(sx, y)
+        if pixel ~= "FFFFFF" then
+            releaseCapture()
+            return false
+        end
+    end
+    releaseCapture()
+    return true
+end
+
+-- 仓库识别 给定材料列表 只ocr给定的材料数量
+raise_inventory_identify = function(materials)
+    local sx, sy = scale(85), scale(185)
+    local ms = {}
+    local ret = {}
+    if materials == nil or #materials == 0 then return end
+    log(materials)
+    swip_inventory(true)
+    ssleep(0.5)
+    log("start")
+    local page = 0
+    -- swip_inventory(true)
+    while true do
+        if page > 3 then break end
+
+        keepCapture()
+        for x = 0, 7 do
+            for y = 0, 2 do
+                area = { sx + x * scale(230), sy + y * scale(280), sx + x * scale(230) + scale(200), sy + y * scale(280) +
+                scale(200) }
+                local material = raise_find_material(area)
+                -- log(x, y, material)
+                -- table.insert(ms, { x, y, material })
+                if material ~= "" then
+                    -- log(material)
+                    if table.includes(materials, material) then
+                        if ret[material] == nil then
+                            area[2] = area[2] + scale(150)
+                            local num = ocrex(area)
+                            if #num == 0 then
+                                num = 0
+                            else
+                                num = num[1]["text"]
+                            end
+                            ret[material] = num
+                            table.insert(ms, { x, y, material, num })
+                        end
+                    end
+                end
+            end
+        end
+        releaseCapture()
+
+        swip_inventory()
+        page = page + 1
+    end
+    log("end")
+    log(ms)
+    ssleep(300)
+end
+
 
 raise_test_all = function()
     -- ssleep(1.5)
