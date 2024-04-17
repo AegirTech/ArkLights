@@ -986,8 +986,8 @@ end
     local 旧费用列表, 旧职业列表
     local 坐标, 识别结果, 更新
     local 更新列表
-    旧职业列表 = copyArray(职业列表)
-    旧费用列表 = copyArray(费用列表)
+    旧职业列表 = shallowCopy(职业列表)
+    旧费用列表 = shallowCopy(费用列表)
     更新列表 = 获取费用列表()
     print("更新未部署干员")
     print("费用列表", 费用列表)

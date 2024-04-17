@@ -71,7 +71,7 @@ skland_get_cred_by_token = function(code)
         log(ret)
         local code = get(ret, 'data', 'cred')
         Skland_sign_token = get(ret, 'data', 'token')
-        log("获取到的token" .. Skland_sign_token)
+        log(Skland_sign_token)
         return code
     else
         log("[3]森空岛获取cred失败" .. ret)

@@ -1,11 +1,5 @@
--- print('util')
 oppid = "com.hypergryph.arknights"
-if use_zhuzhu_game then oppid = "com.hypergryph.arknightss" end
 bppid = "com.hypergryph.arknights.bilibili"
--- apk502 = getApkVerInt() >= 502 or getApkVerInt() == 1
-apk502 = getApkVerInt() >= 502
-is_apk_old = function() return getApkVerInt() < 0 end
-apk_old_warning = "怎么还有人用" .. getApkVerInt()
 
 disable_game_up_check_wrapper = function(func)
     return function(...)
@@ -602,14 +596,6 @@ table.cat = function(t)
     local ans = {}
     for _, v in pairs(t) do for _, n in pairs(v) do table.insert(ans, n) end end
     return ans
-end
-
-function copyArray(a)
-    local b = {}
-    for i, v in ipairs(a) do
-        b[i] = v
-    end
-    return b
 end
 
 --  in = {
@@ -2185,13 +2171,6 @@ show_multi_account_ui = function()
         make_jump_ui_command(layout, nil, "lock:remove(main_ui_lock)"),
         ui_small_submit_width, ui_small_submit_height, ui_submit_color)
 
-    -- newRow(layout)
-    -- addButton(layout, nil, "退出",
-    --           make_jump_ui_command(layout, nil, "peaceExit()"))
-    -- addButton(layout, nil, "必读", make_jump_ui_command(layout, nil,
-    --                                                       "saveConfig('readme_already_read','1');jump_readme()"))
-    -- addButton(layout, nil, "高级设置", make_jump_ui_command(layout, "debug"))
-    -- make_continue_account_ui(layout)
 
     newRow(layout)
     addButton(layout, randomString(32), "导出帐密", make_jump_ui_command(
@@ -2523,22 +2502,6 @@ notifypp = function(img, info, to, channel, sync)
 
     if #to < 5 then return end
 
-    -- log("#image", #image)
-    -- local ret, code
-    -- ret, code = httpGet('https://api.uomg.com/api/image.baidu', "imgurl=" ..
-    --                       'http://imgsrc.baidu.com/forum/pic/item/09f790529822720edafc8a9d76cb0a46f21faba3.jpg')
-    -- log("notifypp response", ret, code)
-    -- exit()
-    -- end, 'http://www.pushplus.plus/send', param)
-    --
-
-    -- TODO 没图床
-    -- log("#image", #image)
-    -- local content = encodeUrl(
-    --                   "![](data:image/jpeg;base64," .. image:sub(1, 17000) .. ")")
-    -- log("#content", #content)
-    -- if #content > 19900 then content = encodeUrl(to) end
-
     -- 不发图更好
     local param = "content=" .. encodeUrl("![](" .. img .. ")") .. "&title=" ..
         encodeUrl(info) .. "&token=" .. encodeUrl(to) ..
@@ -2636,53 +2599,6 @@ clean_table = function(t, idx, bad)
     end
     return ans, idx
 end
-
--- hotUpdate = function()
---   toast("正在检查更新...")
---   if disable_hotupdate then return end
---   -- https://gitee.com/bilabila/arknights/raw/master
---   -- local url = 'https://gitee.com/bilabila/arknights/raw/master/script.lr'
---   local url = update_source .. '/script.lr'
---   if beta_mode then url = url .. '.beta' end
---   local md5url = url .. '.md5'
---   local path = getWorkPath() .. '/newscript.lr'
---   local md5path = path .. '.md5'
---   if downloadFile(md5url, md5path) == -1 then
---     toast("下载校验数据失败")
---     ssleep(3)
---     return
---   end
---   local f = io.open(md5path, 'r')
---   local expectmd5 = f:read() or '1'
---   f:close()
---   if #expectmd5 ~= #'b966ddd58fd64b2f963a0c6b61b463ce' and update_source ~=
---     update_source_fallback then
---     log(2405)
---     update_source = update_source_fallback
---     return hotUpdate()
---   end
---   if expectmd5 == loadConfig("lr_md5", "2") then
---     toast("已经是最新版")
---     return
---   end
---   -- log(3, expectmd5, loadConfig("lr_md5", "2"))
---   if downloadFile(url, path) == -1 then
---     toast("下载最新脚本失败")
---     ssleep(3)
---     return
---   end
---   if fileMD5(path) ~= expectmd5 then
---     toast("脚本校验失败")
---     ssleep(3)
---     return
---   end
---   installLrPkg(path)
---   saveConfig("lr_md5", expectmd5)
---   sleep(1000)
---   -- log(5, expectmd5, loadConfig("lr_md5", "2"))
---   log("已更新至最新")
---   return restartScript()
--- end
 
 unpacking_library = function()
     if root_mode then
@@ -2967,24 +2883,11 @@ make_jump_ui = function(layout)
         --   layout .. "crontab", "定时执行",
         --   make_jump_ui_command(layout, 'crontab'),
         -- },
-        -- {
-        --   layout .. "github", "源码",
-        --   make_jump_ui_command(layout, nil, "jump_github()"),
-        -- },
-        -- {
-        --   layout .. "qqgroup", "反馈群",
-        --   make_jump_ui_command(layout, nil, "jump_qqgroup()"),
-        -- },
         { nil, "肉鸽/公招", make_jump_ui_command(layout, "extra") },
-        -- {nil, "必读", make_jump_ui_command(layout, "help")},
         { nil, "退出", make_jump_ui_command(layout, nil, "peaceExit()") }, {
         readme_btn, "必读", make_jump_ui_command(layout, nil,
         "saveConfig('readme_already_read','1');jump_readme()"),
     }, { nil, "高级设置", make_jump_ui_command(layout, "debug") },
-        -- {
-        --   layout .. "demo", "视频演示",
-        --   make_jump_ui_command(layout, nil, "jump_bilibili()"),
-        -- },
     }
 
     for k, v in pairs(buttons) do
@@ -3018,7 +2921,7 @@ make_ui_title = function(layout, name)
     name = name or ''
     local title = name .. " " .. getApkVerInt() .. "-LTS " ..
         release_date:gsub(' ', '-') .. ' ' .. resolution
-    ui.setTitleText(layout, is_apk_old() and apk_old_warning or title)
+    ui.setTitleText(layout, title)
 end
 
 show_main_ui = function()
@@ -3044,20 +2947,6 @@ show_main_ui = function()
 
     make_afterjob_ui(layout)
 
-    -- newRow(layout)
-    -- addTextView(layout, "完成后通知QQ")
-    -- ui.addEditText(layout, "QQ", "")
-
-    -- addButton(layout, layout .. "jump_qq_btn", "加机器人好友",
-    --           make_jump_ui_command(layout, nil, 'jump_qq()'))
-
-    -- ui.addCheckBox(layout, "crontab_enable", "启用", true)
-    -- newRow(layout)
-    -- addTextView(layout, "点击间隔(毫秒)")
-    -- ui.addEditText(layout, "click_interval", "")
-
-    -- ui.addEditText(layout, "enable_log", "")
-
     -- 无法实现
     -- ui.addCheckBox(layout, "end_poweroff", "关机")
 
@@ -3069,7 +2958,7 @@ show_main_ui = function()
     make_jump_ui(layout)
 
     ui.loadProfile(getUIConfigPath(layout))
-    -- log(getUIConfigPath(layout))
+
     -- 后处理
     if not root_mode then
         ui.setEnable("end_screenoff", false)
@@ -3079,75 +2968,21 @@ show_main_ui = function()
     ui.show(layout, false)
 end
 
-show_help_ui = function()
-    local layout = "help"
-    ui.newLayout(layout, ui_page_width, -2)
-    ui.setTitleText(layout, "必读")
-    newRow(layout)
-    addTextView(layout, [[
-源码与其他脚本：github.com/tkkcc/arknights
-好用的话在上面github链接里登录后点下star
-不star属于白嫖行为，开发者也没动力更新下去了
-有问题加群反馈1009619697
-国内主页：gitee.com/bilabila/arknights
-商用要求：可卖脚本与服务，修改代码再卖需开源
-
-最近更新：
-1. 刷肉鸽等级(蜡烛)已加。
-1. 第10章已加。
-1. 新增root保活，雷电2核2G内存可无限挂肉鸽。需手动关闭root授权提示（设置-超级用户-右上角三个点-通知-无）。
-
-]])
-
-    newRow(layout)
-    ui.addButton(layout, layout .. "_stop", "返回")
-    ui.setBackground(layout .. "_stop", ui_cancel_color)
-    ui.setOnClick(layout .. "_stop", make_jump_ui_command(layout, "main"))
-
-    newRow(layout)
-    addTextView(layout, [[
-]])
-
-    --   newRow(layout)
-    --   addTextView(layout, [[
-    -- ]])
-
-    ui.show(layout, false)
-end
-
-show_help_ui = function()
-    local layout = "help"
-    ui.newLayout(layout, ui_page_width, -2)
-    ui.setTitleText(layout, "必读")
-    newRow(layout)
-
-    newRow(layout)
-    ui.addButton(layout, layout .. "_stop", "返回")
-    ui.setBackground(layout .. "_stop", ui_cancel_color)
-    ui.setOnClick(layout .. "_stop", make_jump_ui_command(layout, "main"))
-    newRow(layout)
-    ui.addWebView(layout, randomString(32), 'https://arklights.pages.dev/guide',
-        -2, 1000)
-    ui.show(layout, false)
-end
-
 show_debug_ui = function()
     local layout = "debug"
     ui.newLayout(layout, ui_page_width, -2)
     ui.setTitleText(layout, "高级设置")
 
     newRow(layout)
-
     addButton(layout, nil, "返回",
         make_jump_ui_command(layout, loadConfig("last_layout", "main")),
         nil, nil)
-    -- ui.addButton(layout, layout .. "_stop", "返回")
-    -- ui.setBackground(layout .. "_stop", ui_cancel_color)
-    -- ui.setOnClick(layout .. "_stop",
-    --               make_jump_ui_command(layout, ))
 
     newRow(layout)
     addButton(layout, nil, "解锁", make_jump_ui_command(layout, 'gesture_capture'))
+
+    newRow(layout)
+    addTextView(layout, "--------------------验证码设置--------------------")
 
     newRow(layout)
     addTextView(layout, "图鉴用户名")
@@ -3158,9 +2993,6 @@ show_debug_ui = function()
     ui.addEditText(layout, "captcha_password", "")
 
     newRow(layout)
-    ui.addCheckBox(layout, "only_use_ttshitu", "仅使用图鉴打码", true)
-
-    newRow(layout)
     ui.addCheckBox(layout, "use_jfbym", "使用云码API处理滑块验证码", false)
 
     newRow(layout)
@@ -3168,8 +3000,21 @@ show_debug_ui = function()
     ui.addEditText(layout, "jfbym_token", "")
 
     newRow(layout)
-    addTextView(layout, "更新源")
-    ui.addEditText(layout, "custom_update_source", nil)
+    ui.addCheckBox(layout, "only_use_ttshitu", "不使用审判庭接码", true)
+
+    newRow(layout)
+    addTextView(layout, "审判庭打码地址")
+    ui.addEditText(layout, "cloud_captcha_server", "")
+
+    newRow(layout)
+    addTextView(layout, "审判庭打码标识")
+    ui.addEditText(layout, "cloud_captcha_token", "")
+
+    newRow(layout)
+    addTextView(layout, "--------------------云控设置--------------------")
+
+    newRow(layout)
+    ui.addCheckBox(layout, "cloud_get_task", "审判庭接受任务", false)
 
     newRow(layout)
     addTextView(layout, "审判庭服务地址")
@@ -3186,15 +3031,7 @@ show_debug_ui = function()
     ui.addCheckBox(layout, "apply_remote_config", "接受远程配置更新", false)
 
     newRow(layout)
-    addTextView(layout, "审判庭打码地址")
-    ui.addEditText(layout, "cloud_captcha_server", "")
-
-    newRow(layout)
-    addTextView(layout, "审判庭打码标识")
-    ui.addEditText(layout, "cloud_captcha_token", "")
-
-    newRow(layout)
-    ui.addCheckBox(layout, "cloud_get_task", "审判庭接受任务", false)
+    addTextView(layout, "--------------------账户设置--------------------")
 
     newRow(layout)
     ui.addCheckBox(layout, "new_change_account_plan", "新版切号方案（测试）", false)
@@ -3215,19 +3052,9 @@ show_debug_ui = function()
     addTextView(layout, "单号最大成功剿灭次数")
     ui.addEditText(layout, "max_jmfight_times", "1")
 
-    -- newRow(layout)
-    -- addTextView(layout, "最大连续作战次数(达到重启游戏)")
-    -- ui.addEditText(layout, "max_fight_times", "")
-
-    -- newRow(layout)
-    -- ui.addCheckBox(layout, "zl_enable_slow_drag", "前瞻投资长部署时间",
-    --                false)
-    -- newRow(layout)
-    -- ui.addCheckBox(layout, "zl_enable_tap_before_drag",
-    --                "前瞻投资部署前点一下", false)
-
-    -- newRow(layout)
-    -- ui.addCheckBox(layout, "zl_enable_log", "前瞻投资开启日志", false)
+    newRow(layout)
+    addTextView(layout, "最大连续作战次数(达到重启游戏)")
+    ui.addEditText(layout, "max_fight_times", "")
 
     -- newRow(layout)
     -- addTextView(layout, "多点点击时长(宿舍换班选不上人)")
@@ -3429,10 +3256,6 @@ show_debug_ui = function()
 
 ]])
 
-    -- newRow(layout)
-    -- addTextView(layout, "前瞻投资重启游戏间隔(游戏有内存泄漏)")
-    -- ui.addEditText(layout, "zl_restart_interval1", "3600")
-
     newRow(layout)
     ui.addCheckBox(layout, "use_system_library", "使用系统支持库", false)
 
@@ -3461,17 +3284,12 @@ show_debug_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "enable_log", "启用日志(会导致闪退)", false)
 
-    -- newRow(layout)
-    -- ui.addCheckBox(layout, "zl_enable_log", "前瞻投资开启日志", false)
-
-    -- newRow(layout)
-    -- ui.addCheckBox(layout, "enable_shift_log", "高产换班开启日志", false)
-
-    -- newRow(layout)
-    -- ui.addCheckBox(layout, "debug_disable_log", "禁用全部日志", false)
-
     newRow(layout)
     ui.addCheckBox(layout, "disable_oom_score_adj", "禁用oom_score_adj", false)
+
+    newRow(layout)
+    addTextView(layout, "更新源")
+    ui.addEditText(layout, "custom_update_source", nil)
 
     newRow(layout)
     ui.addCheckBox(layout, "disable_hotupdate", "禁用自动更新", false)
@@ -3530,16 +3348,6 @@ show_extra_ui = function()
 
     addButton(layout, nil, "返回", make_jump_ui_command(layout, "main"), nil,
         nil)
-    -- ui.addButton(layout, layout .. "_stop", "返回")
-    -- ui.setBackground(layout .. "_stop", ui_cancel_color)
-    -- ui.setOnClick(layout .. "_stop", make_jump_ui_command(layout, "main"))
-
-    -- make_continue_extra_ui(layout)
-
-    -- {nil, "退出", make_jump_ui_command(layout, nil, "peaceExit()")}, {
-    --   readme_btn, "必读", make_jump_ui_command(layout, nil,
-    --                                              "saveConfig('readme_already_read','1');jump_readme()"),
-    -- }, {nil, "高级设置", make_jump_ui_command(layout, "debug")},
 
     newRow(layout)
     addTextView(layout, [[以下功能将沿用脚本主页设置]])
@@ -3550,15 +3358,10 @@ show_extra_ui = function()
     --         "extra_mode='生息演算沙中之火';lock:remove(main_ui_lock)"))
     -- ui.addCheckBox(layout, "sand_fire_unstop", "打满也不结束", false)
 
-    -- addButton(layout, nil, "活动任务与商店（尖灭）",
-    --     make_jump_ui_command(layout, nil,
-    --         "extra_mode='活动任务与商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-
     newRow(layout)
     addTextView(layout, "===========多账户设置(同步)===========")
 
     newRow(layout)
-    -- log(multi_account_enable, multi_account_choice)
     ui.addCheckBox(layout, "extra_multi_account_enable", "启用账号", false)
     ui.addEditText(layout, "extra_multi_account_choice", "")
 
@@ -3588,19 +3391,13 @@ show_extra_ui = function()
             "extra_mode='生息沙洲遗闻商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     newRow(layout)
-    --ui.addCheckBox(layout, "sand_checkpoint", "进入关卡", true)
-    --ui.addCheckBox(layout, "sand_missions", "做奇遇任务", false)
+
     ui.addCheckBox(layout, "sand_no_delete", "不删存档从当前开始", false)
 
     newRow(layout)
     addTextView(layout, "调试选项")
-    ui.addCheckBox(layout, "sand_distrust_ocr", "不信任OCR结果", true)
     ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
     ui.addCheckBox(layout, "sand_noincrease_stop", "代币不增加则停止", true)
-
-    newRow(layout)
-    addTextView(layout, "支持大部分分辨率,此功能如有问题请在Github反馈")
-    -- ui.addEditText(layout, "sand_code", "")
 
     newRow(layout)
     addTextView(layout, "===========肉鸽相关===========")
@@ -3635,8 +3432,6 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "zl_skip_hard", "不打驯兽", false)
     ui.addCheckBox(layout, "zl_no_waste", "每8小时做日常", false)
 
-    -- ui.addSpinner(layout, "zl_hard_level", {"观光", "正式"}, 0)
-
     newRow(layout)
     addTextView(layout, [[需求商品]])
     ui.addEditText(layout, "zl_need_goods", [[]])
@@ -3644,11 +3439,6 @@ show_extra_ui = function()
     ui.addEditText(layout, "zl_max_level", [[]])
     addTextView(layout, [[源石锭]])
     ui.addEditText(layout, "zl_max_coin", [[]])
-
-    -- ui.addCheckBox(layout, "zl_disable_game_up_check", "禁用前台检查", false)
-    -- newRow(layout)
-    -- addTextView(layout, [[重启间隔(秒)]])
-    -- ui.addEditText(layout, "zl_restart_interval", [[]])
 
     -- newRow(layout)
     -- addTextView(layout,
@@ -3659,10 +3449,7 @@ show_extra_ui = function()
     --               [[999源石锭刷取耗时与难度、幕后筹备无关，与是否通关三结局、网络延迟有关，双结局耗时10时14分(97个/时)，三结局耗时8时10分(122个/时)，低网络延迟+三结局耗时7时21分(135个/时)。]] ..
     --               [[如需刷等级(蜡烛)，应选普通难度，勾“多点蜡烛”与“跳过投币”。]] ..
     --               [[商品需求可填商品名称关键字，用空格隔开(如填“玩 金 骑士”)，则刷到其中任一商品就会停止并通知QQ]])
-    --
-    -- ui.(layout, layout .. "_invest", "集成战略前瞻性投资")
-    -- ui.setOnClick(layout .. "_invest", make_jump_ui_command(layout, nil,
-    --                                                         "extra_mode='前瞻投资';lock:remove(main_ui_lock)"))
+
 
     newRow(layout)
     addButton(layout, layout .. "_recruit", "公开招募加急",
@@ -3773,27 +3560,6 @@ sync_ui_config = function(layout)
     end
 end
 
--- auto_raise_move_up = function(index)
---     log("上移")
---     log(index)
---     local cur_level = index
---     local last_level = index - 1
---     log(last_level)
---     local 上一级干员 = _G["plan_char" .. last_level]
---     local 上一级目标 = _G["plan_target" .. last_level]
---     local 上一级目标等级 = _G["plan_level" .. last_level]
---     log(plan_char2, plan_target2, plan_level2)
---     log(上一级干员, 上一级目标, 上一级目标等级)
---     log(_G["plan_char" .. index], _G["plan_target" .. index], _G["plan_level" .. index])
---     ui.setText("plan_char" .. last_level, _G["plan_char" .. index])
---     ui.setSpinner("plan_target" .. last_level, { "精英化", "技能1", "技能2", "技能3" }, _G["plan_target" .. index])
---     ui.setSpinner("plan_level" .. last_level, { "0", "1", "2", "3" }, _G["plan_level" .. index])
--- end
-
--- auto_raise_move_down = function(index)
-
--- end
-
 show_auto_ui = function()
     local layout = "auto"
     ui.newLayout(layout, ui_page_width, -2)
@@ -3862,49 +3628,6 @@ show_auto_ui = function()
     ui.show(layout, false)
 end
 
-jump_qqgroup = function()
-    local qq = "1009619697"
-    local key = "KlYYiyXj2VRJg1qNqRo3tExo959SrKhT"
-    local intent = {
-        action = "android.intent.action.VIEW",
-        uri =
-            "mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26jump_from%3Dwebapi%26k%3D" ..
-            key,
-    }
-    runIntent(intent)
-    putClipboard(qq)
-    toast("群号已复制：" .. qq)
-    peaceExit()
-end
-jump_qq = function()
-    local qq = "605597237"
-    local intent = {
-        action = "android.intent.action.VIEW",
-        uri = "mqqwpa://im/chat?chat_type=wpa&uin=" .. qq,
-    }
-    runIntent(intent)
-    putClipboard(qq)
-    toast("QQ号已复制：" .. qq)
-    peaceExit()
-end
-jump_bilibili = function()
-    local bv = "BV1DL411t7n2"
-    local intent = {
-        action = "android.intent.action.VIEW",
-        uri = "https://bilibili.com/video/" .. bv,
-    }
-    runIntent(intent)
-    peaceExit()
-end
-jump_github = function()
-    local github = "tkkcc/arknights"
-    local intent = {
-        action = "android.intent.action.VIEW",
-        uri = "https://github.com/" .. github,
-    }
-    runIntent(intent)
-    peaceExit()
-end
 jump_readme = function()
     local prefix = "arklights"
     local intent = {
@@ -3925,22 +3648,7 @@ jump_multi_account_json = function()
     runIntent(intent)
     peaceExit()
 end
-openLog = function()
-    local log_file = "file://" .. getSdPath() .. '/' .. package .. '/log/log.txt'
-    log_file = '/sdcard/Download/icon.png'
-    log(log_file)
-    if fileExist(log_file) then log(1) end
-    local intent = {
-        action = "android.intent.action.VIEW",
-        uri = "content://" .. log_file,
-        -- type= 'image/*'
-    }
-    log(intent)
-    runIntent(intent)
-    log(1849)
-    ssleep(3)
-    peaceExit()
-end
+
 show_gesture_capture_ui = function()
     local layout = "gesture_capture"
     ui.newLayout(layout, ui_page_width, -2)
@@ -4037,30 +3745,6 @@ gesture_capture = function()
 end
 gesture_capture = disable_game_up_check_wrapper(gesture_capture)
 
-show_crontab_ui = function()
-    local layout = "crontab"
-    ui.newLayout(layout, ui_page_width, -2)
-    ui.setTitleText(layout, "定时执行")
-    newRow(layout)
-    ui.addCheckBox(layout, layout .. "_option", "定时执行总开关", true)
-    local max_checkbox_one_row = 4
-    local default_hour = { 8, 16, 24 }
-    for i = 1, 24 do
-        if i % max_checkbox_one_row == 1 then
-            newRow(layout, layout .. "_row" .. i)
-        end
-        ui.addCheckBox(layout, layout .. i, tostring(i):padStart(2, '0') .. "点",
-            table.includes(default_hour, i))
-    end
-    newRow(layout, layout .. "_stop_row")
-    ui.addButton(layout, layout .. "_stop", "返回", ui_submit_width)
-    ui.setBackground(layout .. "_stop", ui_submit_color)
-    ui.setOnClick(layout .. "_stop", make_jump_ui_command(layout, "main"))
-
-    ui.loadProfile(getUIConfigPath(layout))
-    ui.show(layout, false)
-end
-
 assignGlobalVariable = function(t)
     for k, v in pairs(t) do
         -- if string.find(k, "dual") then log(k, v, type(v)) end
@@ -4113,6 +3797,7 @@ randomString = function(length)
     for i = 1, length do res = res .. string.char(math.random(97, 122)) end
     return res
 end
+
 gesture = function(fingers)
     if #fingers == 0 then fingers = { fingers } end
     local gesture = Gesture:new() -- 创建一个手势滑动对象
@@ -4125,6 +3810,7 @@ gesture = function(fingers)
     end
     gesture:dispatch()
 end
+
 compareColor = function(x, y, color, sim)
     -- color = color:sub(6,7)..color:sub(4,5)..color:sub(2,3)
     -- log(x,y,color,sim)
@@ -4245,115 +3931,6 @@ appops set ]] .. package .. [[ SYSTEM_ALERT_WINDOW allow
         restartPackage()
     end
 end)
-
-test_fight_hook = function()
-    if not test_fight then return end
-    -- log(2392)
-    fight = {
-        "HD-10", "HD-9", "HD-8", "HD-7", "HD-6", "HD-5", "HD-4", "HD-3", "HD-2",
-        "HD-1",
-        -- "12-1",
-        -- "12-2",
-        -- "12-3",
-        -- "12-4",
-        -- "12-5",
-        -- "12-6",
-        -- "12-7",
-        -- "12-8",
-        -- "12-9", -- "12-10",
-        -- "12-11",
-        -- "12-12",
-        -- "12-13",
-        -- "12-14", "12-15", "12-16",
-        -- "12-17",
-        -- "12-18",
-        -- "12-19",
-        -- "12-20",
-        --
-        -- "11-1",
-        -- "11-2",
-        -- "11-3",
-        -- "11-4",
-        -- "11-5",
-        -- "11-6",
-        -- "11-7",
-        -- "11-8",
-        -- "11-9",
-        -- "11-10",
-        -- "11-11",
-        -- "11-12",
-        -- "11-13",
-        -- "11-14",
-        -- "11-15",
-        -- "11-16",
-        -- "11-17",
-        -- "11-18",
-        -- "11-19",
-        -- "11-20",
-        -- "HD-9", "HD-8", "HD-7", "HD-6", "HD-5", "HD-4", "HD-3", "HD-2", "HD-1",
-
-        -- "10-9",
-        -- "9-9",
-        -- "10-3",
-        -- "10-4",
-        -- "10-5",
-        -- "10-6",
-        -- "10-7",
-        -- "10-8",
-        -- "10-9",
-        -- "10-10",
-        -- "10-11",
-        -- "10-12",
-        -- "10-14",
-        -- "10-15",
-        -- "10-16",
-        -- "10-17",
-        -- "9-2",
-
-        -- "HD-1", "HD-2", "HD-3", "HD-4", "HD-5", "HD-6", "HD-7", "HD-8", "HD-9",
-        -- "break",
-        -- "1-7", "1-7", "CE-5", "LS-5",
-
-        -- "9-2", "9-3", "9-4", "9-5", "9-6", "9-7", "9-9", "9-10", "9-11", "9-12",
-        -- "9-13", "S9-1", "9-14", "9-15", "9-16", "9-17", "9-18", "9-19",
-
-        -- "0-8", "1-7", "S2-7", "3-7", "S4-10", "S5-3", "6-9", "7-15", "R8-2",
-        --
-        -- "JT8-2", "R8-2", "M8-8",
-        -- "CA-5", "CE-5", 'AP-5', 'SK-5', 'LS-5', "PR-D-2", "PR-C-2", "PR-B-2",
-        -- "PR-A-2", "龙门外环", "龙门市区", -- "1-7", "1-12", "2-3", "2-4",
-        -- "2-9", "S2-7", "3-7", "S4-10", "S5-3", "6-9", "7-6", "7-15", "S7-2",
-        -- "JT8-2", "R8-2", "M8-8",
-        -- "PR-A-2", "PR-B-1", "PR-B-2", "PR-C-1", "PR-C-2", "PR-D-1", "PR-D-2",
-        -- "CE-1", "CE-2", "CE-3", "CE-4", "CE-5", "CA-1", "CA-2", "CA-3", "CA-4",
-        -- "CA-5", "AP-1", "AP-2", "AP-3", "AP-4", "AP-5", "LS-1", "LS-2", "LS-3",
-        -- "LS-4", "LS-5", "SK-1", "SK-2", "SK-3", "SK-4", "SK-5", "0-1", "0-2", "0-3",
-        -- "0-8", "1-9", "2-9", "S3-7", "4-10", "5-9", "6-10", "7-14", "R8-2",
-        -- "积水潮窟", "切尔诺伯格", "龙门外环", "龙门市区",
-        -- "废弃矿区", "大骑士领郊外", "北原冰封废城", "PR-A-1", "0-4",
-        -- "0-5", "0-6", "0-7", "0-8", "0-9", "0-10", "0-11", "1-1", "1-3", "1-4",
-        -- "1-5", "1-6", "1-7", "
-        -- 1-8", "1-9", "1-10", "1-11", "1-12", "2-1", "2-2",
-        -- "2-3", "2-4", "2-5", "2-6", "2-7", "2-8", "2-9", "2-10", "S2-1", "S2-2",
-        -- "S2-3", "S2-4", "S2-5", "S2-6", "S2-7", "S2-8", "S2-9", "S2-10", "S2-12",
-        -- "3-1", "3-2", "3-3", "3-4", "3-5", "3-6", "3-7", "3-8", "S3-1", "S3-2",
-        -- "S3-3", "S3-4", "S3-5", "S3-6", "S3-7", "4-1", "4-2", "4-3", "4-4", "4-5",
-        -- "4-6", "4-7", "4-8", "4-9", "4-10", "S4-1", "S4-2", "S4-3", "S4-4", "S4-5",
-        -- "S4-6", "S4-7", "S4-8", "S4-9", "S4-10", "5-1", "5-2", "S5-1", "S5-2",
-        -- "5-3", "5-4", "5-5", "5-6", "S5-3", "S5-4", "5-7", "5-8", "5-9", "S5-5",
-        -- "S5-6", "S5-7", "S5-8", "S5-9", "5-10", "6-1", "6-2", "6-3", "6-4", "6-5",
-        -- "6-7", "6-8", "6-9", "6-10", "S6-1", "S6-2", "6-11", "6-12", "6-14", "6-15",
-        -- "S6-3", "S6-4", "6-16", "7-2", "7-3", "7-4", "7-5", "7-6", "7-8", "7-9",
-        -- "7-10", "7-11", "7-12", "7-13", "7-14", "7-15", "7-16", "S7-1", "S7-2",
-        -- "7-17", "7-18", "R8-1", "R8-2", "R8-3", "R8-4", "R8-5", "R8-6", "R8-7",
-        -- "R8-8", "R8-9", "R8-10", "R8-11", "JT8-2", "JT8-3", "M8-6", "M8-7", "M8-8",
-    }
-    fight = table.filter(fight, function(v) return point['作战列表' .. v] end)
-    log("fight", fight)
-    repeat_fight_mode = false
-    run("轮次作战")
-    exit()
-end
 
 maa_copliot = function(x)
     log("开始抄作业", x)
@@ -4663,12 +4240,6 @@ update_state_from_ui = function()
     hd_mod = "SS"
 
     fight = parse_fight_config(fight_ui)
-    -- log("fight", fight)
-
-    -- hd_shop_open_time_end = parse_time("202309260400")  -- 活动商店关闭时间
-    -- hd2_shop_open_time_end = parse_time("202302240400") -- 活动2商店关闭时间
-    -- 活动类型 "故事集"/"ss" 区分活动任务和是否活动作战
-    -- hd2_mod = "故事集"
 
     -- 资源关全天开放时间段
     all_open_time_start = parse_time("202403281600")
@@ -4823,7 +4394,7 @@ consoleInit = function()
     local screen = getScreen()
     local resolution = screen.width .. 'x' .. screen.height
     local title = getApkVerInt() .. ' ' .. release_date .. '  ' .. resolution
-    console.setTitle(is_apk_old() and apk_old_warning or title)
+    console.setTitle(title)
     console.show()
     console.dismiss()
 end
@@ -4864,14 +4435,6 @@ setControlBar = function()
 end
 
 hideControlBar = function() showControlBar(false) end
-
--- extra_mode_hook = function()
---
---   if extra_mode then
---     run(extra_mode)
---     exit()
---   end
--- end
 
 ocr = function(r, max_height)
     -- releaseCapture()
@@ -5102,20 +4665,6 @@ make_multi_account_choice_hook = function(skip_current)
         string.format('%q', table.join(choice, ' '))
 end
 
--- restart_mode = function(mode, multi)
---   if not mode then return end
---   saveConfig("restart_mode_hook",
---              "extra_mode=[[" .. mode .. "]];extra_mode_multi=" ..
---                (multi and 'true' or 'false'))
---   saveConfig("hideUIOnce", "true")
---   -- TODO：这里把速通放到前台会不会有助于防止被杀（genymotion 安卓10）
---   -- 结果：没用
---   -- open(getPackageName())
---   -- toast("5秒前台，防止别杀")
---   -- ssleep(5)
---   restartScript()
--- end
-
 save_run_state = function(skip_current)
     local hook_prefix = ";-- save_run_state_begin;"
     local hook_suffix = ";-- save_run_state_end;"
@@ -5215,7 +4764,6 @@ killacc = function()
     -- collectgarbage("collect")
     if not root_mode then return end
     if disable_killacc1 then return end
-    if apk502 then return end
     -- if enable_killacc2 then return killacc2() end
     --   if 1 then return 1 end
     --
@@ -5692,9 +5240,6 @@ update_state_from_debugui = function()
     max_login_times_5min = str2int(max_login_times_5min, 3)
     milesecond_after_click = str2int(tap_wait, milesecond_after_click)
     if not (always_enable_log or enable_log) then run = disable_log_wrapper(run) end
-    -- if not enable_shift_log then
-    --   chooseOperator = disable_log_wrapper(chooseOperator)
-    -- end
     QQ = (QQ or ''):commonmap():trim()
     if QQ:find('#') then
         devicenote = QQ:sub(QQ:find('#') + 1, #QQ):trim()
@@ -5719,7 +5264,6 @@ update_state_from_debugui = function()
     cloud.setServer(cloud_server)
     cloud.setCaptcha(cloud_captcha_server, cloud_captcha_token)
     cloud.setStatus(extra_mode == "战略前瞻投资" and 1002 or extra_mode == "生息沙洲遗闻wrapper" and 1003 or 1001)
-    -- if apk502 then enable_restart_package = true end
     -- enable_restart_package = not disable_restart_package
 
     restart_game_interval = str2int(restart_game_interval, 900)
@@ -5739,13 +5283,6 @@ main_ui_config_transfer = function()
         debug_config["shift_min_mood"] = main_config["shift_min_mood"]
     end
     saveOneUIConfig("debug", debug_config)
-end
-
-qqhide = function(x)
-    x = tostring(x)
-    -- if #x<=7 then return x end
-    -- return x:sub(1,3) + '***' + x:sub(#x-4,#x)
-    return x:sub(#x - 3, #x)
 end
 
 hy_exec = function(x)
@@ -5826,14 +5363,6 @@ clear_hook = function()
     saveOneUIConfig("debug", config)
 end
 
-update_game = function()
-    if not enable_update_game then return end
-    -- curl 'https://line1-h5-pc-api.biligame.com/game/detail/gameinfo?game_base_id=101772'
-    -- "android_download_link":"https://pkg.biligame.com/games/mrfz_1.8.21_20220606_101833_1d3de.apk"
-    --
-    -- https://ak.hypergryph.com/downloads/android_lastest
-end
-
 strOr = function(x, y)
     if type(x) == 'string' and #x:trim() > 0 then return x end
     return y or ''
@@ -5851,6 +5380,7 @@ end
 istable = function(x) return type(x) == 'table' end
 
 last_upload_img = ''
+
 uploadImg = function(img)
     -- https://www.imgtp.com/index/api.html
     local ret = uploadFile("https://www.imgtp.com/api/upload", img, 30)
