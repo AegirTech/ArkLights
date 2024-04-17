@@ -1612,7 +1612,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
                     -- TODO .5 => .1 failed
                     if not y or disappear(y, .5) then
                         -- not y 表示 当前主页列表正在展开、收缩或停止，这时
-                        if table.includes({ "任务", "好友", "首页" }, home_target) then
+                        if table.includes({ "任务", "好友", "首页", "干员" }, home_target) then
                             ssleep(.2)
                         end
                         log(home_target)
@@ -8607,6 +8607,68 @@ end
 path.生息沙洲遗闻wrapper = function()
     path.跳转("首页")
     沙洲遗闻()
+end
+
+悖论模拟作业 = {
+    维多利亚之矛 = "36048",
+    --["“亲身经历”"] = "24465",
+    --["“亲身经历"] = "24465",
+    --["亲身经历”"] = "24465",
+    ["“百炼"] = "27410",
+}
+
+path.悖论模拟 = function()
+    path.跳转("干员")
+    appear("干员界面", 3)
+    ssleep(.1)
+    tap("干员界面") --干员排序方式
+    disappear("干员界面", 1)
+    if not wait(function()
+            if findOne("干员悖论模拟降序") then return true end
+            tap("干员悖论模拟降序")
+            ssleep(.3)
+        end, 2) then
+        return
+    end
+    if not findOne("干员界面") then
+        tap("普通作战编队自定义排序关闭")
+        appear("干员界面", 2)
+    end
+    for i = 1, 8 do
+        local bl = true
+        while bl do
+            if findOne("干员悖论模拟列表" .. i) then
+                tap("干员悖论模拟列表" .. i)
+            else
+                break
+            end
+            if appear("悖论模拟界面", 5) then
+                ssleep(.1)
+                local ret = ocrex("悖论模拟关卡名范围")
+                if ret then stage_name = ret[1]["text"] end
+                if 悖论模拟作业[stage_name] then
+                    log(stage_name, 悖论模拟作业[stage_name])
+                    auto_prts(悖论模拟作业[stage_name], true)
+                    if not wait(function()
+                            if findOne("悖论模拟行动结束") then
+                                tap("悖论模拟行动结束")
+                                appear("悖论模拟界面2", 5)
+                                path.跳转("干员")
+                            end
+                            tap("悖论模拟失败")
+                            if findOne("干员界面") then return true end
+                        end, 15) then
+                        return
+                    end
+                else
+                    break
+                end
+            else
+                break
+            end
+        end
+        path.跳转("干员")
+    end
 end
 
 path.森空岛签到 = function()

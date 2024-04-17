@@ -694,7 +694,7 @@ end
             if 部署指令["pre_delay"] then sleep_and_do_strategy(部署指令["pre_delay"]) end
 
             if wave >= 部署指令["kills"] and cost >= 部署指令["costs"] then
-                if 干员列表 and 部署指令["type"] == "Deploy" then
+                if 干员列表 and (部署指令["type"] == "Deploy" or 部署指令["type"] == "deploy" or 部署指令["type"] == "部署") then
                     local 需要cost = {}
                     干员排位 = table.search(干员列表, 部署指令["name"])
                     print(部署指令["name"], "在第", 干员排位)
@@ -727,13 +727,13 @@ end
                         下排干员数量 = 下排干员数量 - 1
                         点战斗()
                     end
-                elseif 部署指令["type"] == "Retreat" then
+                elseif 部署指令["type"] == "Retreat" or 部署指令["type"] == "Retreat" or 部署指令["type"] == "撤退" then
                     if not 部署指令["location"] then
                         部署指令["location"] = 已部署干员[部署指令["name"]]
                     end
                     撤退干员(部署指令["location"])
                     部署顺序 = 部署顺序 + 1
-                elseif 部署指令["type"] == "Skill" then
+                elseif 部署指令["type"] == "Skill" or 部署指令["type"] == "skill" or 部署指令["type"] == "技能" then
                     波数依赖顺序 = 部署顺序
                     波数依赖[波数依赖顺序] = 部署指令
                     波数依赖命令数 = 波数依赖顺序
@@ -755,6 +755,7 @@ end
                     移动相机(部署指令["distance"])
                     部署顺序 = 部署顺序 + 1
                 elseif 训练地图 == 0 then
+                    print("跳过指令")
                     部署顺序 = 部署顺序 + 1
                 end
                 if 部署指令 and 部署指令["post_delay"] then sleep_and_do_strategy(部署指令["post_delay"]) end
@@ -775,13 +776,15 @@ end
                     -- End If
 
 
-                    if wave依赖指令["type"] == "Skill" then
-                        if wave依赖指令["location"] or 已部署干员[wave依赖指令["name"]] then
+                    if wave依赖指令["type"] == "Skill" or wave依赖指令["type"] == "skill" or wave依赖指令["type"] == "技能" then
+                        if wave依赖指令["location"] then
+                            wave依赖指令 = 释放坐标技能(wave依赖指令["location"])
+                        elseif 已部署干员[wave依赖指令["name"]] then
                             wave依赖指令 = 释放坐标技能(已部署干员[wave依赖指令["name"]])
                         else
                             wave依赖指令 = 释放技能(wave依赖指令["name"])
                         end
-                    elseif wave依赖指令["type"] == "Deploy" then
+                    elseif wave依赖指令["type"] == "Deploy" or wave依赖指令["type"] == "deploy" or wave依赖指令["type"] == "部署" then
                         干员排位 = table.findk(干员列表, wave依赖指令["name"])
                         print(wave依赖指令["name"], "干员排位", 干员排位)
                         if 干员排位 > -1 then
@@ -813,7 +816,7 @@ end
                             波数依赖顺序 = 波数依赖顺序 + 1
                         end
                         wave依赖指令 = 波数依赖[波数依赖顺序]
-                    elseif wave依赖指令["type"] == "Retreat" then
+                    elseif wave依赖指令["type"] == "Retreat" or wave依赖指令["type"] == "retreat" or wave依赖指令["type"] == "撤退" then
                         if not wave依赖指令["location"] then
                             wave依赖指令["location"] = 已部署干员[wave依赖指令["name"]]
                         end
