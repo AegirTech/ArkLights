@@ -325,7 +325,7 @@ end
     local 干员组, 技能组 = {}, {}
     for i = 1, #干员目录 do
         干员组[i] = string.sub(干员目录[i], 1, string.len(干员目录[i]) - 1)
-        技能组[i] = tonumber(string.sub(干员目录[i], -1))
+        技能组[i] = tonumber(string.sub(干员目录[i], -1)) or 1
     end
     local 找干员 = function(识别结果)
         for i = 1, 需要干员数 do

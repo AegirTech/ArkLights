@@ -508,6 +508,7 @@ char_choose = function(char_name)
         if char_found then break end
         if ret[-1]["text"] == last_char then break else last_char = ret[-1]["text"] end
         swip_char() --仿照swip_inventory,没改坐标
+    end
 end
 
 -- 干员升级
