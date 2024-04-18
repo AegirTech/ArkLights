@@ -86,7 +86,7 @@ require("sha2")
 require("skland")
 require("prts")
 require("exOcr")
-fetchMaps()
+
 
 load(after_require_hook or '')()
 
@@ -94,6 +94,7 @@ consoleInit()
 showControlBar(true)
 setEventCallback()
 hotUpdate()
+fetchMaps()
 --fetchSkillIcon()
 check_root_mode()
 unpacking_library()
