@@ -2,6 +2,8 @@
 --               自动化练干员
 -- ===========================================
 
+raise = {}
+
 -- 初始化数据及玩家信息
 raise_init = function()
     if not character_table then
@@ -428,24 +430,19 @@ raise_find_material = function(area)
         end
     end
     test_material(material_level)
-    if material == "" then
-        for k, v in pairs(材料等级) do
-            if k ~= material_level then
-                test_material(k)
-            end
-        end
-    end
+    -- if material == "" then
+    --     for k, v in pairs(材料等级) do
+    --         if k ~= material_level then
+    --             test_material(k)
+    --         end
+    --     end
+    -- end
     -- table.removev(材料等级[material_level], material)
     -- log("material", material)
     return material
 end
 
--- 仓库识别
-raise_storage_dentify = function()
-
-end
-
--- 材料识别
+-- 基建材料识别
 raise_material_identify = function()
     -- 从x 945/1686  y=120 开始y++ 识别 22BBFF 减去一定x值得到区域初始坐标
 end
@@ -528,7 +525,7 @@ raise_test = function()
 
     log("start")
     local ms = {}
-    local sx, sy = 12, 121
+    local sx, sy = 49, 173
     for x = 0, 7 do
         for y = 0, 2 do
             area = { sx + x * scale(230), sy + y * scale(280), sx + x * scale(230) + scale(200), sy + y * scale(280) +
@@ -542,7 +539,6 @@ raise_test = function()
     log(ms)
     ssleep(300)
 end
-
 
 -- 基建合成识别
 raise_test2 = function()
@@ -564,6 +560,25 @@ raise_test2 = function()
     ssleep(300)
 end
 
+芯片识别数据 = {
+    近卫芯片组 = {},
+    近卫芯片 = {},
+    狙击芯片组 = {},
+    狙击芯片 = {},
+    重装芯片组 = {},
+    重装芯片 = {},
+    医疗芯片组 = {},
+    医疗芯片 = {},
+    术师芯片组 = {},
+    术师芯片 = {},
+    辅助芯片组 = {},
+    辅助芯片 = {},
+    特种芯片组 = {},
+    特种芯片 = {},
+    先锋芯片组 = {},
+    先锋芯片 = {}
+}
+
 raise_test3 = function()
     -- local pixel = getPixelColor(279, 792)
     -- print(pixel)
@@ -572,15 +587,16 @@ raise_test3 = function()
 
     -- local iswhite, isdis = false, false
 
-    local area = { 199, 451, 435, 698 }
-    local sx, sy = 213, 184
+    local area = {}
+    local sx, sy = scale(204), scale(182)
     local ms = {}
 
     function getcent(area)
         local 绿色, 蓝色 = 0, 0, 0, 0
         local pixel, r, g, b = "", 0, 0, 0
-        local cx, cy = nil, nil
+        -- local cx, cy = nil, nil
         local 蓝色区域差值 = 0
+        local coordinates = {}
         for y = area[2], area[4], 1 do
             iswhite, isdis = false, false
             for x = area[1], area[3], 1 do
@@ -606,6 +622,7 @@ raise_test3 = function()
                         cy = y
                     end
                     蓝色区域差值 = 蓝色区域差值 + x - cx + y - cy
+                    -- table.insert(coordinates, { x, y })
                 end
             end
         end
@@ -616,16 +633,24 @@ raise_test3 = function()
     -- local 绿色, 蓝色 = getcent(area)
     -- local 比例 = 蓝色 / (scale(200) * scale(200))
     -- table.insert(ms, { x, y, 蓝色, 比例 })
-
-    for x = 0, 3 do
+    log("start")
+    local 区域集中度 = 0
+    for x = 0, 5 do
         for y = 0, 2 do
-            area = { sx + x * 230, sy + y * 280, sx + x * 230 + 200, sy + y * 280 + 200 }
-            local 绿色, 蓝色, 蓝色差 = getcent(area)
-            local 比例 = 蓝色 / (scale(200) * scale(200))
-            -- log(x, y, material)
-            table.insert(ms, { x, y, 蓝色, 比例, 蓝色差 / 蓝色 })
+            area = { sx + x * scale(230), sy + y * scale(280), sx + x * scale(230) + scale(200), sy + y * scale(280) +
+            scale(200) }
+            local 绿色, 蓝色, 蓝色区域差值 = getcent(area)
+            local 比例 = 蓝色 / (scale(100) * scale(100))
+            --log(绿色, 蓝色, 比例, 离散距离)
+            -- table.insert(ms, { x, y, 蓝色, 比例, 蓝色差 / 蓝色 })
+            if 蓝色 > 0 then
+                区域集中度 = scale(蓝色区域差值) / (scale(2000) * scale(100))
+                区域集中度 = 区域集中度 * (1 / (1080 / screen.height) * (1080 / screen.height))
+                table.insert(ms, { x, y, 绿色, 蓝色, 比例, 区域集中度, 蓝色区域差值 })
+            end
         end
     end
+    log("end")
 
     -- local 比例 = 白色 / (绿色 + 蓝色 + 白色)
     -- log(绿色, 蓝色, 白色, 比例)
@@ -633,6 +658,7 @@ raise_test3 = function()
     ssleep(2000)
 end
 
+-- 仓库滑动
 swip_inventory = function(left)
     local duration
     local finger
@@ -703,21 +729,6 @@ swip_char = function(left)
     sleep(duration + delay)
 end
 
-is_last_page = function()
-    -- 检测最后一页 1710 y =240-600是否为空白
-    local sx = scale(1710)
-    keepCapture()
-    for y = scale(240), scale(600), 1 do
-        pixel = getPixelColor(sx, y)
-        if pixel ~= "FFFFFF" then
-            releaseCapture()
-            return false
-        end
-    end
-    releaseCapture()
-    return true
-end
-
 -- 仓库识别 给定材料列表 只ocr给定的材料数量
 raise_inventory_identify = function(materials)
     local sx, sy = scale(85), scale(185)
@@ -725,13 +736,18 @@ raise_inventory_identify = function(materials)
     local ret = {}
     if materials == nil or #materials == 0 then return end
     log(materials)
-    swip_inventory(true)
+    -- swip_inventory(true)
     ssleep(0.5)
     log("start")
     local page = 0
     -- swip_inventory(true)
     while true do
-        if page > 3 then break end
+        if page >= 5 then break end
+        if findOne("商店最后一页") then
+            page = 5
+            log("已经是最后一页")
+        end
+        sx = scale(210)
 
         keepCapture()
         for x = 0, 7 do
@@ -740,7 +756,7 @@ raise_inventory_identify = function(materials)
                 scale(200) }
                 local material = raise_find_material(area)
                 -- log(x, y, material)
-                -- table.insert(ms, { x, y, material })
+                table.insert(ms, { x, y, material })
                 if material ~= "" then
                     -- log(material)
                     if table.includes(materials, material) then
@@ -753,7 +769,7 @@ raise_inventory_identify = function(materials)
                                 num = num[1]["text"]
                             end
                             ret[material] = num
-                            table.insert(ms, { x, y, material, num })
+                            -- table.insert(ms, { x, y, material, num })
                         end
                     end
                 end
@@ -762,9 +778,11 @@ raise_inventory_identify = function(materials)
         releaseCapture()
 
         swip_inventory()
+        ssleep(0.1)
         page = page + 1
     end
     log("end")
+    log(ret)
     log(ms)
     ssleep(300)
 end
@@ -774,7 +792,7 @@ raise_test_all = function()
     -- ssleep(1.5)
     -- t = raise_find_material({ 923, 306, 1102, 465 })
     -- log(t)
-    -- raise_test()
-    raise_test2()
+    raise_test()
+    --raise_test2()
     ssleep(500)
 end
