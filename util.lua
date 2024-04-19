@@ -3472,7 +3472,7 @@ show_extra_ui = function()
 
     local max_checkbox_one_row = 4
     for k, v in pairs(green_ticket_shop_good) do
-        if k % max_checkbox_one_row == 1 or k == 8 then
+        if k == 1 or k == 5 or k == 8 then
             newRow(layout, "green_ticket_shop_row" .. k)
         end
         ui.addCheckBox(layout, "green_ticket_shop_" .. k, v, true)
