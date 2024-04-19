@@ -1323,6 +1323,7 @@ qqnotify_before_run = function()
 end
 
 qqnotify_after_run = function(run_start_time)
+    if multi_account_only_login then return end
     local qqmessage_bak = shallowCopy(qqmessage)
     if not qqnotify_noruntime and run_start_time then
         table.insert(qqmessage,
@@ -2197,6 +2198,7 @@ show_multi_account_ui = function()
     addTextView(layout, "切号前关闭")
     ui.addCheckBox(layout, "multi_account_end_closeotherapp", "其他服", true)
     ui.addCheckBox(layout, "multi_account_end_closeapp", "当前服", true)
+    ui.addCheckBox(layout, "multi_account_only_login", "仅上号", false)
 
     -- newRow(layout)
     -- addTextView(layout, "单号最大登录次数")

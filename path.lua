@@ -1354,6 +1354,7 @@ path.账户数据保存 = function()
             end
         end
     end
+    return true
 end
 
 path.邮件收取 = function()
@@ -7789,4 +7790,20 @@ isPhoneNumber = function(str)
     else
         return false
     end
+end
+
+path.游戏监控 = function()
+    path.跳转("首页")
+    hideControlBar()
+    while true do
+        if not nodeLib.findOne(0, 0, 0, 0, { package = server == 0 and oppid or bppid }, false) then
+            break
+        end
+        ssleep(1)
+    end
+    if 快速切号功能状态 == false then
+        path.账户数据保存()
+    end
+    setControlBar()
+    return true
 end

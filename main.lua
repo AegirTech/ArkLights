@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "04.18 23:20"
+release_date = "04.20 01:36"
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -115,8 +115,12 @@ cloud.startHeartBeat()
 --debug_mode = true
 if debug_mode then
     log("debug_mode")
-    char_choose("凯尔希")
-    exit()
+    ssleep(1)
+    -- char_choose("凯尔希")
+    -- exit()
+    -- raise_test_all()
+    -- raise_inventory_identify({ "D32钢", "研磨石" })
+    -- ssleep(100)
 end
 
 load(before_account_hook or '')()
@@ -138,7 +142,6 @@ if cloud.getTaskEnabled() and not cloud_task then
 elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi) and
     multi_account_enable then
     -- 多帐号模式
-
     -- 分隔临时账号设置
     multi_account_choice = multi_account_choice:commonmap()
     local temp_choice_pos = multi_account_choice:find('#')
@@ -212,7 +215,7 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
             table.insert(job, "账户数据保存")
         end
 
-        if #username > 0 and #password > 0 and _G.快速切号功能状态 ~= true then
+        if #username > 0 and #password > 0 and 快速切号功能状态 ~= true then
             table.insert(job, 1, "退出账号")
         end
 
@@ -236,7 +239,15 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
             skip_account = true
         end
         log(job)
-        if not skip_account then run(job) end
+        if multi_account_only_login then
+            job = { "游戏监控" }
+            if #username > 0 and #password > 0 and 快速切号功能状态 ~= true then
+                table.insert(job, 1, "退出账号")
+            end
+            run(job)
+        else
+            if not skip_account then run(job) end
+        end
     end
     saveConfig("continue_account", '')
 elseif not crontab_enable_only then
