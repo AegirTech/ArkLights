@@ -31,7 +31,7 @@ loadHomework = function(levelName, isLocal)
         local data = JsonDecode(ret)
         local x = get(data, 'data', 'content')
         local levelInfo = JsonDecode(x)
-        httpPost('https://prts.maa.plus/copilot/rating', JsonEncode({ rating = "Like", id = maaCode, }))
+        httpPost('https://prts.maa.plus/copilot/rating/', JsonEncode({ rating = "Like", id = maaCode, }))
         --log(levelInfo)
         return levelInfo
     end
@@ -236,18 +236,22 @@ end
         appear("等级降序", 2)
     end
     local choseChar = function(干员, 是否群组)
+        local 记录未编入数量
+        local group_selected = 0
+        if 是否群组 then
+            记录未编入数量 = 未编入数量
+        end
         --8个职业
         for i = 1, 8 do
-            local 字典 = ""
+            local 干员名字字符串 = ""
             local 干员目录 = {}
             for _, item in ipairs(干员) do
                 if 干员职业[item["name"]] == 干员类别[i] then
-                    字典 = 字典 .. item["name"]
+                    干员名字字符串 = 干员名字字符串 .. item["name"]
                     table.insert(干员目录, item["name"] .. item["skill"])
                 end
             end
-            --print(字典)
-            if 字典 ~= "" then
+            if 干员名字字符串 ~= "" and group_selected == 0 then
                 if not findOne("普通作战编队列表" .. i) then
                     tap("普通作战编队列表" .. i)
                     appear("普通作战编队列表" .. i)
@@ -255,15 +259,21 @@ end
                 end
                 --print(干员目录)
                 未编入 = 选择干员(干员目录, "待编队干员", 是否群组)
+
                 未编入数量 = 未编入数量 + 未编入[1]
+                if 是否群组 and 未编入[1] == 0 then
+                    group_selected = 1
+                    未编入数量 = 记录未编入数量
+                    编入数量 = 编入数量 + 1
+                end
                 if 未编入数量 == 1 and 未编入干员[1] == nil then
                     print(i, 未编入[2])
                     未编入干员 = { i, 未编入[2] }
-                elseif 未编入数量 > 1 then
-                    print("缺少干员超过1个")
+                elseif 是否群组 == nil and 未编入数量 > 1 then
+                    log("缺少干员超过1个")
                     exitScript()
                 end
-                编入数量 = #干员目录 + 编入数量
+                if not 是否群组 then 编入数量 = #干员目录 + 编入数量 end
             end
             if i == 8 then
                 if not findOne("职业选择") then
@@ -320,6 +330,7 @@ end
 
 选择干员 = function(干员目录, 字典, 是否群组)
     local 需要干员数 = #干员目录
+    if 是否群组 then 需要干员数 = 1 end
     local 已选择 = {}
     local selected = 0
     local 干员组, 技能组 = {}, {}
@@ -344,10 +355,8 @@ end
                         print(干员组[i], "正在编入,选择", 技能组[i], "技能")
                         sleep(300)
                         选择技能(技能组[i])
-
                         已选择[i] = 1
                         selected = selected + 1
-                        if 是否群组 then return end
                         break
                     end
                 end
@@ -1424,8 +1433,11 @@ end
         elseif 原文本:find("默") and 原文本:find("德克萨斯") then
             t[i]["text"] = "缄默德克萨斯"
         end
+        -- 去除开头的书名号
+        t[i]["text"] = t[i]["text"]:gsub("^《", "")
         --开头和结尾的半角引号替换成全角
         t[i]["text"] = t[i]["text"]:gsub("^\"(.-)\"$", "“%1”")
+
         print(t[i]["text"])
     end
 
