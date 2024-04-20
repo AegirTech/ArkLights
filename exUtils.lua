@@ -2046,3 +2046,15 @@ fight_perfect_pass = function(tap_coordinate)
         return false
     end
 end
+
+int_is_in_range = function(ori, target, range)
+    if math.abs(ori - target) <= range then
+        return true
+    else
+        return false
+    end
+end
+
+get_cpu_arch = function()
+    return exec("getprop ro.product.cpu.abi")
+end
