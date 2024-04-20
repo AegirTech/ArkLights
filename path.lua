@@ -3865,7 +3865,12 @@ same_page_fight = function(pre, cur)
     if type(pre) ~= 'string' or type(cur) ~= 'string' then return end
 
     -- 禁用同页跳转
-    if get_fight_type(cur) == '活动' then return end
+    -- if get_fight_type(cur) == '活动' then return end
+
+    if removeTrailingDigits(pre) == removeTrailingDigits(cur) then
+        log("same page fight", pre, cur)
+        return true
+    end
 
     -- pattern before last - should be same
     -- PR-A-1 == PR-A-2, PR-A-1 != PR-A-2
@@ -4047,8 +4052,8 @@ path.开始游戏 = function(x, disable_ptrs_check)
     save_run_state()
     local need_copy_homework = nil
     log("开始游戏", fight_tick, x)
+    pre_fight = x
     if not findOne("开始行动") then return end
-    if x == "1-11" then return path["1-11"] end
 
     -- TODO 活动时需要注意这个地方，活动关的代理指挥不长这样
     -- 目的是剿灭
@@ -4869,6 +4874,18 @@ clean_hdfight = function()
     -- end
 end
 
+-- 使用模式匹配去除末尾的数字
+removeTrailingDigits = function(str)
+    if str == nil then
+        return ""
+    end
+
+    local pattern = "(.-)%-?%d+$"
+    local trimmedStr = string.match(str, pattern)
+    log(trimmedStr)
+    return trimmedStr
+end
+
 path.活动 = function(x)
     local t = parse_time()
     if t >= hd_open_time_end then
@@ -4880,28 +4897,27 @@ path.活动 = function(x)
         return
     end
 
-    local removeTrailingDigits = function(str)
-        -- 使用模式匹配去除末尾的数字
-        local pattern = "(.-)%-?%d+$"
-        local trimmedStr = string.match(str, pattern)
-        print(trimmedStr)
-        return trimmedStr
+
+    skip_guide = false
+    if removeTrailingDigits(last_guide) == removeTrailingDigits(x) then
+        skip_guide = true
     end
 
-    --if last_guide==nil or removeTrailingDigits(last_guide)~=removeTrailingDigits(x) then
-    path.跳转("首页")
-    tap("面板活动2")
-    log(x)
-    if string.find(x, "HD-EX") then
-        point["活动导航0"] = point["活动导航EX"]
-    elseif string.find(x, "HD-S") then
-        point["活动导航0"] = point["活动导航S"]
-    end
-    if not wait(function()
-            if findOne("活动导航0") then return true end
-            -- if findOne("跳过剧情") then path.跳过剧情() end
-        end, 10) then
-        return path.跳过剧情()
+    if not skip_guide then
+        path.跳转("首页")
+        tap("面板活动2")
+        log(x)
+        if string.find(x, "HD-EX") then
+            point["活动导航0"] = point["活动导航EX"]
+        elseif string.find(x, "HD-S") then
+            point["活动导航0"] = point["活动导航S"]
+        end
+        if not wait(function()
+                if findOne("活动导航0") then return true end
+                -- if findOne("跳过剧情") then path.跳过剧情() end
+            end, 10) then
+            return path.跳过剧情()
+        end
     end
 
     -- 理想城：长夏狂欢季
@@ -5344,31 +5360,36 @@ path.活动 = function(x)
 
     -- car_check()
 
-    if not findOne("活动导航0") then return end
-    if utf8.left(x, 5) == "HD-EX" then --提取x的前面五个，如果是"HD-EX"，则进入活动的ex界面
-        if not wait(function()
-                tap("活动导航EX")
-                ssleep(.5)
-                if not appear("活动导航0", 1) then return true end
-            end, 5) then
-            return
+    if not skip_guide then
+        if not findOne("活动导航0") then return end
+        if utf8.left(x, 5) == "HD-EX" then --提取x的前面五个，如果是"HD-EX"，则进入活动的ex界面
+            if not wait(function()
+                    tap("活动导航EX")
+                    ssleep(.5)
+                    if not appear("活动导航0", 1) then return true end
+                end, 5) then
+                return
+            end
+        elseif utf8.left(x, 5) == "HD-S-" or utf8.left(x, 6) == "HD-MO-" then --提取x的前面4个，如果是"HD-S"，则进入活动的S界面
+            if not wait(function()
+                    tap("活动导航S")
+                    ssleep(.5)
+                    if not appear("活动导航0", 1) then return true end
+                end, 5) then
+                return
+            end
+        else --正常流程进入活动的第一阶段界面
+            if not wait(function()
+                    tap("活动导航0")
+                    ssleep(.5)
+                    if not appear("活动导航0", 1) then return true end
+                end, 5) then
+                return
+            end
         end
-    elseif utf8.left(x, 5) == "HD-S-" or utf8.left(x, 6) == "HD-MO-" then --提取x的前面4个，如果是"HD-S"，则进入活动的S界面
-        if not wait(function()
-                tap("活动导航S")
-                ssleep(.5)
-                if not appear("活动导航0", 1) then return true end
-            end, 5) then
-            return
-        end
-    else --正常流程进入活动的第一阶段界面
-        if not wait(function()
-                tap("活动导航0")
-                ssleep(.5)
-                if not appear("活动导航0", 1) then return true end
-            end, 5) then
-            return
-        end
+    else
+        tap("返回")
+        ssleep(.5)
     end
 
     --[[end
@@ -5377,7 +5398,6 @@ path.活动 = function(x)
     ssleep(.5)]]
 
     -- appear("活动导航2")
-
     swip(x)
     ssleep(.5)
     last_guide = x
