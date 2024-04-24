@@ -1721,6 +1721,7 @@ update_state = function()
     -- 禁用重复刷模式
     repeat_fight_mode = false
     pre_fight = nil
+    last_guide = nil
 
     -- 作战统计
     fight_history = {}
@@ -3862,7 +3863,14 @@ get_fight_special_type = function(x)
 end
 
 same_page_fight = function(pre, cur)
-    if type(pre) ~= 'string' or type(cur) ~= 'string' then return end
+    if type(last_guide) ~= 'string' or type(cur) ~= 'string' then return end
+
+    if removeTrailingDigits(last_guide) == removeTrailingDigits(cur) then
+        log("same page fight", last_guide, cur)
+        return true
+    end
+
+    if type(pre) ~= 'string' then return end
 
     -- 禁用同页跳转
     -- if get_fight_type(cur) == '活动' then return end
@@ -3871,6 +3879,7 @@ same_page_fight = function(pre, cur)
         log("same page fight", pre, cur)
         return true
     end
+
 
     -- pattern before last - should be same
     -- PR-A-1 == PR-A-2, PR-A-1 != PR-A-2
@@ -4052,7 +4061,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
     save_run_state()
     local need_copy_homework = nil
     log("开始游戏", fight_tick, x)
-    pre_fight = x
+    -- pre_fight = x
     if not findOne("开始行动") then return end
 
     -- TODO 活动时需要注意这个地方，活动关的代理指挥不长这样
@@ -4089,6 +4098,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 return path.跳转("首页")
             end
         elseif copy_homework_only then
+            last_guide = x
             return
         end
         -- if not wait(function()
@@ -4897,7 +4907,6 @@ path.活动 = function(x)
         return
     end
 
-
     skip_guide = false
     if removeTrailingDigits(last_guide) == removeTrailingDigits(x) then
         skip_guide = true
@@ -5400,7 +5409,7 @@ path.活动 = function(x)
     -- appear("活动导航2")
     swip(x)
     ssleep(.5)
-    last_guide = x
+    -- last_guide = x
     if x:includes({ "ST-", "TR-" }) then
         --教学关和剧情关只打一遍
         if findOne("作战列表" .. x) then return true end
