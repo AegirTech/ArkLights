@@ -768,6 +768,7 @@ end
                     部署顺序 = 部署顺序 + 1
                 end
                 if 部署指令 and 部署指令["post_delay"] then sleep_and_do_strategy(部署指令["post_delay"]) end
+                if 部署指令 and 部署指令["rear_delay"] then sleep_and_do_strategy(部署指令["rear_delay"]) end
             end
         end
         if 波数依赖顺序 <= 波数依赖命令数 then
