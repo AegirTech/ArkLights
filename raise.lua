@@ -459,7 +459,7 @@ end
 -- 选择干员
 char_choose = function(char_name)
     local character_type = JsonDecode(readFile("character_type_list.json"))
-    local 干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SUPPORT", "SPECIAL" }
+    local 干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
     path.跳转("干员")
     ssleep(.3)
     if not findOne("干员等级降序") then
