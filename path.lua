@@ -5383,7 +5383,7 @@ path.活动 = function(x)
             if not wait(function()
                     tap("活动导航S")
                     ssleep(.5)
-                    if not appear("活动导航0", 1) then return true end
+                    if disappear("活动导航0", 1) then return true end
                 end, 5) then
                 return
             end
@@ -5407,13 +5407,26 @@ path.活动 = function(x)
     ssleep(.5)]]
 
     -- appear("活动导航2")
+    log("111")
+    log(x)
     swip(x)
+    log("222")
     ssleep(.5)
     -- last_guide = x
-    if x:includes({ "ST-", "TR-" }) then
+    local includesSubstring = function(str, substrings)
+        for i = 1, #substrings do
+            if string.find(str, substrings[i], 1, true) then
+                return true
+            end
+        end
+        return false
+    end
+    if includesSubstring(x, { "ST-", "TR-" }) then
         --教学关和剧情关只打一遍
+        log("剧情关")
         if findOne("作战列表" .. x) then return true end
     end
+    log("333")
     tap("作战列表" .. x)
 
     if appear("开始剧情", 1) then
