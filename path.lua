@@ -5407,10 +5407,7 @@ path.活动 = function(x)
     ssleep(.5)]]
 
     -- appear("活动导航2")
-    log("111")
-    log(x)
     swip(x)
-    log("222")
     ssleep(.5)
     -- last_guide = x
     local includesSubstring = function(str, substrings)
@@ -5426,7 +5423,6 @@ path.活动 = function(x)
         log("剧情关")
         if findOne("作战列表" .. x) then return true end
     end
-    log("333")
     tap("作战列表" .. x)
 
     if appear("开始剧情", 1) then
