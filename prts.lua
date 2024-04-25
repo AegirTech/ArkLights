@@ -330,7 +330,6 @@ end
 
 选择干员 = function(干员目录, 字典, 是否群组)
     local 需要干员数 = #干员目录
-    if 是否群组 then 需要干员数 = 1 end
     local 已选择 = {}
     local selected = 0
     local 干员组, 技能组 = {}, {}
@@ -360,6 +359,7 @@ end
                         break
                     end
                 end
+                if 是否群组 and selected >= 1 then break end
             else
                 print(干员组[i], "已编入")
             end
@@ -1410,6 +1410,7 @@ end
         ["1"] = "山",
         ["任"] = "山",
         ["灰"] = "灰烬",
+        ["委"] = "黍",
         ["默德克萨斯"] = "缄默德克萨斯",
         ["翎羽羽"] = "翎羽",
         ["纯烟艾雅法拉"] = "纯烬艾雅法拉",
