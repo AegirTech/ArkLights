@@ -202,7 +202,7 @@ end
     local 编入数量 = 0
     local 未编入 = {}
     local 未编入干员 = {}
-    local 干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SUPPORT", "SPECIAL" }
+    local 干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
     local 未编入数量 = 0
 
     local 干员职业 = JsonDecode(readFile("character_type_list.json"))
@@ -330,7 +330,6 @@ end
 
 选择干员 = function(干员目录, 字典, 是否群组)
     local 需要干员数 = #干员目录
-    if 是否群组 then 需要干员数 = 1 end
     local 已选择 = {}
     local selected = 0
     local 干员组, 技能组 = {}, {}
@@ -360,6 +359,8 @@ end
                         break
                     end
                 end
+                print("已选择")
+                if 是否群组 and selected >= 1 then break end
             else
                 print(干员组[i], "已编入")
             end
@@ -450,6 +451,9 @@ end
         })
         sleep(300)
         tap("选择三技能")
+    elseif a == 1 then
+        tap("选择一技能")
+        sleep(30)
     else
         local intY = scale(403)
         keepCapture()
@@ -768,6 +772,7 @@ end
                     部署顺序 = 部署顺序 + 1
                 end
                 if 部署指令 and 部署指令["post_delay"] then sleep_and_do_strategy(部署指令["post_delay"]) end
+                --if 部署指令 and 部署指令["rear_delay"] then sleep_and_do_strategy(部署指令["rear_delay"]) end
             end
         end
         if 波数依赖顺序 <= 波数依赖命令数 then
@@ -1410,6 +1415,7 @@ end
         ["1"] = "山",
         ["任"] = "山",
         ["灰"] = "灰烬",
+        ["委"] = "黍",
         ["默德克萨斯"] = "缄默德克萨斯",
         ["翎羽羽"] = "翎羽",
         ["纯烟艾雅法拉"] = "纯烬艾雅法拉",

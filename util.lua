@@ -584,7 +584,7 @@ table.includes = function(t, e)
 end
 
 string.includes = function(s, t)
-    for _, v in pairs(t) do if s:find(v) then return true end end
+    for _, v in pairs(t) do if s:find(v, 1, true) then return true end end
 end
 
 table.extend = function(t, e)
