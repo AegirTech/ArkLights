@@ -7,8 +7,21 @@ fetchMaps = function()
     local path = getWorkPath() .. '/maps.zip'
     local extract_path = getWorkPath() .. '/maps'
     --print(extract_path)
-    extractAssets("main.rc", getWorkPath(), "maps.zip")
-    unZip(path, extract_path)
+    -- extractAssets("main.rc", getWorkPath(), "maps.zip")
+    local url = "https://arktoken.enlysure.com:21999/get_ark_file?name=maps.zip&verify=arklights"
+    local res, code = httpGet(url, 30)
+    log(ret, code)
+    if code == 200 then
+        local data = JsonDecode(res)
+        local download_url = get(data, 'url')
+        local file_md5 = get(data, 'md5')
+        local lr_md5 = fileMD5(path)
+        log(file_md5, file_md5, download_url)
+        if lr_md5 ~= file_md5 then
+            downloadFile(download_url, path)
+            unZip(path, extract_path)
+        end
+    end
 end
 
 --加载地图格子数据
