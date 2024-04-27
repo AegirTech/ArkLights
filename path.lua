@@ -1208,12 +1208,6 @@ path.fallback = {
             if findAny({ "新年祝福返回", "面板" }) then return true end
         end, 10)
     end,
-    五周年专享月卡返回 = function()
-        wait(function()
-            tap("五周年专享月卡领取")
-        end, 2)
-        return path.fallback.签到返回()
-    end,
     限时开放许可 = function()
         wait(function() tap("开始作业") end, 1)
         wait(function()
@@ -4781,9 +4775,30 @@ is_jmfight_enough = function(x, outside)
     log("is_jmfight_enough", x)
     if ignore_jmfight_enough_check then return false end
 
+    local auto_jm_rewards = function()
+        if appear("剿灭奖励未领完", .5) then
+            log("自动领取当前剿灭奖励")
+            tap("剿灭奖励未领完")
+            ssleep(.3)
+            if not wait(function()
+                    if findOne("剿灭奖励领完") then return true end
+                    tap("剿灭奖励领完")
+                    ssleep(.2)
+                end, 20) then
+                return
+            end
+            wait(function()
+                tap("剿灭奖励领取退出")
+                ssleep(.2)
+            end, 1)
+            ssleep(.5)
+        end
+    end
+
     -- all fights should check first, because x may not be in jmfight
     if findOne("报酬合成玉已满") and findOne("返还规则") then
-        log("find报酬合成玉已满")
+        log("find报酬合成玉已满1")
+        auto_jm_rewards()
         jmfight_enough = true
         clean_jmfight()
         return true
@@ -4797,7 +4812,8 @@ is_jmfight_enough = function(x, outside)
     if jmfight_enough then return true end
 
     if findOne("报酬合成玉已满") then
-        log("find报酬合成玉已满")
+        log("find报酬合成玉已满2")
+        auto_jm_rewards()
         jmfight_enough = true
         clean_jmfight()
         return true
@@ -5416,7 +5432,15 @@ path.活动 = function(x)
     swip(x)
     ssleep(.5)
     -- last_guide = x
-    if x:includes({ "ST-", "TR-" }) then
+    local includesSubstring = function(str, substrings)
+        for i = 1, #substrings do
+            if string.find(str, substrings[i], 1, true) then
+                return true
+            end
+        end
+        return false
+    end
+    if includesSubstring(x, { "ST-", "TR-" }) then
         --教学关和剧情关只打一遍
         log("剧情关")
         if findOne("作战列表" .. x) then return true end
