@@ -1208,6 +1208,12 @@ path.fallback = {
             if findAny({ "新年祝福返回", "面板" }) then return true end
         end, 10)
     end,
+    五周年专享月卡返回 = function()
+        wait(function()
+            tap("五周年专享月卡领取")
+        end, 2)
+        return path.fallback.签到返回()
+    end,
     限时开放许可 = function()
         wait(function() tap("开始作业") end, 1)
         wait(function()
