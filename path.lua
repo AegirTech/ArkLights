@@ -5438,15 +5438,7 @@ path.活动 = function(x)
     swip(x)
     ssleep(.5)
     -- last_guide = x
-    local includesSubstring = function(str, substrings)
-        for i = 1, #substrings do
-            if string.find(str, substrings[i], 1, true) then
-                return true
-            end
-        end
-        return false
-    end
-    if includesSubstring(x, { "ST-", "TR-" }) then
+    if x:includes({ "ST-", "TR-" }) then
         --教学关和剧情关只打一遍
         log("剧情关")
         if findOne("作战列表" .. x) then return true end
