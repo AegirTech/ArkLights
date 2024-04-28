@@ -809,7 +809,7 @@ Tales_within_the_sand.商店购买 = function()
     log("生息商店购买")
     appear("生息演算繁荣馈赠", 1)
     if not wait(function()
-            if findOne("生息演算繁荣馈赠判断") then return true end
+            if findOne("沙洲遗闻商店界面") then return true end
             appearTap("生息演算繁荣馈赠", 0.1)
         end, 5) then
     end
@@ -819,7 +819,7 @@ Tales_within_the_sand.商店购买 = function()
     -- 防止各种掉帧等导致卡在领取等页面
     local 回到商店主页 = function()
         if not wait(function()
-                if findOne("生息演算繁荣馈赠判断") then return true end
+                if findOne("沙洲遗闻商店界面") then return true end
                 tap("商店顶栏")
                 ssleep(0.2)
             end, 10) then
@@ -827,22 +827,12 @@ Tales_within_the_sand.商店购买 = function()
         end
     end
 
-    local 向左滑动 = function()
-        gesture({
-            {
-                point = { { screen.width * 0.95, screen.height / 2 }, { screen.width * 0.95 - point["商店滑动距离"][1], screen.height / 2 } },
-                start = 0,
-                duration = 1500,
-            },
-        }) -- 滑动大约3个商品的距离
-    end
-
     log("111")
-    if not findOne("生息演算繁荣馈赠判断") then
+    if not appear("沙洲遗闻商店界面", 1) then
         log("未找到商店")
         return
     end
-    local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], point["商店物品间隔"][1], point["商店物品间隔"][2]
+    local 物品横间距, 物品纵间距 = point["商店物品间隔"][1], point["商店物品间隔"][2]
     回到商店主页()
     t = os.time()
     while true do
@@ -852,61 +842,52 @@ Tales_within_the_sand.商店购买 = function()
         end
         for x = 0, 2 do -- 3*3商品进行购买
             for y = 0, 2 do
-                local gt = 0
-                ::startshop::
-                local sx = { 初始物品[1] + x * 物品横间距, 初始物品[2] + y * 物品纵间距 }
-                log(x, y, sx[1], sx[2])
-                回到商店主页()
-                -- ssleep(1000)
-                ssleep(0.5)
-                if not findOne("生息演算繁荣馈赠判断") then
-                    log("商店任务结束")
-                    return
-                end -- 防止跳到其他页面
-                -- 点击商品，进入购买页面判断
-                if not wait(function()
-                        tap(sx)
-                        if findOne("商店购买页面") then return true end
-                    end, 1) then
+                log(x, y)
+                for i = 1, 7 do
+                    回到商店主页()
+                    intX, intY = findMultiColor(scale(120) + x * 物品横间距, scale(515) + y * 物品纵间距,
+                        scale(386) + x * 物品横间距, scale(555) + y * 物品纵间距,
+                        "FFFFFF", "17|-2|575757|-100|-5|5A5A5A", 0, 0.85)
+                    if intX == -1 then break end
+                    if not wait(function()
+                            tap({ intX, intY })
+                            ssleep(.6)
+                            if findOne("商店购买页面") then return true end
+                        end, 1.8) then
+                    end
+                    if findOne("沙洲遗闻商店界面") then
+                        log("未能进入商品，大概是识别错了")
+                        break
+                    end
+                    -- 点击购买
+                    if not wait(function()
+                            if findOne("生息演算繁荣馈赠商店最多") then
+                                tap("生息演算繁荣馈赠商店最多")
+                                ssleep(0.2)
+                            end
+                            if findOne("生息演算繁荣馈赠支付") then
+                                tap("生息演算繁荣馈赠支付")
+                                ssleep(0.5)
+                                disappear("正在提交反馈至神经", network_timeout)
+                            end
+                            if not findOne("商店购买页面") then return true end
+                        end, 5) then
+                    end
+                    --disappear("正在提交反馈至神经", network_timeout)
+                    if findOne("商店购买页面") then
+                        log("未能进入商品，大概是售空了吧~")
+                        break
+                    end
                 end
-                if findOne("生息演算繁荣馈赠判断") then
-                    log("未能进入商品，大概是售空了吧~")
-                    goto continue
-                end
-
-                -- 点击购买
-                if not wait(function()
-                        appearTap("生息演算繁荣馈赠商店最多", 0.1)
-                        ssleep(0.2)
-                        appearTap("生息演算繁荣馈赠支付", 0.1)
-                        if not findOne("商店购买页面") then return true end
-                    end, 3) then
-                end
-
-                if findOne("商店购买页面", 1) then
-                    log("购买失败，大抵是没钱了吧~")
-                    return true
-                end
-
-                disappear("正在提交反馈至神经", network_timeout)
-
-                if x == 0 and y == 1 and gt < 7 then
-                    gt = gt + 1
-                    goto startshop -- 针对信物修复
-                end
-
-                ::continue::
-                回到商店主页()
                 log("开始下一个商品")
             end
         end
         回到商店主页()
-        ssleep(1)
-        if not findOne("生息演算繁荣馈赠判断") then return end -- 防止跳到其他页面
+        ssleep(.5)
         local sx = { screen.width * 0.8, screen.height * 0.5 }
         local oricol = getColor(sx[1], sx[2])
-        向左滑动()
-        ssleep(3)
+        path.swip_hd_shop()
+        ssleep(.5)
         if getColor(sx[1], sx[2]) == oricol then
             log("大概滑动到底了吧~")
             return true

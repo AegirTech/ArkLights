@@ -3565,6 +3565,84 @@ path.信用购买 = function()
     -- for _, i in pairs(range(20)) do if f() then break end end
 end
 
+path.swip_ticket_shop = function(left, nodelay)
+    --采购商店滑动,滑动三个商品的距离
+    local duration
+    local finger
+    local delay
+    if left then
+        local x1 = scale(600)
+        local x2 = scale(10000 / 720 * 1080)
+        local y1 = scale(533)
+        duration = 400
+        finger = { { point = { { x1, y1 }, { x2, y1 } }, duration = duration } }
+        delay = 750
+    else
+        local x = scale(600) --滑动容器内较左侧
+        local y = scale(533)
+        local y2 = scale(900)
+        --修改x2坐标，x+滑动距离1143
+        local x2 = scale(1743) --不可超出1920
+        local x3 = scale(1695) --不会点到物品
+        local y3 = scale(1038)
+        local slids = 50
+        local slidd = 200
+        local taps = slids + slidd + 150
+        local tapd = 200
+        local downd = taps + 100
+        duration = downd
+        finger = {
+            { point = { { x, y }, { x, y2 } },    start = 0,     duration = downd },
+            { point = { { x2, y }, { x2, y3 } },  start = slids, duration = slidd },
+            { point = { { x3, y3 }, { x3, y3 } }, start = taps,  duration = tapd },
+        }
+        delay = 250
+    end
+    log(JsonEncode(finger))
+    gesture(finger)
+    sleep(duration + (nodelay and 0 or delay))
+    return nodelay and delay or 0
+end
+
+path.swip_hd_shop = function(left, nodelay)
+    --活动商店滑动,滑动三个商品的距离
+    local duration
+    local finger
+    local delay
+    if left then
+        local x1 = scale(600)
+        local x2 = scale(10000 / 720 * 1080)
+        local y1 = scale(533)
+        duration = 400
+        finger = { { point = { { x1, y1 }, { x2, y1 } }, duration = duration } }
+        delay = 750
+    else
+        local x = scale(64) --滑动容器内较左侧
+        local y = scale(533)
+        local y2 = scale(900)
+        --修改x2坐标，x+滑动距离,两个物品1031,三个物品1520
+        local x2 = scale(1584) --不可超出1920
+        local x3 = scale(1751) --不会点到物品
+        local y3 = scale(164)
+        local slids = 50
+        local slidd = 200
+        local taps = slids + slidd + 150
+        local tapd = 200
+        local downd = taps + 100
+        duration = downd
+        finger = {
+            { point = { { x, y }, { x, y2 } },    start = 0,     duration = downd },
+            { point = { { x2, y }, { x2, y3 } },  start = slids, duration = slidd },
+            { point = { { x3, y3 }, { x3, y3 } }, start = taps,  duration = tapd },
+        }
+        delay = 250
+    end
+    log(JsonEncode(finger))
+    gesture(finger)
+    sleep(duration + (nodelay and 0 or delay))
+    return nodelay and delay or 0
+end
+
 path.采购中心商店 = function()
     if not green_ticket_shop and not yellow_ticket_shop and not red_ticket_shop then return end
 
@@ -3583,14 +3661,15 @@ path.采购中心商店 = function()
         if not wait(function()
                 if findOne("购买物品面板", 3) then
                     tap("交易所商品最多")
-                    ssleep(0.5)
+                    ssleep(0.3)
                     tap("商店支付")
+                    ssleep(0.3)
                 end
                 disappear("正在提交反馈至神经", network_timeout)
 
                 if findOne("凭证交易所进入") then return true end
                 if not findOne("购买物品面板") then return true end
-            end, 3) then
+            end, 4) then
         end
 
         -- 购买后判断
@@ -3707,9 +3786,6 @@ path.采购中心商店 = function()
                 log("购买失败，大抵是没钱了吧~")
                 return true
             end
-
-
-
             ::continue::
         end
     end
@@ -3730,16 +3806,6 @@ path.采购中心商店 = function()
             log("黄票")
             指定商店购买(yellow_ticket_shop_good_need)
         end
-    end
-
-    local 向左滑动 = function()
-        gesture({
-            {
-                point = { { screen.width * 0.95, screen.height / 2 }, { screen.width * 0.95 - scale(1000), screen.height / 2 } },
-                start = 0,
-                duration = 1500,
-            },
-        }) -- 滑动大约3个商品的距离
     end
 
     local 红票商店购买 = function()
@@ -3765,7 +3831,7 @@ path.采购中心商店 = function()
                 if zx then
                     break
                 end
-                向左滑动()
+                path.swip_ticket_shop()
                 ssleep(1.5)
             end
             if not zx then return end
@@ -3808,7 +3874,7 @@ path.采购中心商店 = function()
             while char_exist do
                 ssleep(.5)
                 ret = ocrex("红票商店干员范围")
-                print(JsonEncode(ret))
+                --print(JsonEncode(ret))
                 if ret and #ret ~= 0 then
                     if table.search(red_ticket_shop_char, ret[1]["text"]) then
                         tap({ ret[1]["l"], ret[1]["b"] })
