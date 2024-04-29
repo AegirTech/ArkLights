@@ -845,7 +845,7 @@ Tales_within_the_sand.商店购买 = function()
                 log(x, y)
                 for i = 1, 7 do
                     回到商店主页()
-                    intX, intY = findMultiColor(scale(120) + x * 物品横间距, scale(515) + y * 物品纵间距,
+                    local intX, intY = findMultiColor(scale(120) + x * 物品横间距, scale(515) + y * 物品纵间距,
                         scale(386) + x * 物品横间距, scale(555) + y * 物品纵间距,
                         "FFFFFF", "17|-2|575757|-100|-5|5A5A5A", 0, 0.85)
                     if intX == -1 then break end

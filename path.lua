@@ -5617,6 +5617,24 @@ path.商店搬空 = function()
         return path.跳过剧情()
     end
 
+    if findOne("活动任务导航") then
+        tap("活动任务导航")
+        ssleep(.2)
+        if appear("活动任务页面", 2) then
+            if findOne("活动任务一键领取") then
+                tap("活动任务一键领取")
+                ssleep(.5)
+                wait(function()
+                    tap("活动任务一键领取")
+                    ssleep(0.2)
+                    if findOne("活动任务一键领取") then return end
+                end, 7)
+            end
+            tap("返回")
+            appear("活动商店导航", 1.5)
+        end
+    end
+
     if not wait(function()
             tap("活动商店导航")
             if findOne("商店主页") then return true end
@@ -5634,16 +5652,6 @@ path.商店搬空 = function()
             end, 10) then
             return
         end
-    end
-
-    local 向左滑动 = function()
-        gesture({
-            {
-                point = { { screen.width * 0.95, screen.height / 2 }, { screen.width * 0.95 - point["商店滑动距离"][1], screen.height / 2 } },
-                start = 0,
-                duration = 1500,
-            },
-        }) -- 滑动大约3个商品的距离
     end
 
     if not findOne("商店主页") then return end
@@ -5704,7 +5712,7 @@ path.商店搬空 = function()
         if not findOne("商店主页") then return end -- 防止跳到其他页面
         local sx = { screen.width * 0.8, screen.height * 0.5 }
         local oricol = getColor(sx[1], sx[2])
-        向左滑动()
+        path.swip_hd_shop()
         ssleep(3)
         if getColor(sx[1], sx[2]) == oricol then
             log("大概滑动到底了吧~")
