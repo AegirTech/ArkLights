@@ -827,7 +827,6 @@ Tales_within_the_sand.商店购买 = function()
         end
     end
 
-    log("111")
     if not appear("沙洲遗闻商店界面", 1) then
         log("未找到商店")
         return
@@ -875,8 +874,8 @@ Tales_within_the_sand.商店购买 = function()
                     end
                     --disappear("正在提交反馈至神经", network_timeout)
                     if findOne("商店购买页面") then
-                        log("未能进入商品，大概是售空了吧~")
-                        break
+                        log("未能购买，大概是钱花完了")
+                        return true
                     end
                 end
                 log("开始下一个商品")

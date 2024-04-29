@@ -3662,7 +3662,7 @@ path.采购中心商店 = function()
                 if findOne("购买物品面板", 3) then
                     tap("交易所商品最多")
                     ssleep(0.3)
-                    tap("商店支付")
+                    tap("采购商店支付")
                     ssleep(0.3)
                 end
                 disappear("正在提交反馈至神经", network_timeout)
@@ -3772,7 +3772,7 @@ path.采购中心商店 = function()
                     if findOne("购买物品面板", 3) then
                         tap("交易所商品最多")
                         ssleep(0.5)
-                        tap("商店支付")
+                        tap("采购商店支付")
                     end
                     ssleep(1)
                     -- tap("商店顶栏")
@@ -3852,7 +3852,7 @@ path.采购中心商店 = function()
                     if findOne("购买物品面板", 3) then
                         tap("交易所商品最多")
                         ssleep(0.5)
-                        tap("商店支付")
+                        tap("采购商店支付")
                         -- tap("商店顶栏")
                     end
                     ssleep(1)
@@ -5674,21 +5674,32 @@ path.商店搬空 = function()
                 -- 点击商品，进入购买页面判断
                 if not wait(function()
                         tap(sx)
+                        ssleep(.5)
                         if findOne("商店购买页面") then return true end
-                    end, 1) then
+                    end, 1.6) then
                 end
                 if findOne("商店主页") then
                     log("未能进入商品，大概是售空了吧~")
                     goto continue
                 end
 
-                -- 点击购买
+                -- 点击购买,只能点一次,点多了会点到右下角龙门币
+                if appear("商店购买页面", 1) then
+                    ssleep(0.2)
+                    tap("商店最多")
+                    ssleep(0.2)
+                    tap("商店支付")
+                    ssleep(0.4)
+                end
                 if not wait(function()
-                        tap("商店最多")
-                        ssleep(0.5)
-                        tap("商店支付")
+                        if findOne("获得物资") then
+                            tap("获得物资")
+                            ssleep(.6)
+                        end
                         if findOne("商店主页") then return true end
-                    end, 3) then
+                        tap("商店购买页面")
+                        ssleep(.3)
+                    end, 4) then
                 end
 
                 if findOne("商店购买页面", 1) then
@@ -7688,7 +7699,7 @@ path.采购中心商店 = function()
                     if findOne("商店购买页面", 3) then
                         tap("交易所商品最多")
                         ssleep(0.5)
-                        tap("商店支付")
+                        tap("采购商店支付")
                     end
                     ssleep(1)
                     -- tap("商店顶栏")
@@ -7809,7 +7820,7 @@ path.采购中心商店 = function()
                 if findOne("商店购买页面", 3) then
                     tap("交易所商品最多")
                     ssleep(0.5)
-                    tap("商店支付")
+                    tap("采购商店支付")
                     -- tap("商店顶栏")
                 end
                 ssleep(1)
