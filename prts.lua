@@ -694,7 +694,7 @@ end
     --等待时需要自动释放技能
     local sleep_and_do_strategy = function(delay)
         local start = os.time()
-        while os.time() - start < delay do
+        while os.time() - start < ((delay - 1) / 1000) do
             keepCapture()
             do_strategy()
             sleep(50)
@@ -784,8 +784,11 @@ end
                     print("跳过指令")
                     部署顺序 = 部署顺序 + 1
                 end
-                if 部署指令 and 部署指令["post_delay"] then sleep_and_do_strategy(部署指令["post_delay"]) end
-                --if 部署指令 and 部署指令["rear_delay"] then sleep_and_do_strategy(部署指令["rear_delay"]) end
+                if 部署指令 and 部署指令["post_delay"] then
+                    sleep_and_do_strategy(部署指令["post_delay"])
+                elseif 部署指令 and 部署指令["rear_delay"] then
+                    sleep_and_do_strategy(部署指令["rear_delay"])
+                end
             end
         end
         if 波数依赖顺序 <= 波数依赖命令数 then
