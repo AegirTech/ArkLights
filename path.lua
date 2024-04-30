@@ -147,11 +147,11 @@ path.base = {
         local elapsed = time() - fight_start_time
         local fight_type = get_fight_type(cur_fight)
         log("接管作战")
-        -- 一般15分钟，剿灭40分钟
+        -- 一般20分钟，剿灭40分钟
         local fight_timeout = (table.includes({ "剿灭" }, fight_type) and elapsed >
                 40 * 60 * 1000) or
             (not table.includes({ "剿灭" }, fight_type) and
-                elapsed > 15 * 60 * 1000)
+                elapsed > 20 * 60 * 1000)
         log(fight_timeout)
         -- 超时跳过当前关
         if fight_timeout then
@@ -173,7 +173,7 @@ path.base = {
                     tap("开包skip")
                     disappear("暂停中")
                 end
-            end, 15 * 60) then
+            end, 20 * 60) then
             return restartapp(appid)
         end
         -- log(127)

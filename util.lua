@@ -3083,7 +3083,7 @@ show_debug_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "continuous_battle", "自动使用最大连战次数,会导致作战次数错乱",
-        true)
+        false)
     newRow(layout)
     ui.addCheckBox(layout, "zero_san_after_fight", "使用1-7清空剩余理智",
         true)
