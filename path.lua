@@ -4505,6 +4505,24 @@ path.主线 = function(x)
             if findOne("作战列表" .. x) then return true end
         end
         tap("作战列表" .. x)
+        if appear("开始剧情", 1) then
+            if not wait(function()
+                    tap("开始剧情")
+                    sleep(1000)
+                    if findOne("跳过剧情") then
+                        path.跳过剧情()
+                        disappear("正在提交反馈至神经", network_timeout)
+                    end
+                    if findOne("获得物资") then
+                        tap("获得物资")
+                        disappear("获得物资", 1.5)
+                        return true
+                    end
+                end, 25) then
+                return
+            end
+            return true
+        end
         appear("开始行动")
     end
     local p
