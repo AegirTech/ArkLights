@@ -4462,6 +4462,19 @@ path.主线 = function(x)
         if get_fight_special_type(x) ~= "磨难" then return end
         -- 选标准还是磨难
         local hard_mode = fight_hard_mode[x]
+        -- 抄作业模式下根据作业选择是否是磨难图
+        if copy_homework then
+            if not homework[x] then return end
+            local homeworkInfo = loadHomework(homework[x])
+            if homeworkInfo then
+                --log(homeworkInfo)
+                --"stage_name":"tough_14-01"
+                if homeworkInfo["stage_name"] then
+                    local t = homeworkInfo["stage_name"]
+                    if t:sub(1, 5) == "tough" then hard_mode = true end
+                end
+            end
+        end
 
         if not findTap("环境选择") then return end
         ssleep(1) -- 按钮组展开时间
@@ -4484,6 +4497,13 @@ path.主线 = function(x)
         hard_mode_switch()
         log(928, x)
         swip(x)
+        --手动取点时取消注释
+        --exit()
+        --教学关和剧情关只打一遍
+        if x:includes({ "TR-", "14-10", "14-13", "14-22", "14-23" }) or x == "14-1" then
+            log("剧情关教学关")
+            if findOne("作战列表" .. x) then return true end
+        end
         tap("作战列表" .. x)
         appear("开始行动")
     end
@@ -4504,9 +4524,9 @@ path.主线 = function(x)
     elseif chapter_index <= 9 then -- chapter 4 to 8
         switch_start = 5
         switch_end = 9
-    elseif chapter_index <= 14 then -- chapter 9 to ?
+    elseif chapter_index <= 15 then -- chapter 9 to ?
         switch_start = 10
-        switch_end = 14
+        switch_end = 15
     end
     for i = switch_start, switch_end do
         if chapter_index ~= i then
