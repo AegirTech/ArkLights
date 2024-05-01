@@ -3654,6 +3654,7 @@ path.采购中心商店 = function()
 
         if not wait(function()
                 tap(good)
+                ssleep(.1)
                 if findOne("购买物品面板") then return true end
             end, 5) then
         end
@@ -3678,7 +3679,12 @@ path.采购中心商店 = function()
             return true
         end
         disappear("正在提交反馈至神经", network_timeout)
-        appearTap("获得物资", 3)
+        if appear("获得物资", 3) then
+            --加点间隔,有时候点太快会点不到卡死
+            ssleep(.5)
+            tap("获得物资")
+        end
+        ssleep(.2)
     end
 
     path.跳转("采购中心")
@@ -3696,6 +3702,7 @@ path.采购中心商店 = function()
             if _G["green_ticket_shop_" .. i] == true then
                 appear("绿票第1层确认", 3)
                 buy_good("凭证交易所购买列表" .. i)
+                if findOne("绿票第2层确认") then break end
             end
         end
     end
@@ -3818,26 +3825,27 @@ path.采购中心商店 = function()
                     return true
                 end
                 tap("红票商店选中")
+                ssleep(.5)
             end, 10) then
             return
         end
         disappear("正在提交反馈至神经", network_timeout)
-        if not appear("红票商店面板") then return end
+        if not appear("红票商店面板", 1) then return end
         if table.search(red_ticket_shop_good_need, "模组数据块") then
-            local zx
+            local p
             for i = 0, 3 do
-                zx = findOne("红票商店模组", 1)
-                print(zx)
-                if zx then
+                p = findOne("红票商店模组")
+                log("模组位置", p)
+                if p then
                     break
                 end
                 path.swip_ticket_shop()
                 ssleep(1.5)
             end
-            if not zx then return end
+            if not p then return end
 
             if not wait(function()
-                    tap(zx)
+                    tap(p)
                     if findOne("购买物品面板") then
                         return true
                     end
@@ -7614,7 +7622,7 @@ path.跳过剧情 = function()
     tap({ txt.r, txt.b })
 end
 
-path.采购中心商店 = function()
+--[[path.采购中心商店 = function()
     if not green_ticket_shop and not yellow_ticket_shop and not red_ticket_shop then return end
     local green_ticket_shop_good_need = {}
     local green_ticket_shop_good_need2 = {}
@@ -7837,7 +7845,7 @@ path.采购中心商店 = function()
     绿票商店购买()
     黄票商店购买()
     红票商店购买()
-end
+end]]
 
 path.生息沙洲遗闻 = function()
     -- load(sand_code)()
