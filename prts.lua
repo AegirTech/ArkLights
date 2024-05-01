@@ -164,7 +164,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
         until false
     end
     if not wait(function()
-            local p = findAny({ "开始行动红按钮", "开始行动突袭", "开始行动演习", "开始行动肉鸽", "开始行动悖论模拟" })
+            local p = findAny({ "开始行动红按钮", "开始行动突袭", "开始行动演习", "开始行动肉鸽", "开始行动悖论模拟", "开始行动磨难" })
             print(p)
             if p then
                 tap(p)
