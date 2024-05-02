@@ -184,10 +184,16 @@ auto_prts = function(作业名, 需要编队, 是否自带)
                 print("跳过剧情")
                 path.跳过剧情()
                 sleep(3000)
+            elseif findOne("战斗中剧情对话") then
+                wait(function()
+                    tap("点cost")
+                    ssleep(.3)
+                    if findOne("作战中") or findOne("暂停中") or findOne("作战中2") then return true end
+                end, 30)
             elseif findOne("作战中") then
                 return true
             end
-        end, 30) then
+        end, 120) then
         return
     end
     print("抄作业")
@@ -634,14 +640,6 @@ end
         print("跳过无按钮剧情")
         appear("作战中", 2)
         加速()
-    end
-
-    if findOne("战斗中剧情对话") then
-        wait(function()
-            tap("点cost")
-            ssleep(.3)
-            if findOne("作战中") or findOne("暂停中") or findOne("作战中2") then return true end
-        end, 30)
     end
 
     点暂停(1)
