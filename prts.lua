@@ -908,8 +908,16 @@ end
             elseif findOne("作战中") or findOne("暂停中") or findOne("作战中2") then
             else
                 --snapShot("/mnt/sdcard/test"..os.time()..".png")
-                print("结束抄作业")
-                break
+                if appear("战斗中剧情对话", 3) then
+                    wait(function()
+                        tap("点cost")
+                        ssleep(.3)
+                        if findOne("作战中") or findOne("暂停中") or findOne("作战中2") then return true end
+                    end, 30)
+                else
+                    print("结束抄作业")
+                    break
+                end
             end
         end
     end
