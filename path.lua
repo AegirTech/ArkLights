@@ -4603,6 +4603,9 @@ path.主线 = function(x)
             end, 3) then
             return
         end
+        if appear("不连续章节进入", 1) then
+            tap("不连续章节进入")
+        end
         if not appear(table.keys(p), 5) then
             log("无法确认是第几章")
             return
