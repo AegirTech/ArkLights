@@ -636,6 +636,14 @@ end
         加速()
     end
 
+    if findOne("战斗中剧情对话") then
+        wait(function()
+            tap("点cost")
+            ssleep(.3)
+            if findOne("作战中") or findOne("暂停中") or findOne("作战中2") then return true end
+        end, 30)
+    end
+
     点暂停(1)
     加速()
     干员列表 = 识别未部署干员()
