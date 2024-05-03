@@ -3638,7 +3638,7 @@ show_auto_ui = function()
     newRow(layout)
     addButton(layout, nil, "隐秘战线(测试,请手动放弃前一次)",
         make_jump_ui_command(layout, nil,
-            "extra_mode='隐秘战线';lock:remove(main_ui_lock)"))
+            "extra_mode='隐秘战线';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
