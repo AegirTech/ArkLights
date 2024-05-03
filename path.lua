@@ -8353,12 +8353,12 @@ path.隐秘战线 = function()
                 log("权重:", 物资权重, 情报权重, 医疗权重)
                 local 选项 = 检测选项(阶段, 结局)
                 local 最优选项 = 比较选项(选项, 阶段)
-                if 最优选项[1] < 3 then
-                    for i = 1, 最优选项[1] do
+                if 最优选项[1] =1 then
                         tap("隐秘战线右翻页")
-                        ssleep(1) --展开动画
-                    end
-                    ssleep(.5)
+                        ssleep(1.5) --展开动画
+                elseif 最优选项[1] =2 then
+                        tap("隐秘战线左翻页")
+                        ssleep(1.5) --展开动画
                 end
                 tap(最优选项[2]["坐标"])
                 ssleep(.5) --展开动画
@@ -8417,6 +8417,8 @@ path.隐秘战线 = function()
     if 结局 <= 5 then
         goto 重新开始
     end
+    
+
 end
 
 path.森空岛签到 = function()
