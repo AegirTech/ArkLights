@@ -8176,7 +8176,7 @@ path.隐秘战线 = function()
         local ret = ocrex(r)
         if ret and #ret ~= 0 then return ret[1]["text"] end
     end
-    local 检测选项 = function(阶段)
+    local 检测选项 = function(阶段, 结局)
         local 选项 = { { {}, {}, {} }, { {}, {}, {} }, { {}, {}, {} } }
         for i = 1, 3 do
             local 顺序 = { "左", "中", "右" }
@@ -8198,6 +8198,22 @@ path.隐秘战线 = function()
                         else
                             c = getPixelColor(选项[i][j]["坐标"][1], 选项[i][j]["坐标"][2])
                             log(c)
+                        end
+                        if name:includes({ "平台" }) then
+                            选项[i][j]["物资"] = 选项[i][j]["物资"] + 8
+                            选项[i][j]["情报"] = 选项[i][j]["情报"] + 8
+                            选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 8
+                        end
+                        if 结局 == 4 then
+                            if name:includes({ "游侠" }) then
+                                选项[i][j]["物资"] = 选项[i][j]["物资"] + 6 * 阶段
+                                选项[i][j]["情报"] = 选项[i][j]["情报"] + 6 * 阶段
+                                选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 6 * 阶段
+                            elseif name:includes({ "影迷" }) then
+                                选项[i][j]["物资"] = 选项[i][j]["物资"] + 5 * 阶段
+                                选项[i][j]["情报"] = 选项[i][j]["情报"] + 5 * 阶段
+                                选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 5 * 阶段
+                            end
                         end
                         if 结局 == 5 and name:includes({ "影迷" }) then
                             选项[i][j]["成功率"] = 选项[i][j]["成功率"] + 0.4
@@ -8227,6 +8243,22 @@ path.隐秘战线 = function()
                         else
                             c = getPixelColor(选项[i][j]["坐标"][1], 选项[i][j]["坐标"][2])
                             log(c)
+                        end
+                        if name:includes({ "平台" }) then
+                            选项[i][j]["物资"] = 选项[i][j]["物资"] + 8
+                            选项[i][j]["情报"] = 选项[i][j]["情报"] + 8
+                            选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 8
+                        end
+                        if 结局 == 4 then
+                            if name:includes({ "游侠" }) then
+                                选项[i][j]["物资"] = 选项[i][j]["物资"] + 6 * 阶段
+                                选项[i][j]["情报"] = 选项[i][j]["情报"] + 6 * 阶段
+                                选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 6 * 阶段
+                            elseif name:includes({ "影迷" }) then
+                                选项[i][j]["物资"] = 选项[i][j]["物资"] + 5 * 阶段
+                                选项[i][j]["情报"] = 选项[i][j]["情报"] + 5 * 阶段
+                                选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 5 * 阶段
+                            end
                         end
                         if 结局 == 5 and name:includes({ "影迷" }) then
                             选项[i][j]["成功率"] = 选项[i][j]["成功率"] + 0.45
@@ -8319,7 +8351,7 @@ path.隐秘战线 = function()
                 医疗权重 = math.max(0, (路线[阶段 + 1][3] - 现有医疗) / (检测点步数[阶段] - step))
 
                 log("权重:", 物资权重, 情报权重, 医疗权重)
-                local 选项 = 检测选项(阶段)
+                local 选项 = 检测选项(阶段, 结局)
                 local 最优选项 = 比较选项(选项, 阶段)
                 if 最优选项[1] < 3 then
                     for i = 1, 最优选项[1] do
