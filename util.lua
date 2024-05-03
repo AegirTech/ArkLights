@@ -2777,6 +2777,8 @@ hotUpdate = function()
     end
     if not update_info.updateLr and not update_info.updateSkill then
         toast("已经是最新版")
+        --显示一些更新公告
+        toast(update_announcement)
         uploadStatistician(false)
         return true
     end
