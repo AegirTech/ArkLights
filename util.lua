@@ -583,6 +583,13 @@ table.includes = function(t, e)
     return table.any(t, function(x) return x == e end)
 end
 
+table.isempty = function(t)
+    for _ in pairs(t) do
+        return false
+    end
+    return true
+end
+
 string.includes = function(s, t)
     for _, v in pairs(t) do if s:find(v, 1, true) then return true end end
 end
