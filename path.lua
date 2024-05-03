@@ -8166,56 +8166,90 @@ path.隐秘战线 = function()
     local 结局C = { 350, 550, 350 }
     local 结局D = { 365, 475, 495 }
     local 结局E = { 370, 385, 620 }
-    local 路线A = { { "物资小队", a1, a2, a3, 结局A }, { "物资小队", "中", "左", "左", "左" } }
-    local 路线B = { { "物资小队", a1, a2, a3, 结局B }, { "物资小队", "中", "左", "左", "中" } }
-    local 路线C = { { "情报小队", a1, a2, b3, 结局C }, { "情报小队", "中", "左", "右", "中" } }
-    local 路线D = { { "情报小队", a1, b2, b3, 结局D }, { "情报小队", "中", "右", "左", "右" } }
-    local 路线E = { { "医疗小队", a1, b2, c3, 结局E }, { "医疗小队", "中", "右", "右", "右" } }
+    local 路径 = { { { "物资小队", a1, a2, a3, 结局A }, { "物资小队", "中", "左", "左", "左" } },
+        { { "物资小队", a1, a2, a3, 结局B }, { "物资小队", "中", "左", "左", "中" } },
+        { { "情报小队", a1, a2, b3, 结局C }, { "情报小队", "中", "左", "右", "中" } },
+        { { "情报小队", a1, b2, b3, 结局D }, { "情报小队", "中", "右", "左", "右" } },
+        { { "医疗小队", a1, b2, c3, 结局E }, { "医疗小队", "中", "右", "右", "右" } } }
     local 检测点步数 = { 5, 10, 18, 26 }
-    local step = 0
-    --选择结局
-    local 路线 = 路线A[1]
-    local 路线点 = 路线A[2]
-    local 阶段 = 1
     local ocro = function(r)
         local ret = ocrex(r)
         if ret and #ret ~= 0 then return ret[1]["text"] end
     end
-    local 检测选项 = function()
+    local 检测选项 = function(阶段)
         local 选项 = { { {}, {}, {} }, { {}, {}, {} }, { {}, {}, {} } }
         for i = 1, 3 do
             local 顺序 = { "左", "中", "右" }
-            选项[i]["name"] = ocro("隐秘战线选项名称")
-            for j = 1, 3 do
-                local 物资 = ocro("隐秘战线" .. 顺序[j] .. "物资")
-                if 物资 then
-                    选项[i][j]["物资"] = tonumber(物资)
-                    选项[i][j]["情报"] = tonumber(ocro("隐秘战线" .. 顺序[j] .. "情报"))
-                    选项[i][j]["医疗"] = tonumber(ocro("隐秘战线" .. 顺序[j] .. "医疗"))
-                    local 成功率范围 = "隐秘战线" .. 顺序[j] .. "成功率"
-                    选项[i][j]["坐标"] = { point[成功率范围][1], point[成功率范围][2] }
-                    local ret = ocro(成功率范围)
+            local name = ocro("隐秘战线选项名称")
+            if findOne("隐秘战线双选项") then
+                for j = 1, 2 do
+                    local 物资 = ocro("隐秘战线双选项" .. 顺序[j] .. "物资")
+                    if 物资 then
+                        选项[i][j]["物资"] = tonumber(物资)
+                        选项[i][j]["情报"] = tonumber(ocro("隐秘战线双选项" .. 顺序[j] .. "情报"))
+                        选项[i][j]["医疗"] = tonumber(ocro("隐秘战线双选项" .. 顺序[j] .. "医疗"))
 
-                    if ret then
-                        选项[i][j]["成功率"] = ((tonumber(ret:sub(1, -2)) - 30) / 70) *
-                            math.abs((tonumber(ret:sub(1, -2)) - 30) / 70)
-                    else
-                        c = getPixelColor(选项[i][j]["坐标"][1], 选项[i][j]["坐标"][2])
-                        log(c)
+                        local 成功率范围 = "隐秘战线双选项" .. 顺序[j] .. "成功率"
+                        选项[i][j]["坐标"] = { point[成功率范围][1], point[成功率范围][2] }
+                        local ret = ocro(成功率范围)
+                        if ret then
+                            选项[i][j]["成功率"] = ((tonumber(ret:sub(1, -2)) - 30) / 70) *
+                                math.abs((tonumber(ret:sub(1, -2)) - 30) / 70)
+                        else
+                            c = getPixelColor(选项[i][j]["坐标"][1], 选项[i][j]["坐标"][2])
+                            log(c)
+                        end
+                        if 结局 == 5 and name:includes({ "影迷" }) then
+                            选项[i][j]["成功率"] = 选项[i][j]["成功率"] + 0.4
+                            选项[i][j]["物资"] = 选项[i][j]["物资"] + 6 * 阶段
+                            选项[i][j]["情报"] = 选项[i][j]["情报"] + 6 * 阶段
+                            选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 6 * 阶段
+                        end
+                        选项[i][j]["绝对值总和"] = 选项[i][j]["物资"] + 选项[i][j]["情报"] + 选项[i][j]["医疗"]
+                        选项[i][j]["加权总和"] = 选项[i][j]["物资"] * 物资权重 + 选项[i][j]["情报"] * 情报权重 + 选项[i][j]["医疗"] * 医疗权重
                     end
-                    选项[i][j]["绝对值总和"] = 选项[i][j]["物资"] + 选项[i][j]["情报"] + 选项[i][j]["医疗"]
-                    选项[i][j]["加权总和"] = 选项[i][j]["物资"] * 物资权重 + 选项[i][j]["情报"] * 情报权重 + 选项[i][j]["医疗"] * 医疗权重
+                end
+            else
+                for j = 1, 3 do
+                    local 物资 = ocro("隐秘战线" .. 顺序[j] .. "物资")
+                    print(物资)
+                    if 物资 then
+                        选项[i][j]["物资"] = tonumber(物资)
+                        选项[i][j]["情报"] = tonumber(ocro("隐秘战线" .. 顺序[j] .. "情报"))
+                        选项[i][j]["医疗"] = tonumber(ocro("隐秘战线" .. 顺序[j] .. "医疗"))
+
+                        local 成功率范围 = "隐秘战线" .. 顺序[j] .. "成功率"
+                        选项[i][j]["坐标"] = { point[成功率范围][1], point[成功率范围][2] }
+                        local ret = ocro(成功率范围)
+                        if ret then
+                            选项[i][j]["成功率"] = ((tonumber(ret:sub(1, -2)) - 30) / 70) *
+                                math.abs((tonumber(ret:sub(1, -2)) - 30) / 70)
+                        else
+                            c = getPixelColor(选项[i][j]["坐标"][1], 选项[i][j]["坐标"][2])
+                            log(c)
+                        end
+                        if 结局 == 5 and name:includes({ "影迷" }) then
+                            选项[i][j]["成功率"] = 选项[i][j]["成功率"] + 0.45
+                            选项[i][j]["物资"] = 选项[i][j]["物资"] + 6 * 阶段
+                            选项[i][j]["情报"] = 选项[i][j]["情报"] + 6 * 阶段
+                            选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 6 * 阶段
+                        end
+                        选项[i][j]["绝对值总和"] = 选项[i][j]["物资"] + 选项[i][j]["情报"] + 选项[i][j]["医疗"]
+                        选项[i][j]["加权总和"] = 选项[i][j]["物资"] * 物资权重 + 选项[i][j]["情报"] * 情报权重 + 选项[i][j]["医疗"] * 医疗权重
+                    end
                 end
             end
+
 
             if i < 3 then
                 tap("隐秘战线右翻页")
                 ssleep(1.8) --展开动画
             end
         end
+        --log(选项)
         return 选项
     end
-    local 比较选项 = function(所有选项)
+    local 比较选项 = function(所有选项, 阶段)
         local 最优选项
         for i = 1, 3 do
             for j = 1, 3 do
@@ -8229,6 +8263,7 @@ path.隐秘战线 = function()
                         if 阶段 < 3 then
                             if 当前选项["绝对值总和"] > 最优选项[2]["绝对值总和"] then 最优选项 = { i, 当前选项 } end
                         else
+                            --if 结局=5 and 所有选项[i]["name"]:include({"影迷"}) then
                             if 当前选项["绝对值总和"] * 当前选项["成功率"] > 最优选项[2]["绝对值总和"] * 最优选项[2]["成功率"] then
                                 最优选项 = { i, 当前选项 }
                             end
@@ -8249,6 +8284,14 @@ path.隐秘战线 = function()
         log("最优选项", 最优选项)
         return 最优选项
     end
+    结局 = 1
+    ::重新开始::
+    local step = 0
+    --选择结局
+    local 路线 = 路径[结局][1]
+    local 路线点 = 路径[结局][2]
+    local 阶段 = 1
+
     appear("隐秘战线小队选择", 3)
     tap("隐秘战线" .. 路线[1])
     appearTap("隐秘战线确认出发")
@@ -8276,8 +8319,8 @@ path.隐秘战线 = function()
                 医疗权重 = math.max(0, (路线[阶段 + 1][3] - 现有医疗) / (检测点步数[阶段] - step))
 
                 log("权重:", 物资权重, 情报权重, 医疗权重)
-                local 选项 = 检测选项()
-                local 最优选项 = 比较选项(选项)
+                local 选项 = 检测选项(阶段)
+                local 最优选项 = 比较选项(选项, 阶段)
                 if 最优选项[1] < 3 then
                     for i = 1, 最优选项[1] do
                         tap("隐秘战线右翻页")
@@ -8295,6 +8338,7 @@ path.隐秘战线 = function()
                             ssleep(.5)
                             return true
                         end
+
                         ssleep(.5)
                     end, 10) then
                     return
@@ -8310,12 +8354,17 @@ path.隐秘战线 = function()
                             ssleep(.5)
                         end
                         if findOne("隐秘战线继续前进") then return true end
+                        if findOne("隐秘战线小队选择") then return true end
                         tap("隐秘战线" .. 路线点[阶段])
                         ssleep(.5)
                     end, 10) then
                     return
                 end
-
+                if findOne("隐秘战线小队选择") then
+                    log("通过结局" .. 结局)
+                    结局 = 结局 + 1
+                    break
+                end
                 tap("隐秘战线" .. 路线点[阶段])
                 ssleep(.5)
             end
@@ -8329,9 +8378,12 @@ path.隐秘战线 = function()
                 end, 10) then
                 return
             end
-            step = 0
-            阶段 = 1
+            break
         end
+    end
+
+    if 结局 <= 5 then
+        goto 重新开始
     end
 end
 
