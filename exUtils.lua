@@ -2058,3 +2058,70 @@ end
 get_cpu_arch = function()
     return exec("getprop ro.product.cpu.abi")
 end
+
+--隐秘战线导航
+hidden_front_navigation = function()
+    path.跳转("首页")
+    log('准备导航到 隐秘战线')
+
+    --从活动面板进入
+    --tap("面板活动")
+    -- if not wait(function()
+    --         if findOne("活动导航0") then return true end
+    --     end, 10) then
+    --     return
+    -- end
+    -- if not wait(function()
+    --         tap("活动导航0")
+    --         if not appear("活动导航0", 1) then return true end
+    --     end, 5) then
+    --     return
+    -- end
+    path.跳转("首页")
+    tap("面板作战")
+    if not appear("主页") then return end
+    if not wait(function()
+            if findOne("主题曲界面") then return true end
+            tap("主题曲")
+        end) then
+        return
+    end
+
+    wait(function()
+        tap("作战主线章节列表" .. 8)
+        if not findOne("主题曲界面") then return true end
+    end)
+
+    if not appear("主页") then return end
+    if not wait(function()
+            tap("隐秘战线在第14章入口")
+            if not findOne("主页") then return true end
+        end, 5) then
+        return
+    end
+
+    if not wait(function()
+            tap("招募说明关闭")
+            if findOne("隐秘战线暂时离开") then return true end
+        end, 5) then
+        return
+    end
+    ssleep(.5)
+    --如果上一次有记录残留，重新开始
+    if not findOne("隐秘战线主界面") then
+        if not wait(function()
+                tap("隐秘战线暂时离开")
+                tap("隐秘战线重新开始")
+                if not findOne("隐秘战线重新开始确认") then return true end
+            end, 5) then
+            return
+        end
+        if not wait(function()
+                tap("隐秘战线重新开始确认")
+                if not appear("隐秘战线重新开始确认", 1) then return true end
+            end, 5) then
+            return
+        end
+    end
+    log('导航成功')
+end
