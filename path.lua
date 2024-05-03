@@ -8317,6 +8317,7 @@ path.隐秘战线 = function()
         return 最优选项
     end
     结局 = 1
+    hidden_front_navigation()
     ::重新开始::
     local step = 0
     --选择结局
