@@ -3639,7 +3639,9 @@ show_auto_ui = function()
     addButton(layout, nil, "隐秘战线(测试)",
         make_jump_ui_command(layout, nil,
             "extra_mode='隐秘战线';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    addTextView(layout, "从结局")
     ui.addEditText(layout, "hidden_front_ending", "1")
+    addTextView(layout, "(数字)开始")
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
 end

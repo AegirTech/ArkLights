@@ -8411,7 +8411,7 @@ path.隐秘战线 = function()
     if 结局 <= 5 then
         goto 重新开始
     end
-
+    -- 领取任务
     if findOne("隐秘战线任务") then
         tap("隐秘战线任务")
         ssleep(.1)
@@ -8424,6 +8424,19 @@ path.隐秘战线 = function()
                 if findOne("隐秘战线小队选择") then return true end
             end, 5)
         end
+    end
+    --退出隐秘战线
+    if not wait(function()
+            tap("隐秘战线暂时离开")
+            ssleep(.2)
+            tap("隐秘战线重新开始确认")
+            ssleep(.2)
+            if findOne("主页") then
+                path.跳转("首页")
+                return true
+            end
+        end, 8) then
+        return
     end
 end
 
