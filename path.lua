@@ -8309,7 +8309,7 @@ path.隐秘战线 = function()
         log("最优选项", 最优选项)
         return 最优选项
     end
-    结局 = 1
+    结局 = str2int(hidden_front_ending, 1)
     hidden_front_navigation()
     ::重新开始::
     local step = 0

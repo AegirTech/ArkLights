@@ -3636,10 +3636,10 @@ show_auto_ui = function()
     ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", true)
 
     newRow(layout)
-    addButton(layout, nil, "隐秘战线(测试,请手动放弃前一次)",
+    addButton(layout, nil, "隐秘战线(测试)",
         make_jump_ui_command(layout, nil,
             "extra_mode='隐秘战线';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-
+    ui.addEditText(layout, "hidden_front_ending", "1")
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
 end

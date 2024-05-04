@@ -2061,22 +2061,9 @@ end
 
 --隐秘战线导航
 hidden_front_navigation = function()
-    path.跳转("首页")
     log('准备导航到 隐秘战线')
 
-    --从活动面板进入
-    --tap("面板活动")
-    -- if not wait(function()
-    --         if findOne("活动导航0") then return true end
-    --     end, 10) then
-    --     return
-    -- end
-    -- if not wait(function()
-    --         tap("活动导航0")
-    --         if not appear("活动导航0", 1) then return true end
-    --     end, 5) then
-    --     return
-    -- end
+    if findOne("主题曲界面") then return true end
     path.跳转("首页")
     tap("面板作战")
     if not appear("主页") then return end
