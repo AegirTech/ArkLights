@@ -8176,7 +8176,7 @@ path.隐秘战线 = function()
         local ret = ocrex(r)
         if ret and #ret ~= 0 then return ret[1]["text"] end
     end
-    local 检测选项 = function(阶段, 结局)
+    local 检测选项 = function(阶段, 结局, step)
         local 选项 = { { {}, {}, {} }, { {}, {}, {} }, { {}, {}, {} } }
         for i = 1, 3 do
             local 顺序 = { "左", "中", "右" }
@@ -8199,10 +8199,10 @@ path.隐秘战线 = function()
                             c = getPixelColor(选项[i][j]["坐标"][1], 选项[i][j]["坐标"][2])
                             log(c)
                         end
-                        if name:includes({ "平台" }) then
-                            选项[i][j]["物资"] = 选项[i][j]["物资"] + 4
-                            选项[i][j]["情报"] = 选项[i][j]["情报"] + 4
-                            选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 4
+                        if 结局 > 5 and name:includes({ "平台" }) then
+                            选项[i][j]["物资"] = 选项[i][j]["物资"] + 7
+                            选项[i][j]["情报"] = 选项[i][j]["情报"] + 7
+                            选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 7
                         end
                         if 结局 == 4 then
                             if name:includes({ "游侠" }) then
@@ -8243,10 +8243,11 @@ path.隐秘战线 = function()
                             c = getPixelColor(选项[i][j]["坐标"][1], 选项[i][j]["坐标"][2])
                             log(c)
                         end
-                        if name:includes({ "平台" }) then
-                            选项[i][j]["物资"] = 选项[i][j]["物资"] + 4
-                            选项[i][j]["情报"] = 选项[i][j]["情报"] + 4
-                            选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 4
+                        --所有结局完成后加权在完成一次平台系列任务
+                        if 结局 > 5 and name:includes({ "平台" }) and step > 2 then
+                            选项[i][j]["物资"] = 选项[i][j]["物资"] + 8
+                            选项[i][j]["情报"] = 选项[i][j]["情报"] + 8
+                            选项[i][j]["医疗"] = 选项[i][j]["医疗"] + 8
                         end
                         if 结局 == 4 and name:includes({ "游侠" }) then
                             选项[i][j]["物资"] = 选项[i][j]["物资"] + 6 * 阶段
@@ -8345,7 +8346,7 @@ path.隐秘战线 = function()
                 医疗权重 = math.max(0, (路线[阶段 + 1][3] - 现有医疗) / (检测点步数[阶段] - step))
 
                 log("权重:", 物资权重, 情报权重, 医疗权重)
-                local 选项 = 检测选项(阶段, 结局)
+                local 选项 = 检测选项(阶段, 结局, step)
                 local 最优选项 = 比较选项(选项, 阶段, step)
                 if 最优选项[1] == 1 then
                     tap("隐秘战线右翻页")
@@ -8364,13 +8365,16 @@ path.隐秘战线 = function()
                             ssleep(.5)
                             return true
                         end
-
                         ssleep(.5)
                     end, 10) then
                     return
                 end
             elseif ret == "应对危机事件" then
                 阶段 = 阶段 + 1
+                if 阶段 > 2 and 结局 > 5 then
+                    结局 = 结局 + 1
+                    break
+                end
                 tap("隐秘战线继续前进")
                 ssleep(.5)
                 appear("隐秘战线返回", 3)
@@ -8408,7 +8412,7 @@ path.隐秘战线 = function()
         end
     end
 
-    if 结局 <= 5 then
+    if 结局 <= 6 then
         goto 重新开始
     end
     -- 领取任务
