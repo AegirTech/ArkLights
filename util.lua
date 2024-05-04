@@ -3411,6 +3411,19 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "sand_noincrease_stop", "代币不增加则停止", true)
 
     newRow(layout)
+    addTextView(layout, "===========隐秘战线===========")
+    newRow(layout)
+    addButton(layout, nil, "隐秘战线——慈悲灯塔",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='隐秘战线';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    addTextView(layout, "从结局")
+    ui.addEditText(layout, "hidden_front_ending", "1")
+    addTextView(layout, "(数字)开始")
+    newRow(layout)
+    ui.addCheckBox(layout, "hidden_front_award", "隐秘战线打完领取奖励", true)
+
+
+    newRow(layout)
     addTextView(layout, "===========肉鸽相关===========")
 
     newRow(layout)
@@ -3635,13 +3648,7 @@ show_auto_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", true)
 
-    newRow(layout)
-    addButton(layout, nil, "隐秘战线(测试)",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='隐秘战线';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    addTextView(layout, "从结局")
-    ui.addEditText(layout, "hidden_front_ending", "1")
-    addTextView(layout, "(数字)开始")
+
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
 end

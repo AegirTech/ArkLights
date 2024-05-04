@@ -8420,7 +8420,7 @@ path.隐秘战线 = function()
         goto 重新开始
     end
     -- 领取任务
-    if findOne("隐秘战线任务") then
+    if findOne("隐秘战线任务") and hidden_front_award then
         tap("隐秘战线任务")
         ssleep(.1)
         if appear("隐秘战线一键领取", 2) then

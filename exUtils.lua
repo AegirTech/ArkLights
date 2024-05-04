@@ -2063,7 +2063,28 @@ end
 hidden_front_navigation = function()
     log('准备导航到 隐秘战线')
 
-    if findOne("主题曲界面") then return true end
+    --启动脚本在 隐秘战线里面时候，path.跳转("首页")会出不去，额外弄个
+    if findOne("隐秘战线暂时离开") then
+        --已经在小队选择界面时候退出
+        ssleep(.2)
+        if findOne("隐秘战线小队选择") then return true end
+        if not wait(function()
+                tap("隐秘战线暂时离开")
+                tap("隐秘战线重新开始")
+                if findOne("隐秘战线重新开始确认") then return true end
+            end, 5, .2) then
+            return
+        end
+        if not wait(function()
+                tap("隐秘战线重新开始确认")
+                ssleep(.3)
+                if findOne("隐秘战线小队选择") then return true end
+            end, 5) then
+            return
+        end
+        return true
+    end
+
     path.跳转("首页")
     tap("面板作战")
     if not appear("主页") then return end
@@ -2082,6 +2103,7 @@ hidden_front_navigation = function()
     if not appear("主页") then return end
     if not wait(function()
             tap("隐秘战线在第14章入口")
+            tap('不连续章节进入')
             if not findOne("主页") then return true end
         end, 5) then
         return
