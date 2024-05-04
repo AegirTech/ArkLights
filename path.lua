@@ -4197,7 +4197,10 @@ path.开始游戏 = function(x, disable_ptrs_check)
             disappear("代理指挥开", .5)
         elseif not findOne("连战次数面板") and findOne("连战按钮") and continuous_battle then
             appearTap("连战按钮")
+            ssleep(.2)
             appear("连战次数面板", 4)
+            -- 出现面板后给一点时间等待展开
+            ssleep(.6)
             local battle_times = 1
             for i = 2, 6 do
                 battle_times = i
