@@ -3391,10 +3391,10 @@ show_extra_ui = function()
     ui.addEditText(layout, "extra_single_password", "")
 
     newRow(layout)
-    addTextView(layout, "===========沙洲遗闻-测试===========")
+    addTextView(layout, "===========生息演算===========")
 
     newRow(layout)
-    addButton(layout, nil, "生息盐酸-沙洲遗闻",
+    addButton(layout, nil, "沙洲遗闻刷点数",
         make_jump_ui_command(layout, nil,
             "extra_mode='生息沙洲遗闻';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     addButton(layout, nil, "沙洲遗闻-商店购买",
@@ -3402,8 +3402,7 @@ show_extra_ui = function()
             "extra_mode='生息沙洲遗闻商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     newRow(layout)
-
-    ui.addCheckBox(layout, "sand_no_delete", "不删存档从当前开始", false)
+    ui.addCheckBox(layout, "sand_no_delete", "不删1-3天存档从4-7天开始(手动过1-3天)", false)
 
     newRow(layout)
     addTextView(layout, "调试选项")
