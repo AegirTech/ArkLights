@@ -2099,7 +2099,7 @@ hidden_front_navigation = function()
         end, 5) then
         return
     end
-
+    if appear("隐秘战线教程关闭", 3) then tap("隐秘战线教程关闭") end
     if not wait(function()
             tap("招募说明关闭")
             if findOne("隐秘战线暂时离开") then return true end
@@ -2108,17 +2108,20 @@ hidden_front_navigation = function()
     end
     ssleep(.5)
     --如果上一次有记录残留，重新开始
-    if not findOne("隐秘战线主界面") then
+    if not findOne("隐秘战线小队选择") then
         if not wait(function()
                 tap("隐秘战线暂时离开")
+                ssleep(.2)
                 tap("隐秘战线重新开始")
-                if not findOne("隐秘战线重新开始确认") then return true end
+                ssleep(.2)
+                if findOne("隐秘战线重新开始确认") then return true end
             end, 5) then
             return
         end
         if not wait(function()
                 tap("隐秘战线重新开始确认")
-                if not appear("隐秘战线重新开始确认", 1) then return true end
+                ssleep(.3)
+                if findOne("隐秘战线小队选择") then return true end
             end, 5) then
             return
         end
