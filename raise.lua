@@ -72,6 +72,7 @@ activity_materials_stage = {
 raise_init = function()
     if not character_table then
         local file = io.open(getWorkPath() .. "/gamedata/excel/character_table.json", "r")
+        -- 游戏内干员数据
         character_table = file:read("*a")
         file:close()
         local status
@@ -83,6 +84,7 @@ raise_init = function()
     end
     if not item_table then
         file = io.open(getWorkPath() .. "/gamedata/excel/item_table.json", "r")
+        -- 游戏内物品数据
         item_table = file:read("*a")
         file:close()
         local status
