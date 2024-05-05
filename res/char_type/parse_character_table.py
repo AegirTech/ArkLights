@@ -28,6 +28,28 @@ def filter_fields(json_obj, fields):
     return filtered_obj
 
 
+def remove_key(json_obj, key_to_remove):
+    if isinstance(json_obj, dict):
+        for key in list(json_obj.keys()):
+            if key == key_to_remove:
+                del json_obj[key]
+            else:
+                remove_key(json_obj[key], key_to_remove)
+    elif isinstance(json_obj, list):
+        for item in json_obj:
+            remove_key(item, key_to_remove)
+    return json_obj
+
+
+def save_to_json(file_path, data):
+    try:
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False)
+        print(f"JSON数据获取成功并保存为{file_path}")
+    except IOError as e:
+        print(f"无法写入文件: {file_path}. 错误: {e}")
+
+
 response = requests.get(url)
 if response.status_code == 200:
     character_table_dict = json.loads(response.text)
@@ -36,11 +58,6 @@ if response.status_code == 200:
     for character_name in character_table_dict.keys():
         character_data = character_table_dict[character_name]
         character_type_list[character_data["name"]] = character_data["profession"]
-
-    with open("character_type_list.json", "w", encoding="utf-8") as f:
-        json.dump(character_type_list, f, ensure_ascii=False)
-
-    print("JSON数据获取成功并保存为character_type_list.json")
 
     # 干员精英化及专精数据,自动养成用
     char_table = {}
@@ -53,13 +70,14 @@ if response.status_code == 200:
             selected_data = filter_fields(
                 character_data, ["evolveCost", "levelUpCost", "lvlUpCost"]
             )
+            selected_data = remove_key(selected_data, "type")
+
             char_table[character_id] = selected_data
             char_table[character_id]["name"] = character_data["name"]
 
-    with open("char_table.json", "w", encoding="utf-8") as f:
-        json.dump(char_table, f, ensure_ascii=False)
+    save_to_json("character_type_list.json", character_type_list)
+    save_to_json("char_table.json", char_table)
 
-    print("JSON数据获取成功并保存为char_table.json")
 else:
     print("无法获取JSON数据")
 
