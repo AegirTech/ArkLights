@@ -1474,7 +1474,7 @@ end
         --开头和结尾的半角引号替换成全角
         t[i]["text"] = t[i]["text"]:gsub("^\"(.-)\"$", "“%1”")
 
-        print(t[i]["text"])
+        --print(t[i]["text"])
     end
 
     return t

@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "05.06 02:48"
+release_date = "05.06 06:35"
 update_announcement = '最近更新：修复卡剧情提示，修复【14-19】导航出错，修复抄作业一些问题'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -105,7 +105,7 @@ remove_old_log()
 remove_lr_ad()
 detectServer()
 predebug_hook()
---showUI()
+showUI()
 loadUIConfig()
 applyRemoteConfig()
 restart_mode_hook()
@@ -116,6 +116,7 @@ cloud.startHeartBeat()
 debug_mode = true
 if debug_mode then
     log("debug_mode")
+
     raise.auto_raise()
     exit()
 end

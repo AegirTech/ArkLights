@@ -54,6 +54,10 @@ local 高级材料2低级材料 = {
     ["30033"] = { chlid = { ["30032"] = 4 }, level = 3, name = "聚酸酯组" },
     ["30032"] = { chlid = { ["30031"] = 3 }, level = 2, name = "聚酸酯" },
     ["31044"] = { chlid = { ["31013"] = 1, ["31043"] = 1, ["31053"] = 1 }, level = 3, name = "精炼溶剂" },
+    ["31073"] = { level = 2, name = "褐素纤维" },
+    ["31074"] = { chlid = { ["30013"] = 1, ["31033"] = 2, ["31063"] = 1 }, level = 3, name = "固化纤维板" },
+    ["31083"] = { level = 2, name = "环烃聚质" },
+    ["31084"] = { chlid = { ["31063"] = 1, ["31073"] = 1, ["31083"] = 1 }, level = 3, name = "环烃预制体" },
     ["30115"] = { chlid = { ["30014"] = 1, ["30044"] = 1, ["30054"] = 1 }, level = 4, name = "聚合剂" },
     ["32001"] = { level = 3, name = "芯片助剂" },
     ["3211"] = { level = 2, name = "先锋芯片" },
@@ -120,6 +124,15 @@ raise.init = function()
             character_name2id[name] = k
         end
     end
+
+    if not item_name2id then
+        item_name2id = {}
+        for k, v in pairs(高级材料2低级材料) do
+            local name = v["name"]
+            item_name2id[name] = k
+        end
+    end
+    log(item_name2id)
     -- 其余接口暂未实现
     player_info_init(raise.get_player_info(true))
 
@@ -174,7 +187,11 @@ end
 -- 材料ID转换材料名
 material_id2name = function(id)
     return 高级材料2低级材料[id]["name"]
-    --return item_table["items"][id]["name"]
+end
+
+-- 材料名转换材料ID
+material_name2id = function(name)
+    return item_name2id[name]
 end
 
 -- 干员ID转换干员名
@@ -251,6 +268,17 @@ raise.char_phase_upgrade_material = function(id)
     return character_table[id]["phases"]
 end
 
+---获取干员指定精英化等级所需材料
+---@return table t 材料id:数量
+raise.get_char_elite_material = function(id, target_phase)
+    local cost = character_table[id]["phases"][target_phase]["evolveCost"]
+    local t
+    for i = 1, #cost do
+        t[cost[i]["id"]] = cost[i]["count"]
+    end
+    return t
+end
+
 -- 计算指定干员精英化材料总数
 raise.char_phase_upgrade_material_total = function(id, target_phase)
     local total_material = {}
@@ -276,11 +304,12 @@ raise.char_phase_upgrade_material_total = function(id, target_phase)
     return total_material
 end
 
--- 计算仓库材料缺失总数
+---计算仓库材料缺失总数
+---@param materials table 材料id:数量
 raise.calculate_materials = function(materials)
     local need_materials = {}
     for k, v in pairs(materials) do
-        local current_count = player_inventory_info[id]
+        local current_count = player_inventory_info[k]
         if current_count < v then
             need_materials[k] = v - current_count
         end
@@ -765,11 +794,71 @@ char_choose = function(char_name)
 end
 
 -- 干员升级
-
+raise.upgrade_char = function()
+    appear("干员档案", 2)
+    if not wait(function()
+            tap("进入升级页面")
+            ssleep(.1)
+            if findOne("升级页面") then return true end
+        end, 5) then
+        log("当前阶段已满级")
+        return true
+    end
+    if not wait(function()
+            tap("干员升级页面max")
+            ssleep(.1)
+            if findOne("干员升级max确认") then return true end
+        end, 5) then
+        log("经验书或者龙门币不足")
+        return false
+    end
+    if appear("干员升级提升等级", 3) then
+        ssleep(.3)
+        tap("干员升级提升等级")
+        appear("干员档案", 3)
+        ssleep(.3)
+    else
+        log("经验书或者龙门币不足")
+        return false
+    end
+    return true
+end
 -- 干员精英化
-raise.elite_char = function(id, target_phase)
+raise.elite_one_phase = function()
+    appear("干员档案", 2)
+    if not wait(function()
+            tap("进入精英化页面")
+            ssleep(.1)
+            if findOne("精英化页面") then return true end
+        end, 5) then
+        log("无法精英化")
+        return true
+    end
+    if not wait(function()
+            tap("精英化页面")
+            ssleep(.2)
+            if findOne("干员档案") then return true end
+        end, 10) then
+        log("未完成精英化")
+        return false
+    end
+    return true
+end
+-- 干员精英化
+raise.elite_char = function(id, start_phase, target_phase)
     local name = char_id2name(id)
     char_choose(name)
+    for i = 1, target_phase - start_phase do
+        if not raise.upgrade_char() then return end
+        --计算材料是否够
+        local material_need = raise.calculate_materials(raise.get_char_elite_material(id, start_phase + i))
+        if table.isempty(material_need) then
+            --执行精英化
+            if not raise.elite_one_phase() then return end
+        else
+            --合成
+        end
+    end
 end
 -- 技能升级
 raise.upgrade_skill = function(id, target_level)
@@ -1000,11 +1089,20 @@ raise.inventory_identify = function(materials)
     local sx, sy = scale(85), scale(185)
     local ms = {}
     local ret = {}
-    if materials == nil or #materials == 0 then return end
-    log(materials)
+    --if materials == nil or #materials == 0 then return end
+    --log(materials)
     -- swip_inventory(true)
-    ssleep(0.5)
-    log("start")
+    path.跳转("首页")
+    ssleep(.1)
+    tap("面板仓库")
+    if not wait(function()
+            tap("仓库养成材料")
+            ssleep(.1)
+            if findOne("仓库养成材料") then return true end
+        end, 5) then
+        log("未进入养成材料页面")
+        return {}
+    end
     local page = 0
     -- swip_inventory(true)
     while true do
@@ -1025,19 +1123,19 @@ raise.inventory_identify = function(materials)
                 table.insert(ms, { x, y, material })
                 if material ~= "" then
                     -- log(material)
-                    if table.includes(materials, material) then
-                        if ret[material] == nil then
-                            area[2] = area[2] + scale(150)
-                            local num = ocrex(area)
-                            if #num == 0 then
-                                num = 0
-                            else
-                                num = num[1]["text"]
-                            end
-                            ret[material] = num
-                            -- table.insert(ms, { x, y, material, num })
+                    --if table.includes(materials, material) then
+                    if ret[material] == nil then
+                        area[2] = area[2] + scale(150)
+                        local num = ocrex(area)
+                        if #num == 0 then
+                            num = 0
+                        else
+                            num = num[1]["text"]
                         end
+                        ret[material] = num
+                        -- table.insert(ms, { x, y, material, num })
                     end
+                    --end
                 end
             end
         end
@@ -1047,10 +1145,18 @@ raise.inventory_identify = function(materials)
         ssleep(0.1)
         page = page + 1
     end
-    log("end")
-    log(ret)
-    log(ms)
-    ssleep(300)
+    --log("结束仓库识别")
+    log(#ret, ret)
+    --log(ms)
+
+    --明日方舟工具箱格式：id：数量
+    local t = {}
+    for k, v in pairs(ret) do
+        log(k, v)
+        t[material_name2id(k)] = v
+    end
+    path.跳转("首页")
+    return t
 end
 
 
@@ -1065,6 +1171,9 @@ end
 
 raise.auto_raise = function()
     raise.init()
+    player_inventory_info = raise.inventory_identify()
+    log(player_inventory_info)
+    --exit()
     for i = 1, #raise_plan do
         log(raise_plan[i])
         local id
@@ -1084,7 +1193,7 @@ raise.auto_raise = function()
                 if elite >= raise_plan[i]["elite"] then
                     log("已达到精英等级")
                 else
-                    raise.elite_char(id, raise_plan[i]["elite"])
+                    raise.elite_char(id, elite, raise_plan[i]["elite"])
                 end
             end
             if raise_plan[i]["skill_master"] then
