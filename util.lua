@@ -3629,6 +3629,10 @@ show_auto_ui = function()
     ui.addEditText(layout, "auto_raise_api", "")
 
     newRow(layout)
+    addTextView(layout, "培养计划")
+    ui.addEditText(layout, "raise_plan_text", "")
+
+    newRow(layout)
     addTextView(layout, "官服请求Token")
     ui.addEditText(layout, "a60_token_offcial", "")
     addTextView(layout, "B服请求Token")

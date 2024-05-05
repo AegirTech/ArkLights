@@ -55,6 +55,31 @@ local 高级材料2低级材料 = {
     ["30032"] = { chlid = { ["30031"] = 3 }, level = 2, name = "聚酸酯" },
     ["31044"] = { chlid = { ["31013"] = 1, ["31043"] = 1, ["31053"] = 1 }, level = 3, name = "精炼溶剂" },
     ["30115"] = { chlid = { ["30014"] = 1, ["30044"] = 1, ["30054"] = 1 }, level = 4, name = "聚合剂" },
+    ["32001"] = { level = 3, name = "芯片助剂" },
+    ["3211"] = { level = 2, name = "先锋芯片" },
+    ["3212"] = { level = 3, name = "先锋芯片组" },
+    ["3213"] = { chlid = { ["32001"] = 1, ["3212"] = 2 }, level = 4, name = "先锋双芯片" },
+    ["3221"] = { level = 2, name = "近卫芯片" },
+    ["3222"] = { level = 3, name = "近卫芯片组" },
+    ["3223"] = { chlid = { ["32001"] = 1, ["3222"] = 2 }, level = 4, name = "近卫双芯片" },
+    ["3231"] = { level = 2, name = "重装芯片" },
+    ["3232"] = { level = 3, name = "重装芯片组" },
+    ["3233"] = { chlid = { ["32001"] = 1, ["3232"] = 2 }, level = 4, name = "重装双芯片" },
+    ["3241"] = { level = 2, name = "狙击芯片" },
+    ["3242"] = { level = 3, name = "狙击芯片组" },
+    ["3243"] = { chlid = { ["32001"] = 1, ["3242"] = 2 }, level = 4, name = "狙击双芯片" },
+    ["3251"] = { level = 2, name = "术师芯片" },
+    ["3252"] = { level = 3, name = "术师芯片组" },
+    ["3253"] = { chlid = { ["32001"] = 1, ["3252"] = 2 }, level = 4, name = "术师双芯片" },
+    ["3261"] = { level = 2, name = "医疗芯片" },
+    ["3262"] = { level = 3, name = "医疗芯片组" },
+    ["3263"] = { chlid = { ["32001"] = 1, ["3262"] = 2 }, level = 4, name = "医疗双芯片" },
+    ["3271"] = { level = 2, name = "辅助芯片" },
+    ["3272"] = { level = 3, name = "辅助芯片组" },
+    ["3273"] = { chlid = { ["32001"] = 1, ["3272"] = 2 }, level = 4, name = "辅助双芯片" },
+    ["3281"] = { level = 2, name = "特种芯片" },
+    ["3282"] = { level = 3, name = "特种芯片组" },
+    ["3283"] = { chlid = { ["32001"] = 1, ["3282"] = 2 }, level = 4, name = "特种双芯片" },
 }
 --定义日常材料与刷取副本的期望映射关系
 local daily_materials_stage_json =
@@ -69,20 +94,13 @@ activity_materials_stage = {
 }
 
 -- 初始化数据及玩家信息
-raise_init = function()
+raise.init = function()
     if not character_table then
-        local file = io.open(getWorkPath() .. "/gamedata/excel/character_table.json", "r")
-        -- 游戏内干员数据
-        character_table = file:read("*a")
-        file:close()
-        local status
-        status, character_table = pcall(JsonDecode, character_table)
-        if not status then
-            log("游戏数据character_table读取失败")
-            return
-        end
+        -- 解包干员数据
+        character_table = JsonDecode(readFile("char_table.json"))
     end
-    if not item_table then
+    --log(character_table)
+    --[[if not item_table then
         file = io.open(getWorkPath() .. "/gamedata/excel/item_table.json", "r")
         -- 游戏内物品数据
         item_table = file:read("*a")
@@ -94,82 +112,121 @@ raise_init = function()
             return
         end
     end
-    if not character_id2name then
-        for k, v in ipairs(character_table) do
-            if string.startsWith(k, "char") then
-                local name = v["name"]
-                character_id2name[k] = name
-                character_name2id[name] = k
-            end
+    ]]
+    if not character_name2id then
+        character_name2id = {}
+        for k, v in pairs(character_table) do
+            local name = v["name"]
+            character_name2id[name] = k
         end
     end
-
     -- 其余接口暂未实现
-    player_info_init(raise_get_player_info())
-end
+    player_info_init(raise.get_player_info(true))
 
--- 接口获取玩家信息
-raise_get_player_info = function()
-    if (not a60_token_offcial) or (not a60_token_bili) then return end
-    if server == 0 then
-        local url = "http://pyark.a60.one:88/login/offcial?username=%s&password=%s&token=%s"
-        url = string.format(url, username, password, a60_token_offcial)
-    else
-        local url = "http://pyark.a60.one:88/login/bilibili?username=%s&password=%s&token=%s"
-        url = string.format(url, username, password, a60_token_bili)
+    -- 读取培养计划
+    local status
+    status, raise_plan = pcall(JsonDecode, raise_plan_text)
+    if not status then
+        log("传入培养计划格式错误")
+        return
     end
-    local ret, code = httpGet(url)
-    if code ~= 200 then return end
-    local status, player_data = pcall(JsonDecode, ret)
-    if not status then return end
-    return player_data
 end
 
+---接口获取玩家信息
+---@param isLocal bool 是否本地测试
+---@return table player_data 玩家数据
+raise.get_player_info = function(isLocal)
+    if not isLocal then
+        if (not a60_token_offcial) or (not a60_token_bili) then return end
+        if server == 0 then
+            local url = "http://pyark.a60.one:88/login/offcial?username=%s&password=%s&token=%s"
+            url = string.format(url, username, password, a60_token_offcial)
+        else
+            local url = "http://pyark.a60.one:88/login/bilibili?username=%s&password=%s&token=%s"
+            url = string.format(url, username, password, a60_token_bili)
+        end
+        local ret, code = httpGet(url)
+        if code ~= 200 then return end
+        local status, player_data = pcall(JsonDecode, ret)
+        if not status then return end
+        return player_data
+    else
+        -- 本地测试数据
+        local player_data = JsonDecode(readFile("data1.json"))
+        return player_data["data"]
+    end
+end
+
+-- 初始化玩家干员数据
 player_info_init = function(player_data)
-    player_inventory_info = player_data["user"]["inventory"] -- charid, data 仓库数据
-    player_character_info = {}                               -- 干员数据
+    player_character_info = {} -- 玩家干员数据
+    --[[player_inventory_info = player_data["user"]["inventory"] -- charid, data 仓库数据
+
     local ori_player_character_info = player_data["user"]["troop"]["chars"]
-    for k, v in pairs(ori_player_character_info) do
+    ]]
+
+    for _, v in pairs(player_data["chars"]) do
         local name = v["charId"]
         player_character_info[name] = v
     end
 end
 
 -- 材料ID转换材料名
-raise_item_id_to_name = function(id)
-    return item_table["items"][id]["name"]
+material_id2name = function(id)
+    return 高级材料2低级材料[id]["name"]
+    --return item_table["items"][id]["name"]
 end
 
 -- 干员ID转换干员名
-raise_character_id_to_name = function(id)
-    return character_id2name[id]
+char_id2name = function(id)
+    return character_table[id]["name"]
 end
 
 -- 干员名字转换到ID
-raise_character_name_to_id = function(name)
+char_name2id = function(name)
     return character_name2id[name]
 end
 
--- 获取指定干员ID的精英化等级
-raise_character_phase_level = function(id)
+---获取指定干员ID的现有精英化等级
+---@return number
+raise.get_char_elite = function(id)
     return player_character_info[id]["evolvePhase"]
 end
 
--- 获取指定干员ID的技能信息
-raise_character_skill_info = function(id)
-    return player_character_info[id]["skills"]
+-- 获取指定干员ID的现有技能信息
+---@return table {通用技能等级，专精等级}
+raise.get_char_skill = function(id, skill_id_index)
+    local common_skill_level = player_character_info[id]["mainSkillLvl"]
+    if common_skill_level == 7 then
+        return { 7, player_character_info[id]["skills"][skill_id_index]["specializeLevel"] }
+    else
+        return { common_skill_level, 0 }
+    end
 end
 
 -- 获取指定干员指定技能的升级材料
-raise_character_skill_upgrade_material = function(id, skill_id_index)
+raise.char_skill_upgrade_material = function(id, skill_id_index)
     local skill_info = character_table[id]["skills"][skill_id_index]
     return skill_info
 end
 
--- 计算指定干员指定技能的升级材料总数 返回 材料ID:数量
-raise_character_skill_upgrade_material_total = function(id, skill_id_index, target_level)
-    local current_skill_level = player_character_info[id]["skills"][skill_id_index]["specializeLevel"]
-    local skill_info = raise_character_skill_upgrade_material(id, skill_id_index)
+---计算角色技能升级所需材料总量
+---@param id number 干员ID
+---@param skill_id_index number 几技能
+---@param target_level number 目标专精等级
+---@return table total_material 包含材料ID和对应数量的表
+raise.char_skill_upgrade_material_total = function(id, skill_id_index, target_level)
+    --通用技能等级
+    local common_skill_level = player_character_info[id]["mainSkillLvl"]
+    -- 指定技能当前专精等级
+    local current_skill_level
+    if common_skill_level < 7 then
+        current_skill_level = 0
+    else
+        current_skill_level = player_character_info[id]["skills"][skill_id_index]["specializeLevel"]
+    end
+
+    local skill_info = raise.char_skill_upgrade_material(id, skill_id_index)
     if target_level == current_skill_level then return {} end
     total_material = {}
     for i = target_level, current_skill_level + 1, -1 do
@@ -190,16 +247,16 @@ raise_character_skill_upgrade_material_total = function(id, skill_id_index, targ
 end
 
 -- 获取指定干员的精英化材料
-raise_character_phase_upgrade_material = function(id)
+raise.char_phase_upgrade_material = function(id)
     return character_table[id]["phases"]
 end
 
 -- 计算指定干员精英化材料总数
-raise_character_phase_upgrade_material_total = function(id, target_phase)
+raise.char_phase_upgrade_material_total = function(id, target_phase)
     local total_material = {}
-    local current_char_phase = raise_character_phase_level(id)
+    local current_char_phase = raise.char_phase_level(id)
     if target_phase == current_char_phase then return {} end
-    local phase_info = raise_character_phase_upgrade_material(id)
+    local phase_info = raise.char_phase_upgrade_material(id)
     table.remove(phase_info, 1)
     total_material = {}
     for i = target_phase, current_char_phase + 1, -1 do
@@ -220,7 +277,7 @@ raise_character_phase_upgrade_material_total = function(id, target_phase)
 end
 
 -- 计算仓库材料缺失总数
-raise_calculate_materials = function(materials)
+raise.calculate_materials = function(materials)
     local need_materials = {}
     for k, v in pairs(materials) do
         local current_count = player_inventory_info[id]
@@ -232,26 +289,26 @@ raise_calculate_materials = function(materials)
 end
 
 -- 根据材料生成需要刷的关卡 默认缺一个材料刷一次关
-raise_generate_fight_plan = function(materials)
+raise.generate_fight_plan = function(materials)
     local plan = {}
 end
 
 -- 生成刷图计划 传入干员名和计划名 返回作战列表
-raise_generate_fight_plan = function(待养成干员, 养成计划)
+raise.generate_fight_plan = function(待养成干员, 养成计划)
     local fight_plan = {}
-    local char_id = raise_character_name_to_id(待养成干员)
+    local char_id = raise.char_name_to_id(待养成干员)
     if char_id == nil then return end
     if 养成计划.plan == "精英化" then
         local 精英化等级 = tonumber(养成计划.level)
-        local 材料需求 = raise_character_phase_upgrade_material_total(char_id, 精英化等级)
+        local 材料需求 = raise.char_phase_upgrade_material_total(char_id, 精英化等级)
         if 材料需求 == {} then return {} end
-        材料需求 = raise_calculate_materials(材料需求)
+        材料需求 = raise.calculate_materials(材料需求)
     elseif 养成计划.plan == "专精" then
         local 专精等级 = tonumber(养成计划.level)
         local 专精技能 = tonumber(养成计划.index)
-        local 材料需求 = raise_character_skill_upgrade_material_total(char_id, 专精技能, 专精等级)
+        local 材料需求 = raise.char_skill_upgrade_material_total(char_id, 专精技能, 专精等级)
         if 材料需求 == {} then return {} end
-        材料需求 = raise_calculate_materials(材料需求)
+        材料需求 = raise.calculate_materials(材料需求)
     end
 end
 
@@ -589,7 +646,7 @@ end
 }
 
 -- 在指定区域内寻找，存在所有特征点，返回材料名 根据材料等级判断用于降低错误率，查找时颜色可信度均为1
-raise_find_material = function(area)
+raise.find_material = function(area)
     local material = ""
     local skip = false
     local material_level = ""
@@ -641,19 +698,20 @@ raise_find_material = function(area)
 end
 
 -- 基建材料识别
-raise_material_identify = function()
+raise.material_identify = function()
     -- 从x 945/1686  y=120 开始y++ 识别 22BBFF 减去一定x值得到区域初始坐标
 end
 
 -- 向上滑动
-raise_swipe_up = function()
+raise.swipe_up = function()
 
 end
 
 -- 材料合成
-raise_material_make = function()
+raise.material_make = function()
 
 end
+
 -- 选择干员
 char_choose = function(char_name)
     local character_type = JsonDecode(readFile("character_type_list.json"))
@@ -709,16 +767,25 @@ end
 -- 干员升级
 
 -- 干员精英化
-
+raise.elite_char = function(id, target_phase)
+    local name = char_id2name(id)
+    char_choose(name)
+end
 -- 技能升级
-
+raise.upgrade_skill = function(id, target_level)
+    local name = char_id2name(id)
+    char_choose(name)
+end
 -- 技能专精
-
+raise.master_skill = function(id, skill_numb, target_level)
+    local name = char_id2name(id)
+    char_choose(name)
+end
 -- 仓库识别 测试
-raise_test = function()
+raise.test = function()
     ssleep(1)
     -- local area = { 469, 722, 710, 969 }
-    -- local material = raise_find_material(area)
+    -- local material = raise.find_material(area)
     -- log(material)
 
     log("start")
@@ -728,7 +795,7 @@ raise_test = function()
         for y = 0, 2 do
             area = { sx + x * scale(230), sy + y * scale(280), sx + x * scale(230) + scale(200), sy + y * scale(280) +
             scale(200) }
-            local material = raise_find_material(area)
+            local material = raise.find_material(area)
             -- log(x, y, material)
             table.insert(ms, { x, y, material })
         end
@@ -739,7 +806,7 @@ raise_test = function()
 end
 
 -- 基建合成识别
-raise_test2 = function()
+raise.test2 = function()
     ssleep(1)
     local ms = {}
     local sx, sy = 251, 87
@@ -748,7 +815,7 @@ raise_test2 = function()
         for y = 0, 2 do
             area = { sx + x * scale(740), sy + y * scale(270), sx + x * scale(740) + scale(250), sy + y * scale(270) +
             scale(250) }
-            local material = raise_find_material(area)
+            local material = raise.find_material(area)
             -- log(x, y, material)
             table.insert(ms, { x, y, material })
         end
@@ -777,7 +844,7 @@ end
     先锋芯片 = {}
 }
 
-raise_test3 = function()
+raise.test3 = function()
     -- local pixel = getPixelColor(279, 792)
     -- print(pixel)
     -- local r, g, b = colorToRGB(pixel)
@@ -892,6 +959,7 @@ swip_inventory = function(left)
     sleep(duration + delay)
 end
 
+-- 干员界面滑动
 swip_char = function(left)
     local duration
     local finger
@@ -928,7 +996,7 @@ swip_char = function(left)
 end
 
 -- 仓库识别 给定材料列表 只ocr给定的材料数量
-raise_inventory_identify = function(materials)
+raise.inventory_identify = function(materials)
     local sx, sy = scale(85), scale(185)
     local ms = {}
     local ret = {}
@@ -952,7 +1020,7 @@ raise_inventory_identify = function(materials)
             for y = 0, 2 do
                 area = { sx + x * scale(230), sy + y * scale(280), sx + x * scale(230) + scale(200), sy + y * scale(280) +
                 scale(200) }
-                local material = raise_find_material(area)
+                local material = raise.find_material(area)
                 -- log(x, y, material)
                 table.insert(ms, { x, y, material })
                 if material ~= "" then
@@ -986,11 +1054,57 @@ raise_inventory_identify = function(materials)
 end
 
 
-raise_test_all = function()
+raise.test_all = function()
     -- ssleep(1.5)
-    -- t = raise_find_material({ 923, 306, 1102, 465 })
+    -- t = raise.find_material({ 923, 306, 1102, 465 })
     -- log(t)
-    raise_test()
-    --raise_test2()
+    raise.test()
+    --raise.test2()
     ssleep(500)
+end
+
+raise.auto_raise = function()
+    raise.init()
+    for i = 1, #raise_plan do
+        log(raise_plan[i])
+        local id
+        if raise_plan[i]["id"] then
+            id = raise_plan[i]["id"]
+        elseif raise_plan[i]["name"] then
+            id = char_name2id(raise_plan[i]["name"])
+        else
+            log("培养计划格式错误:未指定干员")
+            return true
+        end
+        if player_character_info[id] then
+            log("拥有干员", id)
+            if raise_plan[i]["elite"] then
+                log("精英化干员")
+                local elite = raise.get_char_elite(id)
+                if elite >= raise_plan[i]["elite"] then
+                    log("已达到精英等级")
+                else
+                    raise.elite_char(id, raise_plan[i]["elite"])
+                end
+            end
+            if raise_plan[i]["skill_master"] then
+                log("专精技能")
+                --几技能
+                local skill_numb = raise_plan[i]["skill"]
+                local skill_level = raise.get_char_skill(id, skill_numb)
+                if skill_level[2] >= raise_plan[i]["skill_master"] then
+                    log(skill_numb, "技能已达到专精等级")
+                else
+                    raise.master_skill(id, skill_numb, raise_plan[i]["elite"])
+                end
+            elseif raise_plan[i]["skills"] then
+                local skill_level = raise.get_char_skill(id)
+                if skill_level[1] >= raise_plan[i]["skill_master"] then
+                    log("技能已达到指定等级")
+                else
+                    raise.upgrade_skill(id, skill_numb, raise_plan[i]["elite"])
+                end
+            end
+        end
+    end
 end
