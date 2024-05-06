@@ -2984,30 +2984,32 @@ path.会客厅换班 = function(stationType)
     end
 end
 
-path.制造加速 = function()
-    path.跳转("基建")
-    local station
-    for i = 1, #point.基建左侧列表 do
-        local x, y = table.unpack(point["基建左侧列表" .. i])
-        log(x, y, default_findcolor_confidence)
-        log(type(default_findcolor_confidence))
-        if compareColor(x, y, "#FFCC00", default_findcolor_confidence) then
-            station = x .. coord_delimeter .. y .. coord_delimeter .. "#FFCC00"
-            point.station = station
-            rfl.station = true
-            break
-        end
-    end
-    log(526)
-    if not station then return end
-    log(station)
-    if not wait(function()
-            if not findOne("进驻总览") or not findOne("缩放结束") then
-                return true
+path.制造加速 = function(only)
+    if not only then
+        path.跳转("基建")
+        local station
+        for i = 1, #point.基建左侧列表 do
+            local x, y = table.unpack(point["基建左侧列表" .. i])
+            log(x, y, default_findcolor_confidence)
+            log(type(default_findcolor_confidence))
+            if compareColor(x, y, "#FFCC00", default_findcolor_confidence) then
+                station = x .. coord_delimeter .. y .. coord_delimeter .. "#FFCC00"
+                point.station = station
+                rfl.station = true
+                break
             end
-            tap("station")
-        end, 5) then
-        return
+        end
+        log(526)
+        if not station then return end
+        log(station)
+        if not wait(function()
+                if not findOne("进驻总览") or not findOne("缩放结束") then
+                    return true
+                end
+                tap("station")
+            end, 5) then
+            return
+        end
     end
     -- if not appear({"进驻信息", "进驻信息选中"}) then return end
     if not wait(function()
@@ -8176,10 +8178,7 @@ path.隐秘战线 = function()
         { { "医疗小队", a1, b2, c3, 结局E }, { "医疗小队", "中", "右", "右", "右" } },
         { { "物资小队", a1, a2, a3, 结局A }, { "物资小队", "中", "左", "左", "左" } }, }
     local 检测点步数 = { 5, 10, 18, 26 }
-    local ocro = function(r)
-        local ret = ocrex(r)
-        if ret and #ret ~= 0 then return ret[1]["text"] end
-    end
+
     local 检测选项 = function(阶段, 结局, step)
         local 选项 = { { {}, {}, {} }, { {}, {}, {} }, { {}, {}, {} } }
         for i = 1, 3 do
