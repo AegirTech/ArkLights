@@ -271,11 +271,12 @@ end
 ---获取干员指定精英化等级所需材料
 ---@return table t 材料id:数量
 raise.get_char_elite_material = function(id, target_phase)
-    local cost = character_table[id]["phases"][target_phase]["evolveCost"]
-    local t
+    local cost = character_table[id]["phases"][target_phase + 1]["evolveCost"]
+    local t = {}
     for i = 1, #cost do
         t[cost[i]["id"]] = cost[i]["count"]
     end
+    log(t)
     return t
 end
 
@@ -306,10 +307,12 @@ end
 
 ---计算仓库材料缺失总数
 ---@param materials table 材料id:数量
-raise.calculate_materials = function(materials)
+raise.calculate_materials_need = function(materials)
     local need_materials = {}
+    log(player_inventory_info)
     for k, v in pairs(materials) do
-        local current_count = player_inventory_info[k]
+        --log(k, v)
+        local current_count = player_inventory_info[k] or 0
         if current_count < v then
             need_materials[k] = v - current_count
         end
@@ -331,13 +334,13 @@ raise.generate_fight_plan = function(待养成干员, 养成计划)
         local 精英化等级 = tonumber(养成计划.level)
         local 材料需求 = raise.char_phase_upgrade_material_total(char_id, 精英化等级)
         if 材料需求 == {} then return {} end
-        材料需求 = raise.calculate_materials(材料需求)
+        材料需求 = raise.calculate_materials_need(材料需求)
     elseif 养成计划.plan == "专精" then
         local 专精等级 = tonumber(养成计划.level)
         local 专精技能 = tonumber(养成计划.index)
         local 材料需求 = raise.char_skill_upgrade_material_total(char_id, 专精技能, 专精等级)
         if 材料需求 == {} then return {} end
-        材料需求 = raise.calculate_materials(材料需求)
+        材料需求 = raise.calculate_materials_need(材料需求)
     end
 end
 
@@ -793,7 +796,7 @@ char_choose = function(char_name)
     end
 end
 
--- 干员升级
+-- 等级拉满一次
 raise.upgrade_char = function()
     appear("干员档案", 2)
     if not wait(function()
@@ -823,15 +826,22 @@ raise.upgrade_char = function()
     end
     return true
 end
--- 干员精英化
-raise.elite_one_phase = function()
+
+-- 精英化操作一次
+raise.elite_one_phase = function(material_need)
     appear("干员档案", 2)
+    local p
     if not wait(function()
             tap("进入精英化页面")
             ssleep(.1)
+            p = findOne("干员精英化缺少材料")
+            if p then return false end
             if findOne("精英化页面") then return true end
         end, 5) then
         log("无法精英化")
+        if p then
+
+        end
         return true
     end
     if not wait(function()
@@ -844,18 +854,25 @@ raise.elite_one_phase = function()
     end
     return true
 end
--- 干员精英化
+---干员精英化
+---comment
+---@param id string 干员id
+---@param start_phase number 当前精英等级
+---@param target_phase number 目标精英等级
 raise.elite_char = function(id, start_phase, target_phase)
     local name = char_id2name(id)
     char_choose(name)
     for i = 1, target_phase - start_phase do
         if not raise.upgrade_char() then return end
         --计算材料是否够
-        local material_need = raise.calculate_materials(raise.get_char_elite_material(id, start_phase + i))
+        local material_need = raise.calculate_materials_need(raise.get_char_elite_material(id, start_phase + i))
+
         if table.isempty(material_need) then
             --执行精英化
             if not raise.elite_one_phase() then return end
         else
+            log(material_need)
+            raise.elite_one_phase(material_need)
             --合成
         end
     end
@@ -983,29 +1000,43 @@ raise.test3 = function()
         return 绿色, 蓝色, 蓝色区域差值
     end
 
-    -- area = { 1506, 449, 1752, 695 }
-    -- local 绿色, 蓝色 = getcent(area)
-    -- local 比例 = 蓝色 / (scale(200) * scale(200))
-    -- table.insert(ms, { x, y, 蓝色, 比例 })
-    log("start")
-    local 区域集中度 = 0
-    for x = 0, 5 do
-        for y = 0, 2 do
-            area = { sx + x * scale(230), sy + y * scale(280), sx + x * scale(230) + scale(200), sy + y * scale(280) +
-            scale(200) }
-            local 绿色, 蓝色, 蓝色区域差值 = getcent(area)
-            local 比例 = 蓝色 / (scale(100) * scale(100))
-            --log(绿色, 蓝色, 比例, 离散距离)
-            -- table.insert(ms, { x, y, 蓝色, 比例, 蓝色差 / 蓝色 })
-            if 蓝色 > 0 then
-                区域集中度 = scale(蓝色区域差值) / (scale(2000) * scale(100))
-                区域集中度 = 区域集中度 * (1 / (1080 / screen.height) * (1080 / screen.height))
-                table.insert(ms, { x, y, 绿色, 蓝色, 比例, 区域集中度, 蓝色区域差值 })
+    local page = 0
+    -- swip_inventory(true)
+    while true do
+        if page >= 5 then break end
+        if findOne("商店最后一页") then
+            page = 5
+            log("已经是最后一页")
+        end
+        sx = scale(210)
+        -- area = { 1506, 449, 1752, 695 }
+        -- local 绿色, 蓝色 = getcent(area)
+        -- local 比例 = 蓝色 / (scale(200) * scale(200))
+        -- table.insert(ms, { x, y, 蓝色, 比例 })
+        log("start")
+        local 区域集中度 = 0
+        for x = 0, 5 do
+            for y = 0, 2 do
+                area = { sx + x * scale(230), sy + y * scale(280), sx + x * scale(230) + scale(200), sy + y * scale(280) +
+                scale(200) }
+                local 绿色, 蓝色, 蓝色区域差值 = getcent(area)
+                local 比例 = 蓝色 / (scale(100) * scale(100))
+                --log(绿色, 蓝色, 比例, 离散距离)
+                -- table.insert(ms, { x, y, 蓝色, 比例, 蓝色差 / 蓝色 })
+                if 蓝色 > 0 then
+                    区域集中度 = scale(蓝色区域差值) / (scale(2000) * scale(100))
+                    区域集中度 = 区域集中度 * (1 / (1080 / screen.height) * (1080 / screen.height))
+                    table.insert(ms, { x, y, 绿色, 蓝色, 比例, 区域集中度, 蓝色区域差值 })
+                end
             end
         end
-    end
-    log("end")
+        log("end")
+        releaseCapture()
 
+        swip_inventory()
+        ssleep(0.1)
+        page = page + 1
+    end
     -- local 比例 = 白色 / (绿色 + 蓝色 + 白色)
     -- log(绿色, 蓝色, 白色, 比例)
     log(ms)
@@ -1153,7 +1184,8 @@ raise.inventory_identify = function(materials)
     local t = {}
     for k, v in pairs(ret) do
         log(k, v)
-        t[material_name2id(k)] = v
+        if v == "H" then v = 11 end
+        t[material_name2id(k)] = tonumber(v)
     end
     path.跳转("首页")
     return t
