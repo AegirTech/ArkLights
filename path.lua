@@ -8477,7 +8477,7 @@ path.游戏监控 = function()
         end
         ssleep(1)
     end
-    if 快速切号功能状态 == false then
+    if not 快速切号功能状态 then
         path.账户数据保存()
     end
     setControlBar()

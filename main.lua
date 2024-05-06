@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "05.06 10:22"
+release_date = "05.07 00:16"
 update_announcement = '最近更新：【隐秘战线】导航问题，主线活动商店与领取小样'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -116,8 +116,8 @@ cloud.startHeartBeat()
 debug_mode = true
 if debug_mode then
     log("debug_mode")
-
-    raise.auto_raise()
+    ssleep(1)
+    raise.test_all()
     exit()
 end
 
@@ -136,10 +136,11 @@ if auto_update_gameclient == true then auto_update_game() end
 -- log("100",cloud.enabled(),cloud_task)
 if cloud.getTaskEnabled() and not cloud_task then
     -- 云控模式冷启动
-    -- log("102",102)
+    log("102", 102)
 elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi) and
-    multi_account_enable then
+    multi_account_enable and not multi_account_only_login then
     -- 多帐号模式
+    log("多帐号模式")
     -- 分隔临时账号设置
     multi_account_choice = multi_account_choice:commonmap()
     local temp_choice_pos = multi_account_choice:find('#')
@@ -248,8 +249,103 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
         end
     end
     saveConfig("continue_account", '')
+elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi) and
+    multi_account_enable and multi_account_only_login then
+    -- 仅上号模式
+    log("仅上号模式")
+    multi_account_choice = multi_account_choice:commonmap()
+    local temp_choice_pos = multi_account_choice:find('#')
+    if temp_choice_pos then
+        multi_account_config_remove_once_choice()
+        multi_account_choice = multi_account_choice:sub(temp_choice_pos + 1,
+            #multi_account_choice)
+    end
+    log("multi_account_choice", multi_account_choice)
+
+    multi_account_choice = expand_number_config(multi_account_choice)
+
+    account_map = {}
+    for idx, i in pairs(multi_account_choice) do
+        multi_account_choice_idx = idx
+        account_idx = i
+        -- log("type(i)",type(i))
+        -- log('_G["username" .. i]',_G["username" .. i])
+        username = (_G["username" .. i] or ''):map({
+            ["＃"] = "#",
+            ["\n"] = "",
+            [" "] = "",
+            ["　"] = "",
+        })
+        password = (_G["password" .. i] or ''):map({
+            ["\n"] = "",
+            [" "] = "",
+            ["　"] = "",
+        })
+        server = _G["server" .. i] or 0
+
+        if username:find("#") then
+            usernote = username:sub(username:find('#') + 1, #username):trim()
+            username = username:sub(1, username:find('#') - 1):trim()
+        end
+
+        if #username > 0 and #password > 0 then
+            username = username:trim()
+            password = password:trim()
+            table.insert(account_map, { username = username, password = password, server = server, idx = i })
+        end
+    end
+    log(account_map)
+
+    login_account_idx = 1
+
+    while true do
+        username = account_map[login_account_idx].username
+        password = account_map[login_account_idx].password
+        server = account_map[login_account_idx].server
+        account_idx = account_map[login_account_idx].idx
+        apply_multi_account_setting(account_idx)
+        update_state_from_ui()
+        log(account_idx, username, password, server)
+        if multi_account_end_closeotherapp then
+            closeapp(appid == oppid and bppid or oppid)
+        end
+
+        if multi_account_end_closeapp then closeapp(appid) end
+
+        -- 无密码切号方案
+        if new_change_account_plan and root_mode then
+            log("切号测试")
+            _G.快速切号功能状态 = false
+            closeapp(appid)
+            if server == 0 and read_local_config("account", username .. "hyperautologin") then
+                local user_token = read_local_config("account", username .. "token")
+                if user_token and #user_token > 10 then
+                    log("官服快速登录")
+                    user_token = decodeBase64(user_token)
+                    _G.快速切号功能状态 = official_set_login_user(user_token)
+                end
+            elseif server ~= 0 and read_local_config("account", username .. "biliautologin") then
+                local userid = read_local_config("account", username .. "userid")
+                if userid and #userid > 1 and bilibili_is_uid_exist(userid) then
+                    log("b服快速登录")
+                    log(userid)
+                    _G.快速切号功能状态 = bilibili_set_login_uid(userid)
+                end
+            end
+        end
+
+        job = { "游戏监控" }
+
+        if not 快速切号功能状态 then
+            table.insert(job, 1, "退出账号")
+        end
+        run(job)
+        showUI("auto_login")
+        -- show_auto_login_ui()
+    end
 elseif not crontab_enable_only then
     -- 单帐号模式
+    log("单帐号模式")
     transfer_global_variable("multi_account_user0")
     update_state_from_ui()
     if extra_mode then
@@ -267,7 +363,9 @@ elseif not crontab_enable_only then
             table.insert(job, 1, "退出账号")
         end
     end
+    log(job)
     run(job)
+    log("任务完成")
     cloud.completeTask(last_upload_img)
 end
 
