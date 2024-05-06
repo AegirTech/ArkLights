@@ -847,31 +847,34 @@ raise.elite_one_phase = function(material_need)
     if p then
         p = findOne("干员精英化芯片红")
         if p then
-            tap({ p[1], p2 - scale(90) })
-            ssleep(.3)
-            local ret = ocr("干员精英化芯片跳转")
-            if ret and #ret ~= 0 and ret[1]["text"] == "跳转" then
-                tap({ ret[1]["l"] }, ret[1]["t"])
-            end
-            appear("制造站设施列表1", 3)
-            if not wait(function()
-                    tap("芯片站")
-                    if not findOne("制造站设施列表1") then return true end
-                end, 5) then
-                return
-            end
-            if not wait(function()
-                    tap("制造站选芯片类")
-                    if findOne("制造站选芯片类") then return true end
-                end, 5) then
-                return
-            end
+            tap("干员精英化芯片")
+            appear("干员精英化芯片白", 2)
             for k, v in pairs(material_need) do
-                if #k == 4 then
+                if #k == 4 and k:sub(4, 4) == "3" then
+                    if not wait(function()
+                            tap("干员精英化芯片白")
+                            if findOne("制造站设施列表1") then return true end
+                        end, 5) then
+                        return
+                    end
+                    appear("制造站设施列表1", 3)
+                    if not wait(function()
+                            tap("芯片站")
+                            if not findOne("制造站设施列表1") then return true end
+                        end, 5) then
+                        return
+                    end
+                    if not wait(function()
+                            tap("制造站选芯片类")
+                            if findOne("制造站选芯片类") then return true end
+                        end, 5) then
+                        return
+                    end
+
                     tap("芯片制造" .. k)
                     appear("芯片站", 3)
                     --todo胶水不够要去买
-                    for i = 1, v do
+                    for i = 1, v - 1 do
                         tap("制造站加")
                         ssleep(.2)
                     end
@@ -890,18 +893,20 @@ raise.elite_one_phase = function(material_need)
                         end, 5) then
                         return
                     end
-                    path.制造站加速(true)
+                    ssleep(.5)
+                    path.制造加速(true)
 
                     break
                 end
             end
             if not wait(function()
                     tap("返回")
-                    ssleep(.2)
+                    ssleep(.3)
                     if findOne("干员精英化页面") then return true end
                 end, 5) then
                 return
             end
+            if findOne("干员精英化缺少材料") then return false end
         end
     end
     if not wait(function()
