@@ -4510,6 +4510,11 @@ ocr = function(r, max_height)
     return r
 end
 
+ocro = function(r)
+    local ret = ocrex(r)
+    if ret and #ret ~= 0 then return ret[1]["text"] end
+end
+
 -- 集成战略
 swipzl = function(mode)
     -- 两个200的时候逍遥有概率出先没点下一关情况，不知道是不是这个引起的。
