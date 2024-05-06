@@ -723,6 +723,9 @@ raise.find_material = function(area)
     -- end
     -- table.removev(材料等级[material_level], material)
     -- log("material", material)
+    if material == "" then
+        material = raise.inventory_identify_xinpian(area)
+    end
     return material
 end
 
@@ -823,6 +826,7 @@ raise.upgrade_char = function()
     end
     return true
 end
+
 -- 干员精英化
 raise.elite_one_phase = function()
     appear("干员档案", 2)
@@ -844,6 +848,7 @@ raise.elite_one_phase = function()
     end
     return true
 end
+
 -- 干员精英化
 raise.elite_char = function(id, start_phase, target_phase)
     local name = char_id2name(id)
@@ -860,16 +865,19 @@ raise.elite_char = function(id, start_phase, target_phase)
         end
     end
 end
+
 -- 技能升级
 raise.upgrade_skill = function(id, target_level)
     local name = char_id2name(id)
     char_choose(name)
 end
+
 -- 技能专精
 raise.master_skill = function(id, skill_numb, target_level)
     local name = char_id2name(id)
     char_choose(name)
 end
+
 -- 仓库识别 测试
 raise.test = function()
     ssleep(1)
@@ -915,22 +923,92 @@ raise.test2 = function()
 end
 
 芯片识别数据 = {
-    近卫芯片组 = {},
-    近卫芯片 = {},
-    狙击芯片组 = {},
-    狙击芯片 = {},
-    重装芯片组 = {},
-    重装芯片 = {},
-    医疗芯片组 = {},
-    医疗芯片 = {},
-    术师芯片组 = {},
-    术师芯片 = {},
-    辅助芯片组 = {},
-    辅助芯片 = {},
-    特种芯片组 = {},
-    特种芯片 = {},
-    先锋芯片组 = {},
-    先锋芯片 = {}
+    先锋芯片组 = {
+        蓝色 = 1.40,
+        比例1 = 8.74,
+        比例2 = 8.78,
+    },
+    近卫芯片组 = {
+        蓝色 = 1.40,
+        比例1 = 14.75,
+        比例2 = 29.00,
+    },
+
+    重装芯片组 = {
+        蓝色 = 1.28,
+        比例1 = 7.05,
+        比例2 = 44.61,
+    },
+
+    狙击芯片组 = {
+        蓝色 = 1.40,
+        比例1 = 13.71,
+        比例2 = 25.46,
+    },
+
+    术师芯片组 = {
+        蓝色 = 1.44,
+        比例1 = 20.14,
+        比例2 = 46.84,
+    },
+
+    医疗芯片组 = {
+        蓝色 = 1.31,
+        比例1 = 11.76,
+        比例2 = 61.09,
+    },
+
+    辅助芯片组 = {
+        蓝色 = 1.24,
+        比例1 = 16.4,
+        比例2 = 37.13,
+    },
+
+    特种芯片组 = {
+        蓝色 = 1.42,
+        比例1 = 24.8,
+        比例2 = 62.92,
+    },
+    先锋芯片 = {
+        蓝色 = 0.39,
+        比例1 = 4.92,
+        比例2 = 23.60,
+    },
+    近卫芯片 = {
+        蓝色 = 0.40,
+        比例1 = 6.71,
+        比例2 = 16.98,
+    },
+    重装芯片 = {
+        蓝色 = 0.29,
+        比例1 = 6.23,
+        比例2 = 16.47,
+    },
+    狙击芯片 = {
+        蓝色 = 0.40,
+        比例1 = 6.43,
+        比例2 = 28.25,
+    },
+    术师芯片 = {
+        蓝色 = 0.43,
+        比例1 = 8.73,
+        比例2 = 23.23,
+    },
+    医疗芯片 = {
+        蓝色 = 0.32,
+        比例1 = 8.02,
+        比例2 = 22.57,
+    },
+    辅助芯片 = {
+        蓝色 = 0.28,
+        比例1 = 5.4,
+        比例2 = 22.52,
+    },
+    特种芯片 = {
+        蓝色 = 0.33,
+        比例1 = 7.96,
+        比例2 = 26.93,
+    },
 }
 
 raise.test3 = function()
@@ -942,8 +1020,10 @@ raise.test3 = function()
     -- local iswhite, isdis = false, false
 
     local area = {}
-    local sx, sy = scale(204), scale(182)
+    local sx, sy = scale(210), scale(182)
     local ms = {}
+
+    log(sx, sy)
 
     function getcent(area)
         local 绿色, 蓝色 = 0, 0, 0, 0
@@ -975,7 +1055,7 @@ raise.test3 = function()
                         cx = x
                         cy = y
                     end
-                    蓝色区域差值 = 蓝色区域差值 + x - cx + y - cy
+                    蓝色区域差值 = 蓝色区域差值 + scale(x - cx) + scale(y - cy)
                     -- table.insert(coordinates, { x, y })
                 end
             end
@@ -991,10 +1071,14 @@ raise.test3 = function()
     local 区域集中度 = 0
     for x = 0, 5 do
         for y = 0, 2 do
-            area = { sx + x * scale(230), sy + y * scale(280), sx + x * scale(230) + scale(200), sy + y * scale(280) +
-            scale(200) }
+            area = { sx + x * scale(236), sy + y * scale(280), sx + x * scale(236) + scale(210), sy + y * scale(280) +
+            scale(210) }
+            log(area)
+            -- area = { 144, 304, 280, 451 }
+            area = { 140, 308, 280, 448 }
             local 绿色, 蓝色, 蓝色区域差值 = getcent(area)
             local 比例 = 蓝色 / (scale(100) * scale(100))
+            local 绿色比例 = 绿色 / (scale(100) * scale(100))
             --log(绿色, 蓝色, 比例, 离散距离)
             -- table.insert(ms, { x, y, 蓝色, 比例, 蓝色差 / 蓝色 })
             if 蓝色 > 0 then
@@ -1010,6 +1094,83 @@ raise.test3 = function()
     -- log(绿色, 蓝色, 白色, 比例)
     log(ms)
     ssleep(2000)
+end
+
+-- 仓库识别，芯片部分 返回芯片id:数量 在
+raise.inventory_identify_xinpian = function(area)
+    if type(area) ~= "table" or #area ~= 4 then
+        log("area参数错误")
+        return
+    end
+
+    function getcent(area)
+        local 绿色, 蓝色 = 0, 0, 0, 0
+        local pixel, r, g, b = "", 0, 0, 0
+        -- local cx, cy = nil, nil
+        local 蓝色区域差值 = 0
+        local coordinates = {}
+        for y = area[2], area[4], 1 do
+            iswhite, isdis = false, false
+            for x = area[1], area[3], 1 do
+                pixel = getPixelColor(x, y)
+                b, g, r = colorToRGB(pixel)
+                if r > 28 and r < 103 and g > 35 and g < 120 and b > 20 and b < 73 then
+                    绿色 = 绿色 + 1
+                elseif r > 2 and r < 70 and g > 70 and g < 138 and b > 95 and b < 150 then
+                    蓝色 = 蓝色 + 1
+                    if not cx then
+                        cx = x
+                        cy = y
+                    end
+                    蓝色区域差值 = 蓝色区域差值 + scale(x - cx) + scale(y - cy)
+                end
+            end
+        end
+        return 绿色, 蓝色, 蓝色区域差值
+    end
+
+    log(area)
+    local 区域集中度 = 0
+    local 绿色, 蓝色, 蓝色区域差值 = getcent(area)
+    if 蓝色 > 0 then
+        local 比例 = 蓝色 / (scale(100) * scale(100))
+        local 绿色比例 = 绿色 / (scale(100) * scale(100))
+        区域集中度 = scale(蓝色区域差值) / (scale(2000) * scale(100))
+        区域集中度 = 区域集中度 * (1 / (1080 / screen.height) * (1080 / screen.height))
+        log(绿色, 蓝色, 比例, 区域集中度, 蓝色区域差值)
+
+        for k, v in pairs(芯片识别数据) do
+            log("测试开始", k, v)
+            local cc = 0
+            if not int_is_in_range(比例, v["蓝色"], 0.07) then
+                goto continue
+            else
+                cc = cc + 1
+            end
+            if screen.height < 1080 then
+                log("720")
+                if not int_is_in_range(区域集中度, v["比例1"], 0.5) then
+                    goto continue
+                else
+                    cc = cc + 1
+                end
+            else
+                log("1080")
+                if not int_is_in_range(区域集中度, v["比例2"], 0.5) then
+                    goto continue
+                else
+                    cc = cc + 1
+                end
+            end
+            ::continue::
+
+            if cc == 3 then
+                log(k)
+                return k
+            end
+        end
+    end
+    log(ms)
 end
 
 -- 仓库滑动
@@ -1107,11 +1268,12 @@ raise.inventory_identify = function(materials)
     -- swip_inventory(true)
     while true do
         if page >= 5 then break end
+
         if findOne("商店最后一页") then
             page = 5
             log("已经是最后一页")
+            sx = scale(210)
         end
-        sx = scale(210)
 
         keepCapture()
         for x = 0, 7 do
@@ -1119,9 +1281,9 @@ raise.inventory_identify = function(materials)
                 area = { sx + x * scale(230), sy + y * scale(280), sx + x * scale(230) + scale(200), sy + y * scale(280) +
                 scale(200) }
                 local material = raise.find_material(area)
-                -- log(x, y, material)
+                log(x, y, material)
                 table.insert(ms, { x, y, material })
-                if material ~= "" then
+                if type(material) == "string" and material ~= "" then
                     -- log(material)
                     --if table.includes(materials, material) then
                     if ret[material] == nil then
@@ -1164,7 +1326,10 @@ raise.test_all = function()
     -- ssleep(1.5)
     -- t = raise.find_material({ 923, 306, 1102, 465 })
     -- log(t)
-    raise.test()
+    -- raise.test()
+    -- raise.inventory_identify({ "糖聚块", "异铁块", "酮阵列", "近卫芯片" })
+    raise.test3()
+    -- raise.inventory_identify_xinpian({ 131, 304, 284, 461 })
     --raise.test2()
     ssleep(500)
 end
