@@ -2094,27 +2094,25 @@ hidden_front_navigation = function()
         end) then
         return
     end
-
     wait(function()
         tap("作战主线章节列表" .. 8)
         if not findOne("主题曲界面") then return true end
     end)
 
-    if not appear("主页") then return end
     if not wait(function()
             tap("隐秘战线在第14章入口")
-            tap('不连续章节进入')
-            if not findOne("主页") then return true end
-        end, 5) then
-        return
-    end
-    if appear("隐秘战线教程关闭", 3) then tap("隐秘战线教程关闭") end
-    if not wait(function()
-            tap("招募说明关闭")
+            tap('隐秘战线前置章节剧情跳过')
             if findOne("隐秘战线暂时离开") then return true end
-        end, 5) then
+        end, 6) then
         return
     end
+    --if appear("隐秘战线教程关闭", 3) then tap("隐秘战线教程关闭") end
+
+    toast('等待2S 跳过教程')
+    wait(function()
+        tap("隐秘战线教程关闭")
+    end, 2)
+
     ssleep(.5)
     --如果上一次有记录残留，重新开始
     if not findOne("隐秘战线小队选择") then
@@ -2130,10 +2128,16 @@ hidden_front_navigation = function()
         if not wait(function()
                 tap("隐秘战线重新开始确认")
                 ssleep(.3)
+                tap("隐秘战线教程关闭")
                 if findOne("隐秘战线小队选择") then return true end
             end, 5) then
             return
         end
+
+        --有时候教程是在重新开始后才出现,部分机子延迟不一样，多等待一会
+        ssleep(1)
+        tap("隐秘战线教程关闭")
     end
+
     log('导航成功')
 end
