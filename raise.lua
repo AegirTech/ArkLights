@@ -836,29 +836,85 @@ raise.elite_one_phase = function(material_need)
     local p
     if not wait(function()
             tap("进入精英化页面")
-            ssleep(.1)
-            p = findOne("干员精英化缺少材料")
-            if p then return false end
-            if findOne("精英化页面") then return true end
+            if findOne("干员精英化页面") then return true end
         end, 5) then
-        log("无法精英化")
-        if p then
-
-        end
+        log("无法立即精英化")
         return true
     end
+    p = findOne("干员精英化缺少材料")
+    if p then
+        p = findOne("干员精英化芯片红")
+        if p then
+            tap({ p[1], p2 - scale(90) })
+            ssleep(.3)
+            local ret = ocr("干员精英化芯片跳转")
+            if ret and #ret ~= 0 and ret[1]["text"] == "跳转" then
+                tap({ ret[1]["l"] }, ret[1]["t"])
+            end
+            appear("制造站设施列表1", 3)
+            if not wait(function()
+                    tap("芯片站")
+                    if not findOne("制造站设施列表1") then return true end
+                end, 5) then
+                return
+            end
+            if not wait(function()
+                    tap("制造站选芯片类")
+                    if findOne("制造站选芯片类") then return true end
+                end, 5) then
+                return
+            end
+            for k, v in pairs(material_need) do
+                if #k == 4 then
+                    tap("芯片制造" .. k)
+                    appear("芯片站", 3)
+                    --todo胶水不够要去买
+                    for i = 1, v do
+                        tap("制造站加")
+                        ssleep(.2)
+                    end
+                    if not wait(function()
+                            tap("制造站执行更改")
+                            if not findOne("制造站设施列表1") then return true end
+                        end, 5) then
+                        return
+                    end
+                    if not wait(function(reset_wait_start_time)
+                            tap("右确认")
+                            if appear("制造站设施列表1", 1) then return true end
+                            if findOne("正在提交反馈至神经") then
+                                reset_wait_start_time()
+                            end
+                        end, 5) then
+                        return
+                    end
+                    path.制造站加速(true)
+
+                    break
+                end
+            end
+            if not wait(function()
+                    tap("返回")
+                    ssleep(.2)
+                    if findOne("干员精英化页面") then return true end
+                end, 5) then
+                return
+            end
+        end
+    end
     if not wait(function()
-            tap("精英化页面")
+            tap("干员精英化页面")
             ssleep(.2)
             if findOne("干员档案") then return true end
         end, 10) then
         log("未完成精英化")
         return false
     end
+    log(完成一次精英化)
     return true
 end
+
 ---干员精英化
----comment
 ---@param id string 干员id
 ---@param start_phase number 当前精英等级
 ---@param target_phase number 目标精英等级
