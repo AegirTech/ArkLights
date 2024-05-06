@@ -3649,7 +3649,32 @@ show_auto_ui = function()
     addTextView(layout, "--------------------自动作战相关--------------------")
 
     newRow(layout)
-    ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", true)
+    ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", false)
+
+    ui.loadProfile(getUIConfigPath(layout))
+    ui.show(layout, false)
+end
+
+show_auto_login_ui = function()
+    local layout = "auto_login"
+    ui.newLayout(layout, ui_page_width, -2)
+    ui.setTitleText(layout, "切号小助手")
+
+    newRow(layout)
+    addButton(layout, nil, "上一个", "auto_login_pre")
+    ui.addEditText(layout, "auto_login_number", "")
+    addButton(layout, nil, "下一个", "auto_login_next")
+
+    newRow(layout)
+    local server_text = server == 0 and "官服" or "B服"
+    cur_username = username or ""
+    addTextView(layout, server_text .. " 账号：" .. cur_username)
+
+    newRow(layout)
+    addButton(layout, nil, "返回",
+        make_jump_ui_command(layout, loadConfig("last_layout", "multi_account")),
+        nil, nil)
+    addButton(layout, nil, "退出", make_jump_ui_command(layout, nil, "peaceExit()"), nil, nil)
 
 
     ui.loadProfile(getUIConfigPath(layout))
@@ -3809,7 +3834,7 @@ end
 
 loadUIConfig = function(layouts)
     if not layouts then
-        layouts = { "multi_account", "gesture_capture", "extra", "debug", "main", "auto" }
+        layouts = { "multi_account", "gesture_capture", "extra", "debug", "main", "auto", "auto_login" }
     end
     for _, layout in pairs(layouts) do
         assignGlobalVariable(loadOneUIConfig(layout))
@@ -4442,12 +4467,12 @@ detectServer = function()
     server = appid == oppid and 0 or 1
 end
 
-showUI = function()
+showUI = function(last_layout)
     if loadConfig("hideUIOnce", "false") ~= "false" then
         saveConfig("hideUIOnce", "false")
     else
         main_ui_lock = lock:add()
-        local last_layout = loadConfig("last_layout", "main")
+        local last_layout = last_layout or loadConfig("last_layout", "main")
         _G["show_" .. last_layout .. "_ui"]()
         if not wait(function() return not lock:exist(main_ui_lock) end, math.huge) then
             peaceExit()
