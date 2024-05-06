@@ -768,9 +768,10 @@ char_choose = function(char_name)
         end
     end
 
-    local last_char = {}
+    local last_char
     local char_found = false
     while not char_found do
+        ssleep(.1)
         local ret = 干员名ocr校正(ocrex("干员上"))
         log(ret)
         for i = 1, #ret do
@@ -794,7 +795,7 @@ char_choose = function(char_name)
             end
         end
         if char_found then break end
-        if ret[-1]["text"] == last_char then break else last_char = ret[-1]["text"] end
+        if ret[#ret]["text"] == last_char then break else last_char = ret[#ret]["text"] end
         swip_char() --仿照swip_inventory,没改坐标
     end
 end
@@ -805,19 +806,20 @@ raise.upgrade_char = function()
     if not wait(function()
             tap("进入升级页面")
             ssleep(.1)
-            if findOne("升级页面") then return true end
+            if findOne("干员升级页面max") then return true end
         end, 5) then
         log("当前阶段已满级")
         return true
     end
     if not wait(function()
             tap("干员升级页面max")
-            ssleep(.1)
-            if findOne("干员升级max确认") then return true end
+            tap("干员升级max确认")
+            if findOne("干员升级提升等级") then return true end
         end, 5) then
         log("经验书或者龙门币不足")
         return false
     end
+
     if appear("干员升级提升等级", 3) then
         ssleep(.3)
         tap("干员升级提升等级")
@@ -910,7 +912,7 @@ raise.elite_one_phase = function(material_need)
         log("未完成精英化")
         return false
     end
-    log(完成一次精英化)
+    log()
     return true
 end
 
@@ -1300,8 +1302,9 @@ swip_char = function(left)
         local x = scale(94)
         local y = scale(400)
         local y2 = scale(700)
-        local x2 = scale(1720)
-        local y3 = scale(700)
+        local x2 = scale(1720) --滑动6个干员距离
+        local x3 = scale(1720)
+        local y3 = scale(590)
         local slids = 50
         local slidd = 200
         local taps = slids + slidd + 150
@@ -1309,9 +1312,9 @@ swip_char = function(left)
         local downd = taps + 100
         duration = downd
         finger = {
-            { point = { { x, y }, { x, y2 } },   start = 0,     duration = downd },
-            { point = { { x2, y }, { x2, y3 } }, start = slids, duration = slidd },
-            { point = { { x2, y }, { x2, y } },  start = taps,  duration = tapd },
+            { point = { { x, y }, { x, y2 } },    start = 0,     duration = downd },
+            { point = { { x2, y }, { x2, y3 } },  start = slids, duration = slidd },
+            { point = { { x3, y3 }, { x3, y3 } }, start = taps,  duration = tapd },
         }
         delay = 250
     end
