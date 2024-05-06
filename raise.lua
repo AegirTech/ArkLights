@@ -832,6 +832,80 @@ raise.upgrade_char = function()
     return true
 end
 
+-- 买胶水
+raise.buy_32001 = function(numb)
+    path.跳转("采购中心")
+    if not wait(function()
+            if findOne("凭证交易所进入确认") then return true end
+            tap("凭证交易所进入")
+        end, 5) then
+        return
+    end
+    disappear("正在提交反馈至神经", network_timeout)
+    appear("绿票商店选中", 3)
+
+    -- DCBB0C
+    if not wait(function()
+            if findOne("红票商店选中") then
+                return true
+            end
+            tap("红票商店选中")
+            ssleep(.3)
+        end, 10) then
+        return
+    end
+    disappear("正在提交反馈至神经", network_timeout)
+    if not appear("红票商店面板", 1) then return end
+    ssleep(.5)
+    local p
+    for i = 0, 3 do
+        p = findOne("红票商店胶水")
+        log("胶水位置", p)
+        if p then
+            break
+        end
+        path.swip_ticket_shop()
+        ssleep(1.5)
+    end
+    if not p then return end
+
+    if not wait(function()
+            tap(p)
+            if findOne("购买物品面板") then
+                return true
+            end
+        end, 5) then
+    end
+    if findOne("凭证交易所进入") then
+        log("未能进入商品，大概是售空了吧~")
+        return
+    end
+    -- 点击购买
+    if not wait(function()
+            if findOne("购买物品面板", 3) then
+                for i = 1, numb - 1 do
+                    tap("交易所商品加")
+                    ssleep(0.5)
+                end
+                tap("采购商店支付")
+                -- tap("商店顶栏")
+            end
+            ssleep(1)
+            if findOne("凭证交易所进入") then return true end
+            if not findOne("购买物品面板") then return true end
+        end, 3) then
+    end
+    if findOne("购买物品面板", 3) then
+        log("购买失败，大抵是没钱了吧~")
+        return true
+    end
+    disappear("正在提交反馈至神经", network_timeout)
+    appearTap("获得物资", 3)
+    appear("红票商店面板", 5)
+    tap("返回")
+end
+
+
 -- 精英化操作一次
 raise.elite_one_phase = function(material_need)
     appear("干员档案", 2)
@@ -874,6 +948,10 @@ raise.elite_one_phase = function(material_need)
                     tap("芯片制造" .. k)
                     appear("芯片站", 3)
                     --todo胶水不够要去买
+                    raise.buy_32001(v)
+                    if not appear("制造站设施列表1", 2) then
+                        return
+                    end
                     for i = 1, v - 1 do
                         tap("制造站加")
                         ssleep(.2)
@@ -893,16 +971,21 @@ raise.elite_one_phase = function(material_need)
                         end, 5) then
                         return
                     end
-                    ssleep(.5)
+                    ssleep(.8)
+                    appear("制造站设施列表1", 2)
                     path.制造加速(true)
 
                     break
                 end
             end
             if not wait(function()
+                    if findOne("干员精英化页面") then return true end
                     tap("返回")
                     ssleep(.3)
-                    if findOne("干员精英化页面") then return true end
+                    if findOne("干员精英化芯片白") then
+                        tap("干员精英化芯片")
+                        ssleep(.3)
+                    end
                 end, 5) then
                 return
             end
