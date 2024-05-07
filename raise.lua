@@ -344,12 +344,18 @@ raise.generate_fight_plan = function(待养成干员, 养成计划)
     end
 end
 
-get_fight_plan = function(材料需求)
+
+---计算刷图计划与合成计划
+---@param material_need table {id:count}
+---@return table table 刷图计划
+---@return table final_synthesis_materials_result 合成计划{材料等级：{id：合成次数}}
+raise.get_fight_plan = function(material_need)
+    log(353, material_need)
     local final_materials_result = {}
     -- 存放需要合成的子材料 数据格式level:{id:count}
     local final_synthesis_materials_result = {}
 
-    for id, count in pairs(材料需求) do
+    for id, count in pairs(material_need) do
         -- 存放当前材料的子材料 数据格式id:count
         local current_fight_materials_result = {}
         --递归计算当前材料所需的子材料,收集到current_fight_materials_result
@@ -362,8 +368,7 @@ get_fight_plan = function(材料需求)
             final_materials_result[m_id] = final_materials_result[m_id] + m_count
         end
     end
-
-
+    log(final_materials_result)
     -- 将子材料转换成具体的刷图配置
     -- eg. {{hd-7*5,6-11*10},{hd-6*5,6-12*10}}
     -- 案例表示返回了两个材料对应的两组刷图副本,如果前面的没有代理,可尝试后面的,每个材料尝试分组内的关卡
@@ -372,12 +377,16 @@ end
 
 
 
--- 需要刷图的材料集合fight_materials_result
--- 合成路线计划集合 final_synthesis_materials_result
--- minLevel(默认蓝色等级)的材料,仅支持刷图获取,不支持合成
+---需要刷图的材料集合fight_materials_result
+--  final_synthesis_materials_result
+---@param item_id string 材料id
+---@param need_count number 需要的数量
+---@param minLevel number (默认蓝色等级)的材料,仅支持刷图获取,不支持合成
+---@param fight_materials_result table
+---@param final_synthesis_materials_result table 合成路线计划集合
 calc_fight_materials = function(item_id, need_count, minLevel, fight_materials_result, final_synthesis_materials_result)
     local current_materials_info = 高级材料2低级材料[item_id]
-
+    log(item_id, need_count, minLevel, fight_materials_result, final_synthesis_materials_result)
     -- 如果当前材料在材料合成关系表中不存在,直接返回,且设置一个error的标志位
     if not current_materials_info then
         fight_materials_result["error"] = true
@@ -740,14 +749,157 @@ raise.material_identify = function()
     -- 从x 945/1686  y=120 开始y++ 识别 22BBFF 减去一定x值得到区域初始坐标
 end
 
--- 向上滑动
-raise.swipe_up = function()
-
+-- 加工站配方滑动,一次滑动3个
+swip_formula = function(up)
+    local duration
+    local finger
+    local delay
+    if up then
+        local x1 = scale(1110)
+        local y1 = scale(159)
+        local y2 = scale(6000 / 720 * 1080)
+        duration = 400
+        finger = { { point = { { x1, y1 }, { x1, y2 } }, duration = duration } }
+        delay = 750
+    else
+        local x = scale(1200)
+        local y = scale(217)
+        local y2 = scale(1030)
+        local x2 = scale(800)
+        local x3 = scale(1110)
+        local y3 = scale(1030)
+        local slids = 50
+        local slidd = 200
+        local taps = slids + slidd + 150
+        local tapd = 200
+        local downd = taps + 100
+        duration = downd
+        finger = {
+            { point = { { x, y }, { x2, y } },    start = 0,     duration = downd },
+            { point = { { x, y2 }, { x3, y2 } },  start = slids, duration = slidd },
+            { point = { { x3, y3 }, { x3, y3 } }, start = taps,  duration = tapd },
+        }
+        delay = 250
+    end
+    log(JsonEncode(finger))
+    gesture(finger)
+    sleep(duration + delay)
 end
 
 -- 材料合成
-raise.material_make = function()
+raise.material_synthesis = function(id, count)
+    formula_choose(id)
+    local times = count // (24 / 2 ^ (i - 1))
+    log(times)
+    for j = 1, times do
+        raise.加工站选人()
+        tap("加工站最大")
+        ssleep(.3)
+        tap("开始加工")
+        if not appearTap("获得物资", 10) then
+            log("合成材料失败")
+            return false
+        end
+        ssleep(.2)
+    end
+    raise.加工站选人(id)
+    for i = 1, count % (24 / 2 ^ (i - 1)) - 1 do
+        tap("加工站加")
+        ssleep(.1)
+    end
+    ssleep(.1)
+    tap("开始加工")
+    if not appearTap("获得物资", 10) then
+        log("合成材料失败")
+        return false
+    end
+    ssleep(.2)
+    return true
+end
 
+-- 加工站选人 完善后移动到path
+-- todo根据材料id选人
+raise.加工站选人 = function()
+    if not appear("加工站", 2) then return end
+    if not wait(function()
+            if findOne("确认蓝") then return true end
+            tap("加工站换人")
+            ssleep(.3)
+        end, 3) then
+        return
+    end
+    if not wait(function()
+            if findOne("确认蓝") then return true end
+            tap("制造站进度")
+        end, 10) then
+        return
+    end
+    -- 清空选择
+    local start_time = time()
+    tap("干员选择列表1")
+    if not wait(function()
+            if findOne("干员选中") then
+                return true
+            end
+            if time() - start_time > 1000 then
+                tap("干员选择列表1")
+                start_time = time()
+            end
+            -- tap("清空选择")
+        end, 5) then
+        log(1037)
+        return
+    end
+
+    if not wait(function(reset_wait_start_time)
+            if findAny({ "加工站", "开始加工" }) then
+                return true
+            end
+            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+            tap("加工站确认蓝")
+            ssleep(.2)
+        end, 3) then
+        return
+    end
+end
+
+--选择配方
+formula_choose = function(id)
+    local level = 高级材料2低级材料[id]["level"]
+    if not appear("加工站选材料类", 1) then return end
+    if level < 2 then
+        if not wait(function()
+                if findOne("材料类品质升序") then return true end
+                tap("材料类品质升序")
+                ssleep(.3)
+            end, 3) then
+            return
+        end
+    else
+        if not wait(function()
+                if findOne("材料类品质降序") then return true end
+                tap("材料类品质升序")
+                ssleep(.3)
+            end, 3) then
+            return
+        end
+    end
+    --滑到最上面
+    swip_formula(true)
+    ssleep(.5)
+    for i = 1, 5 do
+        for j = 1, 6 do
+            if material_id2name(id) == ocro("配方名称列表" .. j) then
+                tap("配方名称列表" .. j)
+                return true
+            end
+        end
+
+        swip_formula()
+        log("滑动", i, "次")
+        ssleep(.3)
+    end
+    tap("返回")
 end
 
 -- 选择干员
@@ -903,7 +1055,7 @@ raise.buy_32001 = function(numb)
         end, 3) then
     end
     if findOne("购买物品面板", 3) then
-        log("购买失败，大抵是没钱了吧~")
+        log("胶水购买失败，大抵是没钱了吧~")
         return true
     end
     disappear("正在提交反馈至神经", network_timeout)
@@ -954,8 +1106,10 @@ raise.elite_one_phase = function(material_need)
 
                     tap("芯片制造" .. k)
                     appear("芯片站", 3)
-                    --todo胶水不够要去买
-                    raise.buy_32001(v)
+                    local numb_32001 = player_inventory_info["32001"] or 0
+                    if numb_32001 < v then
+                        raise.buy_32001(v - numb_32001)
+                    end
                     if not appear("制造站设施列表1", 2) then
                         return
                     end
@@ -995,18 +1149,18 @@ raise.elite_one_phase = function(material_need)
                 end, 5) then
                 return
             end
-            if findOne("干员精英化缺少材料") then return false end
         end
         if findOne("干员精英化材料红") then
-            tap("干员精英化材料")
+            tap("干员精英化材料1")
             ssleep(.3)
-            log("缺少材料")
+            appear("干员精英化材料白1", 2)
+            log("缺少材料，尝试合成")
             --滚动到最下面
             for i = 1, 3 do
                 gesture({
                     {
-                        point = { { scale(1456), scalse(913) },
-                            { scale(1456), scalse(480) },
+                        point = { { scale(1456), scale(913) },
+                            { scale(1456), scale(480) },
                         },
                         start = 0,
                         duration = 500,
@@ -1014,8 +1168,51 @@ raise.elite_one_phase = function(material_need)
                 })
             end
             ssleep(.3)
-            appear("干员精英化材料白", 2)
+            appear("干员精英化材料白1", 2)
+            local m_need = {}
+            for k, v in pairs(material_need) do
+                if #k == 5 then --去除芯片
+                    m_need[k] = v
+                end
+            end
+            log(m_need)
+            local fight_plan, synthesis_plan = raise.get_fight_plan(m_need)
+            log(synthesis_plan)
+            if not wait(function()
+                    if findOne("加工站") then return true end
+                    tap("干员精英化材料白1跳转")
+                end, 5) then
+                return
+            end
+            appear("加工站", 3)
+            if not wait(function()
+                    tap("加工站选择配方")
+                    if not findOne("加工站选基建类") then return true end
+                end, 5) then
+                return
+            end
+            if not wait(function()
+                    tap("加工站选材料类")
+                    if findOne("加工站选材料类") then return true end
+                end, 5) then
+                return
+            end
+            --由低到高合成
+            for i = 1, 4 do
+                if synthesis_plan[tostring(i)] then
+                    --合成
+                    for k, v in pairs(synthesis_plan[tostring(i)]) do
+                        if not raise.material_synthesis(k, v) then return false end
+                    end
+                end
+            end
+            tap("返回")
+            if appear("干员精英化材料白1", 3) then
+                tap("干员精英化材料1")
+                disappear("干员精英化材料白1", 1)
+            end
         end
+        if findOne("干员精英化缺少材料") then return false end
     end
     if not wait(function()
             tap("干员精英化页面")
@@ -1025,6 +1222,7 @@ raise.elite_one_phase = function(material_need)
         log("未完成精英化")
         return false
     end
+    -- todo 仓库减除消耗的材料
     return true
 end
 
@@ -1032,7 +1230,7 @@ end
 ---@param id string 干员id
 ---@param start_phase number 当前精英等级
 ---@param target_phase number 目标精英等级
----true 为精英化完成,继续后续培养计划 false 为未完成(缺少材料,需要等待芯片合成)
+---@return bool b true 为精英化完成,继续后续培养计划,false 为未完成(缺少材料,需要等待芯片合成)
 raise.elite_char = function(id, start_phase, target_phase)
     local name = char_id2name(id)
     log(name)
@@ -1536,7 +1734,7 @@ raise.auto_raise = function()
     raise.init()
     player_inventory_info = raise.inventory_identify()
     log(player_inventory_info)
-    --exit()
+
     for i = 1, #raise_plan do
         log(raise_plan[i])
         local id
