@@ -913,7 +913,7 @@ end
 -- 精英化操作一次
 raise.elite_one_phase = function(material_need)
     appear("干员档案", 2)
-    local p
+
     if not wait(function()
             tap("进入精英化页面")
             if findOne("干员精英化页面") then return true end
@@ -921,11 +921,11 @@ raise.elite_one_phase = function(material_need)
         log("当前精英等级已满")
         return true
     end
-    p = findOne("干员精英化缺少材料")
-    if p then
-        p = findOne("干员精英化芯片红")
-        if p then
+    if findOne("干员精英化缺少材料") then
+        if findOne("干员精英化芯片红") then
             tap("干员精英化芯片")
+            ssleep(.3)
+            log("缺少芯片,尝试合成")
             appear("干员精英化芯片白", 2)
             for k, v in pairs(material_need) do
                 if #k == 4 and k:sub(4, 4) == "3" then
@@ -978,7 +978,6 @@ raise.elite_one_phase = function(material_need)
                     ssleep(.8)
                     appear("制造站设施列表1", 2)
                     path.制造加速(true)
-
                     break
                 end
             end
@@ -994,6 +993,25 @@ raise.elite_one_phase = function(material_need)
                 return
             end
             if findOne("干员精英化缺少材料") then return false end
+        end
+        if findOne("干员精英化材料红") then
+            tap("干员精英化材料")
+            ssleep(.3)
+            log("缺少材料")
+            --滚动到最下面
+            for i = 1, 3 do
+                gesture({
+                    {
+                        point = { { scale(1456), scalse(913) },
+                            { scale(1456), scalse(480) },
+                        },
+                        start = 0,
+                        duration = 500,
+                    },
+                })
+            end
+            ssleep(.3)
+            appear("干员精英化材料白", 2)
         end
     end
     if not wait(function()
@@ -1016,8 +1034,8 @@ raise.elite_char = function(id, start_phase, target_phase)
     local name = char_id2name(id)
     log(name)
     if not char_choose(name) then
-        log("未找到干员", name)
-        return false
+        log("未找到干员", name, ",跳过")
+        return ture
     end
     for i = 1, target_phase - start_phase do
         if not raise.upgrade_char() then return end
@@ -1029,8 +1047,6 @@ raise.elite_char = function(id, start_phase, target_phase)
             if not raise.elite_one_phase() then return end
         else
             log(material_need)
-            --合成
-
             if not raise.elite_one_phase(material_need) then return end
         end
     end
