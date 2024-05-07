@@ -3630,7 +3630,7 @@ show_auto_ui = function()
 
     newRow(layout)
     addTextView(layout, "培养计划")
-    ui.addEditText(layout, "raise_plan_text", "")
+    ui.addEditText(layout, "raise_plan_text", "", 200, -1)
 
     newRow(layout)
     addTextView(layout, "官服请求Token")
@@ -3644,6 +3644,13 @@ show_auto_ui = function()
 
     newRow(layout)
     addButton(layout, nil, "仓库识别(未完成)", "raise_storage_dentify")
+    addButton(layout, nil, "自动培养",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='自动培养';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+
+    newRow(layout)
+    addTextView(layout, "悖论作业")
+    ui.addEditText(layout, "bl_text", "", -2, -1)
 
     newRow(layout)
     addTextView(layout, "--------------------自动作战相关--------------------")

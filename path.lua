@@ -8116,6 +8116,14 @@ path.悖论模拟 = function()
         tap("普通作战编队自定义排序关闭")
         appear("干员界面", 2)
     end
+    --测试用
+    if bl_text then
+        local status
+        status = pcall(JsonDecode, bl_text)
+        if status then
+            悖论模拟作业 = JsonDecode(bl_text)
+        end
+    end
     for i = 1, 8 do
         local bl = true
         while bl do
@@ -8456,6 +8464,10 @@ path.森空岛签到 = function()
         end
         return true
     end
+end
+
+path.自动培养 = function()
+    raise.auto_raise()
 end
 
 isPhoneNumber = function(str)

@@ -753,6 +753,9 @@ char_choose = function(char_name)
     local 干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
     path.跳转("干员")
     ssleep(.3)
+    --只跳转一次会有概率无反应,多加一次
+    path.跳转("干员")
+    ssleep(.3)
     if not findOne("干员等级降序") then
         tap("干员等级降序")
         appear("干员等级降序", 2)
@@ -763,7 +766,7 @@ char_choose = function(char_name)
             if not findOne("普通作战编队列表" .. i) then
                 tap("普通作战编队列表" .. i)
                 appear("普通作战编队列表" .. i)
-                sleep(200)
+                ssleep(.3)
             end
         end
     end
@@ -796,8 +799,9 @@ char_choose = function(char_name)
         end
         if char_found then break end
         if ret[#ret]["text"] == last_char then break else last_char = ret[#ret]["text"] end
-        swip_char() --仿照swip_inventory,没改坐标
+        swip_char()
     end
+    return true
 end
 
 -- 等级拉满一次
@@ -914,7 +918,7 @@ raise.elite_one_phase = function(material_need)
             tap("进入精英化页面")
             if findOne("干员精英化页面") then return true end
         end, 5) then
-        log("无法立即精英化")
+        log("当前精英等级已满")
         return true
     end
     p = findOne("干员精英化缺少材料")
@@ -1000,7 +1004,6 @@ raise.elite_one_phase = function(material_need)
         log("未完成精英化")
         return false
     end
-    log()
     return true
 end
 
@@ -1008,9 +1011,14 @@ end
 ---@param id string 干员id
 ---@param start_phase number 当前精英等级
 ---@param target_phase number 目标精英等级
+---true 为精英化完成,继续后续培养计划 false 为未完成(缺少材料,需要等待芯片合成)
 raise.elite_char = function(id, start_phase, target_phase)
     local name = char_id2name(id)
-    char_choose(name)
+    log(name)
+    if not char_choose(name) then
+        log("未找到干员", name)
+        return false
+    end
     for i = 1, target_phase - start_phase do
         if not raise.upgrade_char() then return end
         --计算材料是否够
@@ -1021,10 +1029,14 @@ raise.elite_char = function(id, start_phase, target_phase)
             if not raise.elite_one_phase() then return end
         else
             log(material_need)
-            raise.elite_one_phase(material_need)
             --合成
+
+            if not raise.elite_one_phase(material_need) then return end
         end
     end
+    log("精英化", target_phase, name, "已完成")
+    path.跳转("干员")
+    return true
 end
 
 -- 技能升级
@@ -1525,7 +1537,7 @@ raise.auto_raise = function()
                 if elite >= raise_plan[i]["elite"] then
                     log("已达到精英等级")
                 else
-                    raise.elite_char(id, elite, raise_plan[i]["elite"])
+                    if not raise.elite_char(id, elite, raise_plan[i]["elite"]) then return end
                 end
             end
             if raise_plan[i]["skill_master"] then
