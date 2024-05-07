@@ -789,11 +789,12 @@ end
 -- 材料合成
 raise.material_synthesis = function(id, count)
     formula_choose(id)
-    local times = count // (24 / 2 ^ (i - 1))
-    log(times)
+    local level = 高级材料2低级材料[id]["level"]
+    local times = count // (24 / 2 ^ (level - 1))
     for j = 1, times do
         raise.加工站选人()
-        tap("加工站最大")
+        if not appear("加工站", 2) then return false end
+        tap("加工站最多")
         ssleep(.3)
         tap("开始加工")
         if not appearTap("获得物资", 10) then
@@ -836,15 +837,13 @@ raise.加工站选人 = function()
     end
     -- 清空选择
     local start_time = time()
-    tap("干员选择列表1")
+    tap("干员选择列表2")
     if not wait(function()
             if findOne("干员选中") then
                 return true
             end
-            if time() - start_time > 1000 then
-                tap("干员选择列表1")
-                start_time = time()
-            end
+            tap("干员选择列表1")
+            ssleep(.1)
             -- tap("清空选择")
         end, 5) then
         log(1037)
@@ -890,13 +889,13 @@ formula_choose = function(id)
     for i = 1, 5 do
         for j = 1, 6 do
             if material_id2name(id) == ocro("配方名称列表" .. j) then
+                log(material_id2name(id), ocro("配方名称列表" .. j))
                 tap("配方名称列表" .. j)
                 return true
             end
         end
 
         swip_formula()
-        log("滑动", i, "次")
         ssleep(.3)
     end
     tap("返回")
@@ -1082,8 +1081,12 @@ raise.elite_one_phase = function(material_need)
             ssleep(.3)
             log("缺少芯片,尝试合成")
             appear("干员精英化芯片白", 2)
+
             for k, v in pairs(material_need) do
                 if #k == 4 and k:sub(4, 4) == "3" then
+                    --已有芯片
+                    local n = tonumber(ocro("干员精英化芯片数字")) or 0
+                    v = v - n
                     if not wait(function()
                             tap("干员精英化芯片白")
                             if findOne("制造站设施列表1") then return true end
@@ -1135,6 +1138,7 @@ raise.elite_one_phase = function(material_need)
                     ssleep(.8)
                     appear("制造站设施列表1", 2)
                     path.制造加速(true)
+                    ssleep(1)
                     break
                 end
             end
@@ -1187,7 +1191,7 @@ raise.elite_one_phase = function(material_need)
             appear("加工站", 3)
             if not wait(function()
                     tap("加工站选择配方")
-                    if not findOne("加工站选基建类") then return true end
+                    if not findOne("加工站") then return true end
                 end, 5) then
                 return
             end
@@ -1210,6 +1214,8 @@ raise.elite_one_phase = function(material_need)
             if appear("干员精英化材料白1", 3) then
                 tap("干员精英化材料1")
                 disappear("干员精英化材料白1", 1)
+            else
+                return false
             end
         end
         if findOne("干员精英化缺少材料") then return false end
@@ -1236,6 +1242,7 @@ raise.elite_char = function(id, start_phase, target_phase)
     log(name)
     if not char_choose(name) then
         log("未找到干员", name, ",跳过")
+        path.跳转("首页")
         return ture
     end
     for i = 1, target_phase - start_phase do
