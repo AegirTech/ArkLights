@@ -2,6 +2,28 @@
 --               自动化练干员
 -- ===========================================
 
+
+--[[培养计划json举例
+[                                   -- 数组
+    {
+        "skills": 7,                -- 通用技能升级
+        "name": "逻各斯"            -- 干员名字
+    },
+    {
+        "skill": 2,                 -- 几技能
+        "skill_master": 3,          -- 专精等级
+        "name": "维什戴尔"
+    },
+    {
+        "name": "号角",
+        "skills": 7,
+        "elite": 2                   -- 干员精英化等级
+    }
+]
+]]
+
+
+
 raise = {}
 
 --初始化高级材料与低级材料映射关系表
@@ -232,7 +254,7 @@ raise.char_skill_master_material = function(id, skill_id, target_level)
         t[v["id"]] = t[v["count"]]
     end
     return t
-
+end
 
 ---计算角色技能升级所需材料总量
 ---@param id number 干员ID
@@ -1877,7 +1899,7 @@ raise.auto_raise = function()
             elseif raise_plan[i]["skills"] then
                 log("升级技能")
                 local skill_level = raise.get_char_skill(id, 1)
-                if skill_level[1] >= (raise_plan[i]["skill_level"] or 7) then
+                if skill_level[1] >= (raise_plan[i]["skills"] or 7) then
                     log("技能已达到指定等级")
                 else
                     if not raise.upgrade_skill(id, skill_numb, raise_plan[i]["elite"]) then return end

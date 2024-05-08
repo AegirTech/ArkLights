@@ -3403,7 +3403,8 @@ show_extra_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "sand_no_delete", "不删1-3天存档从4-7天开始(手动过1-3天)", false)
-
+    newRow(layout)
+    addTextView(layout, "第1天打丰饶灌木林,跳过到第3天打敌袭,然后进第4天启动")
     newRow(layout)
     addTextView(layout, "调试选项")
     ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
