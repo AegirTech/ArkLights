@@ -224,10 +224,15 @@ raise.get_char_skill = function(id, skill_id_index)
 end
 
 -- 获取指定干员指定技能的升级材料
-raise.char_skill_upgrade_material = function(id, skill_id_index)
-    local skill_info = character_table[id]["skills"][skill_id_index]
-    return skill_info
-end
+---@return table t {id:count} 其中id 4位数字的是技能书
+raise.char_skill_master_material = function(id, skill_id, target_level)
+    local skill_info = character_table[id]["skills"][skill_id]["levelUpCostCond"][target_level]["levelUpCost"]
+    local t = {}
+    for _, v in ipairs(skill_info) do
+        t[v["id"]] = t[v["count"]]
+    end
+    return t
+
 
 ---计算角色技能升级所需材料总量
 ---@param id number 干员ID
@@ -1304,8 +1309,14 @@ raise.upgrade_skill = function(id, target_level)
         path.跳转("首页")
         return ture
     end
-    tap("进入技能升级页面")
-    disappear("干员档案")
+    if not wait(function()
+            tap("进入技能升级页面")
+            if not findOne("干员档案") then return true end
+            if findOne("干员技能升级页面") then return true end
+        end, 5) then
+        log("无法升级技能")
+        return true
+    end
     if not wait(function()
             if findOne("干员技能升级页面") then return true end
             if findOne("干员技能专精完成") then tap("干员技能专精完成") end
@@ -1329,18 +1340,23 @@ raise.upgrade_skill = function(id, target_level)
 end
 
 -- 技能专精
-raise.master_skill = function(id, skill_numb, target_level)
+raise.master_skill = function(id, skill_numb, start_level)
     local name = char_id2name(id)
     local level = raise.get_char_skill(id, skill_numb)
     if level[1] < 7 then return false end
-    local start_level = level[2]
     if not char_choose(name) then
         log("未找到干员", name, ",跳过")
         path.跳转("首页")
         return ture
     end
-    tap("进入技能升级页面")
-    disappear("干员档案")
+    if not wait(function()
+            tap("进入技能升级页面")
+            if not findOne("干员档案") then return true end
+            if findOne("干员技能升级页面") then return false end
+        end, 5) then
+        log("无法升级技能")
+        return true
+    end
     if not wait(function()
             if findOne("干员技能升级页面") then return false end
             if findOne("干员技能专精完成") then tap("干员技能专精完成") end
@@ -1349,6 +1365,14 @@ raise.master_skill = function(id, skill_numb, target_level)
         log("无法升级技能")
         return false
     end
+
+    --用prts自动编队逻辑选择要的干员和技能
+
+    --计算start_level+1的材料需求
+    local material_need = raise.char_skill_master_material(id, skill_numb, start_level + 1)
+    log(material_need)
+
+    --参考精英化进行专精,注意材料数量ocr并不准确,需要在专精页面再ocr一次材料数量
 end
 
 -- 仓库识别 测试
@@ -1848,12 +1872,12 @@ raise.auto_raise = function()
                 if skill_level[2] >= raise_plan[i]["skill_master"] then
                     log(skill_numb, "技能已达到专精等级")
                 else
-                    if not raise.master_skill(id, skill_numb, raise_plan[i]["elite"]) then return end
+                    if not raise.master_skill(id, skill_numb, skill_level[2] + 1) then return end
                 end
             elseif raise_plan[i]["skills"] then
                 log("升级技能")
                 local skill_level = raise.get_char_skill(id, 1)
-                if skill_level[1] >= (raise_plan[i]["skill_master"] or 7) then
+                if skill_level[1] >= (raise_plan[i]["skill_level"] or 7) then
                     log("技能已达到指定等级")
                 else
                     if not raise.upgrade_skill(id, skill_numb, raise_plan[i]["elite"]) then return end
