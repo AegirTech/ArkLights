@@ -214,6 +214,7 @@ end
 -- 获取指定干员ID的现有技能信息
 ---@return table {通用技能等级，专精等级}
 raise.get_char_skill = function(id, skill_id_index)
+    skill_id_index = skill_id_index or 1
     local common_skill_level = player_character_info[id]["mainSkillLvl"]
     if common_skill_level == 7 then
         return { 7, player_character_info[id]["skills"][skill_id_index]["specializeLevel"] }
@@ -1293,14 +1294,61 @@ end
 
 -- 技能升级
 raise.upgrade_skill = function(id, target_level)
+    --暂时写成默认到7级
     local name = char_id2name(id)
-    char_choose(name)
+    local level = raise.get_char_skill(id, 1)
+    local start_level = level[1]
+    log(level, start_level)
+    if not char_choose(name) then
+        log("未找到干员", name, ",跳过")
+        path.跳转("首页")
+        return ture
+    end
+    tap("进入技能升级页面")
+    disappear("干员档案")
+    if not wait(function()
+            if findOne("干员技能升级页面") then return true end
+            if findOne("干员技能专精完成") then tap("干员技能专精完成") end
+            if findOne("干员技能专精页面") then return false end
+        end, 10) then
+        log("无法升级技能")
+        return true
+    end
+    --todo计算材料
+    if not wait(function()
+            if findOne("干员技能升级页面") then tap("干员技能升级页面") end
+            if findOne("干员技能升级红") then return false end
+            if findOne("干员档案") then return true end
+        end, 10) then
+        log("无法升满技能")
+        return false
+    end
+    log("升级技能", target_phase, name, "到7级已完成")
+    path.跳转("干员")
+    return true
 end
 
 -- 技能专精
 raise.master_skill = function(id, skill_numb, target_level)
     local name = char_id2name(id)
-    char_choose(name)
+    local level = raise.get_char_skill(id, skill_numb)
+    if level[1] < 7 then return false end
+    local start_level = level[2]
+    if not char_choose(name) then
+        log("未找到干员", name, ",跳过")
+        path.跳转("首页")
+        return ture
+    end
+    tap("进入技能升级页面")
+    disappear("干员档案")
+    if not wait(function()
+            if findOne("干员技能升级页面") then return false end
+            if findOne("干员技能专精完成") then tap("干员技能专精完成") end
+            if findOne("干员技能专精页面") then return true end
+        end, 10) then
+        log("无法升级技能")
+        return false
+    end
 end
 
 -- 仓库识别 测试
@@ -1800,14 +1848,15 @@ raise.auto_raise = function()
                 if skill_level[2] >= raise_plan[i]["skill_master"] then
                     log(skill_numb, "技能已达到专精等级")
                 else
-                    raise.master_skill(id, skill_numb, raise_plan[i]["elite"])
+                    if not raise.master_skill(id, skill_numb, raise_plan[i]["elite"]) then return end
                 end
             elseif raise_plan[i]["skills"] then
-                local skill_level = raise.get_char_skill(id)
-                if skill_level[1] >= raise_plan[i]["skill_master"] then
+                log("升级技能")
+                local skill_level = raise.get_char_skill(id, 1)
+                if skill_level[1] >= (raise_plan[i]["skill_master"] or 7) then
                     log("技能已达到指定等级")
                 else
-                    raise.upgrade_skill(id, skill_numb, raise_plan[i]["elite"])
+                    if not raise.upgrade_skill(id, skill_numb, raise_plan[i]["elite"]) then return end
                 end
             end
         end
