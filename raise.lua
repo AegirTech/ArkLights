@@ -129,7 +129,7 @@ raise.init = function()
         item_name2id = {}
         for k, v in pairs(高级材料2低级材料) do
             local name = v["name"]
-            item_name2id[name] = k
+            item_name2id[name] = tostring(k)
         end
     end
     log(item_name2id)
@@ -191,6 +191,7 @@ end
 
 -- 材料名转换材料ID
 material_name2id = function(name)
+    --print(item_name2id)
     return item_name2id[name]
 end
 
@@ -348,9 +349,9 @@ end
 ---计算刷图计划与合成计划
 ---@param material_need table {id:count}
 ---@return table table 刷图计划
----@return table final_synthesis_materials_result 合成计划{材料等级：{id：合成次数}}
+---@return table final_synthesis_materials_result 存放需要合成的子材料 数据格式level:{id:count}
 raise.get_fight_plan = function(material_need)
-    log(353, material_need)
+    log(353, "需要材料列表", material_need)
     local final_materials_result = {}
     -- 存放需要合成的子材料 数据格式level:{id:count}
     local final_synthesis_materials_result = {}
@@ -386,7 +387,7 @@ end
 ---@param final_synthesis_materials_result table 合成路线计划集合
 calc_fight_materials = function(item_id, need_count, minLevel, fight_materials_result, final_synthesis_materials_result)
     local current_materials_info = 高级材料2低级材料[item_id]
-    log(item_id, need_count, minLevel, fight_materials_result, final_synthesis_materials_result)
+    log("材料", item_id, "需要数量", need_count, minLevel, fight_materials_result, final_synthesis_materials_result)
     -- 如果当前材料在材料合成关系表中不存在,直接返回,且设置一个error的标志位
     if not current_materials_info then
         fight_materials_result["error"] = true
@@ -394,12 +395,10 @@ calc_fight_materials = function(item_id, need_count, minLevel, fight_materials_r
     end
 
     -- todo 如果是龙门币或者狗粮,直接进行结算,转换成具体的刷图关卡及次数
-    local current_count = player_inventory_info[item_id]
-
-    if not current_count then current_count = 0 end
-
+    local current_count = player_inventory_info[item_id] or 0
 
     --扣减仓库材料,仓库足够直接返回,停止递归
+    log("现有数量", current_count)
     if current_count >= need_count then
         player_inventory_info[item_id] = player_inventory_info[item_id] - need_count
         return
@@ -788,23 +787,23 @@ end
 
 -- 材料合成
 raise.material_synthesis = function(id, count)
-    formula_choose(id)
+    if not formula_choose(id) then return end
     local level = 高级材料2低级材料[id]["level"]
     local times = count // (24 / 2 ^ (level - 1))
     for j = 1, times do
         raise.加工站选人()
-        if not appear("加工站", 2) then return false end
+        if not appear("加工站", 2) then return end
         tap("加工站最多")
         ssleep(.3)
         tap("开始加工")
         if not appearTap("获得物资", 10) then
             log("合成材料失败")
-            return false
+            return
         end
         ssleep(.2)
     end
     raise.加工站选人(id)
-    for i = 1, count % (24 / 2 ^ (i - 1)) - 1 do
+    for i = 1, count % (24 / 2 ^ (level - 1)) - 1 do
         tap("加工站加")
         ssleep(.1)
     end
@@ -812,7 +811,7 @@ raise.material_synthesis = function(id, count)
     tap("开始加工")
     if not appearTap("获得物资", 10) then
         log("合成材料失败")
-        return false
+        return
     end
     ssleep(.2)
     return true
@@ -838,17 +837,6 @@ raise.加工站选人 = function()
     -- 清空选择
     local start_time = time()
     tap("干员选择列表2")
-    if not wait(function()
-            if findOne("干员选中") then
-                return true
-            end
-            tap("干员选择列表1")
-            ssleep(.1)
-            -- tap("清空选择")
-        end, 5) then
-        log(1037)
-        return
-    end
 
     if not wait(function(reset_wait_start_time)
             if findAny({ "加工站", "开始加工" }) then
@@ -955,7 +943,7 @@ char_choose = function(char_name)
         if ret[#ret]["text"] == last_char then break else last_char = ret[#ret]["text"] end
         swip_char()
     end
-    return true
+    return false
 end
 
 -- 等级拉满一次
@@ -1065,7 +1053,10 @@ end
 
 
 -- 精英化操作一次
-raise.elite_one_phase = function(material_need)
+raise.elite_one_phase = function(materials_need)
+    --计算后需要的材料
+    local material_need = {}
+    if materials_need then material_need = raise.calculate_materials_need(materials_need) end
     appear("干员档案", 2)
 
     if not wait(function()
@@ -1085,7 +1076,7 @@ raise.elite_one_phase = function(material_need)
             for k, v in pairs(material_need) do
                 if #k == 4 and k:sub(4, 4) == "3" then
                     --已有芯片
-                    local n = tonumber(ocro("干员精英化芯片数字")) or 0
+                    local n = tonumber(ocro("干员精英化芯片数字") or 0)
                     v = v - n
                     if not wait(function()
                             tap("干员精英化芯片白")
@@ -1154,10 +1145,45 @@ raise.elite_one_phase = function(material_need)
                 return
             end
         end
-        if findOne("干员精英化材料红") then
+        local p1 = findOne("干员精英化材料1红")
+        local p2 = findOne("干员精英化材料2红")
+
+        if p2 then
+            local text = ocro("干员精英化材料2红范围")
+            log("材料2进度", text)
+            local number = tonumber(string.match(text, "%d+")) or 0
+            tap("干员精英化材料2")
+            ssleep(.3)
+            appear("干员精英化材料白2", 2)
+            local m2 = ocro("干员精英化材料白2名称")
+            log(m2, ocro("干员精英化材料白2数字"), material_name2id(m2))
+            if m2 and materials_need[material_name2id(m2)] then
+                material_need[material_name2id(m2)] = materials_need[material_name2id(m2)] - number +
+                    (player_inventory_info[material_name2id(m2)] or 0)
+            end
+            log(material_need)
+            tap("干员精英化材料2")
+            ssleep(.3)
+        end
+
+
+
+        if p1 or p2 then
+            local text = ocro("干员精英化材料1红范围")
+            log("材料1进度", text)
+            local number = tonumber(string.match(text, "%d+")) or 0
             tap("干员精英化材料1")
             ssleep(.3)
             appear("干员精英化材料白1", 2)
+            if p1 then
+                local m1 = ocro("干员精英化材料白1名称")
+                log(m1, ocro("干员精英化材料白1数字"), materials_need[material_name2id(m1)])
+                if m1 and materials_need[material_name2id(m1)] then
+                    material_need[material_name2id(m1)] = materials_need[material_name2id(m1)] - number +
+                        (player_inventory_info[material_name2id(m1)] or 0)
+                end
+                log(material_need)
+            end
             log("缺少材料，尝试合成")
             --滚动到最下面
             for i = 1, 3 do
@@ -1196,8 +1222,10 @@ raise.elite_one_phase = function(material_need)
                 return
             end
             if not wait(function()
-                    tap("加工站选材料类")
                     if findOne("加工站选材料类") then return true end
+                    tap("加工站选材料类")
+                    --给按钮动画回弹
+                    ssleep(.3)
                 end, 5) then
                 return
             end
@@ -1210,6 +1238,8 @@ raise.elite_one_phase = function(material_need)
                     end
                 end
             end
+            appear("加工站", 2)
+            ssleep(.2)
             tap("返回")
             if appear("干员精英化材料白1", 3) then
                 tap("干员精英化材料1")
@@ -1248,15 +1278,9 @@ raise.elite_char = function(id, start_phase, target_phase)
     for i = 1, target_phase - start_phase do
         if not raise.upgrade_char() then return end
         --计算材料是否够
-        local material_need = raise.calculate_materials_need(raise.get_char_elite_material(id, start_phase + i))
-
-        if table.isempty(material_need) then
-            --执行精英化
-            if not raise.elite_one_phase() then return end
-        else
-            log(material_need)
-            if not raise.elite_one_phase(material_need) then return end
-        end
+        local material_need = raise.get_char_elite_material(id, start_phase + i)
+        log(material_need)
+        if not raise.elite_one_phase(material_need) then return end
     end
     log("精英化", target_phase, name, "已完成")
     path.跳转("干员")
