@@ -809,7 +809,10 @@ raise.material_synthesis = function(id, count)
     end
     ssleep(.1)
     tap("开始加工")
-    if not appearTap("获得物资", 10) then
+    if appear("获得物资", 10) then
+        ssleep(.2)
+        tap("获得物资")
+    else
         log("合成材料失败")
         return
     end
@@ -927,7 +930,7 @@ char_choose = function(char_name)
                 break
             end
         end
-        if char_found then break end
+        if char_found then return true end
 
         ret = 干员名ocr校正(ocrex("干员下"))
         log(ret)
@@ -939,10 +942,11 @@ char_choose = function(char_name)
                 break
             end
         end
-        if char_found then break end
+        if char_found then return true end
         if ret[#ret]["text"] == last_char then break else last_char = ret[#ret]["text"] end
         swip_char()
     end
+    path.跳转("首页")
     return false
 end
 
