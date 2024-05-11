@@ -1443,90 +1443,74 @@ end
 
 芯片识别数据 = {
     先锋芯片组 = {
-        蓝色 = 1.40,
-        比例1 = 8.74,
-        比例2 = 8.78,
+        蓝色 = 1.39,
+        比例 = 2.34,
     },
     近卫芯片组 = {
         蓝色 = 1.40,
-        比例1 = 14.75,
-        比例2 = 29.00,
+        比例 = 2.35,
     },
 
     重装芯片组 = {
         蓝色 = 1.28,
-        比例1 = 7.05,
-        比例2 = 44.61,
+        比例 = 2.15,
     },
 
     狙击芯片组 = {
         蓝色 = 1.40,
-        比例1 = 13.71,
-        比例2 = 25.46,
+        比例 = 2.36,
     },
 
     术师芯片组 = {
         蓝色 = 1.44,
-        比例1 = 20.14,
-        比例2 = 46.84,
+        比例 = 2.433,
     },
 
     医疗芯片组 = {
         蓝色 = 1.31,
-        比例1 = 11.76,
-        比例2 = 61.09,
+        比例 = 2.182,
     },
 
     辅助芯片组 = {
         蓝色 = 1.24,
-        比例1 = 16.4,
-        比例2 = 37.13,
+        比例 = 2.070,
     },
 
     特种芯片组 = {
         蓝色 = 1.42,
-        比例1 = 24.8,
-        比例2 = 62.92,
+        比例 = 2.366,
     },
     先锋芯片 = {
         蓝色 = 0.39,
-        比例1 = 4.92,
-        比例2 = 23.60,
+        比例 = 0.476,
     },
     近卫芯片 = {
         蓝色 = 0.40,
-        比例1 = 6.71,
-        比例2 = 16.98,
+        比例 = 0.441,
     },
     重装芯片 = {
         蓝色 = 0.29,
-        比例1 = 6.23,
-        比例2 = 16.47,
+        比例 = 0.357,
     },
     狙击芯片 = {
         蓝色 = 0.40,
-        比例1 = 6.43,
-        比例2 = 28.25,
+        比例 = 0.486,
     },
     术师芯片 = {
         蓝色 = 0.43,
-        比例1 = 8.73,
-        比例2 = 23.23,
+        比例 = 0.492,
     },
     医疗芯片 = {
         蓝色 = 0.32,
-        比例1 = 8.02,
-        比例2 = 22.57,
+        比例 = 0.392,
     },
     辅助芯片 = {
         蓝色 = 0.28,
-        比例1 = 5.4,
-        比例2 = 22.52,
+        比例 = 0.344,
     },
     特种芯片 = {
         蓝色 = 0.33,
-        比例1 = 7.96,
-        比例2 = 26.93,
+        比例 = 0.461,
     },
 }
 
@@ -1544,12 +1528,45 @@ raise.test3 = function()
 
     log(sx, sy)
 
+    -- 计算两点之间的欧几里得距离
+    function distance(point1, point2)
+        local dx = point1[1] - point2[1]
+        local dy = point1[2] - point2[2]
+        return math.sqrt(dx * dx + dy * dy)
+    end
+
+    -- 计算给定数据点列表到参考点的距离，并返回距离列表
+    function distances_to_reference(data, reference_point)
+        local distances = {}
+        for _, point in ipairs(data) do
+            local dist = distance(point, reference_point)
+            table.insert(distances, dist)
+        end
+        return distances
+    end
+
+    -- 计算距离列表的均值
+    function mean_distance(distances)
+        local sum = 0
+        for _, dist in ipairs(distances) do
+            sum = sum + dist
+        end
+        return sum / #distances
+    end
+
     function getcent(area)
         local 绿色, 蓝色 = 0, 0, 0, 0
         local pixel, r, g, b = "", 0, 0, 0
-        -- local cx, cy = nil, nil
+        local cx, cy = nil, nil
         local 蓝色区域差值 = 0
+        local 白色平均距离 = 0
         local coordinates = {}
+        local 中心坐标x, 中心坐标y = (area[3] + area[1]) / 2, (area[4] + area[2]) / 2
+        local 总长 = area[3] - area[1]
+        local 总高 = area[4] - area[2]
+        local 白色坐标 = {}
+        local mx, my = 0, 0
+        log(总长, 总高)
         for y = area[2], area[4], 1 do
             iswhite, isdis = false, false
             for x = area[1], area[3], 1 do
@@ -1570,16 +1587,35 @@ raise.test3 = function()
                     绿色 = 绿色 + 1
                 elseif r > 2 and r < 70 and g > 70 and g < 138 and b > 95 and b < 150 then
                     蓝色 = 蓝色 + 1
+                    mx = x
+                    my = y
                     if not cx then
                         cx = x
                         cy = y
                     end
-                    蓝色区域差值 = 蓝色区域差值 + scale(x - cx) + scale(y - cy)
+                    蓝色区域差值 = 蓝色区域差值 + x - cx + y - cy
                     -- table.insert(coordinates, { x, y })
+                elseif cx and x - cx > 0 and y - cy > 0 and x - cx < 总长 * 0.6 and y - cy < 总高 * 0.6 then
+                    
+                    -- log("白色")
+                    -- log(x - cx > 0, y - cy > 0)
+                    -- log(x - cx < 总长 * 0.5, y - cy < 总高 * 0.5)
+                    -- 白色平均距离 = 白色平均距离 + scale(x - cx) + scale(y - cy)
+                    table.insert(白色坐标, { x, y })
+                    -- 白色
                 end
             end
         end
-        return 绿色, 蓝色, 蓝色区域差值
+
+        local ix, iy = (mx + cx) / 2, (my + cy) / 2
+        log("白色坐标", { ix, iy }, #白色坐标)
+        -- 计算距离列表
+        local distances = distances_to_reference(白色坐标, { ix, iy })
+
+        -- 计算平均距离
+        local mean_dist = mean_distance(distances)
+
+        return 绿色, 蓝色, 蓝色区域差值, 白色平均距离, mean_dist
     end
 
     -- area = { 1506, 449, 1752, 695 }
@@ -1588,30 +1624,30 @@ raise.test3 = function()
     -- table.insert(ms, { x, y, 蓝色, 比例 })
     log("start")
     local 区域集中度 = 0
+    local xxx = screen.height / 720
+    xxx = xxx ^ 3 + 0.4
     for x = 0, 5 do
         for y = 0, 2 do
             area = { sx + x * scale(236), sy + y * scale(280), sx + x * scale(236) + scale(210), sy + y * scale(280) +
             scale(210) }
             log(area)
             -- area = { 144, 304, 280, 451 }
-            area = { 140, 308, 280, 448 }
-            local 绿色, 蓝色, 蓝色区域差值 = getcent(area)
+            area = { 128, 506, 289, 638 }
+            local 绿色, 蓝色, 蓝色区域差值, 白色平均距离, mean_dist = getcent(area)
             local 比例 = 蓝色 / (scale(100) * scale(100))
             local 绿色比例 = 绿色 / (scale(100) * scale(100))
             --log(绿色, 蓝色, 比例, 离散距离)
             -- table.insert(ms, { x, y, 蓝色, 比例, 蓝色差 / 蓝色 })
             if 蓝色 > 0 then
-                区域集中度 = scale(蓝色区域差值) / (scale(2000) * scale(100))
-                区域集中度 = 区域集中度 * (1 / (1080 / screen.height) * (1080 / screen.height))
-                table.insert(ms, { x, y, 绿色, 蓝色, 比例, 区域集中度, 蓝色区域差值 })
+                -- 区域集中度 = 蓝色区域差值 / (scale(2000) * scale(100))
+                -- 区域集中度 = 区域集中度 * (1 / (1080 / screen.height) * (1080 / screen.height))
+                区域集中度 = 蓝色区域差值 / xxx
+                区域集中度 = 区域集中度 / 200000
+                table.insert(ms, { x, y, 绿色, 蓝色, 比例, 区域集中度, 蓝色区域差值, 白色平均距离, mean_dist })
             end
+            break
         end
         log("end")
-        releaseCapture()
-
-        swip_inventory()
-        ssleep(0.1)
-        page = page + 1
     end
     -- local 比例 = 白色 / (绿色 + 蓝色 + 白色)
     -- log(绿色, 蓝色, 白色, 比例)
@@ -1626,14 +1662,17 @@ raise.inventory_identify_xinpian = function(area)
         return
     end
 
+    local 中心坐标x, 中心坐标y = (area[3] + area[1]) / 2, (area[4] + area[2]) / 2
+    local 总长 = area[3] - area[1]
+    local 总宽 = area[4] - area[2]
+
     function getcent(area)
         local 绿色, 蓝色 = 0, 0, 0, 0
         local pixel, r, g, b = "", 0, 0, 0
-        -- local cx, cy = nil, nil
         local 蓝色区域差值 = 0
+        local 白色平均距离 = 0
         local coordinates = {}
         for y = area[2], area[4], 1 do
-            iswhite, isdis = false, false
             for x = area[1], area[3], 1 do
                 pixel = getPixelColor(x, y)
                 b, g, r = colorToRGB(pixel)
@@ -1644,54 +1683,45 @@ raise.inventory_identify_xinpian = function(area)
                     if not cx then
                         cx = x
                         cy = y
+                    else
+                        蓝色区域差值 = 蓝色区域差值 + scale(x - cx) + scale(y - cy)
                     end
-                    蓝色区域差值 = 蓝色区域差值 + scale(x - cx) + scale(y - cy)
+                elseif math.abs(中心坐标x - x) < 总长 * 0.25 and math.abs(中心坐标y - y) < 总宽 * 0.25 then
+                    -- 白色
+                    白色平均距离 = 白色平均距离 + scale(x - 中心坐标x) + scale(y - 中心坐标y)
                 end
             end
         end
-        return 绿色, 蓝色, 蓝色区域差值
+        return 绿色, 蓝色, 蓝色区域差值, 白色平均距离
     end
 
     log(area)
     local 区域集中度 = 0
     local 绿色, 蓝色, 蓝色区域差值 = getcent(area)
+    local ret_xp = ""
     if 蓝色 > 0 then
         local 比例 = 蓝色 / (scale(100) * scale(100))
         local 绿色比例 = 绿色 / (scale(100) * scale(100))
-        区域集中度 = scale(蓝色区域差值) / (scale(2000) * scale(100))
-        区域集中度 = 区域集中度 * (1 / (1080 / screen.height) * (1080 / screen.height))
+        local xxx = screen.height / 720
+        xxx = xxx ^ 3 + 0.4
+        区域集中度 = 蓝色区域差值 / xxx
+        区域集中度 = 区域集中度 / 200000
         log(绿色, 蓝色, 比例, 区域集中度, 蓝色区域差值)
-
+        local cmin = 10
         for k, v in pairs(芯片识别数据) do
             log("测试开始", k, v)
-            local cc = 0
-            if not int_is_in_range(比例, v["蓝色"], 0.07) then
-                goto continue
-            else
-                cc = cc + 1
-            end
-            if screen.height < 1080 then
-                log("720")
-                if not int_is_in_range(区域集中度, v["比例1"], 0.5) then
-                    goto continue
-                else
-                    cc = cc + 1
-                end
-            else
-                log("1080")
-                if not int_is_in_range(区域集中度, v["比例2"], 0.5) then
-                    goto continue
-                else
-                    cc = cc + 1
-                end
-            end
-            ::continue::
-
-            if cc == 3 then
-                log(k)
-                return k
+            蓝色差值 = math.abs(v["蓝色"] - 比例)
+            区域集中度差值 = math.abs(v["比例"] - 区域集中度)
+            log(蓝色差值, 区域集中度差值)
+            总差值 = 蓝色差值 + 区域集中度差值
+            if 总差值 < cmin then
+                cmin = 总差值
+                ret_xp = k
             end
         end
+    end
+    if ret_xp ~= "" then
+        return ret_xp
     end
     log(ms)
 end

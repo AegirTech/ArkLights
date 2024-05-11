@@ -1,4 +1,5 @@
-# https://raw.githubusercontent.com/yuanyan3060/Arknights-Bot-Resource/main/levels.json 
+# https://raw.githubusercontent.com/yuanyan3060/Arknights-Bot-Resource/main/levels.json
+import os
 from typing import List, Optional, Tuple
 from dataclasses import dataclass
 import json
@@ -6,7 +7,11 @@ import pathlib
 import math
 import zipfile
 import glob
+
+import np
 import requests
+
+
 
 
 @dataclass
@@ -27,24 +32,24 @@ class Level:
     view: List[List[int]] = None
 
     @classmethod
-    def from_json(cls, json_data: dict) -> 'Level':
-        raw_tiles = json_data['tiles']
+    def from_json(cls, json_data: dict) -> "Level":
+        raw_tiles = json_data["tiles"]
         tiles = []
         for row in raw_tiles:
             row_tiles = []
             for tile in row:
-                row_tiles.append(Tile(tile['heightType'], tile['buildableType']))
+                row_tiles.append(Tile(tile["heightType"], tile["buildableType"]))
             tiles.append(row_tiles)
 
         return cls(
-            stageId=json_data['stageId'],
-            code=json_data['code'],
-            levelId=json_data['levelId'],
-            name=json_data['name'],
-            height=json_data['height'],
-            width=json_data['width'],
+            stageId=json_data["stageId"],
+            code=json_data["code"],
+            levelId=json_data["levelId"],
+            name=json_data["name"],
+            height=json_data["height"],
+            width=json_data["width"],
             tiles=tiles,
-            view=json_data['view']
+            view=json_data["view"],
         )
 
     def get_width(self):
@@ -73,12 +78,14 @@ class Calc:
         self.width = width
         self.height = height
         self.ratio = height / width
-        self.matrix_p = np.array([
-            [self.ratio / math.tan(math.pi * 20 / 180), 0, 0, 0],
-            [0, 1 / math.tan(math.pi * 20 / 180), 0, 0],
-            [0, 0, -(1000 + 0.3) / (1000 - 0.3), -(1000 * 0.3 * 2) / (1000 - 0.3)],
-            [0, 0, -1, 0],
-        ])
+        self.matrix_p = np.array(
+            [
+                [self.ratio / math.tan(math.pi * 20 / 180), 0, 0, 0],
+                [0, 1 / math.tan(math.pi * 20 / 180), 0, 0],
+                [0, 0, -(1000 + 0.3) / (1000 - 0.3), -(1000 * 0.3 * 2) / (1000 - 0.3)],
+                [0, 0, -1, 0],
+            ]
+        )
 
     def adapter(self) -> Tuple[float, float]:
         fromRatio = 9 / 16
@@ -90,7 +97,9 @@ class Calc:
 
         return -1.4 * t, -2.8 * t
 
-    def run(self, code: str = "", name: str = "", side: bool = False) -> List[List[Tuple[Tile, Tuple[int, int]]]]:
+    def run(
+            self, code: str = "", name: str = "", side: bool = False
+    ) -> List[List[Tuple[Tile, Tuple[int, int]]]]:
         """
         :param code: 关卡代号 例如:0-1 1-7
         :param name: 关卡名称 例如:与虫为伴 code和name中选填一个，一般情况code更方便，但是肉鸽关卡不能用code确定
@@ -111,24 +120,30 @@ class Calc:
         adapter_y, adapter_z = self.adapter()
         y += adapter_y
         z += adapter_z
-        raw = np.array([
-            [1, 0, 0, -x],
-            [0, 1, 0, -y],
-            [0, 0, 1, -z],
-            [0, 0, 0, 1],
-        ])
-        matrix_x = np.array([
-            [1, 0, 0, 0],
-            [0, math.cos(math.pi * 30 / 180), -math.sin(math.pi * 30 / 180), 0],
-            [0, -math.sin(math.pi * 30 / 180), -math.cos(math.pi * 30 / 180), 0],
-            [0, 0, 0, 1],
-        ])
-        matrix_y = np.array([
-            [math.cos(math.pi * 10 / 180), 0, math.sin(math.pi * 10 / 180), 0],
-            [0, 1, 0, 0],
-            [-math.sin(math.pi * 10 / 180), 0, math.cos(math.pi * 10 / 180), 0],
-            [0, 0, 0, 1],
-        ])
+        raw = np.array(
+            [
+                [1, 0, 0, -x],
+                [0, 1, 0, -y],
+                [0, 0, 1, -z],
+                [0, 0, 0, 1],
+            ]
+        )
+        matrix_x = np.array(
+            [
+                [1, 0, 0, 0],
+                [0, math.cos(math.pi * 30 / 180), -math.sin(math.pi * 30 / 180), 0],
+                [0, -math.sin(math.pi * 30 / 180), -math.cos(math.pi * 30 / 180), 0],
+                [0, 0, 0, 1],
+            ]
+        )
+        matrix_y = np.array(
+            [
+                [math.cos(math.pi * 10 / 180), 0, math.sin(math.pi * 10 / 180), 0],
+                [0, 1, 0, 0],
+                [-math.sin(math.pi * 10 / 180), 0, math.cos(math.pi * 10 / 180), 0],
+                [0, 0, 0, 1],
+            ]
+        )
 
         if side:
             matrix = np.dot(matrix_x, matrix_y)
@@ -143,8 +158,17 @@ class Calc:
             for x in range(w):
                 tile = level.get_tile(y, x)
                 np.array([x, y, z, 1])
-                p_x, p_y, p_z, p_w = np.dot(matrix,
-                                            np.array([(x - (w - 1) / 2), ((h - 1) / 2) - y, tile.heightType * -0.4, 1]))
+                p_x, p_y, p_z, p_w = np.dot(
+                    matrix,
+                    np.array(
+                        [
+                            (x - (w - 1) / 2),
+                            ((h - 1) / 2) - y,
+                            tile.heightType * -0.4,
+                            1,
+                        ]
+                    ),
+                )
                 p_x = (1 + p_x / p_w) / 2
                 p_y = (1 + p_y / p_w) / 2
                 center = int(p_x * self.width), int((1 - p_y) * self.height)
@@ -169,33 +193,49 @@ if response.status_code == 200:
         levels.append(Level.from_json(data))
         if data["name"] == None:
             continue
-        elif data["name"].startswith('\t'):
-            data["name"] = data["name"].lstrip('\t')
+        elif data["name"].startswith("\t"):
+            data["name"] = data["name"].lstrip("\t")
             # print(data["name"], data["code"])
         maptype = 1
-        if data["stageId"].startswith('camp'):
+        if data["stageId"].startswith("camp"):
             maptype = 2  # 剿灭
-        elif data["stageId"].startswith('lt'):
+        elif data["stageId"].startswith("lt"):
             maptype = 3  # 保全
         elif "roguelike" in data["levelId"]:
             maptype = 4  # 肉鸽
-        elif data["stageId"].startswith('mem'):
+        elif data["stageId"].startswith("mem"):
             maptype = 5  # 悖论模拟
         trainmap = 0
         if "TR-" in data["code"]:
             trainmap = 1
-        coordinate = [calc.run(code=data["code"], name=data["name"], side=False),
-                      calc.run(code=data["code"], name=data["name"], side=True), maptype, trainmap]
+        coordinate = [
+            calc.run(code=data["code"], name=data["name"], side=False),
+            calc.run(code=data["code"], name=data["name"], side=True),
+            maptype,
+            trainmap,
+        ]
         # print (coordinate)
 
-        fw = open(map_path / (data["name"] + ".json"), 'w', encoding="UTF-8")  # 按地图名+保存坐标到txt
-        fw.write(json.dumps(coordinate, sort_keys=True, indent=4, separators=(',', ': ')))  # 将字符串写入文件中
+        fw = open(
+            map_path / (data["name"] + ".json"), "w", encoding="UTF-8"
+        )  # 按地图名+保存坐标到txt
+        fw.write(
+            json.dumps(coordinate, sort_keys=True, indent=4, separators=(",", ": "))
+        )  # 将字符串写入文件中
 
-        fw = open(map_path / (data["code"] + ".json"), 'w', encoding="UTF-8")  # 按地图代号+保存坐标到txt
-        fw.write(json.dumps(coordinate, sort_keys=True, indent=4, separators=(',', ': ')))  # 将字符串写入文件中
+        fw = open(
+            map_path / (data["code"] + ".json"), "w", encoding="UTF-8"
+        )  # 按地图代号+保存坐标到txt
+        fw.write(
+            json.dumps(coordinate, sort_keys=True, indent=4, separators=(",", ": "))
+        )  # 将字符串写入文件中
 
-        fw = open(map_path / (data["stageId"] + ".json"), 'w', encoding="UTF-8")  # 按地图代号+保存坐标到txt
-        fw.write(json.dumps(coordinate, sort_keys=True, indent=4, separators=(',', ': ')))  # 将字符串写入文件中
+        fw = open(
+            map_path / (data["stageId"] + ".json"), "w", encoding="UTF-8"
+        )  # 按地图代号+保存坐标到txt
+        fw.write(
+            json.dumps(coordinate, sort_keys=True, indent=4, separators=(",", ": "))
+        )  # 将字符串写入文件中
 else:
     print("无法获取数据。错误代码:", response.status_code)
 
@@ -236,10 +276,11 @@ with open(levels_path, encoding="UTF-8") as fp:
         fw.write(json.dumps(coordinate, sort_keys=True, indent=4, separators=(',', ': ')))  # 将字符串写入文件中
 """
 
+
 # 将json文件压缩到maps.zip用于添加到速通资源
 def zip_files(file_folder, output_path):
-    zipf = zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED)
-    files = glob.glob(str(file_folder / '*.json'))
+    zipf = zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED)
+    files = glob.glob(str(file_folder / "*.json"))
     for file in files:
         zipf.write(file, arcname=pathlib.Path(file).name)
     zipf.close()
@@ -247,10 +288,19 @@ def zip_files(file_folder, output_path):
 
 zip_files(map_path, map_path.parent / "maps.zip")
 
-'''
+output_path = os.path.join(map_path.parent, "maps.zip")
+upload_url = "https://arktoken.enlysure.com:21999/upload_ark_file"
+params = {
+    "verify": "arklights",
+}
+file = {"file": open(output_path, "rb")}
+ret = requests.post(upload_url, params=params, files=file,timeout=500)
+print(ret.status_code, ret.text)
+
+"""
 if __name__ == "__main__":
     calc = Calc(1920, 1080)#屏幕分辨率
     code = "CE-6"    
     print( json.dumps(calc.run(code, side=False)))    
     print( json.dumps(calc.run(code, side=True))) 
-'''
+"""
