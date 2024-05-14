@@ -106,12 +106,17 @@ Tales_within_the_sand.重置地图位置 = function()
     if not wait(function()
             if findOne("生息底栏烹饪按钮") then return true end
             if findOne("沙洲遗闻开启今日") then
-                tap("沙洲遗闻开启今日")
+                if not wait(function()
+                        tap("沙洲遗闻开启今日")
+                        if not findOne("沙洲遗闻开启今日") then return true end
+                    end, 7) then
+                end
                 ssleep(.1)
             end
             tap("生息演算主页进入")
             ssleep(0.3)
-        end, 6) then
+        end, 10) then
+        return
     end
     log("重置地图位置结束")
 end
@@ -280,7 +285,7 @@ Tales_within_the_sand.回到三天前存档 = function()
                         if not findOne("沙洲遗闻开启今日") then return true end
                         tap("沙洲遗闻开启今日")
                         ssleep(.1)
-                    end, 5) then
+                    end, 7) then
                 end
                 return true
             end
@@ -783,9 +788,12 @@ Tales_within_the_sand.下一天 = function()
             if findOne("生息演算完成生存周期") then tap("沙洲遗闻开启今日") end
             appearTap("沙洲遗闻开启今日", .1)
             if findOne("沙洲遗闻开启今日") then
-                ssleep(.3)
-                tap("沙洲遗闻开启今日")
-                return true
+                if not wait(function()
+                        tap("沙洲遗闻开启今日")
+                        if not findOne("沙洲遗闻开启今日") then return true end
+                    end, 7) then
+                    return false
+                end
             end
             if findOne("沙洲遗闻基地产出") then
                 if not wait(function()
