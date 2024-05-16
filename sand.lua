@@ -259,7 +259,17 @@ Tales_within_the_sand.回到三天前存档 = function()
         tap("生息演算主页进入")
     end
     if not appear("生息底栏烹饪按钮", 10) then
-        return 沙洲遗闻()
+        if findOne("沙洲遗闻开启今日") then
+            if not wait(function()
+                    if not findOne("沙洲遗闻开启今日") then return true end
+                    tap("沙洲遗闻开启今日")
+                    ssleep(.1)
+                end, 7) then
+            end
+            return 沙洲遗闻()
+        else
+            return 沙洲遗闻()
+        end
     end
     if not wait(function()
             if not findOne("生息底栏弹出页面") then
@@ -306,25 +316,17 @@ Tales_within_the_sand.检查代币数量 = function()
         return false
     end
     local nx = 0
-    local handle = createOcr()
-    if handle ~= nil then
-        local text = ocrTextEx(handle, point["生息演算代币范围"][1],
-            point["生息演算代币范围"][2],
-            point["生息演算代币范围"][3],
-            point["生息演算代币范围"][4])
-        if text ~= nil then
-            text = text:gsub(" ", "")
-            text = text:gsub("O", "0")
-            text = text:gsub("l", "1")
-            nx = str2int(text:match("%d+"))
-            log("识别结果：" .. text)
-            log("匹配结果：" .. nx)
-        else
-            x = -1
-            return false
-        end
-        releaseOcr(handle)
+    local text = ocro("生息演算代币范围")
+
+    if text ~= nil then
+        text = text:gsub(" ", "")
+        text = text:gsub("O", "0")
+        text = text:gsub("l", "1")
+        nx = str2int(text:match("%d+"))
+        log("识别结果：" .. text)
+        log("匹配结果：" .. nx)
     else
+        x = -1
         return false
     end
 
