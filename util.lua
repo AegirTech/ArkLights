@@ -3663,30 +3663,58 @@ show_auto_ui = function()
     ui.show(layout, false)
 end
 
+auto_login_account_action = function(pre)
+    if pre then
+        if login_account_idx == 1 then
+            login_account_idx = multi_account_num
+        else
+            login_account_idx = login_account_idx - 1
+        end
+    else
+        if login_account_idx == multi_account_num then
+            login_account_idx = 1
+        else
+            login_account_idx = login_account_idx + 1
+        end
+    end
+
+    if account_map[login_account_idx] == nil then
+        ui.setTextView("auto_login_number", tostring(login_account_idx))
+        ui.setTextView("auto_login_account_server", "此序号账户为空")
+    end
+    ui.setTextView("auto_login_number", tostring(login_account_idx))
+    local server_text = account_map[login_account_idx].server == 0 and "官服" or "B服"
+    local cur_username = account_map[login_account_idx].username
+    ui.setTextView("auto_login_account_server", server_text .. " 账号：" .. cur_username)
+end
+
 show_auto_login_ui = function()
     local layout = "auto_login"
     ui.newLayout(layout, ui_page_width, -2)
     ui.setTitleText(layout, "切号小助手")
 
     newRow(layout)
-    addButton(layout, nil, "上一个", "auto_login_pre")
-    ui.addEditText(layout, "auto_login_number", "")
-    addButton(layout, nil, "下一个", "auto_login_next")
+    addButton(layout, nil, "上一个", "auto_login_account_action(true)")
+    addTextView(layout, tostring(login_account_idx), "auto_login_number")
+    addButton(layout, nil, "下一个", "auto_login_account_action(false)")
 
     newRow(layout)
-    local server_text = server == 0 and "官服" or "B服"
-    cur_username = username or ""
-    addTextView(layout, server_text .. " 账号：" .. cur_username)
+    local server_text = account_map[login_account_idx].server == 0 and "官服" or "B服"
+    local cur_username = account_map[login_account_idx].username
+    addTextView(layout, server_text .. " 账号：" .. cur_username, "auto_login_account_server")
 
     newRow(layout)
     addButton(layout, nil, "返回",
         make_jump_ui_command(layout, loadConfig("last_layout", "multi_account")),
         nil, nil)
+    addButton(layout, nil, "确认", make_jump_ui_command(layout, nil, "lock:remove(main_ui_lock)"), nil, nil)
     addButton(layout, nil, "退出", make_jump_ui_command(layout, nil, "peaceExit()"), nil, nil)
-
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
+
+    ui.setTextView("auto_login_number", tostring(login_account_idx))
+    ui.setTextView("auto_login_account_server", server_text .. " 账号：" .. cur_username)
 end
 
 jump_readme = function()
