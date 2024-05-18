@@ -4564,7 +4564,10 @@ showUI = function(last_layout)
         main_ui_lock = lock:add()
         local last_layout = last_layout or loadConfig("last_layout", "main")
         _G["show_" .. last_layout .. "_ui"]()
-        if not wait(function() return not lock:exist(main_ui_lock) end, math.huge) then
+        if not wait(function()
+                sleep(300)
+                return not lock:exist(main_ui_lock)
+            end, math.huge) then
             peaceExit()
         end
     end
