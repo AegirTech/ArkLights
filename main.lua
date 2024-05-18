@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "05.18 01:17"
+release_date = "05.19 00:31"
 update_announcement = '最近更新：【隐秘战线】导航问题，主线活动商店与领取小样'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -255,50 +255,8 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
     multi_account_enable and multi_account_only_login then
     -- 仅上号模式
     log("仅上号模式")
-    multi_account_choice = multi_account_choice:commonmap()
-    local temp_choice_pos = multi_account_choice:find('#')
-    if temp_choice_pos then
-        multi_account_config_remove_once_choice()
-        multi_account_choice = multi_account_choice:sub(temp_choice_pos + 1,
-            #multi_account_choice)
-    end
-    log("multi_account_choice", multi_account_choice)
 
-    multi_account_choice = expand_number_config(multi_account_choice)
-
-    account_map = {}
-    for idx, i in pairs(multi_account_choice) do
-        multi_account_choice_idx = idx
-        account_idx = i
-        -- log("type(i)",type(i))
-        -- log('_G["username" .. i]',_G["username" .. i])
-        username = (_G["username" .. i] or ''):map({
-            ["＃"] = "#",
-            ["\n"] = "",
-            [" "] = "",
-            ["　"] = "",
-        })
-        password = (_G["password" .. i] or ''):map({
-            ["\n"] = "",
-            [" "] = "",
-            ["　"] = "",
-        })
-        server = _G["server" .. i] or 0
-
-        if username:find("#") then
-            usernote = username:sub(username:find('#') + 1, #username):trim()
-            username = username:sub(1, username:find('#') - 1):trim()
-        end
-
-        if #username > 0 and #password > 0 then
-            username = username:trim()
-            password = password:trim()
-            table.insert(account_map, { username = username, password = password, server = server, idx = i })
-        end
-    end
-    log(account_map)
-
-    login_account_idx = 1
+    auto_login_init()
 
     showUI("auto_login")
 
@@ -345,10 +303,11 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
         end
         run(job)
         log("监控到游戏已经退出")
-        login_account_idx = login_account_idx + 1
+        -- if auto_login_add then
+        --     login_account_idx = login_account_idx + 1
+        -- end
         saveConfig("hideUIOnce", "false")
         showUI("auto_login")
-        -- show_auto_login_ui()
     end
 elseif not crontab_enable_only then
     -- 单帐号模式
