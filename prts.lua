@@ -10,15 +10,15 @@ fetchMaps = function()
     --print(extract_path)
     -- extractAssets("main.rc", getWorkPath(), "maps.zip")
     local url = "https://arktoken.enlysure.com:21999/get_ark_file?name=maps.zip&verify=arklights"
-    local res, code = httpGet(url, 5)
-    log(ret, code)
+    local ret, code = httpGet(url, 5)
+    -- log(ret, code)
     if code == 200 then
-        local data = JsonDecode(res)
+        local data = JsonDecode(ret)
         local download_url = get(data, 'url')
         local file_md5 = get(data, 'md5')
         local lr_md5 = fileMD5(path)
-        log(file_md5, file_md5, download_url)
         if lr_md5 ~= file_md5 then
+            log(file_md5, file_md5, download_url)
             downloadFile(download_url, path)
             unZip(path, extract_path)
         end

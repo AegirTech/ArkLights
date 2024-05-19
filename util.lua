@@ -2616,18 +2616,59 @@ clean_table = function(t, idx, bad)
     return ans, idx
 end
 
+download_from_alist = function(file_name, path)
+    if dev_mode then return end
+    local path = path or getWorkPath()
+    path = path .. '/' .. file_name
+    local url = "https://arktoken.enlysure.com:21999/get_ark_file?name=" .. file_name .. "&verify=arklights"
+    local ret, code = httpGet(url, 10)
+    -- log(ret, code)
+    if code == 200 then
+        local data = JsonDecode(ret)
+        local download_url = get(data, 'url')
+        local file_md5 = get(data, 'md5')
+        local local_md5 = fileMD5(path)
+        if local_md5 ~= file_md5 then
+            log(file_name, path, download_url)
+            downloadFile(download_url, path)
+            if fileMD5(path) == file_md5 then
+                return true
+            end
+        end
+    end
+end
+
 unpacking_library = function()
     if root_mode then
         if use_system_library then
             _G.sqlite3path = "sqlite3"
             _G.curlpath = "curl"
         else
+            -- mkdir(getWorkPath() .. "/assets")
+            -- extractAssets("sqlite.rc", getWorkPath() .. "/assets")
+            -- _G.curlpath = "curl"
+
+            --sqlite3
             mkdir(getWorkPath() .. "/assets")
-            extractAssets("sqlite.rc", getWorkPath() .. "/assets")
-            exec(string.format([[su root sh -c "cp '%s/assets/sqlite3.2' '/data/local/tmp/sqlite3'"]], getWorkPath()))
-            setFilePremission("/data/local/tmp/sqlite3", 777)
+            local ret = download_from_alist("sqlite3", getWorkPath() .. "/assets")
+            if ret then
+                exec(string.format([[su root sh -c "cp '%s/assets/sqlite3' '/data/local/tmp/sqlite3'"]], getWorkPath()))
+                setFilePremission("/data/local/tmp/sqlite3", 777)
+            end
             _G.sqlite3path = "/data/local/tmp/sqlite3"
-            _G.curlpath = "curl"
+
+            local curl_file = "curl_" .. get_cpu_arch()
+            curl_file = curl_file:map({
+                ["\n"] = "",
+                [" "] = "",
+                ["　"] = "",
+            })
+            local ret = download_from_alist(curl_file, getWorkPath() .. "/assets")
+            if ret then
+                exec(string.format([[su root sh -c "cp '%s/assets/%s' '/data/local/tmp/curl'"]], getWorkPath(), curl_file))
+                setFilePremission("/data/local/tmp/curl", 777)
+            end
+            _G.curlpath = "/data/local/tmp/curl"
         end
     end
 end
