@@ -8496,3 +8496,138 @@ path.游戏监控 = function()
     setControlBar()
     return true
 end
+
+path.促融共竞 = function()
+    if extra_crgj_select == 1 then
+        never_end_wrapper(path.促融共竞房主开始())
+    elseif extra_crgj_select == 0 then
+        path.跳转("首页")
+        tap("面板活动")
+        appear("促融共竞_组队参赛", 10)
+        tap("促融共竞_组队参赛")
+        disappear("促融共竞_组队参赛", 10)
+        never_end_wrapper(path.促融共竞参与者开始())
+    end
+end
+
+path.促融共竞参与者开始 = function()
+    local 促融共竞 = {
+        促融共竞_加入 = function()
+            tap("促融共竞_加入")
+            if not wait(function()
+                    wait(function() input("促融共竞_输入框", extra_crgj_room) end, 1)
+                    log(110)
+                    tap("促融共竞_输入确认")
+                    ssleep(0.5)
+                    if findOne("促融共竞_搜索加入") then
+                        if not wait(function()
+                                tap("促融共竞_搜索加入")
+                                disappear("促融共竞_搜索加入", 1)
+                                if not findOne("促融共竞_搜索加入") then return true end
+                            end, 10) then
+                        end
+                    end
+                    if not findOne("促融共竞_搜索加入") then return true end
+                end, 15) then
+                return
+            end
+        end,
+        促融共竞_准备参赛 = function()
+            tap("促融共竞_准备参赛")
+            disappear("促融共竞_准备参赛", 5)
+        end,
+        促融共竞_确认参赛 = function()
+            tap("促融共竞_确认参赛")
+            disappear("促融共竞_确认参赛", 5)
+        end,
+        促融共竞_下一步 = function()
+            tap("促融共竞_下一步")
+            disappear("促融共竞_下一步", 5)
+        end,
+        促融共竞_准备就绪 = function()
+            tap("促融共竞_准备就绪")
+            disappear("促融共竞_准备就绪", 5)
+        end,
+        促融共竞_比赛结束页面 = function()
+            ssleep(1)
+            tap("促融共竞_比赛再来一局")
+            appear("促融共竞_等待选择地图", 10)
+        end,
+        促融共竞_比赛结束下一步 = function()
+            tap("促融共竞_比赛结束下一步")
+            disappear("促融共竞_比赛结束下一步", 5)
+        end,
+        促融共竞_关卡内部顶部标识 = function()
+            if findOne("促融共竞_二倍速开启") then return end
+            if not wait(function()
+                    if findOne("促融共竞_二倍速开启") then return end
+                    if findOne("促融共竞_二倍速未开启") then
+                        tap("促融共竞_二倍速")
+                    end
+                end, 5) then
+            end
+            ssleep(3)
+        end,
+    }
+    log("促融共竞参与者开始")
+    auto(促融共竞, nil, 0, 60 * 15, false)
+end
+
+path.促融共竞房主开始 = function()
+    local 促融共竞 = {
+        促融共竞_选择项目 = function()
+            tap("促融共竞_选择项目")
+            appear("促融共竞_选择项目页面", 5)
+            if not wait(function()
+                    tap("促融共竞_高级赛")
+                    if getColor(point["促融共竞_高级赛"][1], point["促融共竞_高级赛"][2]) == "EEEEEE" then
+                        tap("促融共竞_IGEX5")
+                        appear("促融共竞_等待选择地图")
+                    end
+                end, 5) then
+            end
+        end,
+        促融共竞_前往比赛 = function()
+            tap("促融共竞_前往比赛")
+            disappear("促融共竞_前往比赛", 5)
+        end,
+        促融共竞_准备参赛 = function()
+            tap("促融共竞_准备参赛")
+            disappear("促融共竞_准备参赛", 5)
+        end,
+        促融共竞_确认参赛 = function()
+            tap("促融共竞_确认参赛")
+            disappear("促融共竞_确认参赛", 5)
+        end,
+        促融共竞_下一步 = function()
+            tap("促融共竞_下一步")
+            disappear("促融共竞_下一步", 5)
+        end,
+        促融共竞_准备就绪 = function()
+            tap("促融共竞_准备就绪")
+            disappear("促融共竞_准备就绪", 5)
+        end,
+        促融共竞_比赛结束页面 = function()
+            ssleep(1)
+            tap("促融共竞_比赛再来一局")
+            appear("促融共竞_等待选择地图", 10)
+        end,
+        促融共竞_比赛结束下一步 = function()
+            tap("促融共竞_比赛结束下一步")
+            disappear("促融共竞_比赛结束下一步", 5)
+        end,
+        促融共竞_关卡内部顶部标识 = function()
+            if findOne("促融共竞_二倍速开启") then return end
+            if not wait(function()
+                    if findOne("促融共竞_二倍速开启") then return end
+                    if findOne("促融共竞_二倍速未开启") then
+                        tap("促融共竞_二倍速")
+                    end
+                end, 5) then
+            end
+            ssleep(3)
+        end,
+    }
+    log("促融共竞参与者开始")
+    auto(促融共竞, nil, 0, 60 * 15, false)
+end
