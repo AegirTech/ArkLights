@@ -3833,7 +3833,7 @@ end
 jump_readme = function()
     local intent = {
         action = "android.intent.action.VIEW",
-        uri = "https://arkdoc.enlysure.com/',
+        uri = "https://arkdoc.enlysure.com/",
     }
     runIntent(intent)
     while true do ssleep(1) end
