@@ -3831,10 +3831,9 @@ show_auto_login_ui = function()
 end
 
 jump_readme = function()
-    local prefix = "arklights"
     local intent = {
         action = "android.intent.action.VIEW",
-        uri = "https://" .. prefix .. '.pages.dev/guide.html',
+        uri = "https://arkdoc.enlysure.com/',
     }
     runIntent(intent)
     while true do ssleep(1) end
