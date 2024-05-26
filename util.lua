@@ -788,7 +788,7 @@ log = function(...)
     -- TODO: 有可能是日志太多导致速通停止运行
     print(l)
     console.println(1, a .. ' ' .. l)
-    -- writeLog(l)
+    if write_log then writeLog(l) end
 end
 
 open = function(id)
@@ -3344,6 +3344,9 @@ show_debug_ui = function()
     ui.addCheckBox(layout, "enable_log", "启用日志(会导致闪退)", false)
 
     newRow(layout)
+    ui.addCheckBox(layout, "write_log", "保存日志到本地", false)
+
+    newRow(layout)
     ui.addCheckBox(layout, "disable_oom_score_adj", "禁用oom_score_adj", false)
 
     newRow(layout)
@@ -3833,7 +3836,7 @@ end
 jump_readme = function()
     local intent = {
         action = "android.intent.action.VIEW",
-        uri = "https://arkdoc.enlysure.com/",
+        uri = "https://arkdoc.enlysure.com",
     }
     runIntent(intent)
     while true do ssleep(1) end
@@ -5561,7 +5564,7 @@ end
 
 remove_old_log = function()
     -- 一周前的文件
-    exec("find /sdcard/" .. package .. '/ -ctime +7 -type f -delete')
+    exec("find /sdcard/" .. package .. '/ -cmin +720 -type f -delete')
 end
 
 clear_hook = function()
