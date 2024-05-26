@@ -386,43 +386,6 @@ end
             end
         end
     end
-    local swipe_next_page = function(left, nodelay)
-        local duration
-        local finger
-        local delay
-        if left then
-            local x1 = scale(600)
-            local x2 = scale(10000 / 720 * 1080)
-            local y1 = scale(533)
-            duration = 400
-            finger = { { point = { { x1, y1 }, { x2, y1 } }, duration = duration } }
-            delay = 750
-        else
-            local x = scale(600)
-            local y = scale(533)
-            local y2 = scale(900)
-            --修改x2坐标，滑动两个位置是1035 滑动三个位置是1252 滑动四个位置1470
-            local x2 = scale(1252)
-            local x3 = scale(1695)
-            local y3 = scale(952)
-            local slids = 50
-            local slidd = 200
-            local taps = slids + slidd + 150
-            local tapd = 200
-            local downd = taps + 100
-            duration = downd
-            finger = {
-                { point = { { x, y }, { x, y2 } },    start = 0,     duration = downd },
-                { point = { { x2, y }, { x2, y3 } },  start = slids, duration = slidd },
-                { point = { { x3, y3 }, { x3, y3 } }, start = taps,  duration = tapd },
-            }
-            delay = 250
-        end
-        log(JsonEncode(finger))
-        gesture(finger)
-        sleep(duration + (nodelay and 0 or delay))
-        return nodelay and delay or 0
-    end
     print(干员组, 技能组)
     keepCapture()
     for i = 1, 18 do
@@ -457,6 +420,44 @@ end
         log("2名干员缺失")
         return { notselected }
     end
+end
+
+swipe_next_page = function(left, nodelay)
+    local duration
+    local finger
+    local delay
+    if left then
+        local x1 = scale(600)
+        local x2 = scale(10000 / 720 * 1080)
+        local y1 = scale(533)
+        duration = 400
+        finger = { { point = { { x1, y1 }, { x2, y1 } }, duration = duration } }
+        delay = 750
+    else
+        local x = scale(600)
+        local y = scale(533)
+        local y2 = scale(900)
+        --修改x2坐标，滑动两个位置是1035 滑动三个位置是1252 滑动四个位置1470
+        local x2 = scale(1252)
+        local x3 = scale(1695)
+        local y3 = scale(952)
+        local slids = 50
+        local slidd = 200
+        local taps = slids + slidd + 150
+        local tapd = 200
+        local downd = taps + 100
+        duration = downd
+        finger = {
+            { point = { { x, y }, { x, y2 } },    start = 0,     duration = downd },
+            { point = { { x2, y }, { x2, y3 } },  start = slids, duration = slidd },
+            { point = { { x3, y3 }, { x3, y3 } }, start = taps,  duration = tapd },
+        }
+        delay = 250
+    end
+    log(JsonEncode(finger))
+    gesture(finger)
+    sleep(duration + (nodelay and 0 or delay))
+    return nodelay and delay or 0
 end
 
 选择技能 = function(a)

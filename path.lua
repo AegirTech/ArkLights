@@ -5039,7 +5039,6 @@ removeTrailingDigits = function(str)
     if str == nil then
         return ""
     end
-
     local pattern = "(.-)%-?%d+$"
     local trimmedStr = string.match(str, pattern)
     log(trimmedStr)
@@ -5066,9 +5065,9 @@ path.活动 = function(x)
         path.跳转("首页")
         tap("面板活动")
         log(x)
-        if string.find(x, "HD-EX") then
+        if string.find(x, "HD-EX-") then
             point["活动导航0"] = point["活动导航EX"]
-        elseif string.find(x, "HD-S") then
+        elseif string.find(x, "HD-S-") then
             point["活动导航0"] = point["活动导航S"]
         end
         if not wait(function()
@@ -5518,9 +5517,10 @@ path.活动 = function(x)
     end
 
     --car_check1() --有些大型活动会自带一些任务
-
+    log("skip_guide", skip_guide)
     if not skip_guide then
         if not findOne("活动导航0") then return end
+        log("111")
         if utf8.left(x, 5) == "HD-EX" then --提取x的前面五个，如果是"HD-EX"，则进入活动的ex界面
             if not wait(function()
                     tap("活动导航EX")
@@ -5547,7 +5547,7 @@ path.活动 = function(x)
             end
         end
     else
-        tap("返回")
+        tap("取消开始行动")
         ssleep(.5)
     end
 
