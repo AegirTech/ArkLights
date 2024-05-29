@@ -509,60 +509,63 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 -- 迷迭香不考虑
             elseif icon == "bskill_man_gold&blacksteel" then
                 -- 排除杏仁
+            elseif icon == "bskill_man_cost_room1" then
+                -- 排除黍
+            elseif icon == "bskill_man_spd_bd5" then
+                -- 排除截云
+            elseif icon == "bskill_man_spd_bd6" then
+                -- 排除截云
+            elseif icon == "bskill_man_spd_bd7" then
+                -- 排除黍
             elseif icon == 'bskill_man_spd3' then
                 base = base + 0.30
             elseif icon == 'bskill_man_spd2' then
                 base = base + 0.25
             elseif icon == 'bskill_man_limit&cost3' then
                 storage[operatoridx] = (storage[operatoridx] or 0) + 16
-                -- table.insert(storage, 16)
             elseif icon == 'bskill_man_spd&limit&cost3' then
                 base = base + 0.25
                 storage[operatoridx] = (storage[operatoridx] or 0) - 12
-                -- table.insert(storage, -12)
             elseif icon == 'bskill_man_spd_add1' then
                 -- 8小时平均收益 ((0.2+0.24)/2*5+0.25*3)/8
                 base = base + 0.23125
             elseif icon == 'bskill_man_spd_add2' then
                 -- 8小时平均收益 ((0.15+0.23)/2*5+0.25*3)/8
                 base = base + 0.2125
+            elseif icon == "bskill_man_spd_add3" then
+                base = base + 0.1 -- 10小时平均收益 8h收益为0.073
             elseif icon == 'bskill_man_spd1' then
                 base = base + 0.15
             elseif icon == 'bskill_man_spd&limit3' then
                 base = base + 0.1
                 storage[operatoridx] = (storage[operatoridx] or 0) + 10
-                -- table.insert(storage, 10)
             elseif icon == 'bskill_man_spd&limit1' then
                 base = base + 0.1
-                -- table.insert(storage, 6)
                 storage[operatoridx] = (storage[operatoridx] or 0) + 6
             elseif icon == 'bskill_man_spd&limit&cost2' then
                 base = base - 0.05
-                -- table.insert(storage, 19)
                 storage[operatoridx] = (storage[operatoridx] or 0) + 19
             elseif icon == 'bskill_man_spd&limit&cost1' then
                 base = base - 0.05
-                -- table.insert(storage, 16)
                 storage[operatoridx] = (storage[operatoridx] or 0) + 16
             elseif icon == 'bskill_man_spd&limit&cost4' then
                 base = base - 0.2
-                -- table.insert(storage, 17)
                 storage[operatoridx] = (storage[operatoridx] or 0) + 17
+            elseif icon == "bskill_man_fuze" then
+                base = base + 0.2
+            elseif icon == "bskill_man_gold4" then
+                if goodType == '贵金属' then base = base + 0.25 end
             elseif icon == 'bskill_man_exp&limit2' then
                 if goodType == '作战记录' then
-                    -- table.insert(storage, 15)
                     storage[operatoridx] = (storage[operatoridx] or 0) + 15
                 end
             elseif icon == 'bskill_man_exp&limit1' then
                 if goodType == '作战记录' then
-                    -- table.insert(storage, 12)
                     storage[operatoridx] = (storage[operatoridx] or 0) + 12
                 end
             elseif icon == 'bskill_man_limit&cost2' then
-                -- table.insert(storage, 10)
                 storage[operatoridx] = (storage[operatoridx] or 0) + 10
             elseif icon == 'bskill_man_limit&cost1' then
-                -- table.insert(storage, 8)
                 storage[operatoridx] = (storage[operatoridx] or 0) + 8
             elseif icon == 'bskill_man_exp&cost' then
                 -- Vlog 心情消耗不考虑

@@ -144,10 +144,14 @@ def avator2operator(src="ArknightsGameData/zh_CN/gamedata/excel/character_table.
 # https://github.com/yuanyan3060/ArknightsGameResource 使用此解包仓库
 def skillicon2operator(
     char=os.path.join(
-        os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"
+        os.getcwd(),
+        "ArknightsGameResource",
+        "gamedata",
+        "excel",
+        "character_table.json",
     ),
     build=os.path.join(
-        os.getcwd(), "ArknightsGameResource/gamedata/excel/building_data.json"
+        os.getcwd(), "ArknightsGameResource", "gamedata", "excel", "building_data.json"
     ),
 ):
     char = json.loads(open(char, encoding="utf-8").read())
@@ -168,7 +172,17 @@ def skillicon2operator(
                 phase = (b2["cond"]["phase"])[-1]
                 ans[buffname].append(operator + str(phase))
 
-    return json.dumps(ans, ensure_ascii=False)
+    file_name = os.path.join(
+        os.getcwd(),
+        "ArknightsGameResource",
+        "skill_new",
+        "skillicon2operator.json",
+    )
+    # with open(file_name, "", encoding="utf-8") as f:
+    #     f.write(json.dumps(ans, ensure_ascii=False))
+    json.dump(ans, open(file_name, "w", encoding="utf-8"), ensure_ascii=False)
+    return "skillicon2operator done"
+    # return json.dumps(ans, ensure_ascii=False)
 
 
 def recruit(
