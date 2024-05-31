@@ -1596,7 +1596,6 @@ raise.test3 = function()
                     蓝色区域差值 = 蓝色区域差值 + x - cx + y - cy
                     -- table.insert(coordinates, { x, y })
                 elseif cx and x - cx > 0 and y - cy > 0 and x - cx < 总长 * 0.6 and y - cy < 总高 * 0.6 then
-                    
                     -- log("白色")
                     -- log(x - cx > 0, y - cy > 0)
                     -- log(x - cx < 总长 * 0.5, y - cy < 总高 * 0.5)

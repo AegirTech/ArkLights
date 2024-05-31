@@ -5066,9 +5066,9 @@ path.活动 = function(x)
         tap("面板活动")
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
-            point["活动导航0"] = point["活动导航EX"]
+            point["活动导航1"] = point["活动导航EX"]
         elseif string.find(x, "HD-S-", 1, true) then
-            point["活动导航0"] = point["活动导航S"]
+            point["活动导航1"] = point["活动导航S"]
         end
         if not wait(function()
                 if findOne("活动导航0") then return true end
@@ -5525,7 +5525,7 @@ path.活动 = function(x)
             if not wait(function()
                     tap("活动导航EX")
                     ssleep(.5)
-                    if not appear("活动导航0", 1) then return true end
+                    if disappear("活动导航1", 1) then return true end
                 end, 5) then
                 return
             end
@@ -5533,15 +5533,15 @@ path.活动 = function(x)
             if not wait(function()
                     tap("活动导航S")
                     ssleep(.5)
-                    if disappear("活动导航0", 1) then return true end
+                    if disappear("活动导航1", 1) then return true end
                 end, 5) then
                 return
             end
         else --正常流程进入活动的第一阶段界面
             if not wait(function()
-                    tap("活动导航0")
+                    tap("活动导航1")
                     ssleep(.5)
-                    if not appear("活动导航0", 1) then return true end
+                    if disappear("活动导航0", 1) then return true end
                 end, 5) then
                 return
             end
