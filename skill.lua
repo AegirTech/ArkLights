@@ -7,6 +7,8 @@ fetchSkillIcon = function()
     local md5url = url .. '.md5'
     local path = getWorkPath() .. '/skill.zip'
     local extract_path = getWorkPath() .. '/skill'
+    --extractAssets("main.rc", getWorkPath(), "skill.zip")
+    --unZip(path, extract_path)
     local md5path = path .. '.md5'
     if downloadFile(md5url, md5path) == -1 then
         toast("下载基建图标校验数据失败")
@@ -81,7 +83,10 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
         local icon2 = {
             v[1] + scale(70), v[2] + scale(18), v[1] + scale(123), v[2] + scale(70),
         }
-        -- log(147, icon1)
+        --log("icon1", icon1, v[1], v[2])
+        local name = correctCharName(ocro({
+            v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
+        }))
         local png = ''
         local png2 = ''
         if not mood_only then
@@ -92,9 +97,10 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
 
             -- 已到结尾，返回
             if png == 'empty1' then
+                log("未识别到技能1", name)
                 empty1_num = empty1_num + 1
                 -- 第一页有可能有多个
-                if pageid > 1 or pageid == 1 and empty1_num > 3 then
+                if (pageid > 1 and empty1_num > 1) or pageid == 1 and empty1_num > 3 then
                     log("page end", icon1, idx, v)
                     return true
                 end
@@ -128,8 +134,8 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
                 break
             end
         end
-        log(129, idx, operator, mood)
-
+        --log(129, idx, operator, mood, name)
+        --[[
         -- 异格将心情设为负值
         local yg1 = { v[1] + scale(7), v[2] - scale(219) }
         local yg2 = { v[1] + scale(7), v[2] - scale(205) }
@@ -155,8 +161,8 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
             if mood == 0 then mood = -1 end
         end
         -- exit()
-
-        table.insert(operators, { png, png2, mood, icon1, pageid })
+        ]]
+        table.insert(operators, { png, png2, mood, icon1, pageid, name })
     end
     -- sleep(max(0, delay - (time() - start_time)))
     log(217, operators)
@@ -219,6 +225,11 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
             elseif icon == 'bskill_tra_spd&limit5' then
                 base = base + 0.20
                 storage = storage + 4
+            elseif icon == 'bskill_tra_spd_bd2' then
+                base = base + 0.005 * dormitoryCapacity
+                if isCharExsit["迷迭香"] then
+                    base = base + 0.31
+                end
             elseif icon == 'bskill_tra_spd&limit4' then
                 base = base + 0.15
                 storage = storage + 4
@@ -452,6 +463,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
     else
         maxStorage = 54
     end
+    --log(operator)
     log("401,goodType", goodType, operator[1])
     -- log("maxStorage", maxStorage)
     -- log("maxOperator", maxOperator)
@@ -465,21 +477,29 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
     local base, disable_moon_effect, storage, storages, standard, all, station,
     station_only, only_need, robot
 
+
+    ---@param icons table [[技能1,技能2,name1],[技能1,技能2,name2],[技能1,技能2,name3]]
     local score = function(icons)
         base = 0
         robot = 0            -- 工程机器人
         storage = {}         -- 容量效果
         standard = 0         -- 标准化技能数量
+        knight = 0           --骑士数量
+        rhine = 0            --莱茵科技数量
+        metallics = 0        --金属工艺数量
         station = 0          -- 根据设施加成
         station_only = false -- 是否只根据设施加成
         all = {}
         only_need = {}
-        -- log(icons)
-        -- log(table.flatten(icons))
+        --log("icons", icons)
+        --log(486, table.flatten(icons))
 
         -- 应用独立技能效果
+        -- 一维化传入的干员技能组
         for idx, icon in pairs(table.flatten(icons)) do
-            operatoridx = (idx + 1) // 2
+            -- 传入的第几位干员,icons[operatoridx][3]返回干员名
+            operatoridx = (idx + 2) // 3
+            -- 计算重复的技能
             all[icon] = (all[icon] or 0) + 1
             -- log(266, icon, goodType, base)
             if icon == 'bskill_man_limit&cost5' then
@@ -488,13 +508,21 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 if goodType == '作战记录' then base = base + 0.35 end
                 -- log(272, base)
             elseif icon == 'bskill_man_exp2' then
-                if goodType == '作战记录' then base = base + 0.30 end
+                if goodType == '作战记录' then base = base + 0.3001 end
             elseif icon == 'bskill_man_exp1' then
-                if goodType == '作战记录' then base = base + 0.25 end
+                if goodType == '作战记录' then base = base + 0.2501 end
+            elseif icon == 'bskill_man_exp4' then
+                if goodType == '作战记录' then base = base + 0.20 end
             elseif icon == 'bskill_man_gold2' then
-                if goodType == '贵金属' then base = base + 0.35 end
+                if goodType == '贵金属' then
+                    base = base + 0.35
+                    metallics = metallics + 1
+                end
             elseif icon == 'bskill_man_gold1' then
-                if goodType == '贵金属' then base = base + 0.30 end
+                if goodType == '贵金属' then
+                    base = base + 0.3001
+                    metallics = metallics + 1
+                end
             elseif icon == 'bskill_man_spd&trade' then
                 -- 清流，使用贸易站数量
                 if goodType == '贵金属' then
@@ -506,7 +534,9 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
             elseif icon == 'bskill_man_spd_bd1' then
                 -- 迷迭香不考虑
             elseif icon == 'bskill_man_spd_bd2' then
-                -- 迷迭香不考虑
+                if isCharExsit["絮雨"] then
+                    base = base + 0.45
+                end
             elseif icon == "bskill_man_gold&blacksteel" then
                 -- 排除杏仁
             elseif icon == "bskill_man_cost_room1" then
@@ -521,6 +551,23 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 base = base + 0.30
             elseif icon == 'bskill_man_spd2' then
                 base = base + 0.25
+                local name = icons[operatoridx][3]
+                --log(name)
+                if table.findv({ "史都华德", "香草", "调香师", "杰西卡", "水月", "罗比菈塔", "海沫" }, name) then
+                    standard = standard + 1
+                elseif table.findv({ "白面鸮", "赫默", "多萝西", "星源" }, name) then
+                    rhine = rhine + 1
+                elseif table.findv({ "远牙", "灰毫", "野鬃" }, name) then
+                    knight = knight + 1
+                    if isCharExsit["薇薇安娜"] then base = base + 0.07 end
+                    if isCharExsit["焰尾"] then
+                        if goodType == "作战记录" then
+                            base = base + 0.101
+                        elseif goodType == "贵金属" then
+                            base = base - 0.1
+                        end
+                    end
+                end
             elseif icon == 'bskill_man_limit&cost3' then
                 storage[operatoridx] = (storage[operatoridx] or 0) + 16
             elseif icon == 'bskill_man_spd&limit&cost3' then
@@ -529,6 +576,8 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
             elseif icon == 'bskill_man_spd_add1' then
                 -- 8小时平均收益 ((0.2+0.24)/2*5+0.25*3)/8
                 base = base + 0.23125
+            elseif icon == 'bskill_man_spd_reduce' then --铅踝
+                base = base + 0.22
             elseif icon == 'bskill_man_spd_add2' then
                 -- 8小时平均收益 ((0.15+0.23)/2*5+0.25*3)/8
                 base = base + 0.2125
@@ -536,6 +585,23 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 base = base + 0.1 -- 10小时平均收益 8h收益为0.073
             elseif icon == 'bskill_man_spd1' then
                 base = base + 0.15
+                local name = icons[operatoridx][3]
+                --log(name)
+                if table.findv({ "夜刀", "流星", "豆苗", "褐果", "石英", "洋灰", "历阵锐枪芬" }, name) then
+                    standard = standard + 1
+                elseif table.findv({ "白面鸮", "赫默", "星源" }, name) then
+                    rhine = rhine + 1
+                elseif table.findv({ "远牙", "灰毫", "野鬃" }, name) then
+                    knight = knight + 1
+                    if isCharExsit["薇薇安娜"] then base = base + 0.07 end
+                    if isCharExsit["焰尾"] then
+                        if goodType == "作战记录" then
+                            base = base + 0.101
+                        elseif goodType == "贵金属" then
+                            base = base - 0.1
+                        end
+                    end
+                end
             elseif icon == 'bskill_man_spd&limit3' then
                 base = base + 0.1
                 storage[operatoridx] = (storage[operatoridx] or 0) + 10
@@ -553,7 +619,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 storage[operatoridx] = (storage[operatoridx] or 0) + 17
             elseif icon == "bskill_man_fuze" then
                 base = base + 0.2
-            elseif icon == "bskill_man_gold4" then
+            elseif icon == "bskill_man_gold4" then --阿罗玛
                 if goodType == '贵金属' then base = base + 0.25 end
             elseif icon == 'bskill_man_exp&limit2' then
                 if goodType == '作战记录' then
@@ -562,6 +628,10 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
             elseif icon == 'bskill_man_exp&limit1' then
                 if goodType == '作战记录' then
                     storage[operatoridx] = (storage[operatoridx] or 0) + 12
+                end
+            elseif icon == 'bskill_man_exp&limit3' then
+                if goodType == '作战记录' then
+                    storage[operatoridx] = (storage[operatoridx] or 0) + 4
                 end
             elseif icon == 'bskill_man_limit&cost2' then
                 storage[operatoridx] = (storage[operatoridx] or 0) + 10
@@ -572,7 +642,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
             elseif icon == 'bskill_man_originium2' then
                 if goodType == '源石' then base = base + 0.35 end
             elseif icon == 'bskill_man_originium1' then
-                if goodType == '源石' then base = base + 0.3 end
+                if goodType == '源石' then base = base + 0.3001 end
             elseif icon == 'bskill_man_constrLv' then
                 robot = min(64, robot + totalStationLevel)
             elseif icon == 'empty' then
@@ -608,24 +678,32 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
         -- 发电站数
         if all['bskill_man_spd&power3'] then
             station_only = true
-            station = station + 0.15 * powerStationNum * all['bskill_man_spd&power3']
+            --加0.01让清流优先和自动化组上班
+            station = station + 0.16 * powerStationNum * all['bskill_man_spd&power3']
             table.extend(only_need, { 'bskill_man_spd&power3' })
         end
         if all['bskill_man_spd&power2'] then
             station_only = true
-            station = station + 0.1 * powerStationNum * all['bskill_man_spd&power2']
+            --加0.01让清流优先和自动化组上班
+            station = station + 0.11 * powerStationNum * all['bskill_man_spd&power2']
             table.extend(only_need, { 'bskill_man_spd&power2' })
         end
         if all['bskill_man_spd&power1'] then
             station_only = true
-            station = station + 0.05 * powerStationNum * all['bskill_man_spd&power1']
+            station = station + 0.06 * powerStationNum * all['bskill_man_spd&power1']
             table.extend(only_need, { 'bskill_man_spd&power1' })
         end
         if all['bskill_man_skill_spd'] then
             -- 水月，标准化技能数量
             base = base + standard * 0.05 * all['bskill_man_skill_spd']
-            -- base = base + 0
-            -- 目前水月还是选0.25
+        end
+        if all['bskill_man_skill_spd2'] then
+            -- 多萝西，莱茵科技技能数量
+            base = base + rhine * 0.05 * all['bskill_man_skill_spd2']
+        end
+        if all['bskill_man_skill_spd3'] then
+            -- 苍苔，金属工艺技能数量
+            if goodType == '贵金属' then base = base + metallics * 0.05 * all['bskill_man_skill_spd3'] end
         end
 
         -- 禁止过小容量
@@ -649,13 +727,14 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
     operator = table.filter(operator,
         function(x) return x[3] >= minAllowedMood end)
     -- 移除心情
-    operatorIcon = map(function(x) return { x[1], x[2] } end, operator)
+    operatorIcon = map(function(x) return { x[1], x[2], x[6] } end, operator)
 
     -- 遍历全部组合
     local best = {}
     local best_score = -1
     local best_only_need = {}
     for _, c in pairs(table.combination(range(1, #operator), maxOperator)) do
+        --log(674, c, table.index(operatorIcon, c))
         local s, only_need = score(table.index(operatorIcon, c))
         if s > best_score then
             best = c
@@ -818,12 +897,14 @@ initPngdata = function()
     meetingPngdata = {}
     controlPngdata = {}
     officePngdata = {}
+    powerPngdata = {}
     stationType2pngData = {
         制造站 = manufacturingPngdata,
         贸易站 = tradingPngdata,
         会客厅 = meetingPngdata,
         控制中枢 = controlPngdata,
         办公室 = officePngdata,
+        发电站 = powerPngdata,
     }
 
     local s = ''
@@ -839,6 +920,8 @@ initPngdata = function()
             pngdata = controlPngdata
         elseif v:startsWith("bskill_hire") then
             pngdata = officePngdata
+        elseif v:startsWith("bskill_pow") then
+            pngdata = powerPngdata
         else
             pngdata = {}
         end
@@ -916,10 +999,9 @@ chooseOperator = function(stationType, goodType, stationLevel,
         end
     end
     swipo(true, true)
-
     start_time = time()
 
-    -- log(671, operator)
+    --log(671, operator)
     -- exit()
 
     -- TODO 滑动时就可以开始计算
@@ -928,9 +1010,16 @@ chooseOperator = function(stationType, goodType, stationLevel,
     if stationType == "制造站" then
         best, best_score = manufacturingStationOperatorBest(operator,
             tradingStationNum,
-            powerStationNum,
+            virtralPowerStationNum,
             totalStationLevel,
             goodType, stationLevel)
+        log("制造站选", best)
+        for i = 1, #best do
+            if table.findv(best[i], "bskill_man_spd_bd2") then
+                isCharExsit["迷迭香"] = true
+                break
+            end
+        end
     elseif stationType == "贸易站" then
         best, best_score = tradingStationOperatorBest(operator, dormitoryCapacity,
             dormitoryLevelSum,
@@ -938,10 +1027,30 @@ chooseOperator = function(stationType, goodType, stationLevel,
             stationLevel)
     elseif stationType == "会客厅" then
         best, best_score = meetingStationOperatorBest(operator)
+    elseif stationType == "发电站" then
+        best, best_score = powerStationOperatorBest(operator)
+        log("发电站选", best)
+        if table.findv(best[1], "bskill_pow_count") then
+            virtralPowerStationNum = virtralPowerStationNum + 1
+            isCharExsit["承曦格雷伊"] = true
+        end
     elseif stationType == "办公室" then
         best, best_score = officeStationOperatorBest(operator)
+        log("办公室选", best)
+        if table.findv(best[1], "bskill_hire_spd_memento") then
+            isCharExsit["絮雨"] = true
+        end
     elseif stationType == "控制中枢" then
         best, best_score = controlStationOperatorBest(operator)
+        for i = 1, #best do
+            if table.findv(best[i], "bskill_ctrl_psk") then
+                isCharExsit["焰尾"] = true
+            elseif table.findv(best[i], "bskill_ctrl_fraction_knight") then
+                isCharExsit["薇薇安娜"] = true
+            elseif table.findv(best[i], "bskill_ctrl_cost_bd4") then
+                isCharExsit["重岳"] = true
+            end
+        end
     end
     sleep(max(0, 500 - (time() - start_time)))
     tap("清空选择")
@@ -1030,6 +1139,8 @@ officeStationOperatorBest = function(operator)
                 s = s + 0.45
             elseif icon == "bskill_hire_spd4" then
                 s = s + 0.4
+            elseif icon == "bskill_hire_skgoat2" then
+                s = s + 0.5
             elseif icon == "bskill_hire_spd3" then
                 s = s + 0.35
             elseif icon == "bskill_hire_spd&clue" then
@@ -1038,6 +1149,8 @@ officeStationOperatorBest = function(operator)
                 s = s + 0.3
             elseif icon == "bskill_hire_spd&ursus2" then
                 s = s + 0.2
+            elseif icon == "bskill_hire_spd_memento" then --絮雨2
+                s = s + 0.31
             elseif icon == "bskill_hire_spd&blacksteel2" then
                 s = s + 0.2
             elseif icon == "bskill_hire_spd_bd_n1_n1" then
@@ -1079,41 +1192,60 @@ controlStationOperatorBest = function(operator)
         'bskill_ctrl_cost_bd1&bd2', -- 令 进驻控制中枢时，当自身心情大于12时，人间烟火+15；当自身心情处于12以下时，感知信息+10
         'bskill_ctrl_cost_bd1',     -- 夕 进驻控制中枢时，控制中枢内所有干员的心情每小时恢复+0.05；当自身心情处于12以下时，人间烟火+15
         'bskill_ctrl_cost_bd2',     -- 夕 进驻控制中枢时，自身心情每小时消耗+0.5；当自身心情大于12时，感知信息+10
-        'bskill_ctrl_ash',          -- ash
-        'bskill_ctrl_tachanka',     -- 机枪
         -- 'bskill_ctrl_p_bot', -- +小车,加发电站数
         -- 'bskill_ctrl_token_p_spd', -- +小车,+制造2%
         -- 'bskill_ctrl_h_spd', -- 进驻控制中枢时，人力办公室联络速度小于30%时（其中包含基础联络速度5%），则联络速度额外+20%（该加成全局效果唯一，不受其它加成影响）
         'bskill_ctrl_psk',             -- 焰尾 进驻控制中枢时，每个进驻在制造站的红松骑士团干员，作战记录类配方的生产力+10%，贵金属类配方的生产力-10%
         'bskill_ctrl_t_limit&spd',     -- 灵知 进驻控制中枢时，每个进驻在贸易站的喀兰贸易干员，订单获取效率-15%，订单上限+6
         'bskill_ctrl_fraction_knight', -- 薇薇安娜 进驻控制中枢时，每个进驻在制造站的骑士干员生产力 +7%
+        'bskill_ctrl_lonely',          --玛恩纳
+        'bskill_ctrl_ash',             -- ash
+        'bskill_ctrl_tachanka',        -- 机枪
     }
 
     local manu_acc = false
     local trading_acc = false
-
+    local mood_reduce = false
     for _, o in pairs(operator) do
         if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_spd') then
             if not trading_acc then
                 trading_acc = true
                 table.insert(best, o)
             end
-        elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_c_spd') and
-            not table.includes({ o[1], o[2] }, 'bskill_ctrl_lda') then
-            -- 老鲤c与t会判错
-            if not trading_acc then
-                trading_acc = true
+        elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_psk') then -- 焰尾
+            table.insert(best, o)
+        elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_fraction_knight') then -- 薇薇安娜
+            table.insert(best, o)
+        elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_h_spd') and (isCharExsit["絮雨"] or isCharExsit["桑葚"]) then --琴柳
+            table.insert(best, o)
+        elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd2') then --夕
+            table.insert(best, o)
+        elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1&bd2') then --令
+            table.insert(best, o)
+        elseif table.includes({ o[1], o[2] }, "bskill_ctrl_cost_bd3") then --重岳
+            if not isCharExsit["絮雨"] then
                 table.insert(best, o)
             end
-        elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') then
-            -- or o[1] ==
-            -- 'bskill_ctrl_c_spd' or o[2] == 'bskill_ctrl_c_spd' then
+        elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') then --凯尔希
             if not manu_acc then
                 manu_acc = true
                 table.insert(best, o)
             end
-            -- elseif o[1] == 'bskill_ctrl_c_spd' or o[2] == 'bskill_ctrl_c_spd' then
-            --   table.insert(best, o)
+        elseif table.includes({ o[1], o[2] }, "bskill_ctrl_cost_bd4") then --重岳2
+            if not mood_reduce then
+                mood_reduce = true
+                table.insert(best, o)
+            end
+        elseif table.includes({ o[1], o[2] }, "bskill_ctrl_lonely") then --玛恩纳
+            if not mood_reduce then
+                mood_reduce = true
+                table.insert(best, o)
+            end
+        elseif table.includes({ o[1], o[2] }, "bskill_ctrl_cost_expand") then --维什戴尔
+            if not mood_reduce then
+                mood_reduce = true
+                table.insert(best, o)
+            end
         else
             table.insert(remain, o)
         end
@@ -1121,6 +1253,64 @@ controlStationOperatorBest = function(operator)
     log(best)
     best = table.slice(table.extend(best, remain), 1, 5)
     return best, best_score
+end
+
+powerStationOperatorBest = function(operator)
+    -- 过滤心情小于阈值的干员
+    local minAllowedMood = shift_min_mood
+    if disable_shift_mood then minAllowedMood = -1 end
+    operator = table.filter(operator,
+        function(x) return x[3] >= minAllowedMood end)
+    local best = {}
+    local best_score = -1
+    for _, o in pairs(operator) do
+        local s = 0
+        for _, icon in pairs({ o[1], o[2] }) do
+            if icon == "bskill_pow_count" then --程曦格雷伊2 发电站数量+1
+                s = s + 0.1
+            elseif icon == "bskill_pow_spd1" then
+                s = s + 0.1
+                if table.findv({ "Lancet-2", "Castle-3", "THRM-EX", "正义骑士号", "Friston-3", "PhonoR-0" }, o[6]) and isCharExsit["承曦格雷伊"] then
+                    s = s - 1
+                end
+            elseif icon == "bskill_pow_spd_P1" then --PhonoR-0
+                if isCharExsit["承曦格雷伊"] then
+                    s = s - 1
+                end
+            elseif icon == "bskill_power_rec_spd&addition2" then
+                s = s + 0.15
+            elseif icon == "bskill_power_rec_spd&addition1" then
+                s = s + 0.13
+            elseif icon == "bskill_power_rec_rhine" then --缪尔赛思
+                s = s + 0.11
+            elseif icon == "bskill_pow_drone" then
+                s = s + 0.2
+            elseif icon == "bskill_pow_spd3" then
+                s = s + 0.2
+            elseif icon == "bskill_pow_spd2" then
+                s = s + 0.15
+            elseif icon == "bskill_pow_spd&cost" then --Friston-3
+                if isCharExsit["凯尔希"] then
+                    s = s + 0.05
+                end
+                if isCharExsit["承曦格雷伊"] then
+                    s = s - 1
+                end
+            elseif icon == "bskill_pow_spd&cost" then --正义骑士号
+                if isCharExsit["承曦格雷伊"] then
+                    s = s - 1
+                end
+            elseif icon == "bskill_pow_spd&cost" then --THRM-EX
+                if isCharExsit["承曦格雷伊"] then
+                    s = s - 1
+                end
+            end
+        end
+        table.insert(best, { s, o })
+    end
+    table.sort(best, function(a, b) return a[1] > b[1] end)
+    best = best[1][2]
+    return { best }, best_score
 end
 
 ygStaitonColor = {
@@ -1136,4 +1326,50 @@ is_training = function()
     local ret = find_color({ scale(46), scale(642), scale(172), scale(1026) }, "72001F", 0, 1)
     ret = ret and true or false
     return ret
+end
+
+correctCharName = function(t)
+    --主要是720p下面的校正
+    if t == nil then return end
+    local 替换 = {
+        ["森"] = "森蚺",
+        ["铜"] = "锏",
+        ["白面鸭"] = "白面鸮",
+        ["3"] = "山",
+        ["白面鸦"] = "白面鸮",
+        ["白面鹗"] = "白面鸮",
+        ["0"] = "山",
+        ["E"] = "山",
+        ["1"] = "山",
+        ["T"] = "山",
+        ["任"] = "山",
+        ["灰"] = "灰烬",
+        ["委"] = "黍",
+        ["默德克萨斯"] = "缄默德克萨斯",
+        ["翎羽羽"] = "翎羽",
+        ["纯烟艾雅法拉"] = "纯烬艾雅法拉",
+        ["纯艾雅法拉"] = "纯烬艾雅法拉",
+        ["林纯艾雅法拉"] = "纯烬艾雅法拉",
+        ["哞"] = "吽",
+        ["子"] = "孑",
+        ["巡巡林者"] = "巡林者",
+        ["愧影"] = "傀影",
+        ["狮蜴"] = "狮蝎",
+        ["圣约送葬"] = "圣约送葬人",
+        ["霸叶"] = "霜叶",
+        ["灰亳"] = "灰毫",
+    }
+
+    local 原文本 = t
+    --print(原文本)
+    if 替换[原文本] then
+        t = 替换[原文本]
+    elseif 原文本:match("^白面.*$") then
+        t = "白面鸮"
+    elseif 原文本:find("纯") and 原文本:find("艾雅法拉") then
+        t = "纯烬艾雅法拉"
+    elseif 原文本:find("默") and 原文本:find("德克萨斯") then
+        t = "缄默德克萨斯"
+    end
+    return t
 end

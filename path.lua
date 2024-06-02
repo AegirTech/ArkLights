@@ -2178,6 +2178,7 @@ path.基建信息获取 = function()
     goldStationNum = 0
     tradingStationNum = 0
     powerStationNum = 0
+    virtralPowerStationNum = powerStationNum
     totalStationLevel = 0
 
     dormitoryStation = {}
@@ -2188,6 +2189,8 @@ path.基建信息获取 = function()
     tradingStationLevel = {}
     manufacturingStation = {}
     manufacturingStationLevel = {}
+
+    isCharExsit = {}
 
     path.跳转("基建")
 
@@ -2279,7 +2282,7 @@ path.基建信息获取 = function()
 
     -- powerStationLevel = map(function() return 3 end, powerStation)
     powerStationNum = #powerStation
-
+    virtralPowerStationNum = powerStationNum
     -- tradingStationLevel = map(function() return 3 end, tradingStation)
     tradingStationNum = #tradingStation
 
@@ -2512,7 +2515,7 @@ path.制造换班 = function(trading)
 
         local stationType = trading and "贸易站" or "制造站"
         chooseOperator(stationType, type, stationLevel, tradingStationNum,
-            powerStationNum, dormitoryCapacity, dormitoryLevelSum,
+            virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
             goldStationNum, totalStationLevel)
 
         wait(function(reset_wait_start_time)
@@ -2859,23 +2862,111 @@ path.基建换班 = function()
 
     path.宿舍换班()
     path.基建信息获取()
-    -- path.控制中枢换班()
-    -- path.会客厅换班()
+
+    path.发电站换班()
     path.办公室换班()
+    path.跳转("基建")
+    if not wait(function()
+            if findOne("撤下干员") then return true end
+            tap("进驻总览")
+        end, 10) then
+        return
+    end
+    path.控制中枢换班(1)
+    -- path.会客厅换班()
     path.制造换班()
     path.贸易换班()
     path.总览换班()
 end
 
-path.控制中枢换班 = function()
+path.控制中枢换班 = function(a)
     if disable_control_shift then return end
-    return path.会客厅换班("控制中枢")
+    return path.会客厅换班("控制中枢", a)
+end
+
+path.发电站换班 = function()
+    if disable_manu_shift and not trading then return end
+
+    -- if not debug then return end
+    local station_color = "#CCFF66"
+    local type
+    local good
+
+
+    local f
+    f = function(i, station, stationLevel)
+        path.跳转("基建")
+
+
+        -- 进入发电站
+        if not wait(function()
+                if not findOne("进驻总览") or not findOne("缩放结束") then
+                    return true
+                end
+                tap(station)
+            end) then
+            return
+        end
+
+        if not appear({ "进驻信息", "进驻信息选中" }, 5) then return end
+        if not wait(function()
+                if findOne("筛选") then return true end
+                if findOne("进驻信息选中") then
+                    wait(function()
+                        if findOne("筛选") then return true end
+                        tap("进驻第一人")
+                    end, 1)
+                elseif findOne("进驻信息") then
+                    tap("进驻信息")
+                    ssleep(.2)
+                    wait(function()
+                        if findOne("筛选") then return true end
+                        tap("进驻第一人")
+                    end, 1)
+                end
+            end, 5) then
+            return
+        end
+
+        if not wait(function()
+                if findOne("干员未选中") and findOne("第一干员未选中") then
+                    return true
+                end
+                tap("第一干员未选中")
+                ssleep(.2)
+            end, 5) then
+            return
+        end
+
+        log(1217, tradingStationLevel, manufacturingStationLevel, powerStationLevel,
+            dormitoryLevel)
+
+        local stationType = "发电站"
+        chooseOperator(stationType, type, stationLevel, tradingStationNum,
+            virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
+            goldStationNum, totalStationLevel)
+
+        wait(function(reset_wait_start_time)
+            tap("确认蓝")
+            if findAny({ "进驻信息", "进驻信息选中" }) then
+                return true
+            end
+            if findOne("正在提交反馈至神经") then
+                reset_wait_start_time()
+            end
+        end, 5)
+    end
+
+    -- 找到所有制造站
+    local station = powerStation
+    local stationLevel = powerStationLevel
+    for i = 1, #station do f(i, station[i], stationLevel[i]) end
 end
 
 path.办公室换班 = function(stationType)
     if disable_office_shift then return end
     -- TODO: 感觉没必要对办公室做处理，又没做体系
-    if 1 then return end
+    --if 1 then return end
     stationType = stationType or "办公室"
 
     path.跳转("基建")
@@ -2917,7 +3008,7 @@ path.办公室换班 = function(stationType)
     end
 
     chooseOperator(stationType, type, stationLevel, tradingStationNum,
-        powerStationNum, dormitoryCapacity, dormitoryLevelSum,
+        virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
         goldStationNum, totalStationLevel)
 
     if not wait(function(reset_wait_start_time)
@@ -2931,10 +3022,11 @@ path.办公室换班 = function(stationType)
     end
 end
 
-path.会客厅换班 = function(stationType)
+path.会客厅换班 = function(stationType, a)
     if disable_meeting_shift and not stationType then return end
 
     stationType = stationType or "会客厅"
+    log(2946, stationType)
     -- 进总览
     -- path.跳转("基建")
     -- if not wait(function()
@@ -2943,7 +3035,7 @@ path.会客厅换班 = function(stationType)
     -- end, 10) then return end
 
     -- 检查是否缺人，不缺不换
-    if not appear("入驻干员" .. stationType, .5) and findOne("撤下干员") and
+    if not a and not appear("入驻干员" .. stationType, .5) and findOne("撤下干员") and
         not findOne("入驻干员" .. stationType) then
         log("无入驻干员")
         return
@@ -2974,7 +3066,7 @@ path.会客厅换班 = function(stationType)
     end
 
     chooseOperator(stationType, type, stationLevel, tradingStationNum,
-        powerStationNum, dormitoryCapacity, dormitoryLevelSum,
+        virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
         goldStationNum, totalStationLevel)
 
     if not wait(function(reset_wait_start_time)
