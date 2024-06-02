@@ -1244,9 +1244,9 @@ controlStationOperatorBest = function(operator)
         end
         if isCharExsit["麒麟R夜刀"] and isCharExsit["火龙S黑角2"] then
             trading_acc = true
-            mood_reduce = true
+            manu_acc = true
         elseif isCharExsit["麒麟R夜刀"] and isCharExsit["火龙S黑角"] then
-            mood_reduce = true
+            manu_acc = true
         else
             isCharExsit["麒麟R夜刀"] = false
             isCharExsit["火龙S黑角"] = false
