@@ -1,45 +1,3 @@
-fetchSkillIcon = function()
-    toast("正在检查更新基建图标...")
-    if disable_hotupdate then return end
-    local url = update_source .. '/skill.zip'
-    -- log("url", url)
-    -- if beta_mode then url = url .. '.beta' end
-    local md5url = url .. '.md5'
-    local path = getWorkPath() .. '/skill.zip'
-    local extract_path = getWorkPath() .. '/skill'
-
-    --使用本地
-    --extractAssets("main.rc", getWorkPath(), "skill.zip")
-    --unZip(path, extract_path)
-
-    local md5path = path .. '.md5'
-    if downloadFile(md5url, md5path) == -1 then
-        toast("下载基建图标校验数据失败")
-        ssleep(3)
-        return
-    end
-    local f = io.open(md5path, 'r')
-    local expectmd5 = f:read() or '1'
-    f:close()
-    if expectmd5 == loadConfig("skill_md5", "2") then
-        toast("已经是最新版基建图标")
-        return
-    end
-    if downloadFile(url, path) == -1 then
-        toast("下载最新基建图标失败")
-        ssleep(3)
-        return
-    end
-    if fileMD5(path) ~= expectmd5 then
-        toast("基建图标校验失败")
-        ssleep(3)
-        return
-    end
-    unZip(path, extract_path)
-    saveConfig("skill_md5", expectmd5)
-    return restartScript()
-end
-
 discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
     -- 异步滑动
     -- local delay = swipo(false, true)
@@ -880,7 +838,7 @@ initPngdata = function()
 
     -- 读取数据
     local f = io.open(getWorkPath() .. '/skill/skillicon2operator.json', 'r')
-    skillpng2operator = f:read()
+    skillpng2operator = f:read("*a")
     f:close()
     local status
     status, skillpng2operator = pcall(JsonDecode, skillpng2operator)
@@ -921,7 +879,6 @@ initPngdata = function()
         办公室 = officePngdata,
         发电站 = powerPngdata,
     }
-
     local s = ''
     for v, _ in pairs(skillpng2operator) do
         local pngdata

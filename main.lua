@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "06.03 01:10"
+release_date = "06.03 22:21"
 update_announcement = '最近更新：【孤星】活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -96,7 +96,6 @@ showControlBar(true)
 setEventCallback()
 hotUpdate()
 fetchMaps()
---fetchSkillIcon()
 check_root_mode()
 unpacking_library()
 enable_accessibility_service()
@@ -117,7 +116,7 @@ cloud.startHeartBeat()
 if debug_mode then
     log("debug_mode")
     ssleep(1)
-    path.基建换班()
+    initPngdata()
     -- showUI("auto_login")
     -- print(findOne("生息演算主页进入"))
     -- raise.auto_raise()
