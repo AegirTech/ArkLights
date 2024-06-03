@@ -501,7 +501,6 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
         robot = 0            -- 工程机器人
         storage = {}         -- 容量效果
         standard = 0         -- 标准化技能数量
-        knight = 0           --骑士数量
         rhine = 0            --莱茵科技数量
         metallics = 0        --金属工艺数量
         station = 0          -- 根据设施加成
@@ -546,11 +545,25 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                     -- base = base + 0.20 * tradingStationNum
                     station = station + 0.20 * tradingStationNum
                 end
+            elseif icon == 'bskill_man_gold3' then --杏仁
+                if goodType == '贵金属' then
+                    base = base + 0.25
+                end
+                if isCharExsit["涤火杰西卡"] then
+                    base = base + 0.05
+                end
+            elseif icon == 'bskill_man_gold&blacksteel' then --杏仁2
+                if goodType == '贵金属' then
+                    base = base + 0.02
+                    if isCharExsit["涤火杰西卡"] then
+                        base = base + 0.02
+                    end
+                end
             elseif icon == 'bskill_man_spd_bd_n1' then
                 -- 迷迭香不考虑
             elseif icon == 'bskill_man_spd_bd1' then
                 -- 迷迭香不考虑
-            elseif icon == 'bskill_man_spd_bd2' then
+            elseif icon == 'bskill_man_spd_bd2' then --迷迭香2
                 if isCharExsit["絮雨"] then
                     base = base + 0.45
                 end
@@ -603,7 +616,6 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 elseif table.findv({ "白面鸮", "赫默", "多萝西", "星源" }, name) then
                     rhine = rhine + 1
                 elseif table.findv({ "远牙", "灰毫", "野鬃" }, name) then
-                    knight = knight + 1
                     if isCharExsit["薇薇安娜"] then base = base + 0.07 end
                     if isCharExsit["焰尾"] then
                         if goodType == "作战记录" then
@@ -613,6 +625,9 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                         end
                     end
                     if isCharExsit["正义骑士号"] and name == "野鬃" then base = base + 0.052 end
+                end
+                if isCharExsit["涤火杰西卡"] and table.findv({ "香草", "杰西卡" }, name) then
+                    base = base + 0.05
                 end
             elseif icon == 'bskill_man_limit&cost3' then
                 storage[operatoridx] = (storage[operatoridx] or 0) + 16
@@ -638,7 +653,6 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 elseif table.findv({ "白面鸮", "赫默", "星源" }, name) then
                     rhine = rhine + 1
                 elseif table.findv({ "远牙", "灰毫", "野鬃" }, name) then
-                    knight = knight + 1
                     if isCharExsit["薇薇安娜"] then base = base + 0.07 end
                     if isCharExsit["焰尾"] then
                         if goodType == "作战记录" then
@@ -1431,6 +1445,16 @@ controlStationOperatorBest = function(operator)
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_c_spd1') then -- 魔王
                 office_acc = true
                 table.insert(best, o)
+                break
+            end
+        end
+    end
+
+    if #best < 5 then
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_bd_spd') then --涤火杰西卡2
+                table.insert(best, o)
+                isCharExsit["涤火杰西卡"] = true
                 break
             end
         end
