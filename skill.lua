@@ -1238,11 +1238,12 @@ controlStationOperatorBest = function(operator)
             if table.includes({ o[1], o[2] }, "bskill_ctrl_token_p_spd2") then --麒麟r夜刀
                 table.insert(best, o)
                 isCharExsit["麒麟R夜刀"] = true
-            elseif table.includes({ o[1], o[2] }, "bskill_ctrl_token_t_spd") then --火龙s黑角
+            elseif table.includes({ o[1], o[2] }, "bskill_ctrl_token_t_spd") then --火龙s黑角2
                 table.insert(best, o)
                 isCharExsit["火龙S黑角2"] = true
                 isCharExsit["火龙S黑角"] = true
-            elseif table.includes({ o[1], o[2] }, "bskill_ctrl_felyne") then --火龙s黑角0
+            elseif table.includes({ o[1], o[2] }, "bskill_ctrl_felyne") and
+                not table.includes({ o[1], o[2] }, "bskill_ctrl_token_t_spd") then --火龙s黑角0
                 table.insert(best, o)
                 isCharExsit["火龙S黑角"] = true
             end
@@ -1286,7 +1287,7 @@ controlStationOperatorBest = function(operator)
 
     if #best < 5 and isCharExsit["絮雨"] then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd2') then --夕
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then --夕
                 table.insert(best, o)
             end
         end
