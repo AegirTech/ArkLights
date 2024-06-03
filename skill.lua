@@ -565,6 +565,9 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 end
             elseif icon == 'bskill_man_spd3' then
                 base = base + 0.30
+                if table.findv({ "淬羽赫默" }, name) then
+                    rhine = rhine + 1
+                end
             elseif icon == 'bskill_man_spd2' then
                 base = base + 0.25
                 local name = icons[operatoridx][3]
