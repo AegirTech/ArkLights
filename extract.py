@@ -542,7 +542,7 @@ def process_transparent_pixels(
             for i in range(image.width):
                 for j in range(image.height):
                     r, g, b, a = pixels[i, j]
-                    if a == 0:
+                    if a < 17:
                         pixels[i, j] = (61, 61, 61, 255)
             image.save(output_path)
         else:
