@@ -21,7 +21,7 @@ if getPackageName() == "com.nx.nxproj.assist" then
     print("开发模式")
     dev_mode = true
     always_enable_log = true
-    debug_mode = true
+    --debug_mode = true
 end
 zl_enable_tap_before_drag = true
 zero_wait_click = true
@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "06.03 22:26"
+release_date = "06.04 16:55"
 update_announcement = '最近更新：【孤星】活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
