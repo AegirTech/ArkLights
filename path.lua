@@ -2636,7 +2636,7 @@ path.总览换班 = function()
     local first_look = false
     if disable_control_shift and disable_meeting_shift then first_look = true end
     local visitedy = {}
-    f = function()
+    f = function(times)
         -- 0.1 是 从干员列表退出后 取消连续点击 保证滑动手势有效
         -- 0.5 是 首次进入界面时 需要多点时间
         -- local timeout = first_look and .5 or .1
@@ -2736,7 +2736,13 @@ path.总览换班 = function()
             visitedy[height] = (visitedy[height] or 0) + 1
             log(865, height, p, visitedy)
         end
-
+        local stationType = "宿舍"
+        log("times", times)
+        if times >= 7 then
+            chooseOperator(stationType)
+            ssleep(.2)
+            tap({ scale(964 * 1.5), scale(43 * 1.5) })
+        end
         if not wait(function()
                 if findOne("筛选取消") then return true end
                 tap("筛选")
@@ -2842,7 +2848,7 @@ path.总览换班 = function()
         end
         if i == 60 then stop('总览换班滑动', 'cur') end
         visitedy = {}
-        while f() do log(475) end
+        while f(i) do log(475) end
         if reach_bottom then break end
         -- sample bottom after first detect
         if not bottom then bottom = sample("进驻总览底部") end

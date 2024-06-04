@@ -446,9 +446,6 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
     -- 输入index组合，计算平均加成，与groundtruth差距：
     -- 1. 只考虑8小时平均收益，非实际换班间隔
     -- 2. 12心情以下干员不考虑，也忽略心情消耗
-    -- 3. 忽略 迷迭香所有技能 效果
-    -- 4. 忽略 意识协议 效果（标准化技能识别不支持）
-    -- 5. 忽略 我寻思能行 效果（发电站技能加成）
     local base, disable_moon_effect, storage, storages, standard, all, station,
     station_only, only_need, robot
 
@@ -922,6 +919,7 @@ initPngdata = function()
     controlPngdata = {}
     officePngdata = {}
     powerPngdata = {}
+    dormitoryPngdata = {}
     stationType2pngData = {
         制造站 = manufacturingPngdata,
         贸易站 = tradingPngdata,
@@ -929,6 +927,7 @@ initPngdata = function()
         控制中枢 = controlPngdata,
         办公室 = officePngdata,
         发电站 = powerPngdata,
+        宿舍 = dormitoryPngdata,
     }
     local s = ''
     for v, _ in pairs(skillpng2operator) do
@@ -945,6 +944,8 @@ initPngdata = function()
             pngdata = officePngdata
         elseif v:startsWith("bskill_pow") then
             pngdata = powerPngdata
+        elseif v:startsWith("bskill_dorm") then
+            pngdata = dormitoryPngdata
         else
             pngdata = {}
         end
@@ -1075,6 +1076,10 @@ chooseOperator = function(stationType, goodType, stationLevel,
         end
     elseif stationType == "控制中枢" then
         best, best_score = controlStationOperatorBest(operator)
+        log("控制中枢选", best)
+    elseif stationType == "宿舍" then
+        best, best_score = dormitoryOperatorBest(operator, goodType, virtralPowerStationNum)
+        log("宿舍选", best)
     end
     sleep(max(0, 500 - (time() - start_time)))
     tap("清空选择")
@@ -1229,10 +1234,11 @@ controlStationOperatorBest = function(operator)
         'bskill_ctrl_tachanka',        -- 机枪
     }
     ]]
-    local manu_acc = false
-    local trading_acc = false
-    local mood_reduce = false
-    local office_acc = false
+
+    local manu_acc = false    -- 制造加速
+    local trading_acc = false -- 贸易加速
+    local mood_reduce = false -- 其他设施心情减免
+    local office_acc = false  -- 办公室加速
 
     if #best <= 2 and not manu_acc and not trading_acc then
         for _, o in pairs(operator) do
@@ -1287,7 +1293,6 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-
     if #best < 5 and isCharExsit["桑葚"] then
         log("寻找重岳")
         for _, o in pairs(operator) do
@@ -1319,8 +1324,6 @@ controlStationOperatorBest = function(operator)
             end
         end
     end
-
-
 
     if #best < 5 and (isCharExsit["絮雨"] or isCharExsit["桑葚"]) then
         for _, o in pairs(operator) do
@@ -1404,6 +1407,7 @@ controlStationOperatorBest = function(operator)
             end
         end
     end
+
     if #best < 5 then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_bd_spd') then --涤火杰西卡2
@@ -1413,6 +1417,7 @@ controlStationOperatorBest = function(operator)
             end
         end
     end
+
     if #best < 5 and not office_acc then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_c_spd1') then -- 魔王
@@ -1423,8 +1428,6 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-
-
     if #best < 5 then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_ela') then --艾拉
@@ -1433,8 +1436,6 @@ controlStationOperatorBest = function(operator)
             end
         end
     end
-
-
 
     for i = 1, 5 - #best do
         for _, o in pairs(operator) do
@@ -1447,11 +1448,99 @@ controlStationOperatorBest = function(operator)
             end
         end
     end
-
-
-
-    log(best)
     --best = table.slice(table.extend(best, remain), 1, 5)
+    return best, best_score
+end
+
+
+--挑选两个宿管
+dormitoryOperatorBest = function(operator, goodType, virtralPowerStationNum)
+    -- 过滤心情小于阈值的干员
+
+    local best = {}
+    local best_score = -1
+
+    local all = {}
+    local single = {}
+
+    if isCharExsit["迷迭香"] then
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1_2") and table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1_n3") then   --车尔尼
+                table.insert(best, o)
+            elseif table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1") and table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1_n2") then --爱丽丝
+                table.insert(best, o)
+            elseif table.includes({ o[1], o[2] }, "bskill_dorm_bdnum") or
+                table.includes({ o[1], o[2] }, "bskill_dorm_rec_allbd") or o[6] == "塑心" then --塑心
+                table.insert(best, o)
+            end
+        end
+        return best, best_score
+    end
+    -- all
+    for _, o in pairs(operator) do
+        local s = 0
+        for _, icon in pairs({ o[1], o[2] }) do
+            if icon == "bskill_dorm_all1" then
+                s = s + 0.1
+            elseif icon == "bskill_dorm_all2" then
+                s = s + 0.15
+            elseif icon == "bskill_dorm_all3" then
+                s = s + 0.2
+            elseif icon == "bskill_dorm_all&one1" then --杜林
+                s = s + 0.2
+                if isCharExsit["鸿雪"] then
+                    s = s + 1
+                end
+            elseif icon == "bskill_dorm_all&one2" then --杜林
+                s = s + 0.25
+                if isCharExsit["鸿雪"] then
+                    s = s + 1
+                end
+            elseif icon == "bskill_dorm_all&one3" then
+                s = s + 0.1
+            elseif icon == "bskill_hire_spd3" then
+                s = s + 0.35
+            elseif icon == "bskill_dorm_powToRecAll2" then
+                s = s + 0.15 + virtralPowerStationNum * 0.05
+            end
+        end
+        table.insert(best, { s, o })
+        table.sort(best, function(a, b) return a[1] > b[1] end)
+        all = best[1][2]
+    end
+
+    -- single
+    for _, o in pairs(operator) do
+        local s = 0
+        for _, icon in pairs({ o[1], o[2] }) do
+            if icon == "bskill_dorm_single1" then
+                s = s + 0.55
+            elseif icon == "bskill_dorm_single2" then
+                s = s + 0.65
+            elseif icon == "bskill_dorm_single3" then
+                s = s + 0.7
+            elseif icon == "bskill_dorm_single4" then
+                s = s + 0.75
+            elseif icon == "bskill_dorm_single&one01" then
+                s = s + 0.2
+            elseif icon == "bskill_dorm_single&one02" then
+                s = s + 0.25
+            elseif icon == "bskill_dorm_single&one21" then
+                s = s + 0.4
+            elseif icon == "bskill_dorm_single&one22" then
+                s = s + 0.5
+            elseif icon == "bskill_dorm_single&one11" then
+                s = s + 0.3
+            elseif icon == "bskill_dorm_single&one12" then
+                s = s + 0.35
+            end
+        end
+        table.insert(best, { s, o })
+        table.sort(best, function(a, b) return a[1] > b[1] end)
+        single = best[1][2]
+    end
+    best = { all, single }
+    log(best)
     return best, best_score
 end
 
