@@ -2921,16 +2921,16 @@ path.发电站换班 = function()
                     wait(function()
                         if findOne("筛选") then return true end
                         tap("进驻第一人")
-                    end, 1)
+                    end, 2)
                 elseif findOne("进驻信息") then
                     tap("进驻信息")
                     ssleep(.2)
                     wait(function()
                         if findOne("筛选") then return true end
                         tap("进驻第一人")
-                    end, 1)
+                    end, 3)
                 end
-            end, 5) then
+            end, 7) then
             return
         end
 
@@ -2939,8 +2939,9 @@ path.发电站换班 = function()
                     return true
                 end
                 tap("第一干员未选中")
-                ssleep(.2)
-            end, 5) then
+                ssleep(.5)
+            end, 7) then
+            log("发电站超时")
             return
         end
 
