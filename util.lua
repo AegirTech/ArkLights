@@ -4439,9 +4439,9 @@ update_state_from_ui = function()
     job = parse_from_ui("now_job_ui", all_job)
 
     -- 活动开放时间段
-    hd_nickname = "CW"
-    hd_max_stage = 10
-    hd_open_time_end = parse_time("202406030400")
+    hd_nickname = "BP"
+    hd_max_stage = 7
+    hd_open_time_end = parse_time("202406190400")
     hd2_open_time_end = parse_time("202401160400") -- 故事集开放时间段
     hd_mod = "SS"
 

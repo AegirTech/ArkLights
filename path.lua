@@ -5162,7 +5162,7 @@ path.活动 = function(x)
 
     if not skip_guide then
         path.跳转("首页")
-        tap("面板活动")
+        tap("面板活动2")
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航1"] = point["活动导航EX"]
@@ -5615,7 +5615,7 @@ path.活动 = function(x)
         返回循心初始页面()
     end
 
-    car_check1() --有些大型活动会自带一些任务
+    --car_check1() --有些大型活动会自带一些任务
     log("skip_guide", skip_guide)
     if not skip_guide then
         if not findOne("活动导航0") then return end
