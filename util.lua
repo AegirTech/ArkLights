@@ -5076,9 +5076,9 @@ end
 restartPackage = function()
     -- log("restart_mode_hook", loadConfig("restart_mode_hook", ''))
     -- log("hideUIOnce", loadConfig("hideUIOnce", ''))
-    if loadConfig("NotRestart", "") == "true" then
-        exitScript()
-    end
+    -- if loadConfig("NotRestart", "") == "true" then
+    --     exitScript()
+    -- end
 
     if getApkVerInt() == 1 then
         disable_restart_package = true
