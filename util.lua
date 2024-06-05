@@ -4261,7 +4261,7 @@ parse_fight_config = function(fight_ui)
         if table.find({ 'HD-', }, startsWithX(v)) then
             local idx = v:gsub(".-(%d+)$", '%1')
             idx = tonumber(idx) or 0
-            if idx > hd_max_stage then
+            if idx > hd_max_stage and not copy_homework then
                 v = "HD-" .. (hd_max_stage or '')
             end
         end
