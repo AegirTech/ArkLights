@@ -1549,7 +1549,7 @@ get_bilibili_url = function()
     local ret = httpGet(url)
     local status
     status, ret = pcall(JsonDecode, ret)
-    ret = get(ret, 'data', 'android_download_link')
+    ret = get(ret, 'data', 'android_download_link2')
     if type(ret) == 'string' and #ret > 0 then
         return ret
     end
@@ -1563,13 +1563,23 @@ auto_update_game = function()
         return
     end
     log("开始检查游戏更新")
-    if game_check_version("com.hypergryph.arknights") == false then
+    log('使用方式' .. auto_update_mode .. '更新游戏客户端，更新 ' .. auto_update_game_select)
+    if (auto_update_game_select == 0 or auto_update_game_select == 1) and game_check_version("com.hypergryph.arknights") == false then
         toast("官服更新开始")
-        install_game(parse_download_url("https://ak.hypergryph.com/downloads/android_lastest"))
+        local url = "https://ak.hypergryph.com/downloads/android_lastest"
+        if auto_update_mode == 0 then
+            install_game(parse_download_url(url))  --使用curl下载并安装
+        else
+            install_game2(parse_download_url(url)) --用自带的更新
+        end
     end
-    if game_check_version("com.hypergryph.arknights.bilibili") == false then
+    if (auto_update_game_select == 0 or auto_update_game_select == 2) and game_check_version("com.hypergryph.arknights.bilibili") == false then
         toast("b服更新开始")
-        install_game(get_bilibili_url())
+        if auto_update_mode == 0 then
+            install_game(get_bilibili_url())  --使用curl下载并安装
+        else
+            install_game2(get_bilibili_url()) --用自带的更新
+        end
     end
 end
 
@@ -1609,6 +1619,26 @@ install_game = function(url)
         exec("su root sh -c 'pm install -r " .. downloadpath .. "'")
         --删除apk
         exec("su root rm -rf " .. getWorkPath() .. '/apk/arknights.apk')
+        --log("install finish",downloadpath)
+    else
+        log("下载失败，请检查网络连接")
+    end
+    console.dismiss()
+end
+
+--用懒人自带的下载并安装游戏
+install_game2 = function(url)
+    console.show()
+    os.execute("mkdir " .. getWorkPath() .. '/apk/')
+    downloadpath = getWorkPath() .. '/apk/arknights.apk'
+    log("开始下载", url, downloadpath)
+    if downloadFile(url, downloadpath, function(process)
+            if process % 5 == 0 then toast("下载进度：" .. process .. "%") end
+        end) == 0 then --下载进度
+        --使用root权限安装
+        exec("su root sh -c 'pm install -r " .. downloadpath .. "'")
+        --删除apk
+        exec("su root rm -rf " .. downloadpath)
         --log("install finish",downloadpath)
     else
         log("下载失败，请检查网络连接")

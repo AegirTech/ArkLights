@@ -3151,6 +3151,8 @@ show_debug_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "auto_update_gameclient",
         "自动更新游戏客户端", false)
+    ui.addSpinner(layout, "auto_update_mode", { "方式一", "方式二" }, 1)
+    ui.addSpinner(layout, "auto_update_game_select", { "官服和B服", "只更新官服", "只更新B服" }, 0)
 
     newRow(layout)
     ui.addCheckBox(layout, "delete_download_floder",
