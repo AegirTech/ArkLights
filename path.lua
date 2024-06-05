@@ -5619,7 +5619,7 @@ path.活动 = function(x)
     log("skip_guide", skip_guide)
     if not skip_guide then
         if not findOne("活动导航0") then return end
-        log("111")
+        log("已进入活动页面,根据" .. x .. "选择入口")
         if utf8.left(x, 5) == "HD-EX" then --提取x的前面五个，如果是"HD-EX"，则进入活动的ex界面
             if not wait(function()
                     tap("活动导航EX")
@@ -5628,7 +5628,7 @@ path.活动 = function(x)
                 end, 5) then
                 return
             end
-        elseif utf8.left(x, 5) == "HD-S-" or utf8.left(x, 6) == "HD-MO-" then --提取x的前面4个，如果是"HD-S"，则进入活动的S界面
+        elseif utf8.left(x, 5) == "HD-S-" or utf8.left(x, 6) == "HD-MO-" then --提取x的前面4个，如果是"HD-S-"，则进入活动的S界面
             if not wait(function()
                     tap("活动导航S")
                     ssleep(.5)
@@ -5640,7 +5640,10 @@ path.活动 = function(x)
             if not wait(function()
                     tap("活动导航1")
                     ssleep(.5)
-                    if disappear("活动导航0", 1) then return true end
+                    if disappear("活动导航0", 1) then
+                        ssleep(.5)
+                        return true
+                    end
                 end, 5) then
                 return
             end
