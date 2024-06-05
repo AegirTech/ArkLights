@@ -1564,7 +1564,7 @@ auto_update_game = function()
     end
     log("开始检查游戏更新")
     log('使用方式' .. auto_update_mode .. '更新游戏客户端，更新 ' .. auto_update_game_select)
-    if (auto_update_game_select == 0 or auto_update_game_select == 1) and game_check_version("com.hypergryph.arknights") == false then
+    if (auto_update_game_select ~= 2) and game_check_version("com.hypergryph.arknights") == false then
         toast("官服更新开始")
         local url = "https://ak.hypergryph.com/downloads/android_lastest"
         if auto_update_mode == 0 then
@@ -1573,7 +1573,7 @@ auto_update_game = function()
             install_game2(parse_download_url(url)) --用自带的更新
         end
     end
-    if (auto_update_game_select == 0 or auto_update_game_select == 2) and game_check_version("com.hypergryph.arknights.bilibili") == false then
+    if (auto_update_game_select ~= 1) and game_check_version("com.hypergryph.arknights.bilibili") == false then
         toast("b服更新开始")
         if auto_update_mode == 0 then
             install_game(get_bilibili_url())  --使用curl下载并安装

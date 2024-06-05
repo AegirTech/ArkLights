@@ -5487,6 +5487,8 @@ update_state_from_debugui = function()
     restart_package_interval = str2int(restart_package_interval, 3600)
 
     if restart_on_crontab_timeout == nil then restart_on_crontab_timeout = true end
+    auto_update_mode = str2int(auto_update_mode, 1)
+    auto_update_game_select = str2int(auto_update_game_select, 0)
 end
 
 -- 基建心情阈值与QQ号
