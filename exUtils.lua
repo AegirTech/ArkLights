@@ -1606,23 +1606,34 @@ end
 -- 使用curl下载并安装
 install_game = function(url)
     console.show()
-    exec("mkdir " .. getWorkPath() .. '/apk/')
-    local downloadpath = getWorkPath() .. '/apk/arknights.apk'
-    local curlCommand = curlpath .. ' -o "' .. downloadpath .. '" "' .. url .. '"'
+    -- exec("mkdir " .. getWorkPath() .. '/apk/')
+
+    local downloadpath = "/storage/emulated/0/" .. package .. '/arknights.apk'
+    local log_file = "/storage/emulated/0/" .. package .. '/log/curl.log'
+    local curlCommand = curlpath .. ' -C - -o "' .. downloadpath .. '" "' .. url .. '" > "' .. log_file .. '" 2>&1 &'
     if (folder_exists("/data/user/0/com.hypergryph.arknights/files/AB")) then
         exec("su root sh -c 'rm -rf /data/user/0/com.hypergryph.arknights/files/'")
     end
     log("开始下载", url, downloadpath)
     log(curlCommand)
-    if exec(curlCommand) == true then
-        --使用root权限安装
-        exec("su root sh -c 'pm install -r " .. downloadpath .. "'")
-        --删除apk
-        exec("su root rm -rf " .. getWorkPath() .. '/apk/arknights.apk')
-        --log("install finish",downloadpath)
-    else
-        log("下载失败，请检查网络连接")
+    exec(curlCommand)
+    ssleep(2)
+    while true do
+        local file = io.open(log_file, "r")
+        local log_file = file:read("*a")
+        file:close()
+        if string.find(log_file, " 100 ") then
+            log("下载完成")
+            break
+        end
+        ssleep(3)
     end
+    ssleep(2)
+    --使用root权限安装
+    exec("su root sh -c 'pm install -r " .. downloadpath .. "'")
+    --删除apk
+    exec("su root rm -rf " .. downloadpath)
+    log("安装完成", downloadpath)
     console.dismiss()
 end
 

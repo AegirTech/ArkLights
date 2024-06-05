@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "06.05 19:49"
+release_date = "06.05 21:49"
 update_announcement = '最近更新：修复【自动更新游戏客户端】,【生路】导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -116,7 +116,8 @@ cloud.startHeartBeat()
 if debug_mode then
     log("debug_mode")
     ssleep(1)
-    --initPngdata()
+    -- exit()
+    -- --initPngdata()
 
     --用于获取活动的剧情关，教学关三星颜色信息
     -- local x = 'HD-ST-3'
