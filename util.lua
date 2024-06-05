@@ -3359,9 +3359,6 @@ show_debug_ui = function()
     ui.addCheckBox(layout, "disable_hotupdate", "禁用自动更新", false)
 
     newRow(layout)
-    ui.addCheckBox(layout, "beta_mode", "启用调试更新源", false)
-
-    newRow(layout)
     ui.addCheckBox(layout, "debug_mode", "启用测试模式", false)
 
     newRow(layout)
@@ -4579,6 +4576,7 @@ setEventCallback = function()
         saveConfig("hideUIOnce", "false")
         saveConfig("restart_mode_hook", '')
         saveConfig("crontab_next_time_on_start", '')
+        saveConfig("NotRestart", "true")
         disableRootToast(true)
         console.show()
     end)
@@ -4586,6 +4584,7 @@ setEventCallback = function()
     setUserEventCallBack(function(type)
         disable_log = false
         log("重启", type)
+        saveConfig("NotRestart", "false")
         saveConfig("hideUIOnce", "false")
         saveConfig("restart_mode_hook", '')
         disableRootToast(true)
@@ -5077,6 +5076,10 @@ end
 restartPackage = function()
     -- log("restart_mode_hook", loadConfig("restart_mode_hook", ''))
     -- log("hideUIOnce", loadConfig("hideUIOnce", ''))
+    if loadConfig("NotRestart", "") == "true" then
+        exitScript()
+    end
+
     if getApkVerInt() == 1 then
         disable_restart_package = true
         log("debug")
