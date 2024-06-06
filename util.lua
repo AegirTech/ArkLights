@@ -3712,6 +3712,9 @@ show_auto_ui = function()
     ui.addCheckBox(layout, "raise_material", "材料合成（未完成）", false)
 
     newRow(layout)
+    ui.addCheckBox(layout, "not_use_ocr", "基建不使用ocr（低配置或基建崩溃建议打开）", false)
+
+    newRow(layout)
     addButton(layout, nil, "仓库识别(未完成)", "raise_storage_dentify")
     addButton(layout, nil, "自动培养",
         make_jump_ui_command(layout, nil,
@@ -4295,7 +4298,7 @@ parse_fight_config = function(fight_ui)
             for _ = 1, 99 do table.insert(expand_fight, '长期委托2') end
             for _ = 1, 99 do table.insert(expand_fight, '长期委托3') end
         elseif table.includes({ 'HD' }, v) then
-            for i = hd_max_stage, hd_max_stage - 3, -1 do
+            for i = hd_max_stage, hd_max_stage - 2, -1 do
                 for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
             end
         elseif table.includes({ 'HD1' }, v) then

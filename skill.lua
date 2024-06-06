@@ -34,7 +34,7 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
     end
 
     -- card = table.slice(card, 4, 4)
-    -- log(114, card)
+    log(114, card)
     local empty1_num = 0
     for idx, v in pairs(card) do
         -- 技能判断
@@ -45,9 +45,14 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
             v[1] + scale(70), v[2] + scale(18), v[1] + scale(123), v[2] + scale(70),
         }
         --log("icon1", icon1, v[1], v[2])
-        local name = correctCharName(ocro({
-            v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
-        }))
+        if not_use_ocr then
+            local name = ""
+        else
+            local name = correctCharName(ocro({
+                v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
+            }))
+        end
+
         local png = ''
         local png2 = ''
         if not mood_only then
@@ -55,7 +60,7 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
             png =
                 findBuildingSkill(icon1[1], icon1[2], icon1[3], icon1[4], pngdata) or
                 png
-
+            log("png1", png, name)
             -- 已到结尾，返回
             if png == 'empty1' then
                 log("未识别到技能1", name)
@@ -74,6 +79,7 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
                 png2 =
                     findBuildingSkill(icon2[1], icon2[2], icon2[3], icon2[4], pngdata) or
                     png2
+                log("png2", png2, name)
                 if png2 ~= 'empty2' and not disable_log then
                     operator2 = skillpng2operator[png2]
                     operator = table.intersect(operator, operator2)
@@ -95,7 +101,7 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
                 break
             end
         end
-        --log(129, idx, operator, mood, name)
+        log(129, idx, operator, mood, name)
         --[[
         -- 异格将心情设为负值
         local yg1 = { v[1] + scale(7), v[2] - scale(219) }

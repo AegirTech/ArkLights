@@ -45,7 +45,7 @@ end
 
 ocrex = function(r)
     if type(r) == "string" then r = point[r] end
-    --log("ocrinput", r)
+    log("ocrinput", r)
     local BitMap = LuaEngine.snapShot(r[1], r[2], r[3], r[4])
     local ret = PaddLeOCR.Detect(BitMap, 0.3, 0.5)
     local res = {}
@@ -61,7 +61,7 @@ ocrex = function(r)
     --[[if max_height then
 	r = table.filter(r, function(x) return (x.b - x.t) <= max_height end)
 	end]]
-    --log("ocroutput", res)
+    log("ocroutput", res)
 
     --释放 LuaEngine.snapShot 截取的图片 如不释放会导致内存溢出
     if BitMap ~= nil and BitMap.isRecycled() == false then
