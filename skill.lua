@@ -1,4 +1,4 @@
-discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
+discover = still_wrapper(function(operators, pngdata, pageid, mood_only, stationType)
     -- 异步滑动
     -- local delay = swipo(false, true)
     -- local start_time = time()
@@ -45,10 +45,9 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only)
             v[1] + scale(70), v[2] + scale(18), v[1] + scale(123), v[2] + scale(70),
         }
         --log("icon1", icon1, v[1], v[2])
-        if not_use_ocr then
-            local name = ""
-        else
-            local name = correctCharName(ocro({
+        local name = "干员名未识别"
+        if not not_use_ocr and not mood_only and table.findv({ "制造站", "发电站", "宿舍" }, stationType) then
+            name = correctCharName(ocro({
                 v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
             }))
         end
@@ -722,15 +721,15 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
         end
         if all['bskill_man_skill_spd'] then
             -- 水月，标准化技能数量
-            base = base + standard * 0.05 * all['bskill_man_skill_spd'] - 0.0002
+            base = base + standard * 0.0501 * all['bskill_man_skill_spd'] - 0.0002
         end
         if all['bskill_man_skill_spd2'] then
             -- 多萝西，莱茵科技技能数量
-            base = base + rhine * 0.05 * all['bskill_man_skill_spd2'] - 0.0002
+            base = base + rhine * 0.0501 * all['bskill_man_skill_spd2'] - 0.0002
         end
         if all['bskill_man_skill_spd3'] then
             -- 苍苔，金属工艺技能数量
-            if goodType == '贵金属' then base = base + metallics * 0.05 * all['bskill_man_skill_spd3'] - 0.0002 end
+            if goodType == '贵金属' then base = base + metallics * 0.0501 * all['bskill_man_skill_spd3'] - 0.0002 end
         end
 
         -- 禁止过小容量
@@ -1013,7 +1012,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
         -- if discover(operator,
         --             (not trading) and manufacturingPngdata or tradingPngdata, i) then
         -- log(stationType, #stationType2pngData[stationType])
-        if discover(operator, stationType2pngData[stationType], i) then break end
+        if discover(operator, stationType2pngData[stationType], i, false, stationType) then break end
 
         -- exit()
         -- 三次重试
@@ -1287,7 +1286,7 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best <= 4 then
+    if #best <= 4 and not not_use_ocr then                            --不使用ocr时无法区分松鼠团和标准化
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_psk') then -- 焰尾
                 table.insert(best, o)
@@ -1363,16 +1362,7 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best < 5 and not office_acc then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_c_spd') and
-                not table.includes({ o[1], o[2] }, 'bskill_ctrl_lda') then -- 老鲤c与t会判错
-                office_acc = true
-                table.insert(best, o)
-                break
-            end
-        end
-    end
+
 
     if #best < 5 and not (isCharExsit["絮雨"] or isCharExsit["桑葚"]) then
         for _, o in pairs(operator) do
@@ -1404,7 +1394,7 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best < 5 and (not (isCharExsit["絮雨"] or isCharExsit["桑葚"])) and isCharExsit["Lancet-2"] then
+    if #best < 5 and not not_use_ocr and (not (isCharExsit["絮雨"] or isCharExsit["桑葚"])) and isCharExsit["Lancet-2"] then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_p_bot') then --森蚺
                 table.insert(best, o)
@@ -1414,7 +1404,7 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best < 5 then
+    if #best < 5 and not not_use_ocr then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_bd_spd') then --涤火杰西卡2
                 table.insert(best, o)
