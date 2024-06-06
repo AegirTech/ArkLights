@@ -721,10 +721,12 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
         end
         if all['bskill_man_skill_spd'] then
             -- 水月，标准化技能数量
+            if not_use_ocr then standard = 1 end --自身至少是一个
             base = base + standard * 0.0501 * all['bskill_man_skill_spd'] - 0.0002
         end
         if all['bskill_man_skill_spd2'] then
             -- 多萝西，莱茵科技技能数量
+            if not_use_ocr then rhine = 1 end --自身至少是一个
             base = base + rhine * 0.0501 * all['bskill_man_skill_spd2'] - 0.0002
         end
         if all['bskill_man_skill_spd3'] then
