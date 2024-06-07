@@ -2739,6 +2739,9 @@ path.总览换班 = function()
         local stationType = "宿舍"
         log("times", times)
         if times >= 7 and isCharExsit["迷迭香"] then
+            ssleep(.2)
+            tap({ scale(880 * 1.5), scale(43 * 1.5) })
+            ssleep(.2)
             chooseOperator(stationType)
             ssleep(.2)
             tap({ scale(964 * 1.5), scale(43 * 1.5) })
