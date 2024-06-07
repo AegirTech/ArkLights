@@ -1135,16 +1135,20 @@ meetingStationOperatorBest = function(operator)
     for _, o in pairs(operator) do
         if table.includes({ o[1], o[2] }, 'bskill_meet_spdOwned1') then
             -- 禁用尤里卡
-        elseif o[1] == "bskill_meet_spd&cost" or o[2] == "bskill_meet_spd&cost" then
+        elseif o[1] == "bskill_meet_spd&cost" or o[2] == "bskill_meet_spd&cost" then -- 见行者
             table.insert(best, 1, o)
         elseif o[1] == "bskill_meet_spdNotOwned2" or o[2] ==
             "bskill_meet_spdNotOwned2" then
             -- 晓歌有人评测过吗
-            table.insert(best, 1, o)
-        elseif o[1] == "bskill_meet_exchange" or o[2] == "bskill_meet_exchange" then
-            table.insert(best, 1, o) -- 跃跃
-        elseif o[1] == "bskill_meet_spd3" or o[2] == "bskill_meet_spd3" then
             table.insert(best, o)
+        elseif o[1] == "bskill_meet_exchange" or o[2] == "bskill_meet_exchange" then -- 跃跃
+            table.insert(best, 1, o)
+        elseif table.includes({ o[1], o[2] }, 'bskill_meet_spd_hast1') then          --伊内丝
+            table.insert(best, o)
+        elseif o[1] == "bskill_meet_spd3" or o[2] == "bskill_meet_spd3" then
+            if o[6] ~= "伺夜" then
+                table.insert(best, o)
+            end
         else
             table.insert(remain, o)
         end
