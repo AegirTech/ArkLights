@@ -5779,7 +5779,7 @@ path.商店搬空 = function()
         return path.跳过剧情()
     end
 
-    if findOne("活动任务导航") then
+    if appear("活动任务导航", .6) then
         tap("活动任务导航")
         ssleep(.2)
         if appear("活动任务页面", 2) then
