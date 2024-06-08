@@ -236,6 +236,9 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
             elseif icon == 'bskill_tra_flow_gc1' then
                 base = base + 0.05
                 gold = gold + (gold // 4) * 2
+            elseif icon == 'bskill_tra_flow_durin' then --鸿雪2
+                --默认桃金娘和杜林在宿舍
+                gold = gold + 2
             elseif icon == 'bskill_tra_spd&limit_felyne' then --泰拉大陆调查团
                 base = base + 0.05
                 if isCharExsit["麒麟R夜刀"] and isCharExsit["火龙S黑角"] then
@@ -1056,6 +1059,13 @@ chooseOperator = function(stationType, goodType, stationLevel,
             dormitoryLevelSum,
             goldStationNum, goodType,
             stationLevel)
+        log("制造站选", best)
+        for i = 1, #best do
+            if table.findv(best[i], "bskill_tra_flow_durin") then
+                isCharExsit["鸿雪"] = true
+                break
+            end
+        end
     elseif stationType == "会客厅" then
         best, best_score = meetingStationOperatorBest(operator)
     elseif stationType == "发电站" then
@@ -1473,6 +1483,16 @@ dormitoryOperatorBest = function(operator, goodType, virtralPowerStationNum)
                 table.insert(best, o)
             elseif table.includes({ o[1], o[2] }, "bskill_dorm_bdnum") or
                 table.includes({ o[1], o[2] }, "bskill_dorm_rec_allbd") or o[6] == "塑心" then --塑心
+                table.insert(best, o)
+            end
+        end
+        return best, best_score
+    end
+    if isCharExsit["鸿雪"] then
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, "bskill_dorm_all&one1") or table.includes({ o[1], o[2] }, "bskill_dorm_all&one2") then --杜林
+                table.insert(best, o)
+            elseif table.includes({ o[1], o[2] }, "bskill_dorm_all2") and o[6] == "桃金娘" then --桃金娘
                 table.insert(best, o)
             end
         end
