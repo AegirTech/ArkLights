@@ -3691,7 +3691,7 @@ show_auto_ui = function()
 
     newRow(layout)
     addTextView(layout, "接口选择")
-    ui.addSpinner(layout, "auto_raise_api_select", { "第三方", "森空岛", "自定义" }, 0)
+    ui.addSpinner(layout, "auto_raise_api_select", { "森空岛", "第三方", "自定义", "本地" }, 0)
 
     newRow(layout)
     addTextView(layout, "自定义接口地址")

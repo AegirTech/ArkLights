@@ -155,8 +155,7 @@ raise.init = function()
         end
     end
     log(item_name2id)
-    -- 其余接口暂未实现
-    player_info_init(raise.get_player_info(true))
+    player_info_init(raise.get_player_info())
 
     -- 读取培养计划
     local status
@@ -171,20 +170,27 @@ end
 ---@param isLocal bool 是否本地测试
 ---@return table player_data 玩家数据
 raise.get_player_info = function(isLocal)
-    if not isLocal then
-        if (not a60_token_offcial) or (not a60_token_bili) then return end
-        if server == 0 then
-            local url = "http://pyark.a60.one:88/login/offcial?username=%s&password=%s&token=%s"
-            url = string.format(url, username, password, a60_token_offcial)
-        else
-            local url = "http://pyark.a60.one:88/login/bilibili?username=%s&password=%s&token=%s"
-            url = string.format(url, username, password, a60_token_bili)
+    if not isLocal or auto_raise_api_select == 3 then
+        if auto_raise_api_select == 0 then
+            data = get_game_info(username, password)
+            return data
+        elseif auto_raise_api_select == 1 then
+            if (not a60_token_offcial) or (not a60_token_bili) then return end
+            if server == 0 then
+                local url = "http://pyark.a60.one:88/login/offcial?username=%s&password=%s&token=%s"
+                url = string.format(url, username, password, a60_token_offcial)
+            else
+                local url = "http://pyark.a60.one:88/login/bilibili?username=%s&password=%s&token=%s"
+                url = string.format(url, username, password, a60_token_bili)
+            end
+            local ret, code = httpGet(url)
+            if code ~= 200 then return end
+            local status, player_data = pcall(JsonDecode, ret)
+            if not status then return end
+            return player_data
+        elseif auto_raise_api_select == 2 then
+
         end
-        local ret, code = httpGet(url)
-        if code ~= 200 then return end
-        local status, player_data = pcall(JsonDecode, ret)
-        if not status then return end
-        return player_data
     else
         -- 本地测试数据
         local player_data = JsonDecode(readFile("data1.json"))
@@ -195,14 +201,19 @@ end
 -- 初始化玩家干员数据
 player_info_init = function(player_data)
     player_character_info = {} -- 玩家干员数据
-    --[[player_inventory_info = player_data["user"]["inventory"] -- charid, data 仓库数据
+    if auto_raise_api_select == 0 then
+        for _, v in pairs(player_data["chars"]) do
+            local name = v["charId"]
+            player_character_info[name] = v
+        end
+    elseif auto_raise_api_select == 1 then
+        player_inventory_info = player_data["user"]["inventory"] -- charid, data 仓库数据
 
-    local ori_player_character_info = player_data["user"]["troop"]["chars"]
-    ]]
-
-    for _, v in pairs(player_data["chars"]) do
-        local name = v["charId"]
-        player_character_info[name] = v
+        local ori_player_character_info = player_data["user"]["troop"]["chars"]
+        for _, v in pairs(ori_player_character_info) do
+            local name = v["charId"]
+            player_character_info[name] = v
+        end
     end
 end
 
