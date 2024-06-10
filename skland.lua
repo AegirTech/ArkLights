@@ -264,27 +264,15 @@ skland_daily_checkin = function(account, password)
     end
 end
 
--- 返回签到所有签到的结果
-skland_get_checkin_result = function(cred, uid, server)
-    local url = API .. "game/attendance?gameId=" .. server .. "&uid=" .. uid
-    local headers = {}
-    headers["cred"] = cred
-    headers["Content-Type"] = "application/json"
-    local ret = LuaEngine.httpGet(url, headers, 5)
-    log(ret)
-end
-
 skland_account_check = function()
-    local url = API .. "/user/check"
-    skland_sign("/user/check", "")
+    local url = API .. "/user/me"
+    skland_sign("/user/me", "")
     local result = curl_get(url, headers)
     local status, result = pcall(JsonDecode, result)
     log(result)
     if status then
-        local code = get(result, "code")
+        -- local code = get(result, "code")
         local msg = get(result, "message")
-        local ret = get(result, 'data', 'isNewUser')
-        -- log(ret)
         if string.find(msg, "用户未登录") then
             return false
         else
@@ -292,7 +280,7 @@ skland_account_check = function()
         end
     else
         log("json解析失败")
-        return -1
+        return false
     end
 end
 
@@ -323,7 +311,7 @@ end
 skland_init = function(account, password)
     log("森空岛初始化")
     local cred = read_local_config("account", account .. "cred")
-    if cred == nil or cred == "" or #cred < 5 then
+    if type(cred) ~= "string" or #cred < 5 then
         log("cred无效，等待重新获取")
         cred = skland_get_cred(account, password)
         if cred ~= 0 then
@@ -331,11 +319,30 @@ skland_init = function(account, password)
             log("cred获取完成" .. cred)
         else
             log("cred无效，登录存在错误，请联系开发者")
+            return false
+        end
+    else
+        log("从配置中读取cred" .. cred)
+        Headers["cred"] = cred
+        skland_refresh_token()
+        if skland_account_check() then
+            log("森空岛初始化完成")
+            return true
+        else
+            log("cred无效，等待重新获取")
+            cred = skland_get_cred(account, password)
+            if cred ~= 0 then
+                save_local_config("account", account .. "cred", cred)
+                log("cred获取完成" .. cred)
+            else
+                log("cred无效，登录存在错误，请联系开发者")
+                return false
+            end
         end
     end
-    log("从配置中读取cred" .. cred)
     Headers["cred"] = cred
     skland_refresh_token()
+    return true
 end
 
 -- 获取绑定的游戏信息
