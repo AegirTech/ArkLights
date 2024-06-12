@@ -5627,7 +5627,10 @@ path.活动 = function(x)
             if not wait(function()
                     tap("活动导航EX")
                     ssleep(.5)
-                    if disappear("活动导航1", 1) then return true end
+                    if disappear("活动导航0", 1) then
+                        ssleep(.5)
+                        return true
+                    end
                 end, 5) then
                 return
             end
@@ -5635,7 +5638,10 @@ path.活动 = function(x)
             if not wait(function()
                     tap("活动导航S")
                     ssleep(.5)
-                    if disappear("活动导航1", 1) then return true end
+                    if disappear("活动导航0", 1) then
+                        ssleep(.5)
+                        return true
+                    end
                 end, 5) then
                 return
             end
