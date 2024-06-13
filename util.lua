@@ -2943,7 +2943,7 @@ make_jump_ui = function(layout)
         --   make_jump_ui_command(layout, 'crontab'),
         -- },
         { nil, "肉鸽/公招", make_jump_ui_command(layout, "extra") },
-        { nil, "退出", make_jump_ui_command(layout, nil, "peaceExit()") }, {
+        { nil, "退出", make_jump_ui_command(layout, nil, "saveConfig('Not_Restart','true');peaceExit()") }, {
         readme_btn, "必读", make_jump_ui_command(layout, nil,
         "saveConfig('readme_already_read','1');jump_readme()"),
     }, { nil, "高级设置", make_jump_ui_command(layout, "debug") },
@@ -3826,7 +3826,8 @@ show_auto_login_ui = function()
         make_jump_ui_command(layout, loadConfig("last_layout", "multi_account")),
         nil, nil)
     addButton(layout, nil, "确认", make_jump_ui_command(layout, nil, "lock:remove(main_ui_lock)"), nil, nil)
-    addButton(layout, nil, "退出", make_jump_ui_command(layout, nil, "peaceExit()"), nil, nil)
+    addButton(layout, nil, "退出", make_jump_ui_command(layout, nil, "saveConfig('Not_Restart','true');peaceExit()"), nil,
+        nil)
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
 
@@ -4579,7 +4580,6 @@ setEventCallback = function()
         saveConfig("hideUIOnce", "false")
         saveConfig("restart_mode_hook", '')
         saveConfig("crontab_next_time_on_start", '')
-        saveConfig("NotRestart", "true")
         disableRootToast(true)
         console.show()
     end)
@@ -4587,7 +4587,6 @@ setEventCallback = function()
     setUserEventCallBack(function(type)
         disable_log = false
         log("重启", type)
-        saveConfig("NotRestart", "false")
         saveConfig("hideUIOnce", "false")
         saveConfig("restart_mode_hook", '')
         disableRootToast(true)
@@ -4626,6 +4625,7 @@ showUI = function(last_layout)
     if loadConfig("hideUIOnce", "false") ~= "false" then
         saveConfig("hideUIOnce", "false")
     else
+        saveConfig("Not_Restart", "false")
         main_ui_lock = lock:add()
         local last_layout = last_layout or loadConfig("last_layout", "main")
         _G["show_" .. last_layout .. "_ui"]()
@@ -5079,9 +5079,9 @@ end
 restartPackage = function()
     -- log("restart_mode_hook", loadConfig("restart_mode_hook", ''))
     -- log("hideUIOnce", loadConfig("hideUIOnce", ''))
-    -- if loadConfig("NotRestart", "") == "true" then
-    --     exitScript()
-    -- end
+    if loadConfig("Not_Restart", "") == "true" then
+        exitScript()
+    end
 
     if getApkVerInt() == 1 then
         disable_restart_package = true
