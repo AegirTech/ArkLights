@@ -312,6 +312,7 @@ path.base = {
 
         -- current fight success
         pre_fight = cur_fight
+        last_guide = cur_fight
         fight_failed_times[cur_fight] = -3
 
         -- if same fight or same page fight
@@ -1513,6 +1514,10 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
     if prev_jump == "基建" and x ~= "基建" and collect_beforeleaving and
         not_first_time_jump then
         path.基建收获()
+    end
+
+    if findAny({ "生息演算_游戏设置页面", "生息演算_游戏设置弹窗", }) then
+        back()
     end
 
     --彩六主大厅适配
@@ -4096,8 +4101,15 @@ path.轮次作战 = function()
         cur_fight = fight[fight_tick]
         log(971, cur_fight)
         if cur_fight == 'BREAK' then break end
-        if not same_page_fight(pre_fight, cur_fight) then path.跳转("首页") end
+        log(pre_fight, cur_fight)
+        if not same_page_fight(pre_fight, cur_fight) then
+            skip_guide = false
+            path.跳转("首页")
+        else
+            skip_guide = true
+        end
         log(820, fight, fight_tick_ui)
+
         pre_fight = nil
 
         path[get_fight_type(cur_fight)](cur_fight)
@@ -4284,7 +4296,8 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 return path.跳转("首页")
             end
         elseif copy_homework_only then
-            last_guide = x
+            pre_fight = cur_fight
+            last_guide = cur_fight
             return
         end
         -- if not wait(function()
@@ -5157,11 +5170,11 @@ path.活动 = function(x)
         clean_hdfight()
         return
     end
-
-    skip_guide = false
-    if removeTrailingDigits(last_guide) == removeTrailingDigits(x) then
-        skip_guide = true
-    end
+    log("活动", x, skip_guide)
+    -- skip_guide = false
+    -- if removeTrailingDigits(last_guide) == removeTrailingDigits(x) then
+    --     skip_guide = true
+    -- end
 
     if not skip_guide then
         path.跳转("首页")
@@ -5174,9 +5187,9 @@ path.活动 = function(x)
         end
         if not wait(function()
                 if findOne("活动导航0") then return true end
-                -- if findOne("跳过剧情") then path.跳过剧情() end
+                if findOne("跳过剧情") then path.跳过剧情() end
             end, 10) then
-            return path.跳过剧情()
+            return
         end
     end
 
@@ -5782,7 +5795,7 @@ path.商店搬空 = function()
     if not wait(function()
             if findOne("活动商店导航") then return true end
         end, 10) then
-        return path.跳过剧情()
+        return
     end
 
     if appear("活动任务导航", .6) then
@@ -5922,7 +5935,7 @@ path.故事解锁 = function()
     if not wait(function()
             if findOne("故事集导航") then return true end
         end, 10) then
-        return path.跳过剧情()
+        return
     end
 
     if not wait(function()
