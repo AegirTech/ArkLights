@@ -10,6 +10,7 @@
 API = "https://zonai.skland.com/api/v1"
 Skland_app_code = '4ca99fa6b56cc2ba'
 Skland_sign_token = "" -- 新版森空岛签名使用
+cred = ""
 
 Headers = {
     ["User-Agent"] = 'Skland/1.0.1 (com.hypergryph.skland; build:100001047; Android 33; ) Okhttp/4.11.0',
@@ -81,6 +82,7 @@ end
 
 --生成签名sign值，并直接设置Headers
 skland_sign = function(url, data)
+    skland_refresh_token()
     local data = data or ""
     local sha = require("sha2")
     local hmac = sha.hmac
@@ -230,7 +232,6 @@ skland_daily_checkin = function(account, password)
     end
 
     Headers["cred"] = cred
-    skland_refresh_token()
     if type(cred) == "string" and #cred > 5 then
         list = skland_get_bind_info()
         if list == nil then
@@ -267,7 +268,7 @@ end
 skland_account_check = function()
     local url = API .. "/user/me"
     skland_sign("/user/me", "")
-    local result = curl_get(url, headers)
+    local result = curl_get(url, Headers)
     local status, result = pcall(JsonDecode, result)
     log(result)
     if status then
@@ -310,7 +311,7 @@ end
 -- 森空岛初始化
 skland_init = function(account, password)
     log("森空岛初始化")
-    local cred = read_local_config("account", account .. "cred")
+    cred = read_local_config("account", account .. "cred")
     if type(cred) ~= "string" or #cred < 5 then
         log("cred无效，等待重新获取")
         cred = skland_get_cred(account, password)
@@ -324,7 +325,6 @@ skland_init = function(account, password)
     else
         log("从配置中读取cred" .. cred)
         Headers["cred"] = cred
-        skland_refresh_token()
         if skland_account_check() then
             log("森空岛初始化完成")
             return true
@@ -341,7 +341,6 @@ skland_init = function(account, password)
         end
     end
     Headers["cred"] = cred
-    skland_refresh_token()
     return true
 end
 
@@ -351,8 +350,31 @@ skland_get_game_info = function(uid)
     params = {
         ["uid"] = uid
     }
-    skland_refresh_token()
     skland_sign("/game/player/info", "uid=" .. uid)
+    local ret = curl_get(url .. "?uid=" .. uid, Headers, 10, nil)
+    log(ret)
+    local status
+    status, ret = pcall(JsonDecode, ret)
+    log(ret)
+    if status then
+        if get(ret, 'code') == 0 then
+            return ret
+        else
+            return {}
+        end
+    else
+        log("json解析失败" .. ret)
+        return {}
+    end
+end
+
+-- 获取干员和材料
+skland_cultivate = function(uid)
+    local url = API .. "/game/cultivate/player"
+    params = {
+        ["uid"] = uid
+    }
+    skland_sign("/game/cultivate/player", "uid=" .. uid)
     local ret = curl_get(url .. "?uid=" .. uid, Headers, 10, nil)
     log(ret)
     local status
@@ -393,7 +415,7 @@ get_game_info = function(account, password, require_uid, require_server)
             goto countinue
         end
         log(i, gameuid, server)
-        ret = skland_get_game_info(gameuid)
+        ret = skland_cultivate(gameuid)
         if ret ~= {} then
             log("获取完成，后续跳过")
             return ret["data"]

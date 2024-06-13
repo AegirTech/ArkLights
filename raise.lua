@@ -156,7 +156,8 @@ raise.init = function()
     end
     log(item_name2id)
     player_info_init(raise.get_player_info())
-
+    log(player_character_info)
+    log(player_inventory_info)
     -- 读取培养计划
     local status
     status, raise_plan = pcall(JsonDecode, raise_plan_text)
@@ -201,10 +202,17 @@ end
 -- 初始化玩家干员数据
 player_info_init = function(player_data)
     player_character_info = {} -- 玩家干员数据
+    player_inventory_info = {}
     if auto_raise_api_select == 0 then
-        for _, v in pairs(player_data["chars"]) do
-            local name = v["charId"]
+        for _, v in pairs(player_data["characters"]) do
+            local name = v["id"]
             player_character_info[name] = v
+        end
+
+        for _, v in pairs(player_data["items"]) do
+            local itemId = v["id"]
+            local count = v["count"]
+            player_inventory_info[itemId] = count
         end
     elseif auto_raise_api_select == 1 then
         player_inventory_info = player_data["user"]["inventory"] -- charid, data 仓库数据
@@ -1901,7 +1909,7 @@ end
 
 raise.auto_raise = function()
     raise.init()
-    player_inventory_info = raise.inventory_identify()
+    -- player_inventory_info = raise.inventory_identify()
     log(player_inventory_info)
 
     for i = 1, #raise_plan do
