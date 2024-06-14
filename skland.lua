@@ -352,10 +352,8 @@ skland_get_game_info = function(uid)
     }
     skland_sign("/game/player/info", "uid=" .. uid)
     local ret = curl_get(url .. "?uid=" .. uid, Headers, 10, nil)
-    log(ret)
     local status
     status, ret = pcall(JsonDecode, ret)
-    log(ret)
     if status then
         if get(ret, 'code') == 0 then
             return ret
@@ -379,7 +377,6 @@ skland_cultivate = function(uid)
     log(ret)
     local status
     status, ret = pcall(JsonDecode, ret)
-    log(ret)
     if status then
         if get(ret, 'code') == 0 then
             return ret

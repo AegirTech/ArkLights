@@ -312,7 +312,6 @@ path.base = {
 
         -- current fight success
         pre_fight = cur_fight
-        last_guide = cur_fight
         fight_failed_times[cur_fight] = -3
 
         -- if same fight or same page fight
@@ -1734,7 +1733,6 @@ update_state = function()
     -- 禁用重复刷模式
     repeat_fight_mode = false
     pre_fight = nil
-    last_guide = nil
 
     -- 作战统计
     fight_history = {}
@@ -4054,13 +4052,6 @@ get_fight_special_type = function(x)
 end
 
 same_page_fight = function(pre, cur)
-    if type(last_guide) ~= 'string' or type(cur) ~= 'string' then return end
-
-    if removeTrailingDigits(last_guide) == removeTrailingDigits(cur) then
-        log("same page fight", last_guide, cur)
-        return true
-    end
-
     if type(pre) ~= 'string' then return end
 
     -- 禁用同页跳转
@@ -4297,7 +4288,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
             end
         elseif copy_homework_only then
             pre_fight = cur_fight
-            last_guide = cur_fight
             return
         end
         -- if not wait(function()
@@ -5684,7 +5674,6 @@ path.活动 = function(x)
     -- appear("活动导航2")
     swip(x)
     ssleep(.5)
-    -- last_guide = x
     if x:includes({ "ST-", "TR-" }) then
         --教学关和剧情关只打一遍
         log("剧情关")

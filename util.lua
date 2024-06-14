@@ -5560,6 +5560,7 @@ end
 
 restart_package_last_time = time()
 request_memory_clean = function()
+    log("request_memory_clean")
     if (time() - restart_package_last_time > restart_package_interval * 1000) then
         qqnotify_before_restart_package()
         restart_account(false)
