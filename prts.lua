@@ -689,6 +689,7 @@ end
                     releaseCapture()
                     if not findOne("子弹时间", 0.85) then
                         if 技能指定次数干员[k] then 技能指定次数干员[k][2] = 技能指定次数干员[k][2] + 1 end
+                        sleep(150)
                     else
                         tap("点cost")
                         --sleep(50)
@@ -1331,6 +1332,7 @@ end
                 波数依赖顺序 = 波数依赖顺序 + 1
                 sleep(100)
                 tap("点cost")
+                sleep(100)
                 break
             else
                 tap("点cost")
@@ -1374,6 +1376,7 @@ end
                 end
                 releaseCapture()
                 点战斗()
+                sleep(100)
                 技能未就绪 = 0
                 波数依赖顺序 = 波数依赖顺序 + 1
                 break

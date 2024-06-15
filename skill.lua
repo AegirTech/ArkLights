@@ -176,10 +176,10 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
             -- log(266, icon, goodType, base)
             if icon == 'bskill_tra_spd3' then
                 base = base + 0.35
-            elseif icon == 'bskill_tra_spd&formula1' then
-                base = base + 0.3 + 0.04 -- 近似两种产物
-            elseif icon == 'bskill_tra_spd&meet1' then
-                base = base + 0.4        -- 近似满级会客厅
+            elseif icon == 'bskill_tra_spd&formula1' then --石英
+                base = base + 0.3 + 0.04                  -- 近似两种产物
+            elseif icon == 'bskill_tra_spd&meet1' then    --伺夜
+                base = base + 0.4                         -- 近似满级会客厅
             elseif icon == 'bskill_tra_spd&cost' then
                 base = base + 0.3
             elseif icon == 'bskill_tra_spd&limit7' then
@@ -200,12 +200,20 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 if isCharExsit["迷迭香"] then
                     base = base + 0.31
                 end
-            elseif icon == 'bskill_tra_spd&limit4' then
+            elseif icon == 'bskill_tra_spd&limit4' then --崖心2
                 base = base + 0.15
                 storage = storage + 4
-            elseif icon == 'bskill_tra_spd&limit3' then
+                if isCharExsit["灵知"] then
+                    base = base - 0.15
+                    storage = storage + 6
+                end
+            elseif icon == 'bskill_tra_spd&limit3' then --银灰0,角峰0,讯使0
                 base = base + 0.15
                 storage = storage + 2
+                if isCharExsit["灵知"] then
+                    base = base - 0.15
+                    storage = storage + 6
+                end
             elseif icon == 'bskill_tra_spd&limit2' then
                 base = base + 0.1
                 storage = storage + 4
@@ -223,13 +231,17 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
             elseif icon == "bskill_tra_spd&limit_down1" then -- 锏
                 base = base + 0.20
                 storage = storage - 2
-            elseif icon == "bskill_tra_spd&limit_down2" then
+                if isCharExsit["灵知"] then
+                    base = base - 0.15
+                    storage = storage + 6
+                end
+            elseif icon == "bskill_tra_spd&limit_down2" then -- 锏2
                 base = base + 0.25
                 storage = storage - 6
-            elseif icon == "bskill_tra_limit2spd" then
-                base = base + math.floor(storage / 5) * 0.25
-            elseif icon == "bskill_trade_ord_spd_variable" then -- 琳琅诗怀雅
-                base = base + storage * 0.04
+                if isCharExsit["灵知"] then
+                    base = base - 0.15
+                    storage = storage + 6
+                end
             elseif icon == 'bskill_tra_flow_gc2' then
                 base = base + 0.05
                 gold = gold + (gold // 2) * 2
@@ -241,6 +253,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 gold = gold + 2
             elseif icon == 'bskill_tra_spd&limit_felyne' then --泰拉大陆调查团
                 base = base + 0.05
+                storage = storage + 2
                 if isCharExsit["麒麟R夜刀"] and isCharExsit["火龙S黑角"] then
                     base = base + 0.361
                 end
@@ -277,6 +290,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
         -- 火哨
         if all["bskill_tra_share1"] then base = base + (level - 1) * 0.15 end
 
+
         -- 拉狗徳狗
         local texas = all['bskill_tra_texas1'] or all['bskill_tra_texas2']
         if all['bskill_tra_Lappland1'] then
@@ -308,6 +322,12 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
         if all['bskill_tra_flow_gs'] then
             base = base + 0.00 + (gold // 1) * 0.05 * all['bskill_tra_flow_gs']
         end
+
+        -- 琳琅诗怀雅
+        if all["bskill_trade_ord_spd_variable"] then base = base + storage * 0.04 end
+
+        -- 锏2
+        if icon == "bskill_tra_limit2spd" then base = base + min(1.00, math.floor(storage / 5) * 0.25) end
 
         -- 孑
         if all['bskill_tra_limit_count'] then
@@ -492,11 +512,12 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 if goodType == '作战记录' then base = base + 0.2501 end
             elseif icon == 'bskill_man_exp4' then
                 if goodType == '作战记录' then base = base + 0.20 end
-            elseif icon == 'bskill_man_gold2' then
+            elseif icon == 'bskill_man_gold2' then -- 砾
                 if goodType == '贵金属' then
                     base = base + 0.35
                     metallics = metallics + 1
                 end
+                if isCharExsit["薇薇安娜"] then base = base + 0.07 end
             elseif icon == 'bskill_man_gold1' then
                 if goodType == '贵金属' then
                     base = base + 0.3001
