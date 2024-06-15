@@ -46,7 +46,7 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
         }
         --log("icon1", icon1, v[1], v[2])
         local name = "干员名未识别"
-        if debug_mode or (not not_use_ocr and not mood_only and table.findv({ "制造站", "发电站", "宿舍" }, stationType)) then
+        if dev_mode or (not not_use_ocr and not mood_only and table.findv({ "制造站", "发电站", "宿舍" }, stationType)) then
             name = correctCharName(ocro({
                 v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
             }))
@@ -198,7 +198,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
             elseif icon == 'bskill_tra_spd_bd2' then --黑键2
                 base = base + 0.005 * dormitoryCapacity
                 if isCharExsit["迷迭香"] then
-                    base = base + 0.31
+                    base = base + 0.4
                 end
             elseif icon == 'bskill_tra_spd&limit4' then --崖心2
                 base = base + 0.15
@@ -1080,7 +1080,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
             dormitoryLevelSum,
             goldStationNum, goodType,
             stationLevel)
-        log("制造站选", best)
+        log("贸易站选", best)
         for i = 1, #best do
             if table.findv(best[i], "bskill_tra_flow_durin") then
                 isCharExsit["鸿雪"] = true
@@ -1701,6 +1701,7 @@ correctCharName = function(t)
         ["林纯艾雅法拉"] = "纯烬艾雅法拉",
         ["哞"] = "吽",
         ["子"] = "孑",
+        ["墨键"] = "黑键",
         ["巡巡林者"] = "巡林者",
         ["愧影"] = "傀影",
         ["狮蜴"] = "狮蝎",
