@@ -27,7 +27,25 @@ path.base = {
         end)
     end,
     start黄框暗 = function() return path.base["start黄框"]() end,
-
+    启动卡黑屏界面 = function() --生路版本更新后，yj客户端偶尔在启动时候会黑屏卡住
+        log('启动游戏卡屏界面检测')
+        if not 启动界面卡住的时间 then
+            启动界面卡住的时间 = time()
+            log('检测到卡黑屏的时间 ' .. 启动界面卡住的时间)
+        end
+        if time() - 启动界面卡住的时间 > 10000 then
+            log('检测该界面停留超过10s')
+            if findOne('启动卡黑屏界面') then
+                toast('启动界面卡住超过了10s，准备重启游戏界面' .. appid)
+                exec('su root am force-stop  ' .. appid)
+                --restartapp(appid)
+                启动界面卡住的时间 = time()
+            end
+        else
+            log(time() - 启动界面卡住的时间)
+        end
+        ssleep(.1)
+    end,
     账号登录 = function() tap("账号登录") end,
     开始唤醒 = function()
         if log_login_to_cloud == true then

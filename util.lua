@@ -3057,7 +3057,8 @@ show_debug_ui = function()
     newRow(layout)
     addTextView(layout, "云码Token")
     ui.addEditText(layout, "jfbym_token", "")
-
+    newRow(layout)
+    ui.addCheckBox(layout, "use_free_server_captcha", "使用免费服务器解决官服滑块验证码", false)
     newRow(layout)
     ui.addCheckBox(layout, "only_use_ttshitu", "不使用审判庭接码", true)
 

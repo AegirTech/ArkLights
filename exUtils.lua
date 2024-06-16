@@ -1966,11 +1966,16 @@ getCaptchaBox = function()
 end
 
 trySolveSlipCaptcha = function()
-    if not use_jfbym then trySolveCapture() end
+    if not use_jfbym and not use_free_server_captcha then trySolveCapture() end
     if not findOne("captcha") then return end
-    SolveSlipCaptcha(jfbym_token, getCaptchaBox())
-    if not disappear("captcha", 5) then
+    if use_free_server_captcha then
+        trySolveCaptureFreeServer(getCaptchaBox())
+        if not disappear("captcha", 5) then trySolveCaptureFreeServer(getCaptchaBox()) end --免费模型，多尝试几次 准确率大概98%
+    else
         SolveSlipCaptcha(jfbym_token, getCaptchaBox())
+        if not disappear("captcha", 5) then
+            SolveSlipCaptcha(jfbym_token, getCaptchaBox())
+        end
     end
     if not appear("realgame", 5) then
         jfbym_report()
@@ -2048,6 +2053,62 @@ jfbym_report = function()
         "Content-Type: application/json;charset=UTF-8")
     log(ret, code)
 end
+
+--使用部署的客户端免费打码官服滑块验证码
+trySolveCaptureFreeServer = function(rect)
+    log("free solve")
+    keepCapture()
+    local node = findOne("captcha")
+    if not node then
+        log('3576 not found captcha')
+        return
+    end
+
+    if not rect then return end
+    local img = getWorkPath() .. "/Captcha.jpg"
+    snapShot(img, rect.l, rect.t, rect.r, rect.b)
+
+    local img_base64 = base64(img)
+    local url = "http://124.222.39.231:8899/yolo_new/"
+    local param = "img=" .. encodeUrl(img_base64)
+
+    log("图鉴准备发送")
+    local ret, code = httpPost(url, param)
+    local status, ret = pcall(JsonDecode, ret)
+    --ret数据出问题时候
+    if not status then return end
+    log(ret)
+    local distance = ret.target[1].距离
+    local distance = str2int(distance, 0)
+    log("distance:", distance)
+    if distance < 0 then
+        log(distance, "图片信息错误")
+        releaseCapture() -- 释放捕获状态
+        return false
+    end
+    log("滑动前检测")
+
+    keepCapture()
+    local node = findOne("captcha")
+    if not node then
+        log('图片寻找失败，不执行任何操作')
+        releaseCapture() -- 释放捕获状态
+        return
+    end
+
+    log("准备开始滑动")
+    gesture({
+        {
+            point = { { 460, 480 }, { distance + 460, 480 } },
+            start = 0,
+            duration = 600,
+        },
+    })
+    log("滑动结束")
+    ssleep(2)        -- 等待验证码关闭或者重试
+    releaseCapture() -- 释放捕获状态
+end
+
 
 -- 去除sb懒人新版广告
 remove_lr_ad = function()

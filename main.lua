@@ -52,8 +52,8 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "06.15 10:57"
-update_announcement = '最近更新：修复【自动更新游戏客户端】,【生路】导航'
+release_date = "06.16 18:04"
+update_announcement = '最近更新：【生路】导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
