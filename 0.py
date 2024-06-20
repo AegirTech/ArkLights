@@ -11,6 +11,8 @@ import win32com.client
 import requests
 
 # win环境下的快速开发脚本
+API = "http://ark.aegirtech.com:8080"
+# API = "http://43.139.36.242:1998"
 
 # 检查localConfig.py是否存在
 if not os.path.exists("localConfig.py"):
@@ -155,7 +157,9 @@ def save():
     for ui_file in ui_files:
         # 把ui_file以utf-8的格式打开，然后以GB18030的格式写入到path+界面目录下
         with open(ui_file, "r", encoding="utf-8") as f:
-            with open(os.path.join(path, "界面", ui_file), "w", encoding="GB18030") as f1:
+            with open(
+                os.path.join(path, "界面", ui_file), "w", encoding="GB18030"
+            ) as f1:
                 f1.write(f.read())
 
     print("保存完成")
@@ -175,9 +179,6 @@ def release(type):
                 print("检测到热更新被注释,请重新打包")
                 return
     if type == "RELEASE":
-        save()
-        run(False)
-
         newLrMD5 = input("请输入md5值: ")
         # 输出pkgPath的文件的md5
         md5 = hashlib.md5()
@@ -211,7 +212,10 @@ def upload(md5, type, force):
         md5.update(f.read())
     md5Text = md5.hexdigest()
     url = (
-        "http://ark.aegirtech.com:8080/uploadHotUpdatePackage?token="
+        # "http://ark.aegirtech.com:8080/uploadHotUpdatePackage?token="
+        # "https://joy-player.com:9081/uploadHotUpdatePackage?token="
+        API
+        + "/uploadHotUpdatePackage?token="
         + token
         + "&md5="
         + md5Text
@@ -228,11 +232,10 @@ def upload(md5, type, force):
         fileName = "skill.zip"
 
     payload = {}
-    files = [("fille", (fileName, open(upFile, "rb"), "application/octet-stream"))]
+    files = [("file", (fileName, open(upFile, "rb"), "application/octet-stream"))]
     headers = {"User-Agent": "Apifox/1.0.0 (https://apifox.com)"}
 
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
-
     print(response.json().get("msg"))
 
 
@@ -241,7 +244,7 @@ def statistician():
     if token == "":
         print("token未配置，请配置token")
         exit()
-    url = "http://ark.aegirtech.com:8080/getStatistician?token=" + token
+    url = API + "/getStatistician?token=" + token
     response = requests.request("GET", url)
     info = response.json()["data"]
     print("============统计信息============")
@@ -271,13 +274,4 @@ if __name__ == "__main__":
             statistician()
 
     except Exception as e:
-        print("缺少正确参数或没有启用管理员权限")
-        print(
-            """
-run: 运行
-save: 保存
-saverun: 保存并运行
-r: 发布脚本
-rs: 发布技能图标
-"""
-        )
+        print(e)

@@ -1547,7 +1547,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
     end
 
     -- 生息演算页面适配
-    if findOne("生息底栏干员按钮") then
+    if extra_mode == "生息沙洲遗闻" and findOne("生息底栏干员按钮") then
         log("生息")
         if not wait(function()
                 if not findOne("生息底栏干员按钮") then return true end
