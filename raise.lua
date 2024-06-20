@@ -256,9 +256,9 @@ end
 ---@return table {通用技能等级，专精等级}
 raise.get_char_skill = function(id, skill_id_index)
     skill_id_index = skill_id_index or 1
-    local common_skill_level = player_character_info[id]["mainSkillLvl"]
+    local common_skill_level = player_character_info[id]["mainSkillLevel"]
     if common_skill_level == 7 then
-        return { 7, player_character_info[id]["skills"][skill_id_index]["specializeLevel"] }
+        return { 7, player_character_info[id]["skills"][skill_id_index]["level"] }
     else
         return { common_skill_level, 0 }
     end
@@ -275,6 +275,11 @@ raise.char_skill_master_material = function(id, skill_id, target_level)
     return t
 end
 
+raise.char_skill_upgrade_material = function(id, skill_id_index)
+
+end
+
+
 ---计算角色技能升级所需材料总量
 ---@param id number 干员ID
 ---@param skill_id_index number 几技能
@@ -282,13 +287,13 @@ end
 ---@return table total_material 包含材料ID和对应数量的表
 raise.char_skill_upgrade_material_total = function(id, skill_id_index, target_level)
     --通用技能等级
-    local common_skill_level = player_character_info[id]["mainSkillLvl"]
+    local common_skill_level = player_character_info[id]["mainSkillLevel"]
     -- 指定技能当前专精等级
     local current_skill_level
     if common_skill_level < 7 then
         current_skill_level = 0
     else
-        current_skill_level = player_character_info[id]["skills"][skill_id_index]["specializeLevel"]
+        current_skill_level = player_character_info[id]["skills"][skill_id_index]["level"]
     end
 
     local skill_info = raise.char_skill_upgrade_material(id, skill_id_index)
