@@ -211,11 +211,13 @@ player_info_init = function(player_data)
 
         for _, v in pairs(player_data["items"]) do
             local itemId = v["id"]
-            local count = v["count"]
+            local count = tonumber(v["count"])
             player_inventory_info[itemId] = count
         end
     elseif auto_raise_api_select == 1 then
-        player_inventory_info = player_data["user"]["inventory"] -- charid, data 仓库数据
+        -- 仓库数据,{材料id:数量}
+        player_inventory_info = player_data["user"]["inventory"]
+
 
         local ori_player_character_info = player_data["user"]["troop"]["chars"]
         for _, v in pairs(ori_player_character_info) do
@@ -1335,7 +1337,7 @@ raise.elite_char = function(id, start_phase, target_phase)
         if not raise.upgrade_char() then return end
         --计算材料是否够
         local material_need = raise.get_char_elite_material(id, start_phase + i)
-        log(material_need)
+        log("需要材料", material_need)
         if not raise.elite_one_phase(material_need) then return end
     end
     log("精英化", target_phase, name, "已完成")
