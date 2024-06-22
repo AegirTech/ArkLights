@@ -2761,11 +2761,11 @@ path.总览换班 = function()
         log("times", times)
         if times >= 7 and (isCharExsit["迷迭香"] or isCharExsit["鸿雪"]) then
             ssleep(.2)
-            tap({ scale(880 * 1.5), scale(43 * 1.5) })
+            tap("基建心情排序")
             ssleep(.2)
             chooseOperator(stationType)
             ssleep(.2)
-            tap({ scale(964 * 1.5), scale(43 * 1.5) })
+            tap("基建心情排序")
         end
         if not wait(function()
                 if findOne("筛选取消") then return true end
