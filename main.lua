@@ -127,11 +127,9 @@ if debug_mode then
     --initPngdata()
 
     --用于获取活动的剧情关，教学关三星颜色信息
-    -- local x = 'HD-ST-3'
+    -- local x = 'HD-TR-2'
     -- swip(x)
-    -- showUI("auto_login")
-    -- print(findOne("生息演算主页进入"))
-    -- raise.auto_raise()
+    -- ssleep(100)
 end
 
 load(before_account_hook or '')()
