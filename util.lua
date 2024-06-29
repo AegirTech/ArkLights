@@ -3602,10 +3602,7 @@ show_extra_ui = function()
         make_jump_ui_command(layout, nil,
             "extra_mode='采购中心商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
-    newRow(layout)
-    addButton(layout, nil, "悖论模拟(测试)",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='悖论模拟';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+
     -- newRow(layout)
     -- addButton(layout, layout .. "_speedrun", "每日任务速通（待修）",
     --           make_jump_ui_command(layout, nil,
@@ -3722,8 +3719,16 @@ show_auto_ui = function()
             "extra_mode='自动培养';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     newRow(layout)
+    addTextView(layout, "--------------------悖论模拟相关--------------------")
+
+    newRow(layout)
     addTextView(layout, "悖论作业")
     ui.addEditText(layout, "bl_text", "", -2, -1)
+
+    newRow(layout)
+    addButton(layout, nil, "悖论模拟(测试)",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='悖论模拟';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     newRow(layout)
     addTextView(layout, "--------------------自动作战相关--------------------")
