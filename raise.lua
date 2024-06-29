@@ -129,7 +129,8 @@ raise.init = function()
     if not 干员职业 then
         干员职业 = JsonDecode(readFile("character_type_list.json"))
     end
-
+    -- 正在进行技能专精
+    mastering = false
     --log(character_table)
     --[[if not item_table then
         file = io.open(getWorkPath() .. "/gamedata/excel/item_table.json", "r")
@@ -934,6 +935,20 @@ end
 raise.formula_choose = function(id)
     local level = 高级材料2低级材料[id]["level"]
     log("选择配方", id, "等级", level)
+    if not wait(function()
+            tap("加工站选择配方")
+            if not findOne("加工站") then return true end
+        end, 5) then
+        return
+    end
+    if not wait(function()
+            if findOne("加工站选材料类") then return true end
+            tap("加工站选材料类")
+            --给按钮动画回弹
+            ssleep(.3)
+        end, 5) then
+        return
+    end
     if not appear("加工站选材料类", 1) then return end
     if level < 2 then
         if not wait(function()
@@ -1297,20 +1312,7 @@ raise.elite_one_phase = function(materials_need)
                 return
             end
             appear("加工站", 3)
-            if not wait(function()
-                    tap("加工站选择配方")
-                    if not findOne("加工站") then return true end
-                end, 5) then
-                return
-            end
-            if not wait(function()
-                    if findOne("加工站选材料类") then return true end
-                    tap("加工站选材料类")
-                    --给按钮动画回弹
-                    ssleep(.3)
-                end, 5) then
-                return
-            end
+
             --由低到高合成
             for i = 1, 4 do
                 if synthesis_plan[tostring(i)] then
@@ -1458,11 +1460,13 @@ raise.master_skill = function(id, skill_numb, start_level)
     end
 
     --用prts自动编队逻辑选择要的干员和技能
-    raise.choose_char_be_trained({
-        {
-            name = char_id2name(id),
-            skill = skill_numb,
-        } })
+    if not raise.choose_char_be_trained({
+            {
+                name = char_id2name(id),
+                skill = skill_numb,
+            } }) then
+        return
+    end
     ssleep(.1)
     tap("专精技能列表" .. skill_numb)
     ssleep(.5)
@@ -1495,20 +1499,6 @@ raise.master_skill = function(id, skill_numb, start_level)
             return
         end
         appear("加工站", 3)
-        if not wait(function()
-                tap("加工站选择配方")
-                if not findOne("加工站") then return true end
-            end, 5) then
-            return
-        end
-        if not wait(function()
-                if findOne("加工站选材料类") then return true end
-                tap("加工站选材料类")
-                --给按钮动画回弹
-                ssleep(.3)
-            end, 5) then
-            return
-        end
         --由低到高合成
         for i = 1, 4 do
             if synthesis_plan[tostring(i)] then
@@ -1537,7 +1527,8 @@ raise.master_skill = function(id, skill_numb, start_level)
         log("未完成专精")
         return false
     end
-    -- todo:选择陪练
+    path.训练室换班("训练室", 干员职业[char_id2name(id)], start_level + 1)
+    mastering = true
     return true
 end
 
@@ -1554,6 +1545,8 @@ raise.choose_char_be_trained = function(干员)
             tap("选择被训练干员")
             sleep(10)
         end, 5) then
+        --多次点击仍然进不去,说明正在专精
+        mastering = true
         return
     end
     if not wait(function()
@@ -2130,7 +2123,7 @@ raise.auto_raise = function()
                     if not raise.elite_char(id, elite, raise_plan[i]["elite"]) then return end
                 end
             end
-            if raise_plan[i]["skill_master"] then
+            if raise_plan[i]["skill_master"] and not mastering then
                 log("专精技能")
                 --几技能
                 local skill_numb = raise_plan[i]["skill"]

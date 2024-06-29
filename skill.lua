@@ -951,6 +951,7 @@ initPngdata = function()
     officePngdata = {}
     powerPngdata = {}
     dormitoryPngdata = {}
+    trainingPngdata = {}
     stationType2pngData = {
         制造站 = manufacturingPngdata,
         贸易站 = tradingPngdata,
@@ -959,6 +960,7 @@ initPngdata = function()
         办公室 = officePngdata,
         发电站 = powerPngdata,
         宿舍 = dormitoryPngdata,
+        训练室 = trainingPngdata,
     }
     local s = ''
     for v, _ in pairs(skillpng2operator) do
@@ -977,6 +979,8 @@ initPngdata = function()
             pngdata = powerPngdata
         elseif v:startsWith("bskill_dorm") then
             pngdata = dormitoryPngdata
+        elseif v:startsWith("bskill_train") then
+            pngdata = trainingPngdata
         else
             pngdata = {}
         end
@@ -1118,6 +1122,10 @@ chooseOperator = function(stationType, goodType, stationLevel,
     elseif stationType == "宿舍" then
         best, best_score = dormitoryOperatorBest(operator, goodType, virtralPowerStationNum)
         log("宿舍选", best)
+    elseif stationType == "训练室" then
+        --goodType表示被训练干员的职业,stationLevel表示被训练干员的专精等级
+        best, best_score = trainingOperatorBest(operator, goodType, stationLevel)
+        log("训练室选", best)
     end
     sleep(max(0, 500 - (time() - start_time)))
     tap("清空选择")
@@ -1652,6 +1660,186 @@ powerStationOperatorBest = function(operator)
             elseif icon == "bskill_pow_spd&cost" then --THRM-EX
                 if isCharExsit["承曦格雷伊"] then
                     s = s - 1
+                end
+            end
+        end
+        table.insert(best, { s, o })
+    end
+    table.sort(best, function(a, b) return a[1] > b[1] end)
+    best = best[1][2]
+    return { best }, best_score
+end
+
+trainingOperatorBest = function(operator, charType, targetLevel)
+    -- 过滤心情小于阈值的干员
+    local minAllowedMood = shift_min_mood
+    if disable_shift_mood then minAllowedMood = -1 end
+    operator = table.filter(operator,
+        function(x) return x[3] >= minAllowedMood end)
+    local best = {}
+    local best_score = -1
+    --{ "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+    for _, o in pairs(operator) do
+        local s = 0
+        for _, icon in pairs({ o[1], o[2] }) do
+            if icon == "bskill_train_vanguard1" and charType == "PIONEER" then
+                s = s + 0.3
+            elseif icon == "bskill_train_vanguard2" and charType == "PIONEER" then
+                s = s + 0.5
+            elseif icon == "bskill_train_vanguard3" and charType == "PIONEER" then
+                s = s + 0.6
+            elseif icon == "bskill_train1_vanguard1" and charType == "PIONEER" then
+                s = s + 0.3
+                if targetLevel == 1 then
+                    s = s + 0.45
+                end
+            elseif icon == "bskill_train_specialist&pioneer1" and charType == "PIONEER" or charType == "SPECIAL" then
+                s = s + 0.3
+            elseif icon == "bskill_train_specialist&pioneer2" and charType == "PIONEER" or charType == "SPECIAL" then
+                s = s + 0.45
+            elseif icon == "bskill_train_all" then
+                s = s + 0.25
+            elseif icon == "bskill_train_reduceTime" then
+                s = s + 0.7
+            elseif icon == "bskill_train_fighter" and charType == "WARRIOR" then
+                s = s + 0.3
+            elseif icon == "bskill_train_vanguard&sniper" and charType == "WARRIOR" or charType == "SNIPER" then
+                s = s + 0.3
+            elseif icon == "bskill_train_lord" and charType == "WARRIOR" then
+                s = s + 0.3
+            elseif icon == "bskill_train_guard1" and charType == "WARRIOR" then
+                s = s + 0.3
+            elseif icon == "bskill_train_guard2" and charType == "WARRIOR" then
+                s = s + 0.5
+            elseif icon == "bskill_train_guard3" and charType == "WARRIOR" then
+                s = s + 0.6
+            elseif icon == "bskill_train3_guard1" and charType == "WARRIOR" then
+                s = s + 0.3
+                if targetLevel == 3 then
+                    s = s + 0.45
+                end
+            elseif icon == "bskill_train3_guard2" and charType == "WARRIOR" then
+                s = s + 0.3
+                if targetLevel == 3 then
+                    s = s + 0.65
+                end
+            elseif icon == "bskill_train2_guard1" and charType == "WARRIOR" then
+                s = s + 0.3
+                if targetLevel == 2 then
+                    s = s + 0.45
+                end
+            elseif icon == "bskill_train1_guard1" and charType == "WARRIOR" then
+                s = s + 0.3
+                if targetLevel == 1 then
+                    s = s + 0.45
+                end
+            elseif icon == "bskill_train_caster&medic1" and charType == "MEDIC" or charType == "CASTER" then
+                s = s + 0.3
+            elseif icon == "bskill_train_caster&medic2" and charType == "MEDIC" or charType == "CASTER" then
+                s = s + 0.45
+            elseif icon == "bskill_train_medic1" and charType == "MEDIC" then
+                s = s + 0.3
+            elseif icon == "bskill_train_wandermedic" and charType == "MEDIC" then
+                s = s + 0.3
+            elseif icon == "bskill_train_medic2" and charType == "MEDIC" then
+                s = s + 0.5
+            elseif icon == "bskill_train_medic3" and charType == "MEDIC" then
+                s = s + 0.6
+            elseif icon == "bskill_train2_medic1" and charType == "MEDIC" then
+                s = s + 0.3
+                if targetLevel == 2 then
+                    s = s + 0.45
+                end
+            elseif icon == "bskill_train_defender1" and charType == "TANK" then
+                s = s + 0.3
+            elseif icon == "bskill_train_defender2" and charType == "TANK" then
+                s = s + 0.5
+            elseif icon == "bskill_train_defender3" and charType == "TANK" then
+                s = s + 0.6
+            elseif icon == "bskill_train2_defender1" and charType == "TANK" then
+                s = s + 0.3
+                if targetLevel == 2 then
+                    s = s + 0.45
+                end
+            elseif icon == " bskill_train_artsprotector" and charType == "TANK" then
+                s = s + 0.3
+            elseif icon == "bskill_train1_defender1" and charType == "TANK" then
+                s = s + 0.3
+                if targetLevel == 1 then
+                    s = s + 0.45
+                end
+            elseif icon == "bskill_train_caster1" and charType == "CASTER" then
+                s = s + 0.3
+            elseif icon == "bskill_train_caster2" and charType == "CASTER" then
+                s = s + 0.5
+            elseif icon == "bskill_train_caster3" and charType == "CASTER" then
+                s = s + 0.6
+            elseif icon == "bskill_train1_caster1" and charType == "CASTER" then
+                s = s + 0.3
+                if targetLevel == 1 then
+                    s = s + 0.45
+                end
+            elseif icon == "bskill_train2_caster1" and charType == "CASTER" then
+                s = s + 0.3
+                if targetLevel == 2 then
+                    s = s + 0.45
+                end
+            elseif icon == "bskill_train_caster&supporter1" and charType == "SUPPORT" or charType == "CASTER" then
+                s = s + 0.3
+            elseif icon == "bskill_train_supporter1" and charType == "SUPPORT" then
+                s = s + 0.3
+            elseif icon == "bskill_train_supporter2" and charType == "SUPPORT" then
+                s = s + 0.5
+            elseif icon == "bskill_train_supporter3" and charType == "SUPPORT" then
+                s = s + 0.6
+            elseif icon == "bskill_train3_supporter2" and charType == "SUPPORT" then
+                s = s + 0.3
+                if targetLevel == 3 then
+                    s = s + 0.65
+                end
+            elseif icon == "bskill_train_siegesniper" and charType == "SNIPER" then
+                s = s + 0.3
+            elseif icon == "bskill_train_sniper1" and charType == "SNIPER" then
+                s = s + 0.3
+            elseif icon == "bskill_train_sniper2" and charType == "SNIPER" then
+                s = s + 0.5
+            elseif icon == "bskill_train_sniper3" and charType == "SNIPER" then
+                s = s + 0.6
+            elseif icon == "bskill_train3_sniper1" and charType == "SNIPER" then
+                s = s + 0.3
+                if targetLevel == 3 then
+                    s = s + 0.45
+                end
+            elseif icon == "bskill_train2_sniper1" and charType == "SNIPER" then
+                s = s + 0.3
+                if targetLevel == 2 then
+                    s = s + 0.45
+                end
+            elseif icon == "bskill_train3_sniper2" and charType == "SNIPER" then
+                s = s + 0.3
+                if targetLevel == 3 then
+                    s = s + 0.65
+                end
+            elseif icon == "bskill_train1_supporter2" and charType == "SNIPER" then
+                s = s + 0.3
+                if targetLevel == 1 then
+                    s = s + 0.65
+                end
+            elseif icon == "bskill_train_specialist1" and charType == "SPECIAL" then
+                s = s + 0.3
+            elseif icon == "bskill_train_specialist2" and charType == "SPECIAL" then
+                s = s + 0.5
+            elseif icon == "bskill_train_specialist3" and charType == "SPECIAL" then
+                s = s + 0.6
+            elseif icon == "bskill_train1_specialist1" and charType == "SPECIAL" then
+                s = s + 0.3
+                if targetLevel == 1 then
+                    s = s + 0.45
+                end
+            elseif icon == "bskill_train3_specialist2" and charType == "SPECIAL" then
+                s = s + 0.3
+                if targetLevel == 3 then
+                    s = s + 0.65
                 end
             end
         end

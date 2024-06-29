@@ -2922,7 +2922,6 @@ path.发电站换班 = function()
     local type
     local good
 
-
     local f
     f = function(i, station, stationLevel)
         path.跳转("基建")
@@ -2996,7 +2995,6 @@ end
 
 path.办公室换班 = function(stationType)
     if disable_office_shift then return end
-    -- TODO: 感觉没必要对办公室做处理，又没做体系
     --if 1 then return end
     stationType = stationType or "办公室"
 
@@ -3030,6 +3028,7 @@ path.办公室换班 = function(stationType)
             end
             if time() - start_time > 1000 then
                 tap("干员选择列表1")
+                ssleep(.3)
                 start_time = time()
             end
             -- tap("清空选择")
@@ -3039,6 +3038,64 @@ path.办公室换班 = function(stationType)
     end
 
     chooseOperator(stationType, type, stationLevel, tradingStationNum,
+        virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
+        goldStationNum, totalStationLevel)
+
+    if not wait(function(reset_wait_start_time)
+            tap("确认蓝")
+            if findAny({ "隐藏", "进驻信息", "进驻信息选中" }) then
+                return true
+            end
+            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+        end, 3) then
+        return
+    end
+end
+
+path.训练室换班 = function(stationType, char_type, target_level)
+    stationType = stationType or "训练室"
+
+    -- 训练室内换班
+    appear("干员技能专精页面", 3)
+    if not wait(function()
+            if findOne("筛选") then return true end
+            tap("选择陪练干员")
+            ssleep(.2)
+        end, 5) then
+        return
+    end
+
+    if not wait(function()
+            if findOne("筛选") then return true end
+            if findOne("进驻信息选中") then
+                wait(function()
+                    if findOne("筛选") then return true end
+                    tap("进驻第一人")
+                end, 2)
+            elseif findOne("进驻信息") then
+                tap("进驻信息")
+                ssleep(.2)
+                wait(function()
+                    if findOne("筛选") then return true end
+                    tap("进驻第一人")
+                end, 3)
+            end
+        end, 7) then
+        return
+    end
+
+    if not wait(function()
+            if findOne("干员未选中") and findOne("第一干员未选中") then
+                return true
+            end
+            tap("第一干员未选中")
+            ssleep(.5)
+        end, 7) then
+        log("训练室超时")
+        return
+    end
+
+    chooseOperator(stationType, char_type, target_level, tradingStationNum,
         virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
         goldStationNum, totalStationLevel)
 

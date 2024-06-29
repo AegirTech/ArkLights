@@ -52,8 +52,8 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "06.29 22:07"
-update_announcement = '最近更新：【生路】导航'
+release_date = "06.30 01:24"
+update_announcement = '最近更新：自动养成测试'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -116,14 +116,14 @@ cloud.startHeartBeat()
 if debug_mode then
     log("debug_mode")
     ssleep(1)
-    print(findOne("专精技能确认"))
+    path.训练室换班("训练室", "CASTER", 3)
     -- auto_raise_api_select = 0
     -- data = raise.get_player_info()
     -- log(data)
     -- player_info_init(data)
     -- log(player_character_info)
     -- log(player_inventory_info)
-    -- exit()
+    exit()
     --initPngdata()
 
     --用于获取活动的剧情关，教学关三星颜色信息
