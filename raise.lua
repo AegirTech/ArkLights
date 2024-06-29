@@ -28,84 +28,84 @@ raise = {}
 
 --初始化高级材料与低级材料映射关系表
 local 高级材料2低级材料 = {
-    ["30062"] = { chlid = { ["30061"] = 3 }, level = 1, name = "装置" },
+    ["30062"] = { child = { ["30061"] = 3 }, level = 1, name = "装置" },
     ["30061"] = { level = 0, name = "破损装置" },
-    ["30024"] = { chlid = { ["30023"] = 2, ["30043"] = 1, ["30083"] = 1 }, level = 4, name = "糖聚块" },
-    ["30145"] = { chlid = { ["31014"] = 2, ["31024"] = 1, ["31034"] = 1 }, level = 4, name = "晶体电子单元" },
-    ["30023"] = { chlid = { ["30022"] = 4 }, level = 2, name = "糖组" },
+    ["30024"] = { child = { ["30023"] = 2, ["30043"] = 1, ["30083"] = 1 }, level = 4, name = "糖聚块" },
+    ["30145"] = { child = { ["31014"] = 2, ["31024"] = 1, ["31034"] = 1 }, level = 4, name = "晶体电子单元" },
+    ["30023"] = { child = { ["30022"] = 4 }, level = 2, name = "糖组" },
     ["30103"] = { level = 2, name = "RMA70-12" },
-    ["30064"] = { chlid = { ["30013"] = 2, ["30063"] = 1, ["30093"] = 1 }, level = 3, name = "改量装置" },
-    ["30063"] = { chlid = { ["30062"] = 4 }, level = 2, name = "全新装置" },
-    ["30022"] = { chlid = { ["30021"] = 3 }, level = 1, name = "糖" },
-    ["31034"] = { chlid = { ["31013"] = 1, ["31023"] = 1, ["31033"] = 2 }, level = 3, name = "晶体电路" },
+    ["30064"] = { child = { ["30013"] = 2, ["30063"] = 1, ["30093"] = 1 }, level = 3, name = "改量装置" },
+    ["30063"] = { child = { ["30062"] = 4 }, level = 2, name = "全新装置" },
+    ["30022"] = { child = { ["30021"] = 3 }, level = 1, name = "糖" },
+    ["31034"] = { child = { ["31013"] = 1, ["31023"] = 1, ["31033"] = 2 }, level = 3, name = "晶体电路" },
     ["30021"] = { level = 0, name = "代糖" },
     ["31033"] = { level = 2, name = "晶体元件" },
-    ["30104"] = { chlid = { ["30013"] = 2, ["30103"] = 1, ["30053"] = 1 }, level = 3, name = "RMA70-24" },
+    ["30104"] = { child = { ["30013"] = 2, ["30103"] = 1, ["30053"] = 1 }, level = 3, name = "RMA70-24" },
     ["30093"] = { level = 2, name = "研磨石" },
     ["30051"] = { level = 1, name = "双酮" },
     ["31063"] = { level = 2, name = "转质盐组" },
-    ["30094"] = { chlid = { ["30063"] = 1, ["30043"] = 1, ["30093"] = 1 }, level = 3, name = "五水研磨石" },
-    ["30013"] = { chlid = { ["30012"] = 5 }, level = 2, name = "固源岩组" },
-    ["30012"] = { chlid = { ["30011"] = 3 }, level = 1, name = "固源岩" },
-    ["31024"] = { chlid = { ["30063"] = 1, ["31023"] = 1, ["30093"] = 1 }, level = 3, name = "炽合金块" },
-    ["30135"] = { chlid = { ["30084"] = 1, ["30094"] = 1, ["30104"] = 1 }, level = 4, name = "D32钢" },
-    ["30014"] = { chlid = { ["30013"] = 4 }, level = 3, name = "提纯源岩" },
-    ["30053"] = { chlid = { ["30052"] = 4 }, level = 3, name = "酮凝集组" },
-    ["30052"] = { chlid = { ["30051"] = 3 }, level = 2, name = "酮凝集" },
-    ["31064"] = { chlid = { ["30023"] = 1, ["31043"] = 1, ["31063"] = 1 }, level = 3, name = "转质盐聚块" },
+    ["30094"] = { child = { ["30063"] = 1, ["30043"] = 1, ["30093"] = 1 }, level = 3, name = "五水研磨石" },
+    ["30013"] = { child = { ["30012"] = 5 }, level = 2, name = "固源岩组" },
+    ["30012"] = { child = { ["30011"] = 3 }, level = 1, name = "固源岩" },
+    ["31024"] = { child = { ["30063"] = 1, ["31023"] = 1, ["30093"] = 1 }, level = 3, name = "炽合金块" },
+    ["30135"] = { child = { ["30084"] = 1, ["30094"] = 1, ["30104"] = 1 }, level = 4, name = "D32钢" },
+    ["30014"] = { child = { ["30013"] = 4 }, level = 3, name = "提纯源岩" },
+    ["30053"] = { child = { ["30052"] = 4 }, level = 3, name = "酮凝集组" },
+    ["30052"] = { child = { ["30051"] = 3 }, level = 2, name = "酮凝集" },
+    ["31064"] = { child = { ["30023"] = 1, ["31043"] = 1, ["31063"] = 1 }, level = 3, name = "转质盐聚块" },
     ["30011"] = { level = 0, name = "源岩" },
     ["31023"] = { level = 2, name = "炽合金" },
-    ["30054"] = { chlid = { ["30023"] = 1, ["30053"] = 2, ["30083"] = 1 }, level = 3, name = "酮阵列" },
-    ["30084"] = { chlid = { ["30033"] = 1, ["30073"] = 1, ["30083"] = 2 }, level = 3, name = "三水锰矿" },
+    ["30054"] = { child = { ["30023"] = 1, ["30053"] = 2, ["30083"] = 1 }, level = 3, name = "酮阵列" },
+    ["30084"] = { child = { ["30033"] = 1, ["30073"] = 1, ["30083"] = 2 }, level = 3, name = "三水锰矿" },
     ["30083"] = { level = 3, name = "轻锰矿" },
-    ["31014"] = { chlid = { ["31013"] = 1, ["31023"] = 1, ["30043"] = 1 }, level = 3, name = "聚合凝胶" },
+    ["31014"] = { child = { ["31013"] = 1, ["31023"] = 1, ["30043"] = 1 }, level = 3, name = "聚合凝胶" },
     ["31013"] = { level = 2, name = "凝胶" },
-    ["30125"] = { chlid = { ["30064"] = 1, ["30074"] = 2 }, level = 4, name = "双极纳米片" },
-    ["30042"] = { chlid = { ["30041"] = 3 }, level = 1, name = "异铁" },
-    ["31054"] = { chlid = { ["30103"] = 1, ["31053"] = 1, ["31033"] = 1 }, level = 3, name = "切削原液" },
+    ["30125"] = { child = { ["30064"] = 1, ["30074"] = 2 }, level = 4, name = "双极纳米片" },
+    ["30042"] = { child = { ["30041"] = 3 }, level = 1, name = "异铁" },
+    ["31054"] = { child = { ["30103"] = 1, ["31053"] = 1, ["31033"] = 1 }, level = 3, name = "切削原液" },
     ["30041"] = { level = 0, name = "异铁碎片" },
     ["31053"] = { level = 2, name = "化合切削液" },
-    ["30044"] = { chlid = { ["30063"] = 1, ["30033"] = 1, ["30043"] = 2 }, level = 3, name = "异铁块" },
-    ["30043"] = { chlid = { ["30042"] = 4 }, level = 2, name = "异铁组" },
+    ["30044"] = { child = { ["30063"] = 1, ["30033"] = 1, ["30043"] = 2 }, level = 3, name = "异铁块" },
+    ["30043"] = { child = { ["30042"] = 4 }, level = 2, name = "异铁组" },
     ["30073"] = { level = 3, name = "扭转醇" },
-    ["30034"] = { chlid = { ["30053"] = 1, ["30033"] = 2, ["30073"] = 1 }, level = 4, name = "聚酸酯块" },
-    ["30155"] = { chlid = { ["31054"] = 1, ["31064"] = 1, ["31044"] = 2 }, level = 4, name = "烧结核凝晶" },
+    ["30034"] = { child = { ["30053"] = 1, ["30033"] = 2, ["30073"] = 1 }, level = 4, name = "聚酸酯块" },
+    ["30155"] = { child = { ["31054"] = 1, ["31064"] = 1, ["31044"] = 2 }, level = 4, name = "烧结核凝晶" },
     ["30031"] = { level = 1, name = "酯原料" },
     ["31043"] = { level = 2, name = "半自然溶剂" },
-    ["30074"] = { chlid = { ["30023"] = 1, ["30103"] = 1, ["30073"] = 1 }, level = 3, name = "白马醇" },
-    ["30033"] = { chlid = { ["30032"] = 4 }, level = 3, name = "聚酸酯组" },
-    ["30032"] = { chlid = { ["30031"] = 3 }, level = 2, name = "聚酸酯" },
-    ["31044"] = { chlid = { ["31013"] = 1, ["31043"] = 1, ["31053"] = 1 }, level = 3, name = "精炼溶剂" },
+    ["30074"] = { child = { ["30023"] = 1, ["30103"] = 1, ["30073"] = 1 }, level = 3, name = "白马醇" },
+    ["30033"] = { child = { ["30032"] = 4 }, level = 3, name = "聚酸酯组" },
+    ["30032"] = { child = { ["30031"] = 3 }, level = 2, name = "聚酸酯" },
+    ["31044"] = { child = { ["31013"] = 1, ["31043"] = 1, ["31053"] = 1 }, level = 3, name = "精炼溶剂" },
     ["31073"] = { level = 2, name = "褐素纤维" },
-    ["31074"] = { chlid = { ["30013"] = 1, ["31033"] = 2, ["31063"] = 1 }, level = 3, name = "固化纤维板" },
+    ["31074"] = { child = { ["30013"] = 1, ["31033"] = 2, ["31063"] = 1 }, level = 3, name = "固化纤维板" },
     ["31083"] = { level = 2, name = "环烃聚质" },
-    ["31084"] = { chlid = { ["31063"] = 1, ["31073"] = 1, ["31083"] = 1 }, level = 3, name = "环烃预制体" },
-    ["30115"] = { chlid = { ["30014"] = 1, ["30044"] = 1, ["30054"] = 1 }, level = 4, name = "聚合剂" },
+    ["31084"] = { child = { ["31063"] = 1, ["31073"] = 1, ["31083"] = 1 }, level = 3, name = "环烃预制体" },
+    ["30115"] = { child = { ["30014"] = 1, ["30044"] = 1, ["30054"] = 1 }, level = 4, name = "聚合剂" },
     ["32001"] = { level = 3, name = "芯片助剂" },
     ["3211"] = { level = 2, name = "先锋芯片" },
     ["3212"] = { level = 3, name = "先锋芯片组" },
-    ["3213"] = { chlid = { ["32001"] = 1, ["3212"] = 2 }, level = 4, name = "先锋双芯片" },
+    ["3213"] = { child = { ["32001"] = 1, ["3212"] = 2 }, level = 4, name = "先锋双芯片" },
     ["3221"] = { level = 2, name = "近卫芯片" },
     ["3222"] = { level = 3, name = "近卫芯片组" },
-    ["3223"] = { chlid = { ["32001"] = 1, ["3222"] = 2 }, level = 4, name = "近卫双芯片" },
+    ["3223"] = { child = { ["32001"] = 1, ["3222"] = 2 }, level = 4, name = "近卫双芯片" },
     ["3231"] = { level = 2, name = "重装芯片" },
     ["3232"] = { level = 3, name = "重装芯片组" },
-    ["3233"] = { chlid = { ["32001"] = 1, ["3232"] = 2 }, level = 4, name = "重装双芯片" },
+    ["3233"] = { child = { ["32001"] = 1, ["3232"] = 2 }, level = 4, name = "重装双芯片" },
     ["3241"] = { level = 2, name = "狙击芯片" },
     ["3242"] = { level = 3, name = "狙击芯片组" },
-    ["3243"] = { chlid = { ["32001"] = 1, ["3242"] = 2 }, level = 4, name = "狙击双芯片" },
+    ["3243"] = { child = { ["32001"] = 1, ["3242"] = 2 }, level = 4, name = "狙击双芯片" },
     ["3251"] = { level = 2, name = "术师芯片" },
     ["3252"] = { level = 3, name = "术师芯片组" },
-    ["3253"] = { chlid = { ["32001"] = 1, ["3252"] = 2 }, level = 4, name = "术师双芯片" },
+    ["3253"] = { child = { ["32001"] = 1, ["3252"] = 2 }, level = 4, name = "术师双芯片" },
     ["3261"] = { level = 2, name = "医疗芯片" },
     ["3262"] = { level = 3, name = "医疗芯片组" },
-    ["3263"] = { chlid = { ["32001"] = 1, ["3262"] = 2 }, level = 4, name = "医疗双芯片" },
+    ["3263"] = { child = { ["32001"] = 1, ["3262"] = 2 }, level = 4, name = "医疗双芯片" },
     ["3271"] = { level = 2, name = "辅助芯片" },
     ["3272"] = { level = 3, name = "辅助芯片组" },
-    ["3273"] = { chlid = { ["32001"] = 1, ["3272"] = 2 }, level = 4, name = "辅助双芯片" },
+    ["3273"] = { child = { ["32001"] = 1, ["3272"] = 2 }, level = 4, name = "辅助双芯片" },
     ["3281"] = { level = 2, name = "特种芯片" },
     ["3282"] = { level = 3, name = "特种芯片组" },
-    ["3283"] = { chlid = { ["32001"] = 1, ["3282"] = 2 }, level = 4, name = "特种双芯片" },
+    ["3283"] = { child = { ["32001"] = 1, ["3282"] = 2 }, level = 4, name = "特种双芯片" },
 }
 --定义日常材料与刷取副本的期望映射关系
 local daily_materials_stage_json =
@@ -125,6 +125,11 @@ raise.init = function()
         -- 解包干员数据
         character_table = JsonDecode(readFile("char_table.json"))
     end
+    干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+    if not 干员职业 then
+        干员职业 = JsonDecode(readFile("character_type_list.json"))
+    end
+
     --log(character_table)
     --[[if not item_table then
         file = io.open(getWorkPath() .. "/gamedata/excel/item_table.json", "r")
@@ -255,9 +260,12 @@ raise.get_char_elite = function(id)
 end
 
 -- 获取指定干员ID的现有技能信息
+---@param id string 干员id
+---@param skill_id_index number 该干员的第几个技能
 ---@return table {通用技能等级，专精等级}
 raise.get_char_skill = function(id, skill_id_index)
     skill_id_index = skill_id_index or 1
+    -- 通用技能等级
     local common_skill_level = player_character_info[id]["mainSkillLevel"]
     if common_skill_level == 7 then
         return { 7, player_character_info[id]["skills"][skill_id_index]["level"] }
@@ -267,12 +275,16 @@ raise.get_char_skill = function(id, skill_id_index)
 end
 
 -- 获取指定干员指定技能的升级材料
+---@param id string 干员id
+---@param skill_id number 该干员的第几个技能
+---@param target_level number 目标专精等级
 ---@return table t {id:count} 其中id 4位数字的是技能书
 raise.char_skill_master_material = function(id, skill_id, target_level)
     local skill_info = character_table[id]["skills"][skill_id]["levelUpCostCond"][target_level]["levelUpCost"]
+    --log("需要材料",skill_info)
     local t = {}
-    for _, v in ipairs(skill_info) do
-        t[v["id"]] = t[v["count"]]
+    for i = 1, #skill_info do
+        t[skill_info[i]["id"]] = skill_info[i]["count"]
     end
     return t
 end
@@ -288,7 +300,7 @@ end
 ---@param target_level number 目标专精等级
 ---@return table total_material 包含材料ID和对应数量的表
 raise.char_skill_upgrade_material_total = function(id, skill_id_index, target_level)
-    --通用技能等级
+    -- 通用技能等级
     local common_skill_level = player_character_info[id]["mainSkillLevel"]
     -- 指定技能当前专精等级
     local current_skill_level
@@ -364,7 +376,7 @@ end
 ---@param materials table 材料id:数量
 raise.calculate_materials_need = function(materials)
     local need_materials = {}
-    log(player_inventory_info)
+    --log(player_inventory_info)
     for k, v in pairs(materials) do
         --log(k, v)
         local current_count = player_inventory_info[k] or 0
@@ -441,7 +453,7 @@ end
 ---@param final_synthesis_materials_result table 合成路线计划集合
 calc_fight_materials = function(item_id, need_count, minLevel, fight_materials_result, final_synthesis_materials_result)
     local current_materials_info = 高级材料2低级材料[item_id]
-    log("材料", item_id, "需要数量", need_count, minLevel, fight_materials_result, final_synthesis_materials_result)
+    -- log("材料", item_id, "需要数量", need_count, minLevel, fight_materials_result, final_synthesis_materials_result)
     -- 如果当前材料在材料合成关系表中不存在,直接返回,且设置一个error的标志位
     if not current_materials_info then
         fight_materials_result["error"] = true
@@ -452,7 +464,7 @@ calc_fight_materials = function(item_id, need_count, minLevel, fight_materials_r
     local current_count = player_inventory_info[item_id] or 0
 
     --扣减仓库材料,仓库足够直接返回,停止递归
-    log("现有数量", current_count)
+    -- log("现有数量", current_count)
     if current_count >= need_count then
         player_inventory_info[item_id] = player_inventory_info[item_id] - need_count
         return
@@ -471,7 +483,7 @@ calc_fight_materials = function(item_id, need_count, minLevel, fight_materials_r
         return
     end
 
-    local childs = current_materials_info["chlid"]
+    local childs = current_materials_info["child"]
 
     if childs == nil then
         fight_materials_result[item_id] = need_count
@@ -841,9 +853,12 @@ end
 
 -- 材料合成
 raise.material_synthesis = function(id, count)
-    if not formula_choose(id) then return end
+    log("材料", material_id2name(id), "准备合成数量", count)
+    if not raise.formula_choose(id) then return end
     local level = 高级材料2低级材料[id]["level"]
-    local times = count // (24 / 2 ^ (level - 1))
+    local emotion_cost = 24 / (2 ^ (level - 1))
+    local times = count // emotion_cost
+    log("最多次数", times)
     for j = 1, times do
         raise.加工站选人()
         if not appear("加工站", 2) then return end
@@ -856,21 +871,29 @@ raise.material_synthesis = function(id, count)
         end
         ssleep(.2)
     end
-    raise.加工站选人(id)
-    for i = 1, count % (24 / 2 ^ (level - 1)) - 1 do
-        tap("加工站加")
+    -- 默认是1,所以减掉
+    local remainder = count % emotion_cost - 1
+    log("剩下次数", remainder)
+    if remainder >= 0 then
+        raise.加工站选人(id)
+        if remainder >= 1 then
+            for i = 1, remainder do
+                tap("加工站加")
+                ssleep(.1)
+            end
+        end
         ssleep(.1)
-    end
-    ssleep(.1)
-    tap("开始加工")
-    if appear("获得物资", 10) then
+        tap("开始加工")
+        if appear("获得物资", 10) then
+            ssleep(.2)
+            tap("获得物资")
+        else
+            log("合成材料失败")
+            return
+        end
         ssleep(.2)
-        tap("获得物资")
-    else
-        log("合成材料失败")
-        return
     end
-    ssleep(.2)
+    appear("加工站", 3)
     return true
 end
 
@@ -908,8 +931,9 @@ raise.加工站选人 = function()
 end
 
 --选择配方
-formula_choose = function(id)
+raise.formula_choose = function(id)
     local level = 高级材料2低级材料[id]["level"]
+    log("选择配方", id, "等级", level)
     if not appear("加工站选材料类", 1) then return end
     if level < 2 then
         if not wait(function()
@@ -948,8 +972,6 @@ end
 
 -- 选择干员
 char_choose = function(char_name)
-    local character_type = JsonDecode(readFile("character_type_list.json"))
-    local 干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
     path.跳转("干员")
     ssleep(.3)
     --只跳转一次会有概率无反应,多加一次
@@ -961,7 +983,7 @@ char_choose = function(char_name)
     end
 
     for i = 1, 8 do
-        if character_type[char_name] == 干员类别[i] then
+        if 干员职业[char_name] == 干员类别[i] then
             if not findOne("普通作战编队列表" .. i) then
                 tap("普通作战编队列表" .. i)
                 appear("普通作战编队列表" .. i)
@@ -1133,9 +1155,9 @@ raise.elite_one_phase = function(materials_need)
 
             for k, v in pairs(material_need) do
                 if #k == 4 and k:sub(4, 4) == "3" then
-                    --已有芯片
-                    local n = tonumber(ocro("干员精英化芯片数字") or 0)
-                    v = v - n
+                    -- 已有芯片,不采用ocr识别仓库后不需要再识别验证数字
+                    -- local n = tonumber(ocro("干员精英化芯片数字") or 0)
+                    -- v = v - n
                     if not wait(function()
                             tap("干员精英化芯片白")
                             if findOne("制造站设施列表1") then return true end
@@ -1205,7 +1227,7 @@ raise.elite_one_phase = function(materials_need)
         end
         local p1 = findOne("干员精英化材料1红")
         local p2 = findOne("干员精英化材料2红")
-
+        --[[采用森空岛接口之后不需要再ocr二次验证
         if p2 then
             local text = ocro("干员精英化材料2红范围")
             log("材料2进度", text)
@@ -1223,17 +1245,18 @@ raise.elite_one_phase = function(materials_need)
             tap("干员精英化材料2")
             ssleep(.3)
         end
-
+        ]]
 
 
         if p1 or p2 then
+            --[[采用森空岛接口之后不需要再ocr二次验证
             local text = ocro("干员精英化材料1红范围")
             log("材料1进度", text)
-            local number = tonumber(string.match(text, "%d+")) or 0
+            local number = tonumber(string.match(text, "%d+")) or 0]]
             tap("干员精英化材料1")
             ssleep(.3)
             appear("干员精英化材料白1", 2)
-            if p1 then
+            --[[if p1 then
                 local m1 = ocro("干员精英化材料白1名称")
                 log(m1, ocro("干员精英化材料白1数字"), materials_need[material_name2id(m1)])
                 if m1 and materials_need[material_name2id(m1)] then
@@ -1242,6 +1265,7 @@ raise.elite_one_phase = function(materials_need)
                 end
                 log(material_need)
             end
+            ]]
             log("缺少材料，尝试合成")
             --滚动到最下面
             for i = 1, 3 do
@@ -1258,14 +1282,14 @@ raise.elite_one_phase = function(materials_need)
             ssleep(.3)
             appear("干员精英化材料白1", 2)
             local m_need = {}
-            for k, v in pairs(material_need) do
+            for k, v in pairs(materials_need) do
                 if #k == 5 then --去除芯片
                     m_need[k] = v
                 end
             end
-            log(m_need)
+            log("缺少非芯片材料:", m_need)
             local fight_plan, synthesis_plan = raise.get_fight_plan(m_need)
-            log(synthesis_plan)
+            log("合成材料计划", synthesis_plan)
             if not wait(function()
                     if findOne("加工站") then return true end
                     tap("干员精英化材料白1跳转")
@@ -1324,7 +1348,7 @@ end
 ---@param id string 干员id
 ---@param start_phase number 当前精英等级
 ---@param target_phase number 目标精英等级
----@return bool b true 为精英化完成,继续后续培养计划,false 为未完成(缺少材料,需要等待芯片合成)
+---@return bool bool true 为精英化完成,继续后续培养计划,false 为未完成(缺少材料,需要等待芯片合成)
 raise.elite_char = function(id, start_phase, target_phase)
     local name = char_id2name(id)
     log(name)
@@ -1414,14 +1438,179 @@ raise.master_skill = function(id, skill_numb, start_level)
         return false
     end
 
-    --用prts自动编队逻辑选择要的干员和技能
-
     --计算start_level+1的材料需求
     local material_need = raise.char_skill_master_material(id, skill_numb, start_level + 1)
-    log(material_need)
+    log("需要材料", material_need)
+    local materials_need = raise.calculate_materials_need(material_need)
+    log("缺少材料", materials_need)
 
-    --参考精英化进行专精,注意材料数量ocr并不准确,需要在专精页面再ocr一次材料数量
+    local m_need = {}
+    local fight_plan, synthesis_plan
+    if material_need ~= {} then
+        for k, v in pairs(material_need) do
+            if #k == 5 then --去除技能书
+                m_need[k] = v
+            end
+        end
+        log("缺少非技能书材料:", m_need)
+        fight_plan, synthesis_plan = raise.get_fight_plan(m_need)
+        log("合成计划:", synthesis_plan)
+    end
+
+    --用prts自动编队逻辑选择要的干员和技能
+    raise.choose_char_be_trained({
+        {
+            name = char_id2name(id),
+            skill = skill_numb,
+        } })
+    ssleep(.1)
+    tap("专精技能列表" .. skill_numb)
+    ssleep(.5)
+    appear("专精技能确认", 5)
+    -- 森空岛接口有延迟,这里用判断有没有红点来决定要不要合材料
+    if findOne("干员技能专精红") then
+        log("进行材料合成")
+        tap("干员专精材料1")
+        ssleep(.3)
+        appear("干员专精材料白1", 2)
+        log("缺少材料，尝试合成")
+        --滚动到最下面
+        for i = 1, 3 do
+            gesture({
+                {
+                    point = { { scale(1456), scale(913) },
+                        { scale(1456), scale(480) },
+                    },
+                    start = 0,
+                    duration = 500,
+                },
+            })
+        end
+        ssleep(.3)
+        appear("干员专精材料白1", 2)
+        if not wait(function()
+                if findOne("加工站") then return true end
+                tap("干员专精材料白1跳转")
+            end, 5) then
+            return
+        end
+        appear("加工站", 3)
+        if not wait(function()
+                tap("加工站选择配方")
+                if not findOne("加工站") then return true end
+            end, 5) then
+            return
+        end
+        if not wait(function()
+                if findOne("加工站选材料类") then return true end
+                tap("加工站选材料类")
+                --给按钮动画回弹
+                ssleep(.3)
+            end, 5) then
+            return
+        end
+        --由低到高合成
+        for i = 1, 4 do
+            if synthesis_plan[tostring(i)] then
+                --合成
+                for k, v in pairs(synthesis_plan[tostring(i)]) do
+                    if not raise.material_synthesis(k, v) then return false end
+                end
+            end
+        end
+        appear("加工站", 2)
+        ssleep(.2)
+        tap("返回")
+        if appear("干员专精材料白1", 3) then
+            tap("干员专精材料1")
+            disappear("干员专精材料白1", 1)
+        else
+            return false
+        end
+    end
+    if findOne("干员技能专精红") then return false end
+    if not wait(function()
+            tap("专精技能确认")
+            ssleep(.2)
+            if findOne("干员技能专精页面") then return true end
+        end, 10) then
+        log("未完成专精")
+        return false
+    end
+    -- todo:选择陪练
+    return true
 end
+
+-- 选择要技能专精的干员,参考prts自动编队函数
+raise.choose_char_be_trained = function(干员)
+    local 编入数量 = 0
+    local 未编入 = {}
+    local 未编入干员 = {}
+    local 未编入数量 = 0
+
+    appear("干员技能专精页面", 3)
+    if not wait(function()
+            if findOne("编队确认") then return true end
+            tap("选择被训练干员")
+            sleep(10)
+        end, 5) then
+        return
+    end
+    if not wait(function()
+            if findOne("专精无干员选中") then return true end
+            tap("专精第一干员未选中")
+            ssleep(.5)
+        end, 5) then
+        return
+    end
+    if not findOne("职业选择") then
+        tap("职业选择")
+        appear("职业选择", 2)
+    end
+    if not findOne("等级降序") then
+        tap("等级降序")
+        appear("等级降序", 2)
+    end
+    local choseChar = function(干员)
+        local 记录未编入数量
+        --8个职业
+        for i = 1, 8 do
+            local 干员名字字符串 = ""
+            local 干员目录 = {}
+            if 干员职业[干员[1]["name"]] == 干员类别[i] then
+                干员名字字符串 = 干员名字字符串 .. 干员[1]["name"]
+                table.insert(干员目录, 干员[1]["name"] .. 干员[1]["skill"])
+            end
+            if 干员名字字符串 ~= "" then
+                if not findOne("普通作战编队列表" .. i) then
+                    tap("普通作战编队列表" .. i)
+                    appear("普通作战编队列表" .. i)
+                    sleep(200)
+                end
+                --print(干员目录)
+                未编入 = 选择干员(干员目录, "待编队干员")
+                未编入数量 = 未编入数量 + 未编入[1]
+                if 未编入数量 == 1 and 未编入干员[1] == nil then
+                    print(i, 未编入[2])
+                    未编入干员 = { i, 未编入[2] }
+                end
+            end
+            --print("编入数量", 编入数量)
+        end
+    end
+    choseChar(干员)
+
+    tap("编队确认")
+    releaseCapture()
+    appear("干员技能专精页面", 3)
+    print(未编入干员)
+    if 未编入数量 >= 1 then
+        log("未能识别到待训练干员")
+        return false
+    end
+    return true
+end
+
 
 -- 仓库识别 测试
 raise.test = function()
@@ -1946,10 +2135,11 @@ raise.auto_raise = function()
                 --几技能
                 local skill_numb = raise_plan[i]["skill"]
                 local skill_level = raise.get_char_skill(id, skill_numb)
+                log("通用技能等级:", skill_level[1], ";" .. skill_numb .. "技能专精等级:", skill_level[2])
                 if skill_level[2] >= raise_plan[i]["skill_master"] then
                     log(skill_numb, "技能已达到专精等级")
                 else
-                    if not raise.master_skill(id, skill_numb, skill_level[2] + 1) then return end
+                    if not raise.master_skill(id, skill_numb, skill_level[2]) then return end
                 end
             elseif raise_plan[i]["skills"] then
                 log("升级技能")
