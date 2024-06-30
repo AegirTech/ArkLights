@@ -1672,7 +1672,8 @@ end
 
 trainingOperatorBest = function(operator, charType, targetLevel)
     -- 过滤心情小于阈值的干员
-    local minAllowedMood = shift_min_mood
+    local minAllowedMood = 16
+    log("干员职业", charType, "目标等级", targetLevel)
     if disable_shift_mood then minAllowedMood = -1 end
     operator = table.filter(operator,
         function(x) return x[3] >= minAllowedMood end)
@@ -1693,9 +1694,9 @@ trainingOperatorBest = function(operator, charType, targetLevel)
                 if targetLevel == 1 then
                     s = s + 0.45
                 end
-            elseif icon == "bskill_train_specialist&pioneer1" and charType == "PIONEER" or charType == "SPECIAL" then
+            elseif icon == "bskill_train_specialist&pioneer1" and (charType == "PIONEER" or charType == "SPECIAL") then
                 s = s + 0.3
-            elseif icon == "bskill_train_specialist&pioneer2" and charType == "PIONEER" or charType == "SPECIAL" then
+            elseif icon == "bskill_train_specialist&pioneer2" and (charType == "PIONEER" or charType == "SPECIAL") then
                 s = s + 0.45
             elseif icon == "bskill_train_all" then
                 s = s + 0.25
@@ -1703,7 +1704,7 @@ trainingOperatorBest = function(operator, charType, targetLevel)
                 s = s + 0.7
             elseif icon == "bskill_train_fighter" and charType == "WARRIOR" then
                 s = s + 0.3
-            elseif icon == "bskill_train_vanguard&sniper" and charType == "WARRIOR" or charType == "SNIPER" then
+            elseif icon == "bskill_train_vanguard&sniper" and (charType == "WARRIOR" or charType == "SNIPER") then
                 s = s + 0.3
             elseif icon == "bskill_train_lord" and charType == "WARRIOR" then
                 s = s + 0.3
@@ -1733,9 +1734,9 @@ trainingOperatorBest = function(operator, charType, targetLevel)
                 if targetLevel == 1 then
                     s = s + 0.45
                 end
-            elseif icon == "bskill_train_caster&medic1" and charType == "MEDIC" or charType == "CASTER" then
+            elseif icon == "bskill_train_caster&medic1" and (charType == "MEDIC" or charType == "CASTER") then
                 s = s + 0.3
-            elseif icon == "bskill_train_caster&medic2" and charType == "MEDIC" or charType == "CASTER" then
+            elseif icon == "bskill_train_caster&medic2" and (charType == "MEDIC" or charType == "CASTER") then
                 s = s + 0.45
             elseif icon == "bskill_train_medic1" and charType == "MEDIC" then
                 s = s + 0.3
@@ -1784,7 +1785,7 @@ trainingOperatorBest = function(operator, charType, targetLevel)
                 if targetLevel == 2 then
                     s = s + 0.45
                 end
-            elseif icon == "bskill_train_caster&supporter1" and charType == "SUPPORT" or charType == "CASTER" then
+            elseif icon == "bskill_train_caster&supporter1" and (charType == "SUPPORT" or charType == "CASTER") then
                 s = s + 0.3
             elseif icon == "bskill_train_supporter1" and charType == "SUPPORT" then
                 s = s + 0.3

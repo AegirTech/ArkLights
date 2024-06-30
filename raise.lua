@@ -1037,6 +1037,7 @@ char_choose = function(char_name)
         if ret[#ret]["text"] == last_char then break else last_char = ret[#ret]["text"] end
         swip_char()
     end
+    log("未找到干员", char_name)
     path.跳转("首页")
     return false
 end
@@ -1287,12 +1288,13 @@ raise.elite_one_phase = function(materials_need)
                 gesture({
                     {
                         point = { { scale(1456), scale(913) },
-                            { scale(1456), scale(480) },
+                            { scale(1456), scale(0) },
                         },
                         start = 0,
                         duration = 500,
                     },
                 })
+                ssleep(.5)
             end
             ssleep(.3)
             appear("干员精英化材料白1", 2)
@@ -1483,12 +1485,13 @@ raise.master_skill = function(id, skill_numb, start_level)
             gesture({
                 {
                     point = { { scale(1456), scale(913) },
-                        { scale(1456), scale(480) },
+                        { scale(1456), scale(0) },
                     },
                     start = 0,
                     duration = 500,
                 },
             })
+            ssleep(.5)
         end
         ssleep(.3)
         appear("干员专精材料白1", 2)
