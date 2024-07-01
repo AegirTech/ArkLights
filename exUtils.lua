@@ -2099,7 +2099,7 @@ trySolveCaptureFreeServer = function(rect)
     log("准备开始滑动")
     gesture({
         {
-            point = { { 460, 480 }, { distance + 460, 480 } },
+            point = { { scale(460), scale(480) }, { distance + scale(460), scale(480) } },
             start = 0,
             duration = 600,
         },
