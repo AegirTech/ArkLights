@@ -2077,10 +2077,10 @@ parse_from_ui = function(prefix, reference)
 end
 
 all_job = {
-    "邮件收取", "轮次作战", "访问好友", "基建收获",
-    "基建换班", "制造加速", "线索交流", "副手换人",
-    "信用购买", "公开招募", "任务收集", "限时活动",
-    "商店搬空", "故事解锁", "森空岛签到",
+    "邮件收取", "轮次作战", "自动培养", "访问好友",
+    "基建收获", "基建换班", "制造加速", "线索交流",
+    "副手换人", "信用购买", "公开招募", "任务收集",
+    "限时活动", "商店搬空", "故事解锁", "森空岛签到",
 }
 
 now_job = table.filter(all_job, function(x) return x ~= "副手换人" end)
@@ -2137,6 +2137,10 @@ make_account_ui = function(layout, prefix)
     ui.addCheckBox(layout, prefix .. "auto_recruit4", "4", true)
     ui.addCheckBox(layout, prefix .. "auto_recruit5", "5", true)
     ui.addCheckBox(layout, prefix .. "auto_recruit6", "6", false)
+
+    newRow(layout)
+    addTextView(layout, "培养计划")
+    ui.addEditText(layout, prefix .. "raise_plan_text", "", 200, -1)
 
     -- local max_checkbox_one_row = getScreen().width //200
     local max_checkbox_one_row = 3
@@ -3694,10 +3698,6 @@ show_auto_ui = function()
     newRow(layout)
     addTextView(layout, "自定义接口地址")
     ui.addEditText(layout, "auto_raise_api", "")
-
-    newRow(layout)
-    addTextView(layout, "培养计划")
-    ui.addEditText(layout, "raise_plan_text", "", 200, -1)
 
     newRow(layout)
     addTextView(layout, "官服请求Token")

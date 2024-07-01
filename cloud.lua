@@ -412,35 +412,36 @@ server=]] .. server
     if x then hook = hook .. [[;max_stone_times=]] .. str2int(x) end
 
     hook = hook .. [[;now_job_ui1=]] .. str(get(config, 'daily', 'mail'))
-    hook = hook .. [[;now_job_ui3=]] .. str(get(config, 'daily', 'friend'))
+    hook = hook .. [[;now_job_ui3=]] .. str(get(config, 'daily', 'cultivation'))
+    hook = hook .. [[;now_job_ui4=]] .. str(get(config, 'daily', 'friend'))
 
-    hook = hook .. [[;now_job_ui4=]] ..
-        str(get(config, 'daily', 'infrastructure', 'harvest'))
     hook = hook .. [[;now_job_ui5=]] ..
-        str(get(config, 'daily', 'infrastructure', 'shift'))
+        str(get(config, 'daily', 'infrastructure', 'harvest'))
     hook = hook .. [[;now_job_ui6=]] ..
+        str(get(config, 'daily', 'infrastructure', 'shift'))
+    hook = hook .. [[;now_job_ui7=]] ..
         str(get(config, 'daily', 'infrastructure', 'acceleration'))
 
-    hook = hook .. [[;now_job_ui7=]] ..
-        str(get(config, 'daily', 'infrastructure', 'communication'))
     hook = hook .. [[;now_job_ui8=]] ..
+        str(get(config, 'daily', 'infrastructure', 'communication'))
+    hook = hook .. [[;now_job_ui9=]] ..
         str(get(config, 'daily', 'infrastructure', 'deputy'))
-    hook = hook .. [[;now_job_ui9=]] .. str(get(config, 'daily', 'credit'))
+    hook = hook .. [[;now_job_ui10=]] .. str(get(config, 'daily', 'credit'))
 
-    hook = hook .. [[;now_job_ui10=]] ..
+    hook = hook .. [[;now_job_ui11=]] ..
         str(get(config, 'daily', 'offer', 'enable'))
-    hook = hook .. [[;now_job_ui11=]] .. str(get(config, 'daily', 'task'))
-    hook = hook .. [[;now_job_ui12=]] .. str(get(config, 'daily', 'activity'))
+    hook = hook .. [[;now_job_ui12=]] .. str(get(config, 'daily', 'task'))
+    hook = hook .. [[;now_job_ui13=]] .. str(get(config, 'daily', 'activity'))
     --审判庭配置提前写在这里里,如果需要对接审判庭,青在daily属性中添加shopping
     local shopping_cloud_switch = get(config, 'daily', 'shopping')
 
     local main_config = loadOneUIConfig("main")
 
-    local shopping_ui_switch = main_config["now_job_ui13"]
+    local shopping_ui_switch = main_config["now_job_ui14"]
     --审判庭云控不存在则使用本地配置
     shopping_ui_switch = (shopping_cloud_switch == nil) and shopping_ui_switch or str(shopping_cloud_switch)
 
-    hook = hook .. [[;now_job_ui13=]] .. str(shopping_ui_switch)
+    hook = hook .. [[;now_job_ui14=]] .. str(shopping_ui_switch)
 
     hook = hook .. [[;auto_recruit0=]] ..
         str(get(config, 'daily', 'offer', 'other'))
