@@ -3110,6 +3110,64 @@ path.训练室换班 = function(stationType, char_type, target_level)
     end
 end
 
+path.加工站选人 = function(stationType, material_id, material_level)
+    --根据需要合成的材料换人,而不是总体基建效率
+    stationType = stationType or "加工站"
+    if not appear("加工站", 2) then return end
+    if not wait(function()
+            if findOne("确认蓝") then return true end
+            tap("加工站换人")
+            ssleep(.3)
+        end, 3) then
+        return
+    end
+
+    if not wait(function()
+            if findOne("筛选") then return true end
+            if findOne("进驻信息选中") then
+                wait(function()
+                    if findOne("筛选") then return true end
+                    tap("进驻第一人")
+                end, 2)
+            elseif findOne("进驻信息") then
+                tap("进驻信息")
+                ssleep(.2)
+                wait(function()
+                    if findOne("筛选") then return true end
+                    tap("进驻第一人")
+                end, 3)
+            end
+        end, 7) then
+        return
+    end
+
+    if not wait(function()
+            if findOne("干员未选中") and findOne("第一干员未选中") then
+                return true
+            end
+            tap("第一干员未选中")
+            ssleep(.5)
+        end, 7) then
+        log("加工站超时")
+        return
+    end
+
+    chooseOperator(stationType, material_id, material_level, tradingStationNum,
+        virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
+        goldStationNum, totalStationLevel)
+
+    if not wait(function(reset_wait_start_time)
+            if findAny({ "加工站", "开始加工" }) then
+                return true
+            end
+            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+            tap("加工站确认蓝")
+            ssleep(.2)
+        end, 3) then
+        return
+    end
+end
+
 path.会客厅换班 = function(stationType, a)
     if disable_meeting_shift and not stationType then return end
 

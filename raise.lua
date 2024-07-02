@@ -169,6 +169,8 @@ raise.init = function()
     -- 读取培养计划
     local status
     status, raise_plan = pcall(JsonDecode, raise_plan_text)
+    log(raise_plan_text)
+    log("培养计划", raise_plan)
     if not status then
         log("传入培养计划格式错误")
         return
@@ -865,12 +867,13 @@ end
 raise.material_synthesis = function(id, count)
     log("材料", material_id2name(id), "准备合成数量", count)
     if not raise.formula_choose(id) then return end
-    local level = 高级材料2低级材料[id]["level"]
+    local level = 高级材料2低级材料[id]["level"] or 3
     local emotion_cost = 24 / (2 ^ (level - 1))
     local times = count // emotion_cost
     log("最多次数", times)
     for j = 1, times do
-        raise.加工站选人()
+        emotion_cost = 24 / (2 ^ (level - 1))
+        path.加工站选人("加工站", id, level)
         if not appear("加工站", 2) then return end
         tap("加工站最多")
         ssleep(.3)
@@ -882,10 +885,11 @@ raise.material_synthesis = function(id, count)
         ssleep(.2)
     end
     -- 默认是1,所以减掉
+    emotion_cost = 24 / (2 ^ (level - 1))
     local remainder = count % emotion_cost - 1
     log("剩下次数", remainder)
     if remainder >= 0 then
-        raise.加工站选人(id)
+        path.加工站选人("加工站", id, level)
         if remainder >= 1 then
             for i = 1, remainder do
                 tap("加工站加")
@@ -897,47 +901,11 @@ raise.material_synthesis = function(id, count)
         if appear("获得物资", 10) then
             ssleep(.2)
             tap("获得物资")
-        else
-            log("合成材料失败")
-            return
         end
         ssleep(.2)
     end
     appear("加工站", 3)
     return true
-end
-
--- 加工站选人 完善后移动到path
--- todo根据材料id选人
-raise.加工站选人 = function()
-    if not appear("加工站", 2) then return end
-    if not wait(function()
-            if findOne("确认蓝") then return true end
-            tap("加工站换人")
-            ssleep(.3)
-        end, 3) then
-        return
-    end
-    if not wait(function()
-            if findOne("确认蓝") then return true end
-            tap("制造站进度")
-        end, 10) then
-        return
-    end
-    -- 清空选择
-    local start_time = time()
-    tap("干员选择列表2")
-
-    if not wait(function(reset_wait_start_time)
-            if findAny({ "加工站", "开始加工" }) then
-                return true
-            end
-            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
-            tap("加工站确认蓝")
-            ssleep(.2)
-        end, 3) then
-        return
-    end
 end
 
 --选择配方
@@ -2111,7 +2079,7 @@ end
 raise.auto_raise = function()
     if not raise.init() then return end
     -- player_inventory_info = raise.inventory_identify()
-    log("培养计划", raise_plan)
+
     if raise_plan == nil or type(raise_plan) ~= "table" or raise_plan == {} then return end
     for i = 1, #raise_plan do
         log(raise_plan[i])

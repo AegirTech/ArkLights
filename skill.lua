@@ -952,6 +952,7 @@ initPngdata = function()
     powerPngdata = {}
     dormitoryPngdata = {}
     trainingPngdata = {}
+    workshopPngdata = {}
     stationType2pngData = {
         制造站 = manufacturingPngdata,
         贸易站 = tradingPngdata,
@@ -961,6 +962,7 @@ initPngdata = function()
         发电站 = powerPngdata,
         宿舍 = dormitoryPngdata,
         训练室 = trainingPngdata,
+        加工站 = workshopPngdata,
     }
     local s = ''
     for v, _ in pairs(skillpng2operator) do
@@ -981,6 +983,8 @@ initPngdata = function()
             pngdata = dormitoryPngdata
         elseif v:startsWith("bskill_train") then
             pngdata = trainingPngdata
+        elseif v:startsWith("bskill_ws_") then
+            pngdata = workshopPngdata
         else
             pngdata = {}
         end
@@ -1126,6 +1130,10 @@ chooseOperator = function(stationType, goodType, stationLevel,
         --goodType表示被训练干员的职业,stationLevel表示被训练干员的专精等级
         best, best_score = trainingOperatorBest(operator, goodType, stationLevel)
         log("训练室选", best)
+    elseif stationType == "加工站" then
+        --goodType表示材料,stationLevel表示材料等级等级
+        best, best_score = workshopOperatorBest(operator, goodType, stationLevel)
+        log("加工站选", best)
     end
     sleep(max(0, 500 - (time() - start_time)))
     tap("清空选择")
@@ -1230,7 +1238,7 @@ officeStationOperatorBest = function(operator)
             elseif icon == "bskill_hire_spd_memento" then --絮雨2
                 s = s + 0.31
             elseif icon == "bskill_hire_spd_bd_n2" then   --桑葚2
-                s = s + 0.251
+                s = s + 0.301
             elseif icon == "bskill_hire_spd&blacksteel2" then
                 s = s + 0.2
             elseif icon == "bskill_hire_spd_bd_n1_n1" then
@@ -1842,6 +1850,77 @@ trainingOperatorBest = function(operator, charType, targetLevel)
                 if targetLevel == 3 then
                     s = s + 0.65
                 end
+            end
+        end
+        table.insert(best, { s, o })
+    end
+    table.sort(best, function(a, b) return a[1] > b[1] end)
+    best = best[1][2]
+    return { best }, best_score
+end
+
+workshopOperatorBest = function(operator, id, level)
+    -- 暂时只考虑材料合成
+    log(id, level)
+    --[[{"重装芯片组":"3232","糖聚块":"30024","固化纤维板":"31074","晶体元件":"31033","特种芯片组":"3282","辅助双芯片":"3273",
+    "异铁块":"30044","化合切削液":"31053","聚合剂":"30115","烧结核凝晶":"30155","聚酸酯组":"30033","先锋芯片":"3211","源岩":"30011",
+    "酮凝集":"30052","精炼溶剂":"31044","重装双芯片":"3233","轻锰矿":"30083","切削原液":"31054","酮阵列":"30054","医疗芯片":"3261",
+    "双酮":"30051","晶体电子单元":"30145","环烃预制体":"31084","炽合金":"31023","炽合金块":"31024","聚合凝胶":"31014","近卫芯片":"3221",
+    "狙击双芯片":"3243","术师双芯片":"3253","转质盐组":"31063","破损装置":"30061","狙击芯片":"3241","特种芯片":"3281","装置":"30062",
+    "转质盐聚块":"31064","改量装置":"30064","代糖":"30021","术师芯片":"3251","酯原料":"30031","辅助芯片":"3271","固源岩组":"30013",
+    "双极纳米片":"30125","RMA70-12":"30103","白马醇":"30074","晶体电路":"31034","辅助芯片组":"3272","环烃聚质":"31083","先锋双芯片":"3213",
+    "全新装置":"30063","近卫芯片组":"3222","RMA70-24":"30104","半自然溶剂":"31043","褐素纤维":"31073","狙击芯片组":"3242","医疗芯片组":"3262",
+    "近卫双芯片":"3223","聚酸酯":"30032","异铁":"30042","先锋芯片组":"3212","术师芯片组":"3252","特种双芯片":"3283","固源岩":"30012",
+    "提纯源岩":"30014","异铁碎片":"30041","芯片助剂":"32001","糖":"30022","酮凝集组":"30053","三水锰矿":"30084","重装芯片":"3231",
+    "异铁组":"30043","糖组":"30023","研磨石":"30093","聚酸酯块":"30034","医疗双芯片":"3263","扭转醇":"30073","五水研磨石":"30094",
+    "凝胶":"31013","D32钢":"30135"}]]
+
+    -- 过滤心情小于阈值的干员
+    local minAllowedMood = 24
+    if disable_shift_mood then minAllowedMood = -1 end
+    operator = table.filter(operator,
+        function(x) return x[3] >= minAllowedMood end)
+    local best = {}
+    local best_score = -1
+    for _, o in pairs(operator) do
+        local s = 0
+        for _, icon in pairs({ o[1], o[2] }) do
+            if icon == "bskill_ws_asc1" and #id == 4 and utf8.left(id, 2) == "32" then
+                s = s + 0.7
+            elseif icon == "bskill_ws_asc2" and #id == 4 and utf8.left(id, 2) == "32" then
+                s = s + 0.8
+            elseif icon == "bskill_ws_p5" then --凯尔希，尽量让在基建上班
+                --s = s + 0.70
+            elseif icon == "bskill_ws_p4" then
+                s = s + 0.65
+            elseif icon == "bskill_ws_p3" then
+                s = s + 0.6
+            elseif icon == "bskill_ws_evolve4" then
+                s = s + 1
+            elseif icon == "bskill_ws_evolve3" then
+                s = s + 0.8
+            elseif icon == "bskill_ws_evolve2" then
+                s = s + 0.75
+            elseif icon == "bskill_ws_evolve1" then
+                s = s + 0.7
+            elseif icon == "bskill_ws_free" then
+                s = s + 0.79
+            elseif icon == "bskill_ws_bonus1" and level < 4 then
+                s = s + 0.9
+            elseif icon == "bskill_ws_bonus2" and level == 4 then
+                s = s + 0.9
+            elseif icon == "bskill_ws_alloyBlock" and id == "31024" then                 --号角
+                s = s + 1
+            elseif icon == "bskill_ws_orirock" and (id == "30014" or id == "30013") then --泥岩
+                s = s + 0.9
+            elseif icon == "bskill_ws_device" and (id == "30064" or id == "30063") then  --贾维
+                s = s + 0.9
+            elseif icon == "bskill_ws_skill3" and (id == "3302" or id == "3303") then    --技能书
+                s = s + 0.8
+            elseif icon == "bskill_ws_skill2" and (id == "3302" or id == "3303") then    --技能书
+                s = s + 0.75
+            elseif icon == "bskill_ws_skill1" and (id == "3302" or id == "3303") then    --技能书
+                s = s + 0.7
             end
         end
         table.insert(best, { s, o })
