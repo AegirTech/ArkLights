@@ -2099,10 +2099,10 @@ raise.test_all = function()
 end
 
 raise.auto_raise = function()
-    raise.init()
+    if not raise.init() then return end
     -- player_inventory_info = raise.inventory_identify()
     log(player_inventory_info)
-
+    if raise_plan == nil or type(raise_plan) ~= "table" or raise_plan == {} then return end
     for i = 1, #raise_plan do
         log(raise_plan[i])
         local id
