@@ -2140,7 +2140,7 @@ make_account_ui = function(layout, prefix)
 
     newRow(layout)
     addTextView(layout, "培养计划")
-    ui.addEditText(layout, prefix .. "raise_plan_text", "", 200, -1)
+    ui.addEditText(layout, prefix .. "raise_plan_text", "", 350, -1)
 
     -- local max_checkbox_one_row = getScreen().width //200
     local max_checkbox_one_row = 3

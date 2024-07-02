@@ -160,7 +160,7 @@ raise.init = function()
         end
     end
     log(item_name2id)
-    player_info_init(raise.get_player_info())
+    if not player_info_init(raise.get_player_info()) then return end
     log(player_character_info)
     log(player_inventory_info)
     -- 读取培养计划
@@ -208,6 +208,7 @@ end
 player_info_init = function(player_data)
     player_character_info = {} -- 玩家干员数据
     player_inventory_info = {}
+    if type(player_data) ~= "table" or player_data == {} or #player_data == 0 or player_data["characters"] == nil then return end
     if auto_raise_api_select == 0 then
         for _, v in pairs(player_data["characters"]) do
             local name = v["id"]
