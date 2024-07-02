@@ -443,7 +443,7 @@ server=]] .. server
 
     hook = hook .. [[;now_job_ui14=]] .. str(shopping_ui_switch)
 
-    hook = hook .. [[;raise_plan_text=]] .. str(get(config, 'daily', 'cultivation_plan'))
+    hook = hook .. [[;raise_plan_text=[[]] .. str(get(config, 'daily', 'cultivation_plan')) .. "]]"
 
     hook = hook .. [[;auto_recruit0=]] ..
         str(get(config, 'daily', 'offer', 'other'))
