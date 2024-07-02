@@ -399,7 +399,7 @@ get_game_info = function(account, password, require_uid, require_server)
         log("绑定列表获取失败")
         return false
     end
-    log(list)
+    log("list:", list)
     for i, v in pairs(list) do
         local gameuid = list[i]["uid"]
         if require_uid ~= 0 and require_uid ~= gameuid then
@@ -415,6 +415,7 @@ get_game_info = function(account, password, require_uid, require_server)
         ret = skland_cultivate(gameuid)
         if ret ~= {} then
             log("获取完成，后续跳过")
+            --log("ret:", ret)
             return ret["data"]
         end
         ::countinue::

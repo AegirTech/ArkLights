@@ -160,9 +160,12 @@ raise.init = function()
         end
     end
     log(item_name2id)
-    if not player_info_init(raise.get_player_info()) then return end
-    log(player_character_info)
-    log(player_inventory_info)
+    if not player_info_init(raise.get_player_info()) then
+        log("玩家信息初始化错误")
+        return
+    end
+    log("干员数据", player_character_info)
+    log("仓库数据", player_inventory_info)
     -- 读取培养计划
     local status
     status, raise_plan = pcall(JsonDecode, raise_plan_text)
@@ -170,6 +173,7 @@ raise.init = function()
         log("传入培养计划格式错误")
         return
     end
+    return true
 end
 
 ---接口获取玩家信息
@@ -179,6 +183,7 @@ raise.get_player_info = function(isLocal)
     if not isLocal or auto_raise_api_select == 3 then
         if auto_raise_api_select == 0 then
             data = get_game_info(username, password)
+            log("data:", data)
             return data
         elseif auto_raise_api_select == 1 then
             if (not a60_token_offcial) or (not a60_token_bili) then return end
@@ -208,12 +213,16 @@ end
 player_info_init = function(player_data)
     player_character_info = {} -- 玩家干员数据
     player_inventory_info = {}
-    if type(player_data) ~= "table" or player_data == {} or #player_data == 0 or player_data["characters"] == nil then return end
+    if type(player_data) ~= "table" or player_data == {} or player_data["characters"] == nil then
+        log("player_data解析出错")
+        return
+    end
     if auto_raise_api_select == 0 then
         for _, v in pairs(player_data["characters"]) do
             local name = v["id"]
             player_character_info[name] = v
         end
+        -- 根据building数据更新训练室干员的专精等级
 
         for _, v in pairs(player_data["items"]) do
             local itemId = v["id"]
@@ -224,13 +233,13 @@ player_info_init = function(player_data)
         -- 仓库数据,{材料id:数量}
         player_inventory_info = player_data["user"]["inventory"]
 
-
         local ori_player_character_info = player_data["user"]["troop"]["chars"]
         for _, v in pairs(ori_player_character_info) do
             local name = v["charId"]
             player_character_info[name] = v
         end
     end
+    return true
 end
 
 -- 材料ID转换材料名
@@ -2102,7 +2111,7 @@ end
 raise.auto_raise = function()
     if not raise.init() then return end
     -- player_inventory_info = raise.inventory_identify()
-    log(player_inventory_info)
+    log("培养计划", raise_plan)
     if raise_plan == nil or type(raise_plan) ~= "table" or raise_plan == {} then return end
     for i = 1, #raise_plan do
         log(raise_plan[i])
