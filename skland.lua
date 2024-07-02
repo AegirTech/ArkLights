@@ -315,15 +315,15 @@ skland_init = function(account, password)
     if type(cred) ~= "string" or #cred < 5 then
         log("cred无效，等待重新获取")
         cred = skland_get_cred(account, password)
-        if cred ~= 0 then
+        if type(cred) == "string" and #cred > 5 then
             save_local_config("account", account .. "cred", cred)
-            log("cred获取完成" .. cred)
+            log("cred获取完成", cred)
         else
             log("cred无效，登录存在错误，请联系开发者")
             return false
         end
     else
-        log("从配置中读取cred" .. cred)
+        log("从配置中读取cred", cred)
         Headers["cred"] = cred
         if skland_account_check() then
             log("森空岛初始化完成")
@@ -333,7 +333,7 @@ skland_init = function(account, password)
             cred = skland_get_cred(account, password)
             if cred ~= 0 then
                 save_local_config("account", account .. "cred", cred)
-                log("cred获取完成" .. cred)
+                log("cred获取完成", cred)
             else
                 log("cred无效，登录存在错误，请联系开发者")
                 return false
@@ -361,7 +361,7 @@ skland_get_game_info = function(uid)
             return {}
         end
     else
-        log("json解析失败" .. ret)
+        log("json解析失败", ret)
         return {}
     end
 end
@@ -384,7 +384,7 @@ skland_cultivate = function(uid)
             return {}
         end
     else
-        log("json解析失败" .. ret)
+        log("json解析失败", ret)
         return {}
     end
 end
