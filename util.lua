@@ -3707,16 +3707,13 @@ show_auto_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "raise_fight_plan", "作战计划(未完成)", true)
-    ui.addCheckBox(layout, "raise_material", "材料合成（未完成）", false)
+    --ui.addCheckBox(layout, "raise_material", "材料合成（未完成）", false)
 
     newRow(layout)
     ui.addCheckBox(layout, "not_use_ocr", "基建不使用ocr（低配置或基建崩溃建议打开）", false)
 
     newRow(layout)
     addButton(layout, nil, "仓库识别(未完成)", "raise_storage_dentify")
-    addButton(layout, nil, "自动培养",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='自动培养';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     newRow(layout)
     addTextView(layout, "--------------------悖论模拟相关--------------------")

@@ -164,13 +164,13 @@ raise.init = function()
         log("玩家信息初始化错误")
         return
     end
-    log("干员数据", player_character_info)
-    log("仓库数据", player_inventory_info)
+    --log("干员数据", player_character_info)
+    --log("仓库数据", player_inventory_info)
     -- 读取培养计划
     local status
     status, raise_plan = pcall(JsonDecode, raise_plan_text)
-    log(raise_plan_text)
-    log("培养计划", raise_plan)
+    --log(raise_plan_text)
+    --log("培养计划", raise_plan)
     if not status then
         log("传入培养计划格式错误")
         return
