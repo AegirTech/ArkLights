@@ -179,6 +179,12 @@ def release(type):
                 print("检测到热更新被注释,请重新打包")
                 return
     if type == "RELEASE":
+        print(
+            """
+1.请验证文件大小,在1.5m左右或以内
+2.请运行res/char_type/parse_character_table.py,
+  并将生成的char_table.json和character_type_list.json放在懒人脚本资源/main.rc里面"""
+        )
         newLrMD5 = input("请输入md5值: ")
         # 输出pkgPath的文件的md5
         md5 = hashlib.md5()
