@@ -1457,7 +1457,7 @@ raise.master_skill = function(id, skill_numb, start_level)
             } }) then
         return
     end
-    ssleep(.1)
+    appear("干员技能专精页面", 3)
     tap("专精技能列表" .. skill_numb)
     ssleep(.5)
     appear("专精技能确认", 5)
