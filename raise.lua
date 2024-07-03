@@ -874,8 +874,8 @@ raise.material_synthesis = function(id, count)
     log("最多次数", times)
     for j = 1, times do
         emotion_cost = 24 / (2 ^ (level - 1))
-        path.加工站选人("加工站", id, level)
-        if not appear("加工站", 2) then return end
+
+        if not path.加工站选人("加工站", id, level) then return end
         tap("加工站最多")
         ssleep(.3)
         tap("开始加工")
@@ -892,7 +892,7 @@ raise.material_synthesis = function(id, count)
     local remainder = count % emotion_cost - 1
     log("剩下次数", remainder)
     if remainder >= 0 then
-        path.加工站选人("加工站", id, level)
+        if not path.加工站选人("加工站", id, level) then return end
         if remainder >= 1 then
             for i = 1, remainder do
                 tap("加工站加")
