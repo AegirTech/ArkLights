@@ -36,8 +36,11 @@ ArkLights is the <b> lightning fast</b> and <b> fully managed</b> Arknights game
     # in linux
     ./0.sh release
     # in windows
-    python3 ./0.py release
+    python3 ./0.py r --脚本发版（打包选择打包脚本）
+    python3 ./0.py rs --基建技能压缩包发版（skill.zip放在/res下）
+    github action 中的Map update --地图发版（一般在游戏更新后一个小时，可以本地运行/res/maps/maps.py看看有没有新的地图数据，注意注释掉上传）
     ```
+    
     
 1. 数据提取
     ```sh
