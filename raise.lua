@@ -886,6 +886,7 @@ raise.material_synthesis = function(id, count)
         appear("加工站", 3)
         ssleep(.3)
     end
+    ssleep(2)
     -- 默认是1,所以减掉
     emotion_cost = 24 / (2 ^ (level - 1))
     local remainder = count % emotion_cost - 1
@@ -972,10 +973,15 @@ char_choose = function(char_name)
     --只跳转一次会有概率无反应,多加一次
     path.跳转("干员")
     ssleep(.3)
+    if not findOne("职业选择") then
+        tap("职业选择")
+        appear("职业选择", 2)
+    end
     if not findOne("干员等级降序") then
         tap("干员等级降序")
         appear("干员等级降序", 2)
     end
+
 
     for i = 1, 8 do
         if 干员职业[char_name] == 干员类别[i] then
