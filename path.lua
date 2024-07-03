@@ -3171,6 +3171,7 @@ path.加工站选人 = function(stationType, material_id, material_level)
         end, 3) then
         return
     end
+    return true
 end
 
 path.会客厅换班 = function(stationType, a)

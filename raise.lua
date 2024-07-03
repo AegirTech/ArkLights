@@ -166,7 +166,7 @@ raise.init = function()
         return
     end
     --log("干员数据", player_character_info)
-    --log("仓库数据", player_inventory_info)
+    log("仓库数据", player_inventory_info)
     -- 读取培养计划
     local status
     status, raise_plan = pcall(JsonDecode, raise_plan_text)
@@ -872,10 +872,15 @@ raise.material_synthesis = function(id, count)
     local emotion_cost = 24 / (2 ^ (level - 1))
     local times = count // emotion_cost
     log("最多次数", times)
+    -- todo 根据返回的技能图标调整心情消耗
     for j = 1, times do
         emotion_cost = 24 / (2 ^ (level - 1))
 
-        if not path.加工站选人("加工站", id, level) then return end
+        if not path.加工站选人("加工站", id, level) then
+            log("选人失败")
+            return
+        end
+        if not appear("加工站", 2) then return end
         tap("加工站最多")
         ssleep(.3)
         tap("开始加工")
@@ -892,7 +897,11 @@ raise.material_synthesis = function(id, count)
     local remainder = count % emotion_cost - 1
     log("剩下次数", remainder)
     if remainder >= 0 then
-        if not path.加工站选人("加工站", id, level) then return end
+        if not path.加工站选人("加工站", id, level) then
+            log("选人失败")
+            return
+        end
+        if not appear("加工站", 2) then return end
         if remainder >= 1 then
             for i = 1, remainder do
                 tap("加工站加")
@@ -1294,7 +1303,7 @@ raise.elite_one_phase = function(materials_need)
             end
             log("缺少非芯片材料:", m_need)
             local fight_plan, synthesis_plan = raise.get_fight_plan(m_need)
-            log("合成材料计划", synthesis_plan)
+            log("精英化合成计划", synthesis_plan)
             if not wait(function()
                     if findOne("加工站") then return true end
                     tap("干员精英化材料白1跳转")
