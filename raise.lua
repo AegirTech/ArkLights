@@ -120,6 +120,7 @@ activity_materials_stage = {
 
 -- 初始化数据及玩家信息
 raise.init = function()
+    log(raise_plan_text)
     if not character_table then
         -- 解包干员数据
         character_table = JsonDecode(readFile("char_table.json"))
@@ -169,8 +170,8 @@ raise.init = function()
     -- 读取培养计划
     local status
     status, raise_plan = pcall(JsonDecode, raise_plan_text)
-    --log(raise_plan_text)
-    --log("培养计划", raise_plan)
+
+    log("培养计划", raise_plan)
     if not status then
         log("传入培养计划格式错误")
         return
@@ -882,7 +883,8 @@ raise.material_synthesis = function(id, count)
             log("合成材料失败")
             return
         end
-        ssleep(.2)
+        appear("加工站", 3)
+        ssleep(.3)
     end
     -- 默认是1,所以减掉
     emotion_cost = 24 / (2 ^ (level - 1))
@@ -902,7 +904,8 @@ raise.material_synthesis = function(id, count)
             ssleep(.2)
             tap("获得物资")
         end
-        ssleep(.2)
+        appear("加工站", 3)
+        ssleep(.3)
     end
     appear("加工站", 3)
     return true
@@ -994,6 +997,7 @@ char_choose = function(char_name)
             if ret[i]["text"] == char_name then
                 char_found = true
                 tap({ (ret[i]["l"] + ret[i]["r"]) / 2, ret[i]["t"] - scale(200) })
+                appearTap("角色档案关闭", 1.5)
                 appear("干员档案", 5)
                 break
             end
@@ -1006,6 +1010,7 @@ char_choose = function(char_name)
             if ret[i]["text"] == char_name then
                 char_found = true
                 tap({ (ret[i]["l"] + ret[i]["r"]) / 2, ret[i]["t"] - scale(200) })
+                appearTap("角色档案关闭", 1.5)
                 appear("干员档案", 5)
                 break
             end
