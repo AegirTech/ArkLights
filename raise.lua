@@ -1467,8 +1467,14 @@ raise.master_skill = function(id, skill_numb, start_level)
         return
     end
     appear("干员技能专精页面", 3)
-    tap("专精技能列表" .. skill_numb)
-    ssleep(.5)
+    if not wait(function()
+            tap("专精技能列表" .. skill_numb)
+            if not findOne("干员技能专精页面") then return true end
+            if findOne("干员技能升级页面") then return false end
+        end, 5) then
+        log("无法升级技能")
+        return true
+    end
     appear("专精技能确认", 5)
     -- 森空岛接口有延迟,这里用判断有没有红点来决定要不要合材料
     if findOne("干员技能专精红") then
