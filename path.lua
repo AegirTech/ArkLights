@@ -5295,7 +5295,7 @@ path.活动 = function(x)
         clean_hdfight()
         return
     end
-    if hd_mod == "故事集" then
+    if hd_mod == "故事集" and (not copy_homework) then
         clean_hdfight()
         return
     end
@@ -5310,9 +5310,9 @@ path.活动 = function(x)
         tap("面板活动")
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
-            point["活动导航1"] = point["活动导航EX"]
+            point["活动导航0"] = point["活动导航EX"]
         elseif string.find(x, "HD-S-", 1, true) then
-            point["活动导航1"] = point["活动导航S"]
+            point["活动导航0"] = point["活动导航S"]
         end
         if not wait(function()
                 if findOne("活动导航0") then return true end
@@ -5789,7 +5789,7 @@ path.活动 = function(x)
             end
         else --正常流程进入活动的第一阶段界面
             if not wait(function()
-                    tap("活动导航1")
+                    tap("活动导航0")
                     ssleep(.5)
                     if disappear("活动导航0", 1) then
                         ssleep(.5)
@@ -5925,22 +5925,23 @@ path.商店搬空 = function()
         end, 10) then
         return
     end
-
-    if appear("活动任务导航", .6) then
-        tap("活动任务导航")
-        ssleep(.2)
-        if appear("活动任务页面", 2) then
-            if findOne("活动任务一键领取") then
-                tap("活动任务一键领取")
-                ssleep(.5)
-                wait(function()
+    if hd_mod == "SS" then
+        if appear("活动任务导航", .6) then
+            tap("活动任务导航")
+            ssleep(.2)
+            if appear("活动任务页面", 2) then
+                if findOne("活动任务一键领取") then
                     tap("活动任务一键领取")
-                    ssleep(0.2)
-                    if findOne("活动任务一键领取") then return end
-                end, 7)
+                    ssleep(.5)
+                    wait(function()
+                        tap("活动任务一键领取")
+                        ssleep(0.2)
+                        if findOne("活动任务一键领取") then return end
+                    end, 7)
+                end
+                tap("返回")
+                appear("活动商店导航", 1.5)
             end
-            tap("返回")
-            appear("活动商店导航", 1.5)
         end
     end
 
