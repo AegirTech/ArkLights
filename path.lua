@@ -1283,7 +1283,7 @@ path.限时活动 = function(retry)
     if retry > 10 then return end
     path.跳转("首页")
     local p = findAny({
-        "面板限时活动", "面板限时活动2", "面板限时活动3",
+        "面板限时活动", "面板限时活动2", "面板限时活动3", "面板限时活动4",
     })
     if p then
         tap(p, true)
@@ -1354,7 +1354,7 @@ path.限时活动 = function(retry)
     if not wait(function()
             if not findOne("面板") then return true end
             if findAny({
-                    "面板限时活动", "面板限时活动2", "面板限时活动3",
+                    "面板限时活动", "面板限时活动2", "面板限时活动3", "面板限时活动4",
                     "面板赠送一次",
                 }) then
                 return true
