@@ -1008,6 +1008,7 @@ char_choose = function(char_name)
         ssleep(.1)
         local ret = 干员名ocr校正(ocrex("干员上"))
         log(ret)
+        if ret == "" or #ret == 0 then return false end
         for i = 1, #ret do
             if ret[i]["text"] == char_name then
                 char_found = true
@@ -1021,6 +1022,7 @@ char_choose = function(char_name)
 
         ret = 干员名ocr校正(ocrex("干员下"))
         log(ret)
+        if ret == "" or #ret == 0 then return false end
         for i = 1, #ret do
             if ret[i]["text"] == char_name then
                 char_found = true
@@ -2126,10 +2128,9 @@ raise.auto_raise = function()
                 if elite >= raise_plan[i]["elite"] then
                     log("已达到精英等级")
                 else
-                    if not raise.elite_char(id, elite, raise_plan[i]["elite"]) then return end
+                    return raise.elite_char(id, elite, raise_plan[i]["elite"])
                 end
-            end
-            if raise_plan[i]["skill_master"] and not mastering then
+            elseif raise_plan[i]["skill_master"] and not mastering then
                 log("专精技能")
                 --几技能
                 local skill_numb = raise_plan[i]["skill"]
@@ -2138,7 +2139,7 @@ raise.auto_raise = function()
                 if skill_level[2] >= raise_plan[i]["skill_master"] then
                     log(skill_numb, "技能已达到专精等级")
                 else
-                    if not raise.master_skill(id, skill_numb, skill_level[2]) then return end
+                    return raise.master_skill(id, skill_numb, skill_level[2])
                 end
             elseif raise_plan[i]["skills"] then
                 log("升级技能")
@@ -2146,7 +2147,7 @@ raise.auto_raise = function()
                 if skill_level[1] >= (raise_plan[i]["skills"] or 7) then
                     log("技能已达到指定等级")
                 else
-                    if not raise.upgrade_skill(id, skill_numb, raise_plan[i]["elite"]) then return end
+                    return raise.upgrade_skill(id, skill_numb, raise_plan[i]["elite"])
                 end
             end
         end

@@ -1474,6 +1474,7 @@ end
         ["势"] = "芬",
     }
 
+    if t == nil or #t == 0 then return "" end
     for i = 1, #t do
         local 原文本 = (t[i]["text"])
         --print(原文本)
