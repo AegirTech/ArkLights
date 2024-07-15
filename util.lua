@@ -4446,7 +4446,7 @@ update_state_from_ui = function()
     hd_nickname = "KR"
     hd_max_stage = 8
     hd_open_time_end = parse_time("202407160400")
-    hd2_open_time_end = parse_time("202407050400") -- 故事集开放时间段
+    hd2_open_time_end = parse_time("202407160400") -- 故事集开放时间段
     hd_mod = "故事集"
 
     fight = parse_fight_config(fight_ui)

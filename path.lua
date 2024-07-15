@@ -5981,6 +5981,19 @@ path.商店搬空 = function()
                 回到商店主页()
                 ssleep(0.5)
                 if not findOne("商店主页") then return end -- 防止跳到其他页面
+                --商店是否有皮肤判断
+                if x == point['商店购买皮肤位置'][1] and y == point['商店购买皮肤位置'][2] then
+                    log('皮肤购买')
+                    tap(sx)
+                    if not appear('商店皮肤支付', 3) then goto continue end
+                    tap('商店皮肤支付') --皮肤购买
+                    disappear('商店皮肤支付')
+                    wait(function()
+                        if findOne("商店主页") then return true end
+                        tap("开包skip")
+                    end, 8)
+                    goto continue
+                end
                 -- 点击商品，进入购买页面判断
                 if not wait(function()
                         tap(sx)
