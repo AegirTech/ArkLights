@@ -3445,6 +3445,63 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
 
+
+    newRow(layout)
+    addTextView(layout, "===========肉鸽相关===========")
+
+    newRow(layout)
+    addButton(layout, nil, "傀影与猩红孤钻",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
+    addButton(layout, nil, "水月与深蓝之树(仅720p)",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='水月与深蓝之树';lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addButton(layout, nil, "萨卡兹的无终奇语(测试)",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='萨卡兹的无终奇语';lock:remove(main_ui_lock)"))
+    newRow(layout)
+
+    addTextView(layout, [[选第]])
+    ui.addEditText(layout, "zl_best_operator", [[-1]])
+    addTextView(layout, [[个近卫 开]])
+    ui.addEditText(layout, "zl_skill_times", [[0]])
+    addTextView(layout, [[次]])
+    ui.addEditText(layout, "zl_skill_idx", [[1]])
+    addTextView(layout, [[技能]])
+
+    newRow(layout)
+    ui.addCheckBox(layout, "zl_more_repertoire", "多点剧目", false)
+    ui.addCheckBox(layout, "zl_more_experience", "多点蜡烛", false)
+    ui.addCheckBox(layout, "zl_skip_coin", "跳过投币", false)
+
+    newRow(layout)
+    ui.addCheckBox(layout, "zl_accept_mg", "可打敏感", false)
+    ui.addCheckBox(layout, "zl_accept_yx", "可打臆想", false)
+    ui.addCheckBox(layout, "zl_accept_sc", "可打生存", false)
+
+    newRow(layout)
+    ui.addCheckBox(layout, "zl_skip_hard", "不打驯兽", false)
+    --ui.addCheckBox(layout, "zl_only_coin", "不打驯兽", false)
+    ui.addCheckBox(layout, "zl_no_waste", "每8小时做日常", false)
+
+    newRow(layout)
+    addTextView(layout, [[需求商品]])
+    ui.addEditText(layout, "zl_need_goods", [[]])
+    addTextView(layout, [[等级]])
+    ui.addEditText(layout, "zl_max_level", [[]])
+    addTextView(layout, [[源石锭]])
+    ui.addEditText(layout, "zl_max_coin", [[]])
+
+    -- newRow(layout)
+    -- addTextView(layout,
+    --             [[用于刷源石锭投资、等级(蜡烛)、藏品、剧目等。应选择常见5、6星近卫，临光1、煌2、山2、羽毛笔1、帕拉斯1、赫拉格2、史尔特尔2、银灰1、幽灵鲨1、拉狗2，更多干员测试见群精华消息。]] ..
+    --   [[刷源石锭应选“观光难度”，不勾“多点蜡烛”、“跳过投币”]]
+    --               [[支持凌晨4点数据更新、支持掉线抢登情况、支持每8小时做日常。支持16:9及以上分辨率，但建议16:9，否则可能选不到后勤队。]] ..
+    --               [[游戏本体存在内存泄漏，因此会抽空重启。如果1小时内就出现脚本停止运行、随机界面卡住、悬浮按钮消失，应把“高级设置”中两个3600重启间隔调小(如900)。]] ..
+    --               [[999源石锭刷取耗时与难度、幕后筹备无关，与是否通关三结局、网络延迟有关，双结局耗时10时14分(97个/时)，三结局耗时8时10分(122个/时)，低网络延迟+三结局耗时7时21分(135个/时)。]] ..
+    --               [[如需刷等级(蜡烛)，应选普通难度，勾“多点蜡烛”与“跳过投币”。]] ..
+    --               [[商品需求可填商品名称关键字，用空格隔开(如填“玩 金 骑士”)，则刷到其中任一商品就会停止并通知QQ]])
     newRow(layout)
     addTextView(layout, "===========促融共竞===========")
     newRow(layout)
@@ -3494,59 +3551,6 @@ show_extra_ui = function()
     addTextView(layout, "(数字)开始")
     newRow(layout)
     ui.addCheckBox(layout, "hidden_front_award", "隐秘战线打完领取奖励", true)
-
-
-    newRow(layout)
-    addTextView(layout, "===========肉鸽相关===========")
-
-    newRow(layout)
-    addButton(layout, nil, "傀影与猩红孤钻",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
-    addButton(layout, nil, "水月与深蓝之树(仅720p)",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='水月与深蓝之树';lock:remove(main_ui_lock)"))
-    newRow(layout)
-    addTextView(layout, [[选第]])
-    ui.addEditText(layout, "zl_best_operator", [[-1]])
-    addTextView(layout, [[个近卫 开]])
-    ui.addEditText(layout, "zl_skill_times", [[0]])
-    addTextView(layout, [[次]])
-    ui.addEditText(layout, "zl_skill_idx", [[1]])
-    addTextView(layout, [[技能]])
-
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_more_repertoire", "多点剧目", false)
-    ui.addCheckBox(layout, "zl_more_experience", "多点蜡烛", false)
-    ui.addCheckBox(layout, "zl_skip_coin", "跳过投币", false)
-
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_accept_mg", "可打敏感", false)
-    ui.addCheckBox(layout, "zl_accept_yx", "可打臆想", false)
-    ui.addCheckBox(layout, "zl_accept_sc", "可打生存", false)
-
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_skip_hard", "不打驯兽", false)
-    ui.addCheckBox(layout, "zl_no_waste", "每8小时做日常", false)
-
-    newRow(layout)
-    addTextView(layout, [[需求商品]])
-    ui.addEditText(layout, "zl_need_goods", [[]])
-    addTextView(layout, [[等级]])
-    ui.addEditText(layout, "zl_max_level", [[]])
-    addTextView(layout, [[源石锭]])
-    ui.addEditText(layout, "zl_max_coin", [[]])
-
-    -- newRow(layout)
-    -- addTextView(layout,
-    --             [[用于刷源石锭投资、等级(蜡烛)、藏品、剧目等。应选择常见5、6星近卫，临光1、煌2、山2、羽毛笔1、帕拉斯1、赫拉格2、史尔特尔2、银灰1、幽灵鲨1、拉狗2，更多干员测试见群精华消息。]] ..
-    --   [[刷源石锭应选“观光难度”，不勾“多点蜡烛”、“跳过投币”]]
-    --               [[支持凌晨4点数据更新、支持掉线抢登情况、支持每8小时做日常。支持16:9及以上分辨率，但建议16:9，否则可能选不到后勤队。]] ..
-    --               [[游戏本体存在内存泄漏，因此会抽空重启。如果1小时内就出现脚本停止运行、随机界面卡住、悬浮按钮消失，应把“高级设置”中两个3600重启间隔调小(如900)。]] ..
-    --               [[999源石锭刷取耗时与难度、幕后筹备无关，与是否通关三结局、网络延迟有关，双结局耗时10时14分(97个/时)，三结局耗时8时10分(122个/时)，低网络延迟+三结局耗时7时21分(135个/时)。]] ..
-    --               [[如需刷等级(蜡烛)，应选普通难度，勾“多点蜡烛”与“跳过投币”。]] ..
-    --               [[商品需求可填商品名称关键字，用空格隔开(如填“玩 金 骑士”)，则刷到其中任一商品就会停止并通知QQ]])
-
 
     newRow(layout)
     addButton(layout, layout .. "_recruit", "公开招募加急",
