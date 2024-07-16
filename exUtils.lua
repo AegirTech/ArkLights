@@ -2410,6 +2410,14 @@ skz_after_fight = function()
     if not wait(function()
             if not drop_page then tap("战略确认") end
             if findOne("萨卡兹_战略帮助") then drop_page = true end
+            if findOne("萨卡兹_不要了") then
+                tap("萨卡兹_不要了")
+                if not wait(function()
+                        tap("萨卡兹_不要了确认")
+                        if findAny({ "战略返回", "萨卡兹_战略帮助" }) then return true end
+                    end, 2) then
+                end
+            end
             local x = appear({
                 "萨卡兹_收藏品拾取", "萨卡兹_招募券收下", "萨卡兹_源石锭收下",
                 "萨卡兹_思绪收下",
