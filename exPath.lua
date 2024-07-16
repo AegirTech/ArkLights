@@ -824,23 +824,23 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     --延迟一会，否则会产生位移，可以拿来后续做线路优化的筛选
     --目前默认选择上面的线路
     ssleep(1)
-    -- findTap("萨卡兹_待编入负荷干员")
-    -- disappear('萨卡兹_待编入负荷干员')
-    -- appear('萨卡兹_点击负荷干员')
-    -- findTap('萨卡兹_点击负荷干员')
-    -- ssleep(.5)
-    -- appear('萨卡兹_等待负荷干员列表出现')
+    findTap("萨卡兹_待编入负荷干员")
+    disappear('萨卡兹_待编入负荷干员')
+    appear('萨卡兹_点击负荷干员')
+    findTap('萨卡兹_点击负荷干员')
+    ssleep(.5)
+    appear('萨卡兹_等待负荷干员列表出现')
     -- ssleep(1)
-    -- --编入负荷干员
-    -- --if not findOne("萨卡兹_等待负荷干员列表出现") then return true end
-    -- for _, v in ipairs(point['萨卡兹_选项负荷干员']) do
-    --     tap(v)
-    --     ssleep(.1)
-    -- end
-    -- tap("萨卡兹_等待负荷干员列表出现")
-    -- disappear('萨卡兹_等待负荷干员列表出现')
-    -- ssleep(.5)
-    -- tap("萨卡兹_收起负荷干员")
+    --编入负荷干员
+    if not findOne("萨卡兹_等待负荷干员列表出现") then return true end
+    for _, v in ipairs(point['萨卡兹_选项负荷干员']) do
+        tap(v)
+        ssleep(.1)
+    end
+    tap("萨卡兹_等待负荷干员列表出现")
+    disappear('萨卡兹_等待负荷干员列表出现')
+    ssleep(.5)
+    tap("萨卡兹_收起负荷干员")
 
     ::fight_first::
     log("准备进入第一关作战")
