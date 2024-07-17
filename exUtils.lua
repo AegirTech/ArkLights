@@ -2495,7 +2495,7 @@ zl_event_solve = function(xx, 战略帮助)
     --local t = time()
     if not wait(function()
             if findOne(战略帮助) then return true end
-            tap(point['萨米_不期而遇选项点击'][xx])
+            tap("萨卡兹_不期而遇选项点击列表" .. xx)
         end, 15) then
         return false
     end
