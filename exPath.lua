@@ -1190,7 +1190,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                     return true
                 end
                 tap("萨卡兹_" .. 萨卡兹路线[1][3] .. "节点_作战列表" .. 萨卡兹路线[1][1])
-            end, 5) then
+            end, 5, .2) then
             return
         end
         if 萨卡兹路线[1][2] == "不期而遇" then
