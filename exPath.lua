@@ -598,7 +598,7 @@ end
     -- 如果是二三都为2列 也默认全部是直线
     -- 第三列作战似乎大概率出现紧急 有则直接跳过
     第三列分支 = 0
-    if findAny({ "萨卡兹_第三列_三条分支", "萨卡兹_第三列_三条分支2" }) then
+    if findAny({ "萨卡兹_第三列_三条分支", "萨卡兹_第三列_三条分支2", "萨卡兹_第三列_三条分支_二列上" }) then
         第三列分支 = 3
         for i = 1, 3 do
             if findOne("萨卡兹_第三列_不期而遇3_列表" .. i) then
@@ -631,12 +631,18 @@ end
             end
 
             for k, x in ipairs(第三列) do
-                local valid_third = (第三列分支 == 3 and k == j) or (中间分支_来源 == 0 and j == 1 and k == 1) or
+                local valid_third = (第三列分支 == 3 and k == j and 中间分支_来源 ~= 0) or (中间分支_来源 == 0 and j == 1 and k == 1) or
                     (中间分支_来源 == 0 and j == 2 and k == 3)
+                local found_二列上分支 = findOne("萨卡兹_第三列_三条分支_二列上") and j == 1
                 local found_上分支 = findOne("萨卡兹_第三列_下分支_连接上") and k == 2
                 local found_中分支 = findOne("萨卡兹_第三列_下分支_连接中") and k == 2 and (j == 2 or j == 3)
 
-                if valid_third or found_上分支 or found_中分支 or k == j then
+                if valid_third or found_上分支 or found_中分支 or found_二列上分支 then
+                    log(valid_third)
+                    log(found_上分支)
+                    log(found_中分支)
+                    log(found_二列上分支)
+                    log({ { i, v }, { j, w }, { k, x } })
                     table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
                 end
             end
