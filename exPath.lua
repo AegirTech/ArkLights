@@ -596,7 +596,6 @@ end
     -- 似乎没必要 第三列基本全是不期而遇
     -- 如果是三列 就默认全部是直线 不考虑分支（懒得写了）
     -- 如果是二三都为2列 也默认全部是直线
-    -- 第三列作战似乎大概率出现紧急 有则直接跳过
     第三列分支 = 0
     if findAny({ "萨卡兹_第三列_三条分支", "萨卡兹_第三列_三条分支2", "萨卡兹_第三列_三条分支_二列上" }) then
         第三列分支 = 3
@@ -604,7 +603,7 @@ end
             if findOne("萨卡兹_第三列_不期而遇3_列表" .. i) then
                 table.insert(第三列, "不期而遇")
             else
-                table.insert(第三列, "紧急作战")
+                table.insert(第三列, "作战")
             end
         end
     else
@@ -612,7 +611,7 @@ end
             if findOne("萨卡兹_第三列_不期而遇2_列表" .. i) then
                 table.insert(第三列, "不期而遇")
             else
-                table.insert(第三列, "紧急作战")
+                table.insert(第三列, "作战")
             end
         end
     end
@@ -694,6 +693,10 @@ end
 
 
 path.萨卡兹的无终奇语前瞻投资 = function()
+    if zl_blueprint then
+        萨卡兹_蓝图分队()
+        return
+    end
     log('start skz')
     if findOne("萨卡兹_戛然而止") then
         log('萨卡兹_戛然而止')

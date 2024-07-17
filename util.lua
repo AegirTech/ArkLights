@@ -3440,8 +3440,6 @@ show_extra_ui = function()
     newRow(layout)
     addTextView(layout, "账户")
     ui.addEditText(layout, "extra_single_account", "")
-
-    newRow(layout)
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
 
@@ -3450,18 +3448,18 @@ show_extra_ui = function()
     addTextView(layout, "===========肉鸽相关===========")
 
     newRow(layout)
-    addButton(layout, nil, "傀影与猩红孤钻",
+    addButton(layout, nil, "傀影",
         make_jump_ui_command(layout, nil,
             "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
-    addButton(layout, nil, "水月与深蓝之树(仅720p)",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='水月与深蓝之树';lock:remove(main_ui_lock)"))
-    newRow(layout)
-    addButton(layout, nil, "萨卡兹的无终奇语(测试)",
+    -- addButton(layout, nil, "水月(仅720p)",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='水月与深蓝之树';lock:remove(main_ui_lock)"))
+    -- newRow(layout)
+    addButton(layout, nil, "萨卡兹(测试)",
         make_jump_ui_command(layout, nil,
             "extra_mode='萨卡兹的无终奇语';lock:remove(main_ui_lock)"))
-    newRow(layout)
 
+    newRow(layout)
     addTextView(layout, [[选第]])
     ui.addEditText(layout, "zl_best_operator", [[-1]])
     addTextView(layout, [[个近卫 开]])
@@ -3486,6 +3484,11 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "zl_no_waste", "每8小时做日常", false)
 
     newRow(layout)
+    ui.addCheckBox(layout, "zl_blueprint", "使用蓝图分队", false)
+    addTextView(layout, [[分队位置]])
+    ui.addEditText(layout, "zl_blueprint_position", [[2]])
+
+    newRow(layout)
     addTextView(layout, [[需求商品]])
     ui.addEditText(layout, "zl_need_goods", [[]])
     addTextView(layout, [[等级]])
@@ -3502,23 +3505,22 @@ show_extra_ui = function()
     --               [[999源石锭刷取耗时与难度、幕后筹备无关，与是否通关三结局、网络延迟有关，双结局耗时10时14分(97个/时)，三结局耗时8时10分(122个/时)，低网络延迟+三结局耗时7时21分(135个/时)。]] ..
     --               [[如需刷等级(蜡烛)，应选普通难度，勾“多点蜡烛”与“跳过投币”。]] ..
     --               [[商品需求可填商品名称关键字，用空格隔开(如填“玩 金 骑士”)，则刷到其中任一商品就会停止并通知QQ]])
-    newRow(layout)
-    addTextView(layout, "===========促融共竞===========")
-    newRow(layout)
-    addTextView(layout, "组队选择")
-    ui.addSpinner(layout, "extra_crgj_select", { "参与方", "房主" }, 0)
+    -- newRow(layout)
+    -- addTextView(layout, "===========促融共竞===========")
+    -- newRow(layout)
+    -- addTextView(layout, "组队选择")
+    -- ui.addSpinner(layout, "extra_crgj_select", { "参与方", "房主" }, 0)
 
-    newRow(layout)
-    addTextView(layout, "房间号")
-    ui.addEditText(layout, "extra_crgj_room", "")
+    -- newRow(layout)
+    -- addTextView(layout, "房间号")
+    -- ui.addEditText(layout, "extra_crgj_room", "")
 
-    newRow(layout)
-    addTextView(layout, "房主请在进入房间后的页面开始，仅支持组队，不能用于匹配作战")
-    newRow(layout)
-    addButton(layout, nil, "促融共竞开始",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    -- ui.addEditText(layout, "extra_single_password", "")
+    -- newRow(layout)
+    -- addTextView(layout, "房主请在进入房间后的页面开始，仅支持组队，不能用于匹配作战")
+    -- newRow(layout)
+    -- addButton(layout, nil, "促融共竞开始",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     newRow(layout)
     addTextView(layout, "===========生息演算===========")
