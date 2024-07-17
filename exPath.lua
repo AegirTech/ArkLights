@@ -548,6 +548,136 @@ path.沙中之火 = function()
     end
 end
 
+萨卡兹_分支选择 = function()
+    中间分支_来源 = 0
+    if findOne("萨卡兹_第二列_中间分支_来源上") then
+        中间分支_来源 = 1
+    elseif findOne("萨卡兹_第二列_中间分支_来源下") then
+        中间分支_来源 = 2
+    end
+    log(中间分支_来源)
+    第一列 = {}
+    第二列 = {}
+    第三列 = {}
+    第一列选择 = 0
+    第二列选择 = 0
+    第三列选择 = 0
+    -- 第一列关卡判断
+    for i = 1, 2 do
+        if findOne("萨卡兹_第一列_不期而遇_列表" .. i) then
+            table.insert(第一列, "不期而遇")
+        else
+            table.insert(第一列, "作战")
+        end
+    end
+    log(第一列)
+    -- 第二列关卡判断
+
+    if 中间分支_来源 == 0 then --2列
+        for i = 1, 2 do
+            if findOne("萨卡兹_第二列_不期而遇2_列表" .. i) then
+                table.insert(第二列, "不期而遇")
+            else
+                table.insert(第二列, "作战")
+            end
+        end
+    else
+        for i = 1, 3 do
+            if findOne("萨卡兹_第二列_不期而遇3_列表" .. i) then
+                table.insert(第二列, "不期而遇")
+            else
+                table.insert(第二列, "作战")
+            end
+        end
+    end
+    log(第二列)
+
+    -- 第三列关卡判断
+    -- 似乎没必要 第三列基本全是不期而遇
+    -- 如果是三列 就默认全部是直线 不考虑分支（懒得写了）
+    -- 如果是二三都为2列 也默认全部是直线
+    -- 第三列作战似乎大概率出现紧急 有则直接跳过
+    第三列分支 = 0
+    if findAny({ "萨卡兹_第三列_三条分支", "萨卡兹_第三列_三条分支2" }) then
+        第三列分支 = 3
+        for i = 1, 3 do
+            if findOne("萨卡兹_第三列_不期而遇3_列表" .. i) then
+                table.insert(第三列, "不期而遇")
+            else
+                table.insert(第三列, "紧急作战")
+            end
+        end
+    else
+        for i = 1, 2 do
+            if findOne("萨卡兹_第三列_不期而遇2_列表" .. i) then
+                table.insert(第三列, "不期而遇")
+            else
+                table.insert(第三列, "紧急作战")
+            end
+        end
+    end
+    log(第三列)
+
+    -- 生成路线图
+    skz_map = {}
+
+    for i, v in ipairs(第一列) do
+        for j, w in ipairs(第二列) do
+            local valid_first_second = (j == i and (中间分支_来源 == 0 or j == 1)) or (i == 中间分支_来源 and j == 2) or
+                (i == 2 and j == 3)
+
+            if not valid_first_second then
+                goto continue_second
+            end
+
+            for k, x in ipairs(第三列) do
+                local valid_third = (第三列分支 == 3 and k == j) or (中间分支_来源 == 0 and j == 1 and k == 1) or
+                    (中间分支_来源 == 0 and j == 2 and k == 3)
+                local found_上分支 = findOne("萨卡兹_第三列_下分支_连接上") and k == 2
+                local found_中分支 = findOne("萨卡兹_第三列_下分支_连接中") and k == 2 and (j == 2 or j == 3)
+
+                if valid_third or found_上分支 or found_中分支 or k == j then
+                    table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                end
+            end
+
+            ::continue_second::
+        end
+    end
+    log(skz_map)
+
+    local function find_best_route(routes)
+        local max_unexpected_encounters = -1
+        local best_route = nil
+        for _, route in ipairs(routes) do
+            local count = 0
+            local emergency = false
+            for _, segment in ipairs(route) do
+                if segment[2] == "紧急作战" then
+                    emergency = true
+                    break
+                elseif segment[2] == "不期而遇" then
+                    count = count + 1
+                end
+            end
+            if not emergency and count > max_unexpected_encounters then
+                max_unexpected_encounters = count
+                best_route = route
+            end
+        end
+        return best_route
+    end
+
+    local best_route = find_best_route(skz_map)
+    if best_route then
+        log(best_route)
+        return best_route[1][1], best_route[2][1], best_route[3][1]
+    else
+        log("没有满足条件的路线")
+        return 1, 1, 1
+    end
+end
+
 
 path.萨卡兹的无终奇语前瞻投资 = function()
     log('start skz')
@@ -820,6 +950,9 @@ path.萨卡兹的无终奇语前瞻投资 = function()
         end, 15) then
         return
     end
+
+    -- 分支选择 返回每一列行数
+    第一列选择, 第二列选择, 第三列选择 = 萨卡兹_分支选择()
 
     --延迟一会，否则会产生位移，可以拿来后续做线路优化的筛选
     --目前默认选择上面的线路
