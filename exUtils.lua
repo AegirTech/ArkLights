@@ -2296,7 +2296,7 @@ zl_help_fight = function(reflashNum, 初始招募界面)
     tap(p)
     disappear("战略助战界面", 5)
     --再判断一次是否符号招募要求
-    local target_operator = { '羽毛', '送葬', '圣', '嘉维尔', '海沫' }
+    local target_operator = { '羽毛', '送葬', '圣', '嘉维尔', '海沫', '煌', '骑士', '临光' }
     if not wait(function()
             local target_best = ocr('战略助战确认干员范围')
             if target_best[1] then
@@ -2574,6 +2574,9 @@ end
 zl_navigation = function(常规行动, 需要点击的肉鸽)
     local 常规行动 = 常规行动 or '常规行动'
     local 需要点击的肉鸽 = 需要点击的肉鸽 or '傀影与猩红孤钻'
+    -- 省略跳转
+    if findOne(常规行动) then return true end
+
     path.跳转("首页")
 
     tap("面板作战")
