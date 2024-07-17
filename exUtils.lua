@@ -2275,8 +2275,9 @@ zl_help_fight = function(reflashNum, 初始招募界面)
     local order = {
         { "百炼嘉维尔", 99, 2 },
         { "圣约送葬人", 99, 2 },
-        { "煌", 0, 1 },
-        { "耀骑士临光", 0, 1 },
+        { "煌", 99, 1 }, --辅助，医疗这些都得开技能，也能不开
+        { "耀骑士临光", 99, 1 },
+        { "乌尔比安", 99, 1 },
         -- { "羽毛笔", 99, 2 },
         --{ "海沫", 99, 2 },
     }
@@ -2296,7 +2297,7 @@ zl_help_fight = function(reflashNum, 初始招募界面)
     tap(p)
     disappear("战略助战界面", 5)
     --再判断一次是否符号招募要求
-    local target_operator = { '羽毛', '送葬', '圣', '嘉维尔', '海沫', '煌', '骑士', '临光' }
+    local target_operator = { '羽毛', '送葬', '圣', '嘉维尔', '海沫', '煌', '骑士', '临光', '比安' }
     if not wait(function()
             local target_best = ocr('战略助战确认干员范围')
             if target_best[1] then
@@ -2337,11 +2338,13 @@ end
 function zl_selection_node(select_number)
     local select_number = select_number or 0
     local paths = { -1, -1, -1, -1, -1 }
-    --紧急 普通 不期  兴致 商店 ，越在后面优先级越高
-    local 关卡类型 = { "822E2E", "7268A9", "468C9A", "2E757F", "115340" }
+    --紧急 普通 普通2 不期  商店 ，越在后面优先级越高
+    --有时候普通战斗关卡有两种颜色好像（  都放进来好了
+    local 关卡类型 = { "822E2E", "7268A9", "5B528D", "2E757F", "115340" }
     --local 萨米关卡类型 = { "943E40", "7268A9", "468C9A", "4890A2", "246757" }
     if select_number > 3 then
         log('校准线路次数超过3次，放弃本次探索重新来')
+        back()
         path.跳转("首页")
     end
     if not wait(function()
@@ -2353,7 +2356,8 @@ function zl_selection_node(select_number)
 
             -- 遍历关卡类型
             for i = 1, #关卡类型 do
-                local path_pos = point.萨卡兹关卡节点坐标[i][1] .. "|" .. point.萨卡兹关卡节点坐标[i][2]
+                local xx = point['萨卡兹_关卡节点坐标列表' .. i]
+                local path_pos = xx[1] .. "|" .. xx[2]
                 for j = 1, #关卡类型 do
                     local path_pos_color = path_pos .. "|" .. 关卡类型[j]
                     --print(path_pos_color)
@@ -2376,7 +2380,7 @@ function zl_selection_node(select_number)
             end
         end, 3) then
         log('找不到节点，重新校准路线')
-        zl_repos_path('萨卡兹_放弃本次探索')
+        if not zl_repos_path('萨卡兹_放弃本次探索') then return end
         return zl_selection_node(select_number + 1)
     end
 
@@ -2410,7 +2414,7 @@ skz_after_fight = function()
     if not wait(function()
             if not drop_page then tap("战略确认") end
             if findOne("萨卡兹_战略帮助") then drop_page = true end
-            if findOne("萨卡兹_不要了") then
+            if zl_only_coin and findOne("萨卡兹_不要了") then
                 tap("萨卡兹_不要了")
                 if not wait(function()
                         tap("萨卡兹_不要了确认")
@@ -2420,7 +2424,7 @@ skz_after_fight = function()
             end
             local x = appear({
                 "萨卡兹_收藏品拾取", "萨卡兹_招募券收下", "萨卡兹_源石锭收下",
-                "萨卡兹_思绪收下",
+                "萨卡兹_思绪收下", --好像还有地雷收下的我没有收录
             })
             log(2555, x)
             tap(x)
@@ -2524,7 +2528,8 @@ zl_deploy = function(deploy_table)
         wait(function()
             tap("干员费用够列表1")
             disappear("干员费用够列表1", 0.5)
-            nDeploy3(1, deploy_table[i], 4 - i)
+            local deploy_point = { scale(deploy_table[i][1]), scale(deploy_table[i][2]), deploy_table[i][3] }
+            nDeploy3(1, deploy_point, 4 - i)
 
             wait(function()
                 if findOne("生命值") then return true end
@@ -2664,7 +2669,10 @@ zl_eight_daily = function()
 end
 
 --肉鸽 等级源石锭检查
-zl_level_coin_inquire = function()
+zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检测范围)
+    local 常规行动 = 常规行动 or '常规行动'
+    local 等级检测范围 = 等级检测范围 or '等级检测范围'
+    local 源石锭检测范围 = 源石锭检测范围 or '源石锭检测范围'
     if zl_level_enough then
         if zl_no_waste then
             -- todo
@@ -2685,42 +2693,32 @@ zl_level_coin_inquire = function()
         stop("肉鸽结束", '', false, true)
     end
 
-    -- 检测等级
-    local zl_level_check = function()
-        if not (str2int(zl_max_level, 0) > 0) then return end
-        if not findOne("常规行动") then return end
-        -- if not wait(function()
-        --   if not findOne("常规行动") then return true end
-        --   tap("战略等级入口")
-        -- end) then return end
-
+    if zl_max_level == 'max' then
+        local now_month = str2int(os.date("%m"), 0) --获取当前月份
+        zl_max_level = 15 * (now_month - 7) + 50    -- 2025年再处理一次
+    end
+    -- 检测等级 ，输入检测范围的名字
+    --例如   zl_number_check()
+    local zl_number_check = function(检测范围)
+        --if not (str2int(zl_max_level, 0) > 0) then return end
+        local 检测范围 = 检测范围 or {}
+        if not findOne(常规行动) then return end
         local prex = -1
         local ans = wait(function()
             ssleep(.5)
-            -- if not findOne("常规行动") then return 0 end
-            -- local x = ocr("战略等级") or {}
-            local r = point["战略等级"]
-            local x = ocrBinaryEx(r[1], r[2], r[3], r[4], "000000-feb525") or {}
-            -- local x = ocrEx(r[1], r[2], r[3], r[4]) or {}
-            log("4126", x)
-            x = (x[1] or {}).text or ""
-            x = number_ocr_correct(x)
-            x = str2int(x:match("^(%d+).*"), -1)
-            log("4127", x)
-            if x == 125 and not findOne("战略等级" .. x) then return end
-            if x >= 0 and x <= 155 and x == prex then return x end
-            -- if x >= 0 and x <= 140 then return x end
-            -- if x >= 0 then return x end
+            local r = ocro(检测范围)
+            log("4126", r)
+            if not r then x = "" end
+            x = str2int(r:match("%d+"), -1)
+            log("4127", type(x), x)
+            if x >= 0 and x <= 999 then return x end
             prex = x
-        end, 5)
-        -- wait(function()
-        --   tap("返回")
-        --   if appear("常规行动") then return true end
-        -- end, 5)
+        end, 3)
         return ans
     end
 
-    local zl_level = zl_level_check() or -1
+    local zl_level = zl_number_check(等级检测范围) or -1
+    toast('等级:' .. zl_level)
     if not zl_level_enough and zl_level == str2int(zl_max_level, 10000) then
         zl_level_enough = true
         captureqqimagedeliver("INFO", "肉鸽任务完成", table.join(qqmessage,
@@ -2728,42 +2726,10 @@ zl_level_coin_inquire = function()
             (zl_level or '') .. "等级已满")
     end
 
-    -- 检测源石锭
-    local zl_coin_check = function()
-        if not (str2int(zl_max_coin, 0) > 0) then return end
-        if str2int(zl_max_coin, 0) >= 999 then return end
 
-        if not findOne("常规行动") then return end
-        if not wait(function()
-                if not findOne("常规行动") then return true end
-                tap("战略源石锭入口")
-            end) then
-            return
-        end
 
-        local prex = -1
-        local ans = wait(function()
-            ssleep(.5)
-            -- if not findOne("常规行动") then return 0 end
-            local x = ocr("战略源石锭") or {}
-            log(4195, x)
-            x = (x[1] or {}).text or ""
-            x = number_ocr_correct(x)
-            x = str2int(x:match("[^%d](%d+)$"), -1)
-            log("4128", x)
-            if x >= 0 and x == prex then return x end
-            -- if x >= 0 then return x end
-            prex = x
-        end, 5)
-        wait(function()
-            tap("返回")
-            if appear("常规行动") then return true end
-        end, 5)
-
-        return ans
-    end
-
-    local zl_coin = zl_coin_check() or -1
+    local zl_coin = zl_number_check(源石锭检测范围) or -1
+    toast('源石锭:' .. zl_coin)
     if not zl_coin_enough and zl_coin >= str2int(zl_max_coin, 10000) then
         zl_coin_enough = true
         captureqqimagedeliver("INFO", "肉鸽任务完成", table.join(qqmessage,
@@ -2957,7 +2923,7 @@ skz_fight_name = function()
                 -- 只支持三种作战
                 if fight1.text:includes({ "坏", "邻", "居" }) then
                     fight1.text = "坏邻居"
-                elseif fight1.text:includes({ "安", "全", "检" }) then
+                elseif fight1.text:includes({ "安", "全", "检", '熔', '炉' }) then --这个的范围偏上 偶尔找不到
                     fight1.text = "安全检查"
                 elseif fight1.text:includes({ "夺", "路", "逃" }) then
                     fight1.text = "夺路而逃"
