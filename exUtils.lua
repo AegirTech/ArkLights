@@ -2708,15 +2708,15 @@ zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检�
             ssleep(.5)
             local r = ocro(检测范围)
             log("4126", r)
-            if x == nil or type(x) ~= "string" or #x == 0 then
-                return 0
-            end
+            -- if x == nil or type(x) ~= "string" or #x == 0 then
+            --     return 0
+            -- end
             if not r then x = "" end
             x = str2int(r:match("%d+"), -1)
             log("4127", type(x), x)
             if x >= 0 and x <= 999 then return x end
             prex = x
-        end, 3)
+        end, 0.7) --给点检测时间
         return ans
     end
 
