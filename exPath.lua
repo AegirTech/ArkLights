@@ -1151,14 +1151,28 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     log('在选择节点界面')
     log(萨卡兹路线)
     if next(萨卡兹路线) == nil then
-        local idxs = -1
-        local idxs, maxIndex = zl_selection_node()
-        --如果maxIndex是1 2 则是战斗关卡   3 4 是不期而遇
-        if idxs > 0 then
-            log(idxs, maxIndex)
-            tap(point.萨卡兹关卡节点坐标[idxs])
-            ssleep(.5)
+        -- local idxs = -1
+        -- local idxs, maxIndex = zl_selection_node()
+        -- --如果maxIndex是1 2 则是战斗关卡   3 4 是不期而遇
+        -- if idxs > 0 then
+        --     log(idxs, maxIndex)
+        --     tap(point.萨卡兹关卡节点坐标[idxs])
+        --     ssleep(.5)
+        -- end
+
+        -- 最后为商店
+        sx = { scale(1761), scale(846) }
+        oricol = getColor(sx[1], sx[2])
+        if not wait(function()
+                if findOne("萨卡兹_商店进入") then
+                    return true
+                end
+                tap("萨卡兹_地图商店坐标")
+            end, 5) then
+            return
         end
+        ssleep(.5)
+        maxIndex = 5
     else
         sx = { scale(1761), scale(846) }
         oricol = getColor(sx[1], sx[2])
