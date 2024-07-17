@@ -1245,7 +1245,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                             if time() - t > 1000 then --不期而遇事件，偶尔下面的 '√' 会一直存在，间隔点击一次
                                 t = time()
                                 if not findOne('萨米_希望源石锭界面') then
-                                    tap(scale(989), scale(906)) --更上面一点，防止误触
+                                    tap({ scale(960), scale(935) }) --更上面一点，防止误触
                                 end
                             end
                             if incident[1] then return true end
@@ -1256,7 +1256,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                     if not incident[1] then return false end
                     local str = incident[1].text
                     log('事件名字：', str)
-                    if findOne('萨卡兹_不期而遇确认') then tap(scale(989), scale(906)) end
+                    if findOne('萨卡兹_不期而遇确认') then tap({ scale(960), scale(935) }) end
                     if string.finds(str, { "虫" }) then
                         if zl_event_solve(3, "萨卡兹_战略帮助") then return true end
                     elseif string.finds(str, { '相遇', '解', '故事', '高空', '不散' }) then
