@@ -277,6 +277,17 @@
             appearTap("萨卡兹_刷新确认")
             disappear("萨卡兹_刷新确认")
         end
+        wait(function()
+            if find_color("萨卡兹_刷新按钮范围", "FCFCF9|6A6A6A") then return end
+        end, 1.2)
+        po = find_color("萨卡兹_刷新按钮范围", "FCFCF9")
+        log(po)
+        if po and findAny({ "萨卡兹_出发前往紧急作战", "萨卡兹_出发前往普通作战" }) then
+            log("开始刷新")
+            tap(po)
+            appearTap("萨卡兹_刷新确认")
+            disappear("萨卡兹_刷新确认")
+        end
     end
     -- ssleep(100)
     关卡刷新()
