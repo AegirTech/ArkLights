@@ -269,8 +269,9 @@
         appear("萨卡兹_出发前往2", 1)
         log("关卡刷新")
         ssleep(0.1)
-        local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9")
-        log(po)
+        local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
+
+        log("刷新按钮位置", po)
         if po then
             log("开始刷新")
             tap(po)
@@ -279,9 +280,10 @@
         end
         wait(function()
             if find_color("萨卡兹_刷新按钮范围", "FCFCF9|6A6A6A") then return end
+            ssleep(0.1)
         end, 1.2)
-        po = find_color("萨卡兹_刷新按钮范围", "FCFCF9")
-        log(po)
+        po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
+        log("刷新按钮位置", po)
         if po and findAny({ "萨卡兹_出发前往紧急作战", "萨卡兹_出发前往普通作战" }) then
             log("开始刷新")
             tap(po)
@@ -358,7 +360,8 @@
                             incident = ocr("萨卡兹_不期而遇事件名字检测")
                             if time() - t > 1000 then --不期而遇事件，偶尔下面的 '√' 会一直存在，间隔点击一次
                                 t = time()
-                                if not findOne('萨米_希望源石锭界面') then tap("萨卡兹_不期而遇确认") end
+                                log(366)
+                                if not findOne('萨米_希望源石锭界面') then tap("萨卡兹_不期而遇确认点击") end
                             end
                             if incident[1] then return true end
                             if findOne("萨卡兹_战略帮助") then return true end
@@ -369,7 +372,7 @@
                     local str = incident[1].text
                     log('事件名字：', str)
                     if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
-                    if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认") end
+                    if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
                     if string.finds(str, { "虫" }) then
                         if zl_event_solve(3, "萨卡兹_战略帮助") then return true end
                     elseif string.finds(str, { '相遇', '解', '故事', '高空', '不散' }) then

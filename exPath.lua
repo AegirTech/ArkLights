@@ -1256,7 +1256,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                     if not incident[1] then return false end
                     local str = incident[1].text
                     log('事件名字：', str)
-                    if findOne('萨卡兹_不期而遇确认') then tap({ scale(960), scale(935) }) end
+                    if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
                     if string.finds(str, { "虫" }) then
                         if zl_event_solve(3, "萨卡兹_战略帮助") then return true end
                     elseif string.finds(str, { '相遇', '解', '故事', '高空', '不散' }) then
