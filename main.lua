@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.17 12:27"
+release_date = "07.17 15:42"
 update_announcement = '最近更新：故事集导航，签到活动修复'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -116,6 +116,12 @@ cloud.startHeartBeat()
 if debug_mode then
     log("debug_mode")
     ssleep(1)
+    -- if findOne("萨卡兹_每列_3节点判断") then
+    --     log("每列2个")
+    -- else
+    --     log("每列3个")
+    -- end
+    -- exit()
     --print(findOne("职业选择"))
     --raise.material_synthesis("31014", 10)
     --path.训练室换班("训练室", "CASTER", 3)
@@ -128,7 +134,7 @@ if debug_mode then
     --exit()
     --initPngdata()
     萨卡兹_分支选择()
-    exit()
+    --exit()
     --用于获取活动的剧情关，教学关三星颜色信息
     -- local x = 'HD-TR-2'
     -- swip(x)

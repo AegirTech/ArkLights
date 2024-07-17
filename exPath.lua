@@ -620,7 +620,7 @@ end
 
     -- 生成路线图
     skz_map = {}
-
+    log(中间分支_来源, 第三列分支)
     for i, v in ipairs(第一列) do
         for j, w in ipairs(第二列) do
             local valid_first_second = (j == i and (中间分支_来源 == 0 or j == 1)) or (i == 中间分支_来源 and j == 2) or
@@ -636,12 +636,10 @@ end
                 local found_二列上分支 = findOne("萨卡兹_第三列_三条分支_二列上") and j == 1
                 local found_上分支 = findOne("萨卡兹_第三列_下分支_连接上") and k == 2
                 local found_中分支 = findOne("萨卡兹_第三列_下分支_连接中") and k == 2 and (j == 2 or j == 3)
-
-                if valid_third or found_上分支 or found_中分支 or found_二列上分支 then
-                    log(valid_third)
-                    log(found_上分支)
-                    log(found_中分支)
-                    log(found_二列上分支)
+                local 其他分支 = (j == 1 and k == 1) or (j == 3 and k == 2 and 中间分支_来源 ~= 0 and 第三列分支 == 0) or
+                    (j == 2 and k == 3 and 中间分支_来源 == 0 and 第三列分支 == 0)
+                if valid_third or found_上分支 or found_中分支 or found_二列上分支 or 其他分支 then
+                    log(valid_third, valid_third, found_上分支, found_中分支, found_二列上分支)
                     log({ { i, v }, { j, w }, { k, x } })
                     table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
                 end
@@ -673,15 +671,25 @@ end
         end
         return best_route
     end
-
     local best_route = find_best_route(skz_map)
     if best_route then
         log(best_route)
-        return best_route[1][1], best_route[2][1], best_route[3][1]
     else
         log("没有满足条件的路线")
-        return 1, 1, 1
+        best_route = skz_map[1]
     end
+    best_route[1][3] = 2
+    if 中间分支_来源 == 0 then
+        best_route[2][3] = 2
+    else
+        best_route[2][3] = 3
+    end
+    if 第三列分支 == 3 then
+        best_route[3][3] = 3
+    else
+        best_route[3][3] = 2
+    end
+    return best_route
 end
 
 
@@ -956,10 +964,10 @@ path.萨卡兹的无终奇语前瞻投资 = function()
         end, 15) then
         return
     end
-
+    ssleep(0.5) -- 右边第三列有概率加载过慢
     -- 分支选择 返回每一列行数
-    第一列选择, 第二列选择, 第三列选择 = 萨卡兹_分支选择()
-
+    萨卡兹路线 = 萨卡兹_分支选择()
+    log("路线选择", 萨卡兹路线)
     --延迟一会，否则会产生位移，可以拿来后续做线路优化的筛选
     --目前默认选择上面的线路
     ssleep(1)
@@ -980,12 +988,14 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     disappear('萨卡兹_等待负荷干员列表出现')
     ssleep(.5)
     tap("萨卡兹_收起负荷干员")
-
     ::fight_first::
     log("准备进入第一关作战")
     ssleep(.5)
+    local 第一列 = 萨卡兹路线[1][1]
+    table.remove(萨卡兹路线, 1)
     if not wait(function()
-            tap("萨卡兹_第一次作战上")
+            -- tap("萨卡兹_第一次作战上")
+            tap("萨卡兹_第一列_作战列表" .. 第一列)
             if findOne('萨卡兹_第一次作战被点击') then return true end
         end, 5) then
         -- in_fight_return = "无法进入第一关"
@@ -1139,14 +1149,38 @@ path.萨卡兹的无终奇语前瞻投资 = function()
 
     ::fight_select::
     log('在选择节点界面')
-    local idxs = -1
-    local idxs, maxIndex = zl_selection_node()
-    --如果maxIndex是1 2 则是战斗关卡   3 4 是不期而遇
-    if idxs > 0 then
-        log(idxs, maxIndex)
-        tap(point.萨卡兹关卡节点坐标[idxs])
+    log(萨卡兹路线)
+    if next(萨卡兹路线) == nil then
+        local idxs = -1
+        local idxs, maxIndex = zl_selection_node()
+        --如果maxIndex是1 2 则是战斗关卡   3 4 是不期而遇
+        if idxs > 0 then
+            log(idxs, maxIndex)
+            tap(point.萨卡兹关卡节点坐标[idxs])
+            ssleep(.5)
+        end
+    else
+        sx = { scale(1761), scale(846) }
+        oricol = getColor(sx[1], sx[2])
+        log("每列节点", 萨卡兹路线[1][3])
+        log(萨卡兹路线)
+        if not wait(function()
+                if getColor(sx[1], sx[2]) ~= oricol then
+                    return true
+                end
+                tap("萨卡兹_" .. 萨卡兹路线[1][3] .. "节点_作战列表" .. 萨卡兹路线[1][1])
+            end, 5) then
+            return
+        end
+        if 萨卡兹路线[1][2] == "不期而遇" then
+            maxIndex = 3
+        else
+            maxIndex = 1
+        end
+        table.remove(萨卡兹路线, 1)
         ssleep(.5)
     end
+
 
     if maxIndex == 1 or maxIndex == 2 then
         --进入战斗
