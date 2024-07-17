@@ -1191,22 +1191,11 @@ path.萨卡兹的无终奇语前瞻投资 = function()
             return
         end
         if 萨卡兹路线[1][2] == "不期而遇" then
-            maxIndex = 3
+            maxIndex = 4
         else
             maxIndex = 1
         end
         table.remove(萨卡兹路线, 1)
-        ssleep(.5)
-    end
-
-    local idxs = -1
-    local idxs, maxIndex = zl_selection_node()
-    --如果maxIndex是1 2 则是战斗关卡   3 4 是不期而遇
-
-    if not idxs then return end
-    if idxs > 0 then
-        log(idxs, maxIndex)
-        tap('萨卡兹_关卡节点坐标列表' .. idxs)
         ssleep(.5)
     end
 
