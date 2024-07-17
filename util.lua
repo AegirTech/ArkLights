@@ -3482,7 +3482,7 @@ show_extra_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "zl_skip_hard", "不打驯兽", false)
-    --ui.addCheckBox(layout, "zl_only_coin", "不打驯兽", false)
+    ui.addCheckBox(layout, "zl_only_coin", "只是投币", false)
     ui.addCheckBox(layout, "zl_no_waste", "每8小时做日常", false)
 
     newRow(layout)

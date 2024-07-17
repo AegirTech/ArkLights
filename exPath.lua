@@ -712,7 +712,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
         toast(in_fight_return or '重开')
         ssleep(3)
         if not request_memory_clean() then
-            path.萨米测试(true)
+            path.萨卡兹的无终奇语前瞻投资(true)
         else
             path.跳转("首页")
         end
@@ -727,7 +727,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     zl_navigation('萨卡兹_常规行动', '萨卡兹的无终奇语进入主题')
 
     --肉鸽 等级源石锭检查
-    --zl_level_coin_inquire()
+    zl_level_coin_inquire('萨卡兹_常规行动', '萨卡兹_等级检测范围', '萨卡兹_源石锭检测范围')
 
     -- 放弃探索
     if findOne("萨卡兹_放弃本次探索") then
@@ -803,8 +803,10 @@ path.萨卡兹的无终奇语前瞻投资 = function()
             tap("新战略确认")
             tap("继续探索")
             if time() - t > 2 * 1000 then --第一次时候，需要选择难度等级
-                --ssleep(1)
+                ssleep(1)
                 t = time()
+                log('选择一次难度等级')
+                tap({ scale(1759), scale(567) })
             end
         end, 15) then
         -- 初始选难度
@@ -972,16 +974,20 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     --目前默认选择上面的线路
     ssleep(1)
     findTap("萨卡兹_待编入负荷干员")
-    disappear('萨卡兹_待编入负荷干员')
-    appear('萨卡兹_点击负荷干员')
-    findTap('萨卡兹_点击负荷干员')
-    ssleep(.5)
-    appear('萨卡兹_等待负荷干员列表出现')
-    -- ssleep(1)
-    --编入负荷干员
-    if not findOne("萨卡兹_等待负荷干员列表出现") then return true end
-    for _, v in ipairs(point['萨卡兹_选项负荷干员']) do
-        tap(v)
+    local t = time()
+    if not wait(function()
+            findTap("萨卡兹_点击负荷干员")
+            if time() - t > 1500 then
+                t = time()
+                tap('招募说明关闭') --第一次加载会有这个弹窗
+            end
+            if findOne('萨卡兹_等待负荷干员列表出现') then return true end
+        end, 10, .3) then
+        return false
+    end
+    ssleep(1)
+    for i = 1, #point['萨卡兹_选项负荷干员列表'] do
+        tap('萨卡兹_选项负荷干员列表' .. i)
         ssleep(.1)
     end
     tap("萨卡兹_等待负荷干员列表出现")
@@ -1005,8 +1011,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
 
     --检查作战关卡名字
     if not skz_fight_name() then return end
-
-    log('1313:' .. now_fight_name)
+    toast(now_fight_name)
     ssleep(1)
     if not wait(function()
             if findOne("快捷编队") then return true end
@@ -1074,35 +1079,20 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     end
 
     if not findOne("生命值") then return end
-    -- 等待加载游戏界面,然后判断该地图是什么名字
-    --log('准备识别关卡')
-    -- if not wait(function()
-    --         for _, v in ipairs(point.萨卡兹作战关卡寻找) do
-    --             local color = v[2]
-    --             if cmpColorEx(color, 0.9) == 1 then
-    --                 now_fight_name = v[1]
-    --                 log('找到地图了，地图名字是：' .. v[1])
-    --                 return true
-    --             end
-    --         end
-    --     end, 15, .2) then
-    --     log('未知的关卡')
-    --     return restartapp(appid)
-    -- end
 
     -- 需要等等才能点两倍速
     appearTap("两倍速", 3)
 
     -- 部署干员到关卡位置
-    zl_deploy(point.萨卡兹作战关卡[now_fight_name])
+    zl_deploy(point.萨卡兹_作战关卡[now_fight_name])
 
     appear("生命值")
 
     local last_time_see_life = time()
     local skill_times = 0
-    local zl_level = zl_level or -1
     if not wait(function()
-            toast('当前等级：' .. zl_level, 0, scale(1080))
+            --
+            -- toast('当前等级：' .. zl_level, 0, scale(1080))
             if findOne("返回确认界面") then tap("左取消") end
             if findOne("暂停中") then
                 tap("开包skip")
@@ -1117,11 +1107,21 @@ path.萨卡兹的无终奇语前瞻投资 = function()
 
             tap("开始行动1")
             local p = findOne("技能亮")
+            local jump = false
             if p and skill_times < zl_skill_times then
                 skill_times = skill_times + 1
                 tap({ p[1], p[2] + scale(200) })
-                -- appear("技能ready", 5)
-                appear("生命值蓝", 5)
+                --把【appear("生命值蓝", 5)】改成下面的，有时候打完会停顿一会，下面加快判断
+                wait(function()
+                    if findOne("萨卡兹_成功通过") then
+                        log('成功通过')
+                        jump = true
+                        return true
+                    end
+                    if findOne("生命值蓝") then return true end
+                end, 5)
+                if jump then return true end
+
                 ssleep(0.5)
                 wait(function()
                     tap("开技能")
@@ -1133,7 +1133,11 @@ path.萨卡兹的无终奇语前瞻投资 = function()
         return restartapp(appid)
     end
 
-    appear({ "战略返回", "萨卡兹_联系中断" }, 30)
+    appear({ "战略返回", "萨卡兹_联系中断", '萨卡兹_戛然而止' }, 30)
+    if findOne("萨卡兹_戛然而止") then
+        log('戛然而止界面，准备返回')
+        return
+    end
     if findOne("萨卡兹_联系中断") then
         log('重启')
         restartapp(appid)
@@ -1195,8 +1199,18 @@ path.萨卡兹的无终奇语前瞻投资 = function()
         ssleep(.5)
     end
 
+    local idxs = -1
+    local idxs, maxIndex = zl_selection_node()
+    --如果maxIndex是1 2 则是战斗关卡   3 4 是不期而遇
 
-    if maxIndex == 1 or maxIndex == 2 then
+    if not idxs then return end
+    if idxs > 0 then
+        log(idxs, maxIndex)
+        tap('萨卡兹_关卡节点坐标列表' .. idxs)
+        ssleep(.5)
+    end
+
+    if maxIndex <= 3 then
         --进入战斗
         --检测作战关卡名字
         skz_fight_name()
@@ -1209,18 +1223,20 @@ path.萨卡兹的无终奇语前瞻投资 = function()
             return
         end
         goto fight_trusteeship
-    elseif maxIndex == 3 or maxIndex == 4 then
+    elseif maxIndex == 4 then
         --进入不期而遇
         log("进入不期而遇")
         appear('萨卡兹_不期而遇节点出现')
         wait(function()
             tap("萨卡兹_进入")
+            tap("萨卡兹_思维混乱确认红") --偶尔有情况 思维负载太多了，第一第二个节点都是作战时候，第三个节点有概率出现
         end, 2)
         if not wait(function()
                 if not findOne("萨米_战略帮助") then return true end
                 tap("战略确认")
-            end, 10) then
-            --return
+            end, 15) then
+            toast('进入不期而遇出错,可能误点到了什么')
+            return restartapp(appid)
         end
 
         --判断不期而遇事件，并处理
@@ -1231,11 +1247,10 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                     local t = time()
                     if not wait(function()
                             incident = ocr("萨卡兹_不期而遇事件名字检测")
-                            -- if time() - t > 1500 then
-                            --     t = time()
-                            --     if not findOne('萨米_希望源石锭界面') then tap("战略确认") end
-                            --     return
-                            -- end
+                            if time() - t > 1000 then --不期而遇事件，偶尔下面的 '√' 会一直存在，间隔点击一次
+                                t = time()
+                                if not findOne('萨米_希望源石锭界面') then tap("萨卡兹_不期而遇确认") end
+                            end
                             if incident[1] then return true end
                             if findOne("萨卡兹_战略帮助") then return true end
                         end, 8) then
@@ -1246,7 +1261,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                     log('事件名字：', str)
                     if string.finds(str, { "虫" }) then
                         if zl_event_solve(3, "萨卡兹_战略帮助") then return true end
-                    elseif string.finds(str, { '相遇', '解', '故事', '高空' }) then
+                    elseif string.finds(str, { '相遇', '解', '故事', '高空', '不散' }) then
                         if zl_event_solve(2, "萨卡兹_战略帮助") then return true end
                     elseif string.finds(str, { "萨米", "维", "女士" }) then
                         if zl_event_solve(1, "萨卡兹_战略帮助") then return true end
@@ -1279,6 +1294,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
             -- if not findOne("战略帮助") then return true end
             if findAny({ "诡意行商投资", "诡意行商离开" }) then return true end
             tap("萨卡兹_商店进入")
+            tap("萨卡兹_思维混乱确认红") --偶尔有情况 思维负载太多了，第一第二个节点都是作战时候，第三个节点有概率出现
         end, 3) then
         return zl_repos_path('萨卡兹_放弃本次探索')
     end
@@ -1288,7 +1304,12 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     --投币
 
     if not zl_skip_coin then zl_shop_coin() end
-
+    if zl_only_coin then
+        log('只是投币，准备退出')
+        findTap('战略退出')
+        appear('萨卡兹_放弃本次探索', 3)
+        return true
+    end
     --购买商品
     if not wait(function()
             if findOne("诡意行商离开") then return true end
