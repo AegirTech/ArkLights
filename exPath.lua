@@ -1061,7 +1061,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                         if zl_event_solve(3, "萨卡兹_战略帮助") then return true end
                     elseif string.finds(str, { '相遇', '解', '故事', '高空' }) then
                         if zl_event_solve(2, "萨卡兹_战略帮助") then return true end
-                    elseif string.finds(x, { "萨米", "维", "女士" }) then
+                    elseif string.finds(str, { "萨米", "维", "女士" }) then
                         if zl_event_solve(1, "萨卡兹_战略帮助") then return true end
                     end
                 end
