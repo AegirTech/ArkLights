@@ -269,6 +269,7 @@
         appear("萨卡兹_出发前往2", 1)
         log("关卡刷新")
         ssleep(0.1)
+        --if not findOne("萨卡兹_出发前往紧急作战") and not findOne("萨卡兹_出发前往普通作战") then return end
         local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
 
         log("刷新按钮位置", po)
@@ -305,14 +306,26 @@
     end
     ssleep(0.15)
     关卡刷新()
+
+    -- 思绪过多,丢掉一个
+    if findOne("萨卡兹_思维负荷红") then
+        tap("萨卡兹_收起负荷干员")
+        appear("萨卡兹_等待负荷干员列表出现", 2)
+        tap("萨卡兹_第一个思绪")
+        appearTap("萨卡兹_思绪舍弃", 1)
+        ssleep(.5)
+        appearTap("萨卡兹_收起负荷干员", 1.5)
+        appear("萨卡兹_待编入负荷干员", 1)
+    end
     ssleep(0.3)
-    -- 用于退出关卡选择
     wait(function()
         tap({ scale(134), scale(504) })
         ssleep(0.1)
     end, 1)
     ssleep(1)
+
     -- 分支选择 返回每一列行数
+
     萨卡兹路线 = 萨卡兹_分支选择()
     log("路线选择", 萨卡兹路线)
     log('在选择节点界面')
