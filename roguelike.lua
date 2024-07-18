@@ -536,20 +536,8 @@
     --投币
 
     if not zl_skip_coin then zl_shop_coin() end
-    if zl_only_coin then
-        log('只是投币，准备退出')
-        findTap('战略退出')
-        appear('萨卡兹_放弃本次探索', 3)
-        return true
-    end
-    --购买商品
-    if not wait(function()
-            if findOne("诡意行商离开") then return true end
-            tap("开包skip")
-        end, 5) then
-        return
-    end
-    for i = 1, 10 do if not zl_shop_buy() then break end end
 
-    return goto_next_level()
+    log('只是投币，准备退出')
+    findTap('战略退出')
+    return zl_repos_path('萨卡兹_放弃本次探索')
 end

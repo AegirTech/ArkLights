@@ -767,25 +767,6 @@ end
     log(skz_map)
 
     local function find_best_route(routes)
-        -- local max_unexpected_encounters = -1
-        -- local best_route = nil
-        -- for _, route in ipairs(routes) do
-        --     local count = 0
-        --     local emergency = false
-        --     for _, segment in ipairs(route) do
-        --         if segment[2] == "紧急作战" then
-        --             emergency = true
-        --             break
-        --         elseif segment[2] == "不期而遇" then
-        --             count = count + 1
-        --         end
-        --     end
-        --     if not emergency and count > max_unexpected_encounters then
-        --         max_unexpected_encounters = count
-        --         best_route = route
-        --     end
-        -- end
-        -- return best_route
         local best_score = 50
         local best_route = nil
         for _, route in ipairs(routes) do
@@ -819,7 +800,8 @@ end
     local best_route = find_best_route(skz_map)
     if not best_route then
         log("没有满足条件的路线")
-        best_route = skz_map[1]
+        -- best_route = skz_map[1]
+        best_route = { { 1, 第一列[1] }, { 1, 第二列[1] }, { 1, 第三列[1] } }
     end
     log(best_route)
     best_route[1][3] = 2
