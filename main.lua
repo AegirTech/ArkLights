@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.18 03:23"
+release_date = "07.18 09:49"
 update_announcement = '最近更新：萨卡兹肉鸽'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -116,11 +116,9 @@ cloud.startHeartBeat()
 if debug_mode then
     log("debug_mode")
     ssleep(1)
-    local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
-
-    log("刷新按钮位置", po)
-
-    exit()
+    -- local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
+    -- log("刷新按钮位置", po)
+    -- exit()
     --initPngdata()
     -- 萨卡兹_分支选择()
     -- exit()

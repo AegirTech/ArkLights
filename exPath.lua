@@ -1270,6 +1270,16 @@ path.萨卡兹的无终奇语前瞻投资 = function()
             end, 30) then
             return false
         end
+
+        -- 检查是否点到思维界面
+        ssleep(0.5)
+        if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
+        if not wait(function()
+                if findOne("战略返回") then return true end
+                if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
+            end, 3) then
+        end
+
         goto fight_select
     end
 
