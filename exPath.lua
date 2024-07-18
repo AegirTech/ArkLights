@@ -706,9 +706,15 @@ end
                             if i == 1 and j == k and (j == 1 or 2) then
                                 table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
                             end
+                            if i == 2 and j == 3 and k == 3 then
+                                table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                            end
                         end
                         if 第二列分支_来源下 then
                             if i == 2 and j == k and (j == 2 or 3) then
+                                table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                            end
+                            if i == 1 and j == 1 and k == 1 then
                                 table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
                             end
                         end
@@ -786,7 +792,7 @@ end
             local score = 0
             for rx, segment in ipairs(route) do
                 if segment[2] == "紧急作战" then
-                    score = score + 6
+                    score = score + 8
                 elseif segment[2] == "不期而遇" then
                     if rx == 1 then
                         -- score = score + 1
@@ -795,6 +801,9 @@ end
                         score = score + 2
                     end
                 elseif segment[2] == "作战" then
+                    if rx == 1 then
+                        score = score + 1
+                    end
                     score = score + 3
                 end
             end
@@ -814,16 +823,8 @@ end
     end
     log(best_route)
     best_route[1][3] = 2
-    if 中间分支_来源 == 0 then
-        best_route[2][3] = 2
-    else
-        best_route[2][3] = 3
-    end
-    if 第三列分支 == 3 then
-        best_route[3][3] = 3
-    else
-        best_route[3][3] = 2
-    end
+    best_route[2][3] = 第二列分支_数目
+    best_route[3][3] = 第三列分支_数目
     return best_route
 end
 

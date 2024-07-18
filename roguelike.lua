@@ -412,9 +412,10 @@
     -- 第二列
     不期而遇关卡寻找 = function()
         log('不期而遇关卡寻找')
-        local po = find_color("萨卡兹_不期而遇关卡查找_列范围", "378892")
+        local po = find_color("萨卡兹_不期而遇关卡查找_列范围", "2D747E")
+        log("不期而遇关卡位置", po)
         if po then
-            iwait(function()
+            wait(function()
                 tap(po)
                 ssleep(0.1)
             end, 0.6)
