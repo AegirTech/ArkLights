@@ -116,11 +116,9 @@ cloud.startHeartBeat()
 if debug_mode then
     log("debug_mode")
     ssleep(1)
-    local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
-
-    log("刷新按钮位置", po)
-
-    exit()
+    -- local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
+    -- log("刷新按钮位置", po)
+    -- exit()
     --initPngdata()
     -- 萨卡兹_分支选择()
     -- exit()

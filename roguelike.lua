@@ -271,7 +271,9 @@
         ssleep(0.1)
         --if not findOne("萨卡兹_出发前往紧急作战") and not findOne("萨卡兹_出发前往普通作战") then return end
         local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
-
+        if not findOne("萨卡兹_出发前往紧急作战") and not findOne("萨卡兹_出发前往普通作战") then
+            return
+        end
         log("刷新按钮位置", po)
         if po then
             log("开始刷新")
@@ -402,8 +404,13 @@
     end
 
     不期而遇处理()
-    ssleep(0.1)
+    ssleep(0.5)
     if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
+    if not wait(function()
+            if findOne("战略返回") then return true end
+            if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
+        end, 3) then
+    end
 
     -- 第二列
     不期而遇关卡寻找 = function()
@@ -445,8 +452,15 @@
     ssleep(.5)
     appear("萨卡兹_不期而遇判断", 3)
     不期而遇处理()
-    ssleep(0.1)
+
+    ssleep(0.5)
     if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
+    if not wait(function()
+            if findOne("战略返回") then return true end
+            if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
+        end, 3) then
+    end
+
     -- 第三列
     sx = { scale(1761), scale(846) }
     oricol = getColor(sx[1], sx[2])
@@ -473,8 +487,15 @@
     ssleep(.5)
     appear("萨卡兹_不期而遇判断", 3)
     不期而遇处理()
-    ssleep(0.1)
+
+    ssleep(0.5)
     if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
+    if not wait(function()
+            if findOne("战略返回") then return true end
+            if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
+        end, 3) then
+    end
+
     -- 商店
     sx = { scale(1761), scale(846) }
     oricol = getColor(sx[1], sx[2])
