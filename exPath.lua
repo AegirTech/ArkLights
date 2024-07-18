@@ -549,19 +549,12 @@ path.沙中之火 = function()
 end
 
 萨卡兹_分支选择 = function()
-    中间分支_来源 = 0
-    if findOne("萨卡兹_第二列_中间分支_来源上") then
-        中间分支_来源 = 1
-    elseif findOne("萨卡兹_第二列_中间分支_来源下") then
-        中间分支_来源 = 2
-    end
-    log(中间分支_来源)
-    第一列 = {}
-    第二列 = {}
-    第三列 = {}
-    第一列选择 = 0
-    第二列选择 = 0
-    第三列选择 = 0
+    local 第一列 = {}
+    local 第二列 = {}
+    local 第三列 = {}
+    local 第一列选择 = 0
+    local 第二列选择 = 0
+    local 第三列选择 = 0
     -- 第一列关卡判断
     for i = 1, 2 do
         if findOne("萨卡兹_第一列_不期而遇_列表" .. i) then
@@ -570,40 +563,74 @@ end
             table.insert(第一列, "作战")
         end
     end
+    log("第1列")
     log(第一列)
-    -- 第二列关卡判断
 
-    if 中间分支_来源 == 0 then --2列
+    -- 第二列关卡判断
+    log("第2列")
+    local 第二列分支_数目 = 0
+    local 第二列分支_来源上 = false
+    local 第二列分支_来源下 = false
+    if findOne("萨卡兹_第二列_中间分支_来源上") then
+        第二列分支_来源上 = true
+    end
+    if findOne("萨卡兹_第二列_中间分支_来源下") then
+        第二列分支_来源下 = true
+    end
+    log(第二列分支_来源上, 第二列分支_来源下)
+    if (not 第二列分支_来源上) and (not 第二列分支_来源下) then --2列
+        第二列分支_数目 = 2
         for i = 1, 2 do
             if findOne("萨卡兹_第二列_不期而遇2_列表" .. i) then
                 table.insert(第二列, "不期而遇")
             else
-                table.insert(第二列, "作战")
+                local ox = find_color("萨卡兹_第二列_紧急作战2_查找列表" .. i, "DADADA")
+                if ox then
+                    table.insert(第二列, "紧急作战")
+                else
+                    table.insert(第二列, "作战")
+                end
             end
         end
     else
+        第二列分支_数目 = 3
         for i = 1, 3 do
             if findOne("萨卡兹_第二列_不期而遇3_列表" .. i) then
                 table.insert(第二列, "不期而遇")
             else
-                table.insert(第二列, "作战")
+                local ox = find_color("萨卡兹_第二列_紧急作战3_查找列表" .. i, "DADADA")
+                if ox then
+                    table.insert(第二列, "紧急作战")
+                else
+                    table.insert(第二列, "作战")
+                end
             end
         end
     end
+    log(第二列分支_数目)
     log(第二列)
 
     -- 第三列关卡判断
     -- 似乎没必要 第三列基本全是不期而遇
     -- 如果是三列 就默认全部是直线 不考虑分支（懒得写了）
     -- 如果是二三都为2列 也默认全部是直线
-    第三列分支 = 0
-    if findAny({ "萨卡兹_第三列_三条分支", "萨卡兹_第三列_三条分支2", "萨卡兹_第三列_三条分支_二列上" }) then
-        第三列分支 = 3
+    log("第3列")
+    local 第三列分支_数目 = 2
+    local po = find_color("萨卡兹_第三列_三条分支寻找范围", "FEFEFE")
+    if po then
+        第三列分支_数目 = 3
+    end
+    if 第三列分支_数目 == 3 then
         for i = 1, 3 do
             if findOne("萨卡兹_第三列_不期而遇3_列表" .. i) then
                 table.insert(第三列, "不期而遇")
             else
-                table.insert(第三列, "作战")
+                local ox = find_color("萨卡兹_第三列_紧急作战3_查找列表" .. i, "DADADA")
+                if ox then
+                    table.insert(第三列, "紧急作战")
+                else
+                    table.insert(第三列, "作战")
+                end
             end
         end
     else
@@ -611,72 +638,181 @@ end
             if findOne("萨卡兹_第三列_不期而遇2_列表" .. i) then
                 table.insert(第三列, "不期而遇")
             else
-                table.insert(第三列, "作战")
+                local ox = find_color("萨卡兹_第三列_紧急作战2_查找列表" .. i, "DADADA")
+                if ox then
+                    table.insert(第三列, "紧急作战")
+                else
+                    table.insert(第三列, "作战")
+                end
             end
         end
     end
+    log(第三列分支_数目)
     log(第三列)
+    local 第三列分支_32连接下 = false
+    local 第三列分支_32连接上 = false
+    if 第二列分支_数目 == 3 and 第三列分支_数目 == 2 then
+        local po = find_color("萨卡兹_第三列_32_中间分支连接下查找范围", "FEFEFE")
+        if po then
+            第三列分支_32连接下 = true --找到则是连接的第三条分支的第二个
+        end
+
+        local po = find_color("萨卡兹_第三列_32_中间分支连接上查找范围", "FEFEFE")
+        if po then
+            第三列分支_32连接上 = true --找到则是连接的第三条分支的第二个
+        end
+    end
+    log(第三列分支_32连接上, 第三列分支_32连接上)
+    local 第三列分支_23连接下 = false
+    local 第三列分支_23连接上 = false
+    if 第二列分支_数目 == 2 and 第三列分支_数目 == 3 then
+        local po = find_color("萨卡兹_第三列_23_中间分支连接下查找范围", "FEFEFE")
+        if po then
+            第三列分支_23连接下 = true --找到则是连接的第三条分支的第二个
+        end
+
+        local po = find_color("萨卡兹_第三列_23_中间分支连接上查找范围", "FEFEFE")
+        if po then
+            第三列分支_23连接上 = true --找到则是连接的第三条分支的第二个
+        end
+    end
+    log(第三列分支_23连接上, 第三列分支_23连接下)
 
     -- 生成路线图
-    skz_map = {}
-    log(中间分支_来源, 第三列分支)
+    local skz_map = {}
+    local function checkCondition(i, j, k, branch2, branch3)
+        if branch2 and branch3 then
+            return { { 1, 1, 1 }, { 1, 2, 2 }, { 2, 3, 2 } }
+        elseif branch2 and not branch3 then
+            return { { 1, 1, 1 }, { 1, 2, 2 }, { 1, 3, 2 } }
+        elseif not branch2 and branch3 then
+            return { { 1, 1, 1 }, { 1, 2, 1 }, { 1, 3, 2 } }
+        elseif not branch2 and not branch3 then
+            return { { 1, 1, 1 }, { 2, 2, 1 }, { 1, 3, 2 } }
+        end
+        return {}
+    end
+
     for i, v in ipairs(第一列) do
         for j, w in ipairs(第二列) do
-            local valid_first_second = (j == i and (中间分支_来源 == 0 or j == 1)) or (i == 中间分支_来源 and j == 2) or
-                (i == 2 and j == 3)
-
-            if not valid_first_second then
-                goto continue_second
-            end
-
             for k, x in ipairs(第三列) do
-                local valid_third = (第三列分支 == 3 and k == j and 中间分支_来源 ~= 0) or (中间分支_来源 == 0 and j == 1 and k == 1) or
-                    (中间分支_来源 == 0 and j == 2 and k == 3)
-                local found_二列上分支 = findOne("萨卡兹_第三列_三条分支_二列上") and j == 1
-                local found_上分支 = findOne("萨卡兹_第三列_下分支_连接上") and k == 2
-                local found_中分支 = findOne("萨卡兹_第三列_下分支_连接中") and k == 2 and (j == 2 or j == 3)
-                local 其他分支 = (j == 1 and k == 1) or (j == 3 and k == 2 and 中间分支_来源 ~= 0 and 第三列分支 == 0) or
-                    (j == 2 and k == 3 and 中间分支_来源 == 0 and 第三列分支 == 0)
-                if valid_third or found_上分支 or found_中分支 or found_二列上分支 or 其他分支 then
-                    log(valid_third, valid_third, found_上分支, found_中分支, found_二列上分支)
-                    log({ { i, v }, { j, w }, { k, x } })
-                    table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                if 第二列分支_数目 == 第三列分支_数目 then
+                    if 第二列分支_数目 == 2 then
+                        if i == j and j == k then
+                            table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                        end
+                    else
+                        if 第二列分支_来源上 then
+                            if i == 1 and j == k and (j == 1 or 2) then
+                                table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                            end
+                        end
+                        if 第二列分支_来源下 then
+                            if i == 2 and j == k and (j == 2 or 3) then
+                                table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                            end
+                        end
+                    end
+                else
+                    if 第二列分支_数目 == 2 and 第三列分支_数目 == 3 then
+                        local 条件组合 = {
+                            { 第三列分支_23连接下, { { 1, 1, 1 }, { 2, 2, 2 }, { 2, 2, 3 } } },
+                            { 第三列分支_23连接上, { { 1, 1, 1 }, { 1, 1, 2 }, { 2, 2, 3 } } }
+                        }
+                        -- 遍历每个条件组合并插入数据到 skz_map
+                        for _, 条件 in ipairs(条件组合) do
+                            local 第三列条件, 值组合 = table.unpack(条件)
+                            if 第三列条件 then
+                                for _, 值 in ipairs(值组合) do
+                                    local a, b, c = table.unpack(值)
+                                    if i == a and j == b and k == c then
+                                        table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                                    end
+                                end
+                            end
+                        end
+                    else
+                        -- 相反就是 第二列 3 第三列 2
+                        local 条件组合 = {
+                            { 第三列分支_32连接下, 第二列分支_来源上, { { 1, 1, 1 }, { 1, 2, 2 }, { 2, 3, 2 } } },
+                            { 第三列分支_32连接下, 第二列分支_来源下, { { 1, 1, 1 }, { 1, 2, 2 }, { 1, 3, 2 } } },
+                            { 第三列分支_32连接上, 第二列分支_来源上, { { 1, 1, 1 }, { 1, 2, 1 }, { 1, 3, 2 } } },
+                            { 第三列分支_32连接上, 第二列分支_来源下, { { 1, 1, 1 }, { 2, 2, 1 }, { 1, 3, 2 } } }
+                        }
+                        -- 遍历每个条件组合并插入数据到 skz_map
+                        for _, 条件 in ipairs(条件组合) do
+                            local 第三列条件, 第二列条件, 值组合 = table.unpack(条件)
+                            if 第三列条件 then
+                                if 第二列条件 then
+                                    for _, 值 in ipairs(值组合) do
+                                        local a, b, c = table.unpack(值)
+                                        if i == a and j == b and k == c then
+                                            table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
                 end
             end
-
-            ::continue_second::
         end
     end
     log(skz_map)
 
     local function find_best_route(routes)
-        local max_unexpected_encounters = -1
+        -- local max_unexpected_encounters = -1
+        -- local best_route = nil
+        -- for _, route in ipairs(routes) do
+        --     local count = 0
+        --     local emergency = false
+        --     for _, segment in ipairs(route) do
+        --         if segment[2] == "紧急作战" then
+        --             emergency = true
+        --             break
+        --         elseif segment[2] == "不期而遇" then
+        --             count = count + 1
+        --         end
+        --     end
+        --     if not emergency and count > max_unexpected_encounters then
+        --         max_unexpected_encounters = count
+        --         best_route = route
+        --     end
+        -- end
+        -- return best_route
+        local best_score = 50
         local best_route = nil
         for _, route in ipairs(routes) do
-            local count = 0
-            local emergency = false
+            local score = 0
             for _, segment in ipairs(route) do
                 if segment[2] == "紧急作战" then
-                    emergency = true
-                    break
+                    score = score + 6
                 elseif segment[2] == "不期而遇" then
-                    count = count + 1
+                    if segment[1] == 1 then
+                        -- score = score + 1
+                        -- 在第一列优先
+                    else
+                        score = score + 2
+                    end
+                elseif segment[2] == "作战" then
+                    score = score + 3
                 end
             end
-            if not emergency and count > max_unexpected_encounters then
-                max_unexpected_encounters = count
+            log(score, route)
+            if score < best_score then
+                best_score = score
                 best_route = route
             end
         end
+        log(best_score, route)
         return best_route
     end
     local best_route = find_best_route(skz_map)
-    if best_route then
-        log(best_route)
-    else
+    if not best_route then
         log("没有满足条件的路线")
         best_route = skz_map[1]
     end
+    log(best_route)
     best_route[1][3] = 2
     if 中间分支_来源 == 0 then
         best_route[2][3] = 2
