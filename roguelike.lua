@@ -269,11 +269,8 @@
         appear("萨卡兹_出发前往2", 1)
         log("关卡刷新")
         ssleep(0.1)
-        --if not findOne("萨卡兹_出发前往紧急作战") and not findOne("萨卡兹_出发前往普通作战") then return end
+        if findOne("萨卡兹_出发前往不期而遇") then return end
         local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
-        if not findOne("萨卡兹_出发前往紧急作战") and not findOne("萨卡兹_出发前往普通作战") then
-            return
-        end
         log("刷新按钮位置", po)
         if po then
             log("开始刷新")
@@ -286,7 +283,7 @@
             ssleep(0.1)
         end, 1.2)
         po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
-        log("刷新按钮位置", po)
+        log("刷新按钮位置", po,findAny({ "萨卡兹_出发前往紧急作战", "萨卡兹_出发前往普通作战" })
         if po and findAny({ "萨卡兹_出发前往紧急作战", "萨卡兹_出发前往普通作战" }) then
             log("开始刷新")
             tap(po)
