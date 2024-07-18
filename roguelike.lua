@@ -539,5 +539,5 @@
 
     log('只是投币，准备退出')
     findTap('战略退出')
-    return zl_repos_path('萨卡兹_放弃本次探索')
+    return
 end
