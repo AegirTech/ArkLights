@@ -439,7 +439,7 @@ raise.get_fight_plan = function(material_need)
         -- 存放当前材料的子材料 数据格式id:count
         local current_fight_materials_result = {}
         --递归计算当前材料所需的子材料,收集到current_fight_materials_result
-        calc_fight_materials(id, count, 2, current_fight_materials_result, final_synthesis_materials_result)
+        calc_fight_materials(id, count, 1, current_fight_materials_result, final_synthesis_materials_result)
 
         -- 将每个顶级材料解析出来的2级或3级材料统一收集,避免精英化或专精时多个4级材料依赖同一个2或3级材料的情况
         -- 避免同一个材料生成两条作战配置
@@ -461,7 +461,7 @@ end
 --  final_synthesis_materials_result
 ---@param item_id string 材料id
 ---@param need_count number 需要的数量
----@param minLevel number (默认蓝色等级)的材料,仅支持刷图获取,不支持合成
+---@param minLevel number (暂时默认绿色等级)材料,仅支持刷图获取,不支持合成
 ---@param fight_materials_result table
 ---@param final_synthesis_materials_result table 合成路线计划集合
 calc_fight_materials = function(item_id, need_count, minLevel, fight_materials_result, final_synthesis_materials_result)
