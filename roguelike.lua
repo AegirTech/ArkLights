@@ -534,10 +534,47 @@
     --check_goods()
 
     --投币
-
     if not zl_skip_coin then zl_shop_coin() end
+
+    -- 取钱
+    if zl_get_coin then zl_shop_get_coin() end
 
     log('只是投币，准备退出')
     findTap('战略退出')
     return
+end
+
+zl_shop_get_coin = function()
+    if not wait(function()
+            tap({ scale(244), scale(536) })
+        end, 2) then
+    end
+    log('诡意行商取钱开始')
+    if not appear("诡意行商投资", 1) then return true end
+    if not wait(function()
+            if findOne("诡意行商余额提取") then return true end
+            tap("诡意行商投资")
+        end) then
+        return
+    end
+    if not wait(function()
+            if findOne("诡意行商余额提取页面") then return true end
+            tap("诡意行商余额提取")
+        end) then
+        return
+    end
+
+    wait(function(reset_wait_start_time)
+        -- 不能投情况
+        if not findOne("诡意行商余额提取页面") then
+            tap("诡意行商余额提取")
+            appear("诡意行商余额提取页面")
+        end
+        if findOne("正在提交反馈至神经") then
+            reset_wait_start_time()
+        end
+        tap("诡意行商余额提取")
+        appear("诡意行商余额提取页面")
+        tap("诡意行商确认提取")
+    end, 10)
 end

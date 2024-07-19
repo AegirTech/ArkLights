@@ -3489,6 +3489,9 @@ show_extra_ui = function()
     ui.addEditText(layout, "zl_blueprint_position", [[2]])
 
     newRow(layout)
+    ui.addCheckBox(layout, "zl_get_coin", "测试功能", false)
+
+    newRow(layout)
     addTextView(layout, [[需求商品]])
     ui.addEditText(layout, "zl_need_goods", [[]])
     addTextView(layout, [[等级]])
