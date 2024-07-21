@@ -973,7 +973,12 @@ path.fallback = {
     获得物资 = function() tap("返回") end,
     战略返回 = function()
         tap("战略返回")
-        appear("常规行动", 2)
+        appear({ "常规行动" }, 2)
+    end,
+    战略返回其他肉鸽 = function()
+        tap("战略返回")
+        --其他很多地方用到上面的战略返回，怕改有点问题，所以额外加一个
+        appear({ '萨卡兹_常规行动' }, 2)
     end,
     断罪返回 = function()
         tap("断罪返回")

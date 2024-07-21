@@ -3448,14 +3448,14 @@ show_extra_ui = function()
     addTextView(layout, "===========肉鸽相关===========")
 
     newRow(layout)
-    addButton(layout, nil, "傀影",
+    addButton(layout, nil, "傀影与猩红孤钻",
         make_jump_ui_command(layout, nil,
             "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
     -- addButton(layout, nil, "水月(仅720p)",
     --     make_jump_ui_command(layout, nil,
     --         "extra_mode='水月与深蓝之树';lock:remove(main_ui_lock)"))
     -- newRow(layout)
-    addButton(layout, nil, "萨卡兹(测试)",
+    addButton(layout, nil, "萨卡兹的无终奇语",
         make_jump_ui_command(layout, nil,
             "extra_mode='萨卡兹的无终奇语';lock:remove(main_ui_lock)"))
 

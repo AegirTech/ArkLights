@@ -25,7 +25,7 @@
 
     --判断是否在其他界面
     local jumpout
-    if findOne("战略返回") then path.fallback.战略返回() end
+    if findOne("战略返回") then path.fallback.战略返回其他肉鸽() end
     if findOne("暂停中") and findOne("生命值") then restartapp(appid) end
 
     -- 先导航到常规行动
