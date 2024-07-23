@@ -3365,3 +3365,54 @@ zl_fight_name_ocr = function(rogueType)
 
     return true
 end
+
+
+zl_不期而遇处理_萨卡兹 = function()
+    log('处理不期而遇事件')
+    if not wait(function()
+            local function x()
+                local incident
+                local t = time()
+                if not wait(function()
+                        incident = ocr("萨卡兹_不期而遇事件名字检测")
+                        if time() - t > 1000 then
+                            t = time()
+                            log(366)
+                            if not findOne('萨米_希望源石锭界面') then tap("萨卡兹_不期而遇确认点击") end
+                        end
+                        return incident[1] or findOne("萨卡兹_战略帮助")
+                    end, 8) then
+                    return false
+                end
+                if not incident[1] then return false end
+                local str = incident[1].text
+                log('事件名字：', str)
+                if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
+                if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
+                if string.finds(str, { "虫" }) then
+                    return zl_event_solve(3, "萨卡兹_战略帮助")
+                elseif string.finds(str, { '相遇', '解', '故事', '高空', '不散' }) then
+                    return zl_event_solve(2, "萨卡兹_战略帮助")
+                elseif string.finds(str, { "萨米", "维", "女士" }) then
+                    return zl_event_solve(1, "萨卡兹_战略帮助")
+                end
+            end
+            return x() or findOne("萨卡兹_战略帮助")
+        end, 30) then
+        return false
+
+        --用1处理的事件
+        --'高空坠物', '驮兽旅行家', '竣工仪式'
+
+        --用2处理的事件
+        --         '在故事', '不请自来', '巴别塔雇员', '魂灵', '热门景点',
+        -- '未来猎手', '绝境', '相遇', '阴魂', '卫国前夜', '价高者得',
+        -- '解惑', '前瞻', '深坑', '变换',
+        -- '敬虔之人', '好心的女士', '疤痕国际', '沉默拳王',
+        -- '离去者的庭院', '温暖余韵',
+
+        --用3处理的事件
+        --'造物', '刀口舔血', '淡然面对', '修正时代', '虫卡', '聚思成塔', '失落财宝', '解读变迁'
+    end
+    return true
+end

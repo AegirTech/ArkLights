@@ -381,41 +381,7 @@
             return restartapp(appid)
         end
 
-        log('处理不期而遇事件')
-        if not wait(function()
-                local x = function()
-                    local incident
-                    local t = time()
-                    if not wait(function()
-                            incident = ocr("萨卡兹_不期而遇事件名字检测")
-                            if time() - t > 1000 then --不期而遇事件，偶尔下面的 '√' 会一直存在，间隔点击一次
-                                t = time()
-                                log(366)
-                                if not findOne('萨米_希望源石锭界面') then tap("萨卡兹_不期而遇确认点击") end
-                            end
-                            if incident[1] then return true end
-                            if findOne("萨卡兹_战略帮助") then return true end
-                        end, 8) then
-                        return false
-                    end
-                    if not incident[1] then return false end
-                    local str = incident[1].text
-                    log('事件名字：', str)
-                    if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
-                    if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
-                    if string.finds(str, { "虫" }) then
-                        if zl_event_solve(3, "萨卡兹_战略帮助") then return true end
-                    elseif string.finds(str, { '相遇', '解', '故事', '高空', '不散' }) then
-                        if zl_event_solve(2, "萨卡兹_战略帮助") then return true end
-                    elseif string.finds(str, { "萨米", "维", "女士" }) then
-                        if zl_event_solve(1, "萨卡兹_战略帮助") then return true end
-                    end
-                end
-                if x() then return true end
-                if findOne("萨卡兹_战略帮助") then return true end
-            end, 30) then
-            return false
-        end
+        if not zl_不期而遇处理_萨卡兹() then return false end
     end
 
     不期而遇处理()
