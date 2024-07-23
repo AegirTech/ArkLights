@@ -2724,20 +2724,20 @@ zl_navigation = function(常规行动, 需要点击的肉鸽)
     path.跳转("首页")
 
     tap("面板作战")
-    if not appear("主页") then return end
+    if not appear("主页") then return false end
 
     if not wait(function()
             if findOne("主题曲界面") then return true end
             tap("主题曲")
         end, 5) then
-        return
+        return false
     end
 
     if not wait(function()
             if findOne("在长期探索") then return true end
             tap("集成战略")
         end, 5) then
-        return
+        return false
     end
 
     if not wait(function()

@@ -6669,52 +6669,7 @@ path.前瞻投资 = function(lighter)
     if findOne("暂停中") and findOne("生命值") then restartapp(appid) end
 
     -- 先导航到常规行动
-    if not findOne("常规行动") then
-        path.跳转("首页")
-
-        tap("面板作战")
-        if not appear("主页") then return end
-
-        if not wait(function()
-                if findOne("主题曲界面") then return true end
-                tap("主题曲")
-            end, 5) then
-            return
-        end
-
-        if not wait(function()
-                if findOne("集成战略_查看全部主题") then
-                    tap("集成战略_查看全部主题")
-                    return true
-                end
-                tap("集成战略")
-            end, 5) then
-            return
-        end
-
-        --滑动到最左边
-
-        if not wait(function()
-                if findOne("常规行动") then return true end
-                if findOne("傀影与猩红孤钻") then
-                    tap("傀影与猩红孤钻")
-                else
-                    gesture({
-                        {
-                            point = { { screen.width * 0.1,   scale(800) },
-                                { screen.width * 0.9,             scale(800) },
-                                { screen.width * 0.9 - scale(10), scale(800) },
-                                { screen.width * 0.9 + scale(10), scale(800) } },
-                            start = 0,
-                            duration = 300,
-                        },
-                    })
-                    ssleep(1)
-                end
-            end, 5) then
-            return
-        end
-    end
+    if not zl_navigation('常规行动', '傀影与猩红孤钻') then return end
 
     if zl_level_enough then
         if zl_no_waste then
@@ -6725,7 +6680,7 @@ path.前瞻投资 = function(lighter)
         end
         傀影肉鸽完成 = true
         return
-        -- stop("肉鸽结束", '', false, true)
+        --stop("肉鸽结束", '', false, true)
     end
 
     if zl_coin_enough then
@@ -7933,6 +7888,7 @@ path.肉鸽任务 = function()
         zl_need_goods = zl_need_goods_ky
         zl_max_level = zl_max_level_ky
         zl_max_coin = zl_max_coin_ky
+        if zl_max_level_ky == 'max' then zl_max_level = '155' end --填max的时候，默认为155级
         while true do
             if 傀影肉鸽完成 then
                 break
@@ -7964,7 +7920,7 @@ path.肉鸽任务 = function()
             path.萨卡兹的无终奇语前瞻投资()
         end
     end
-    stop("肉鸽结束", '', false, true)
+    stop("肉鸽结束", '', true, true) --打不完不关闭游戏，有时候需要再检测一下的
 end
 
 path.公开招募加急 = function()

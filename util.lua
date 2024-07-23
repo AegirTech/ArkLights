@@ -3465,6 +3465,12 @@ show_extra_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "zl_no_waste", "每8小时日常", false)
+    addButton(layout, nil, "肉鸽任务开始",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='肉鸽任务';lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addTextView(layout, "需要刷哪个肉鸽，去勾选启用，然后点击上面的【肉鸽任务开始】")
+    newRow(layout)
 
     newRow(layout)
     ui.addTabView(layout, "extra_tab")
@@ -3478,24 +3484,24 @@ show_extra_ui = function()
     --         "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
 
     newRow(rouge_layout_傀影)
-    ui.addCheckBox(rouge_layout_傀影, "zl_more_repertoire", "多点剧目", false)
-    ui.addCheckBox(rouge_layout_傀影, "zl_more_experience", "多点蜡烛", false)
-    ui.addCheckBox(rouge_layout_傀影, "zl_skip_hard", "不打驯兽", false)
+    ui.addCheckBox(rouge_layout_傀影, "zl_more_repertoire", "多点剧目", true)
+    ui.addCheckBox(rouge_layout_傀影, "zl_more_experience", "多点蜡烛", true)
+    ui.addCheckBox(rouge_layout_傀影, "zl_skip_hard", "不打驯兽", true)
 
     newRow(rouge_layout_傀影)
-    ui.addCheckBox(rouge_layout_傀影, "zl_accept_mg", "可打敏感", false)
-    ui.addCheckBox(rouge_layout_傀影, "zl_accept_yx", "可打臆想", false)
-    ui.addCheckBox(rouge_layout_傀影, "zl_accept_sc", "可打生存", false)
+    ui.addCheckBox(rouge_layout_傀影, "zl_accept_mg", "可打敏感", true)
+    ui.addCheckBox(rouge_layout_傀影, "zl_accept_yx", "可打臆想", true)
+    ui.addCheckBox(rouge_layout_傀影, "zl_accept_sc", "可打生存", true)
 
     newRow(rouge_layout_傀影)
-    ui.addCheckBox(rouge_layout_傀影, "zl_skip_coin_ky", "跳过投币", false)
+    ui.addCheckBox(rouge_layout_傀影, "zl_skip_coin_ky", "跳过投币", true)
     ui.addCheckBox(rouge_layout_傀影, "zl_only_coin_ky", "只是投币", false)
 
     newRow(rouge_layout_傀影)
     addTextView(rouge_layout_傀影, [[需求商品]])
     ui.addEditText(rouge_layout_傀影, "zl_need_goods_ky", [[]])
     addTextView(rouge_layout_傀影, [[等级]])
-    ui.addEditText(rouge_layout_傀影, "zl_max_level_ky", [[]])
+    ui.addEditText(rouge_layout_傀影, "zl_max_level_ky", [[max]])
     addTextView(rouge_layout_傀影, [[源石锭]])
     ui.addEditText(rouge_layout_傀影, "zl_max_coin_ky", [[]])
 
@@ -3508,7 +3514,7 @@ show_extra_ui = function()
     ui.addTab("extra_tab", rouge_layout_萨米, "萨米")
     newRow(rouge_layout_萨米)
     ui.addCheckBox(rouge_layout_萨米, "zl_sami", "启用探索者的银淞止境", false)
-    addTextView(rouge_layout_萨米, "开发中")
+    addTextView(rouge_layout_萨米, "| 已经勉强可以刷，线路优化未做")
 
     newRow(rouge_layout_萨米)
     addTextView(rouge_layout_萨米, [[需求商品]])
@@ -3541,10 +3547,7 @@ show_extra_ui = function()
     addTextView(rouge_layout_萨卡兹, [[源石锭]])
     ui.addEditText(rouge_layout_萨卡兹, "zl_max_coin_skz", [[]])
 
-    newRow(layout)
-    addButton(layout, nil, "肉鸽任务开始",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='肉鸽任务';lock:remove(main_ui_lock)"))
+
 
     -- newRow(layout)
     -- addTextView(layout, "===========肉鸽相关===========")
