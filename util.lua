@@ -3455,6 +3455,11 @@ show_extra_ui = function()
     --     make_jump_ui_command(layout, nil,
     --         "extra_mode='水月与深蓝之树';lock:remove(main_ui_lock)"))
     -- newRow(layout)
+
+    addButton(layout, nil, "探索者的银淞止境(开发中)",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='探索者的银淞止境';lock:remove(main_ui_lock)"))
+    newRow(layout)
     addButton(layout, nil, "萨卡兹的无终奇语",
         make_jump_ui_command(layout, nil,
             "extra_mode='萨卡兹的无终奇语';lock:remove(main_ui_lock)"))

@@ -2245,7 +2245,12 @@ hidden_front_navigation = function()
 end
 
 --肉鸽借助战
-zl_help_fight = function(reflashNum, 初始招募界面)
+--reflashNum重新定位初始，初始给0
+--初始招募界面 例如'放弃本次探索' '萨米_放弃本次探索'
+--肉鸽类型  例如  '萨卡兹'  '萨米'  '水月'
+zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型)
+    local 招募界面 = 初始招募界面 or '放弃本次探索'
+    local 肉鸽类型 = 肉鸽类型 or '默认'
     reflashNum = reflashNum or 0
     single_man_operation = true
     if reflashNum > 8 then
@@ -2272,15 +2277,27 @@ zl_help_fight = function(reflashNum, 初始招募界面)
         return a
     end, {})
 
-    local order = {
-        { "百炼嘉维尔", 99, 2 },
-        { "圣约送葬人", 99, 2 },
-        { "煌", 99, 1 }, --辅助，医疗这些都得开技能，也能不开
-        { "耀骑士临光", 99, 1 },
-        { "乌尔比安", 99, 1 },
-        -- { "羽毛笔", 99, 2 },
-        --{ "海沫", 99, 2 },
-    }
+    --不同肉鸽试用的助战组不一样  感觉萨米和水月可以用一套的
+
+    log('肉鸽类型: ', 肉鸽类型)
+    if 肉鸽类型 == '萨米' or 肉鸽类型 == '水月' then
+        order = {
+            { "百炼嘉维尔", 99, 2 },
+            { "圣约送葬人", 99, 2 },
+            { "乌尔比安", 99, 1 },
+            { "羽毛笔", 99, 2 },
+            { "海沫", 99, 2 },
+        }
+    else
+        order = {
+            { "百炼嘉维尔", 99, 2 },
+            { "圣约送葬人", 99, 2 },
+            { "煌", 99, 1 }, --辅助，医疗这些都得开技能，也能不开
+            { "耀骑士临光", 99, 1 },
+            { "乌尔比安", 99, 1 },
+        }
+    end
+
     local best = table.findv(order, function(x) return name2point[x[1]] end)
     if not best then
         log("助战找不到所需干员，准备刷新", reflashNum)
@@ -2288,7 +2305,7 @@ zl_help_fight = function(reflashNum, 初始招募界面)
         tap("肉鸽刷新助战蓝")
         reflashNum = reflashNum + 1
         ssleep(2) --偶尔有机子卡死，给多一点延迟，稳！
-        return zl_help_fight(reflashNum)
+        return zl_help_fight(reflashNum, 招募界面, 肉鸽类型)
     end
     -- log("best", best)
     -- if not best then return point.战略助战干员列表1, 0, 1 end
@@ -2296,6 +2313,7 @@ zl_help_fight = function(reflashNum, 初始招募界面)
     p = { p.l, p.t }
     tap(p)
     disappear("战略助战界面", 5)
+    toast('再次判断助战干员')
     --再判断一次是否符号招募要求
     local target_operator = { '羽毛', '送葬', '圣', '嘉维尔', '海沫', '煌', '骑士', '临光', '比安' }
     if not wait(function()
@@ -2315,11 +2333,11 @@ zl_help_fight = function(reflashNum, 初始招募界面)
         reflashNum = reflashNum + 1
         tap({ 141, 54 })
         ssleep(2) --偶尔有机子卡死，给多一点延迟，稳！
-        return zl_help_fight(reflashNum)
+        return zl_help_fight(reflashNum, 招募界面, 肉鸽类型)
     end
     reflashNum = 0
     --默认为单人助战，如果是以下干员则再去招募个医疗
-    if best[1] == "百炼嘉维尔" then
+    if best[1] == "百炼嘉维尔" or best[1] == '乌尔比安' then
         single_man_operation = false
     end
     zl_skill_times = best[2]
@@ -2335,12 +2353,17 @@ zl_help_fight = function(reflashNum, 初始招募界面)
 end
 
 --肉鸽挑选节点，改关卡类型和坐标位置，可以适应其他肉鸽
-function zl_selection_node(select_number)
+function zl_selection_node_skz(select_number, rogueType)
+    local rogueType = rogueType or '萨卡兹'
     local select_number = select_number or 0
     local paths = { -1, -1, -1, -1, -1 }
     --紧急 普通 普通2 不期  商店 ，越在后面优先级越高
     --有时候普通战斗关卡有两种颜色好像（  都放进来好了
-    local 关卡类型 = { "822E2E", "7268A9", "5B528D", "2E757F", "115340" }
+    if rogueType == '萨卡兹' then
+        关卡类型 = { "822E2E", "7268A9", "5B528D", "2E757F", "115340" }
+    elseif rogueType == '萨米' then
+        关卡类型 = { "994649", "7268A9", "468C9A", "4890A2", "2B6D5B" }
+    end
     --local 萨米关卡类型 = { "943E40", "7268A9", "468C9A", "4890A2", "246757" }
     if select_number > 3 then
         log('校准线路次数超过3次，放弃本次探索重新来')
@@ -2356,18 +2379,19 @@ function zl_selection_node(select_number)
 
             -- 遍历关卡类型
             for i = 1, #关卡类型 do
-                local xx = point['萨卡兹_关卡节点坐标列表' .. i]
+                local xx = point[rogueType .. '_关卡节点坐标列表' .. i]
                 local path_pos = xx[1] .. "|" .. xx[2]
                 for j = 1, #关卡类型 do
                     local path_pos_color = path_pos .. "|" .. 关卡类型[j]
                     --print(path_pos_color)
                     local res = cmpColorEx(path_pos_color, 0.9)
                     if res == 1 then
+                        print(path_pos_color)
                         paths[i] = j
                     end
                 end
             end
-
+            --print(paths)
             --找到的话就退出，判断和是不是大于0，如果没有找到则是{0,0,0,0,0}
             --找到的话，至少会是1
             local paths_sum = 0
@@ -2378,10 +2402,10 @@ function zl_selection_node(select_number)
                     return true
                 end
             end
-        end, 3) then
+        end, 3, .05) then
         log('找不到节点，重新校准路线')
-        if not zl_repos_path('萨卡兹_放弃本次探索') then return end
-        return zl_selection_node(select_number + 1)
+        if not zl_repos_path(rogueType .. '_放弃本次探索') then return end
+        return zl_selection_node(select_number + 1, rogueType)
     end
 
 
@@ -2409,7 +2433,7 @@ function zl_selection_node(select_number)
 end
 
 --萨卡兹肉鸽战斗后拾取战利品
-skz_after_fight = function()
+zl_fight_after_skz = function()
     local drop_page = false
     if not wait(function()
             if not drop_page then tap("战略确认") end
@@ -2486,6 +2510,85 @@ skz_after_fight = function()
     return true
 end
 
+--萨米肉鸽战斗后拾取战利品
+zl_fight_after_sami = function()
+    local drop_page = false
+    if not wait(function()
+            if not drop_page then tap("战略确认") end
+            if findOne("萨米_战略帮助") then drop_page = true end
+            local x = appear({
+                "萨米_目标生命拾取", "萨米_收藏品拾取", "萨米_招募券拾取",
+                "萨米_源石锭拾取", '萨米_道具收下',
+                '萨米_密文版拾取', "萨米_密文版选择左", "萨米_已领取所有奖励"
+            })
+            log(2555, x)
+            tap(x)
+            if x == '萨米_密文版拾取' then
+                -- wait(function()
+                --     if tap("萨米_已领取所有奖励") then return true end
+                --     tap("萨米_密文版选择左")
+                -- end, 5)
+                appear('萨米_密文版选择左', 1)
+                findTap('萨米_密文版选择左')
+            end
+
+            -- 误触到招募券处理
+            if findOne("确认招募") then
+                -- 放弃招募
+                if zl_only_coin then
+                    if not wait(function()
+                            if not findOne("确认招募") then return true end
+                            tap("放弃招募")
+                        end, 5) then
+                        return
+                    end
+
+                    if not wait(function()
+                            if findOne("编队") then return true end
+                            tap("右右确认")
+                        end, 5) then
+                        return
+                    end
+                else
+                    -- 招募
+                    if findOne("确认招募") then
+                        local start_time = time()
+                        if not wait(function()
+                                if findOne("编队") then return true end
+                                if findOne("返回确认界面") then
+                                    if time() - start_time < 2000 then
+                                        tap("左取消")
+                                    else
+                                        tap("右确认")
+                                    end
+                                    disappear("返回确认界面")
+                                    ssleep(.5)
+                                end
+                                tap("近卫招募列表" .. 1)
+                                findTap("确认招募")
+                                tap("开包skip")
+                            end, 10) then
+                            return
+                        end
+                    end
+                end
+            end
+
+            if not findOne("战略返回") then
+                if not appear({ "战略返回", "萨米_战略帮助" }) then
+                    tap("战略确认")
+                end
+            end
+            if findAny({ "萨米_常规行动", "萨米_战略帮助" }) and not findOne("确认招募") then
+                return true
+            end
+        end, 20) then
+        return false
+    end
+    return true
+end
+
+
 --不期而遇事件处理
 zl_event_solve = function(xx, 战略帮助)
     --local 事件处理 = function(xx)
@@ -2513,7 +2616,7 @@ string.finds = function(x, targetStr)
     return false
 end
 
--- 集成战略干员摆放
+-- 集成战略干员摆放 摆放三个人， 写的有点乱 可以优化
 zl_deploy = function(deploy_table)
     for i = 1, 3 do
         if not wait(function()
@@ -2542,6 +2645,39 @@ zl_deploy = function(deploy_table)
                 if not appear("干员部署_2蓝", 8) then return true end
             elseif i == 3 then
                 if not appear("干员部署_蓝", 5) then return true end
+            end
+        end, 20)
+    end
+end
+
+-- 集成战略干员摆放 摆放两个人的
+zl_deploy2 = function(deploy_table)
+    local number = 2
+    if single_man_operation then number = 1 end
+    for i = 1, number do
+        if not wait(function()
+                if findOne("干员费用够列表1") then return true end
+                if not findOne("生命值") then
+                    log("没找到生命值，继续等待")
+                end
+            end, 30) then
+            return false
+        end
+        wait(function()
+            tap("干员费用够列表1")
+            disappear("干员费用够列表1", 0.5)
+            local deploy_point = { scale(deploy_table[i][1]), scale(deploy_table[i][2]), deploy_table[i][3] }
+            nDeploy3(1, deploy_point, 4 - i)
+
+            wait(function()
+                if findOne("生命值") then return true end
+                tap("开始行动1")
+            end)
+
+            if i == 1 then
+                if disappear("干员部署_黄", 4) then return true end
+            elseif i == 2 then
+                if disappear("干员部署_2蓝", 2) then return true end
             end
         end, 20)
     end
@@ -2732,6 +2868,7 @@ zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检�
 
 
     local zl_coin = zl_number_check(源石锭检测范围) or -1
+    if zl_coin == 999 then zl_skip_coin = true end --源石锭999的话跳过投币，避免浪费时间
     toast('源石锭:' .. zl_coin)
     if not zl_coin_enough and zl_coin >= str2int(zl_max_coin, 10000) then
         zl_coin_enough = true
@@ -2916,33 +3053,312 @@ zl_shop_coin = function()
     end, 6)
 end
 
-skz_fight_name = function()
-    local fight1ocr = {}
-    if not wait(function()
-            fight1ocr = ocr("萨卡兹_作战检测范围")
-            if #fight1ocr > 1 then
-                log("4880", 4880, fight1ocr)
-                local fight1 = fight1ocr[2]
-                -- 只支持三种作战
-                if fight1.text:includes({ "坏", "邻", "居" }) then
-                    fight1.text = "坏邻居"
-                elseif fight1.text:includes({ "安", "全", "检", '熔', '炉' }) then --这个的范围偏上 偶尔找不到
-                    fight1.text = "安全检查"
-                elseif fight1.text:includes({ "夺", "路", "逃" }) then
-                    fight1.text = "夺路而逃"
-                elseif fight1.text:includes({ "公", "害" }) then
-                    fight1.text = "公害"
-                else
-                    log("不知道什么作战：" .. fight1.text)
+--肉鸽等级满了，放弃行动后回到首页再截个图
+zl_level_coin_enough = function()
+    if zl_level_enough or zl_coin_enough then
+        captureqqimagedeliver("INFO", "肉鸽行动结束",
+            table.join(qqmessage, ' ') .. " 放弃行动后")
+
+        wait(function(reset_wait_start_time)
+            if not disappear("常规行动") then return true end
+            if findOne("正在提交反馈至神经") then
+                reset_wait_start_time()
+            end
+            tap("战略确认")
+        end, 5)
+        return
+    end
+end
+
+--肉鸽初始放弃探索
+zl_abandon_explore = function(type)
+    local rogue_tpye = type or ''
+    -- 放弃探索
+    if findOne(rogue_tpye .. "_放弃本次探索") then
+        if not wait(function()
+                if findOne("返回确认界面") then return true end
+                tap(rogue_tpye .. "_放弃本次探索")
+            end, 5) then
+            log(2608)
+            -- 无法直接放弃的情况 不处理
+            if not wait(function()
+                    if not findOne(rogue_tpye .. "_常规行动") then return true end
+                    tap(rogue_tpye .. "_继续探索")
+                    ssleep(.5)
+                    log(2613)
+                end, 5) then
+                return
+            end
+
+            if not wait(function()
+                    if findOne(rogue_tpye .. "_常规行动") then return true end
+                    -- 第一次数据更新处理
+                    if findAny({
+                            "面板", "活动公告返回", "签到返回", "签到返回黄",
+                            "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                        }) then
+                        jumpout = true
+                        return true
+                    end
+                    tap("战略确认")
+                end, 5) then
+                return
+            end
+            if jumpout then return end
+        end
+        if not wait(function(reset_wait_start_time)
+                if findOne("正在提交反馈至神经") then
+                    reset_wait_start_time()
+                end
+                if findOne("返回确认界面") then
+                    tap("右右确认")
                     return
                 end
-                now_fight_name = fight1.text
+                tap("战略确认")
+                if findOne(rogue_tpye .. "_常规行动") and not findOne(rogue_tpye .. "_放弃探索") then
+                    return true
+                end
+                -- 第一次数据更新处理
+                if findAny({
+                        "面板", "活动公告返回", "签到返回", "签到返回黄",
+                        "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                    }) then
+                    jumpout = true
+                    return true
+                end
+            end, 30) then
+            return false
+        end
+    end
+    return true
+end
+
+zl_招募近卫 = function(type)
+    local rogue_tpye = type or ''
+    log('招募近卫')
+    if not wait(function()
+            tap(rogue_tpye .. '_' .. "近卫招募券")
+            tap("招募说明关闭")
+            if not findOne(rogue_tpye .. '_' .. "初始招募") and findOne("确认招募") then
                 return true
             end
-        end, 5) then
-        findTap('战略退出')
-        --stop("不知道第一个作战是什么", 'cur')
+        end, 10) then
         return false
     end
+
+    if not wait(function()
+            if findAny({ rogue_tpye .. '_' .. "初始招募", "战略返回" }) then
+                log(26)
+                return true
+            end
+            if findOne("返回确认界面") then
+                log(27)
+                -- 虽然不知道会不会走这儿
+                tap("左取消")
+                disappear("返回确认界面")
+                -- 不等会怎么样呢，有时会闪
+                ssleep(.5)
+            end
+            log(28, zl_best_operator)
+            local idx = str2int(zl_best_operator, -1)
+
+            if idx >= 1 and idx <= 12 then
+                -- 指定
+                tap("近卫招募列表" .. (zl_best_operator or 1))
+                findTap("确认招募")
+                tap("开包skip")
+            elseif idx == -1 then
+                -- 助战自动
+                zl_help_fight(0, rogue_tpye .. '_' .. '初始招募', rogue_tpye)
+            else
+                stop("请设置近卫干员序号(1~12)", '', true, false)
+            end
+        end, 120) then
+        return false
+    end
+    return true
+end
+
+zl_招募医疗 = function(type)
+    local rogue_tpye = type or ''
+    if not single_man_operation then
+        log("招募医疗")
+        if not wait(function()
+                if findOne("确认招募") then return true end
+                if findOne("剿灭说明") then tap("剿灭说明") end
+                tap(rogue_tpye .. '_' .. "医疗招募券")
+                tap("招募说明关闭")
+            end, 10) then
+            return false
+        end
+        appear('战略助战')
+        if not wait(function()
+                if findAny({ rogue_tpye .. '_' .. "初始招募", "战略返回" }) then
+                    log(26)
+                    return true
+                end
+                if findOne("返回确认界面") then
+                    log(27)
+                    -- 虽然不知道会不会走这儿
+                    tap("左取消")
+                    disappear("返回确认界面")
+                    -- 不等会怎么样呢，有时会闪
+                    ssleep(.5)
+                end
+                tap("近卫招募列表" .. 1)
+                findTap("确认招募")
+                tap("开包skip")
+            end, 120) then
+            return false
+        end
+    else
+        log("不招募医疗")
+        if not wait(function()
+                if findOne("确认招募") then return true end
+                if findOne("剿灭说明") then tap("剿灭说明") end
+                tap(rogue_tpye .. '_' .. "医疗招募券")
+                tap("招募说明关闭")
+            end, 10) then
+            return false
+        end
+
+        if not wait(function()
+                tap("放弃招募")
+                if findOne("剿灭说明") then tap("剿灭说明") end
+                if not findOne("确认招募") then return true end
+            end, 10) then
+            return false
+        end
+
+        if not wait(function()
+                tap("右右确认")
+                if findOne("剿灭说明") then tap("剿灭说明") end
+                if findOne(rogue_tpye .. '_' .. "初始招募") then return true end
+            end, 10) then
+            return false
+        end
+    end
+    return true
+end
+
+zl_放弃招募辅助 = function(type)
+    local rogue_tpye = type or ''
+    -- 第二人，这里三步带了 剿灭说明 处理
+    if not wait(function()
+            if findOne("确认招募") then return true end
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            tap(rogue_tpye .. '_' .. "辅助招募券")
+            tap("招募说明关闭")
+        end, 10) then
+        return false
+    end
+
+    if not wait(function()
+            tap("放弃招募")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if not findOne("确认招募") then return true end
+        end, 10) then
+        return false
+    end
+
+    if not wait(function()
+            tap("右右确认")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if findOne(rogue_tpye .. '_' .. "初始招募") then return true end
+        end, 10) then
+        return false
+    end
+    return true
+end
+
+--通用的  肉鸽的第一次作战编队 直接引用就可以
+zl_first_edit_team = function()
+    if not wait(function()
+            if findOne("快捷编队") then return true end
+            tap("进入")
+        end, 10) then
+        return false
+    end
+
+    if not wait(function()
+            if findOne("确认招募") then return true end
+            tap("快捷编队")
+        end, 10) then
+        return false
+    end
+
+    if not wait(function()
+            if findOne("攻击范围") and
+                (zl_skill_idx ~= 2 or zl_skill_idx == 2 and findOne("战略二技能")) then
+                tap("近卫招募列表2") --第2个干员
+                ssleep(.2)
+                tap("近卫招募列表3") --第3个干员
+                return true
+            end
+            tap("近卫招募列表1")
+            if not appear("攻击范围", 1) then return end
+            if zl_skill_idx == 2 then
+                tap("战略二技能")
+                if not appear("战略二技能", 1) then return end
+            end
+        end, 10) then
+        return false
+    end
+
+    if not wait(function()
+            if not findOne("确认招募") then return true end
+            tap("确认招募")
+        end, 10) then
+        return false
+    end
+
+    if not appear("快捷编队") then return false end
+    return true
+end
+
+--肉鸽作战名字检测 type是肉鸽类型，是作战关卡名字检测的范围
+zl_fight_name_ocr = function(rogueType)
+    local rogueType = rogueType or '萨卡兹'
+    local fight1ocr = {}
+    --zl_fight_name 这个可修改替换为不同肉鸽的作战关卡名字
+    log('rogueType: ', rogueType)
+    if rogueType == '萨卡兹' then
+        zl_fight_name = {
+            ["坏邻居"] = { "坏", "邻", "居" },
+            ["安全检查"] = { "安", "全", "检", "熔", "炉" },
+            ["夺路而逃"] = { "夺", "路", "逃" },
+            ["公害"] = { "公", "害" }
+        }
+    elseif rogueType == '萨米' then
+        zl_fight_name = {
+            ["待宰的兽群"] = { "待", "宰", "兽", '群' },
+            ["死囚之夜"] = { "囚", "死" },
+            ["度假村冤魂"] = { "度", "假", "村", "冤", "魂" },
+            ["事不过四"] = { "事", "过", "四" },
+            ["苔手"] = { "苔", "手" },
+        }
+    end
+    print(zl_fight_name)
+    if not wait(function()
+            fight1ocr = ocr(rogueType .. "_作战检测范围")
+            if #fight1ocr > 1 then
+                log("4880", 4880, fight1ocr)
+                local fight1 = fight1ocr[2].text
+
+                for name, chars in pairs(zl_fight_name) do
+                    if fight1:includes(chars) then
+                        now_fight_name = name
+                        return true
+                    end
+                end
+
+                log("不知道什么作战：" .. fight1)
+                return
+            end
+        end, 5, .2) then
+        findTap('战略退出')
+        return false
+    end
+
     return true
 end
