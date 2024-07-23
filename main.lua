@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.23 14:32"
+release_date = "07.23 23:47"
 update_announcement = '最近更新：萨米肉鸽(测试)，优化萨卡兹只投资'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -117,38 +117,13 @@ if debug_mode then
     log("debug_mode")
     ssleep(1)
     -- 思绪过多,丢掉一个
-    if findOne("萨卡兹_思维负荷红") then
-        findTap("萨卡兹_思维负荷红")
-        local t = time()
-        if not wait(function()
-                if time() - t > 1000 then
-                    t = time()
-                    tap('招募说明关闭') --第一次加载会有这个弹窗
-                end
-                if findOne('萨卡兹_点击负荷干员') then return true end
-            end, 10, .2) then
-            return false
-        end
-        if not wait(function()
-                local x = appear({
-                    "萨卡兹_第一个思绪", "萨卡兹_思绪舍弃"
-                })
-                log(2575, x)
-                tap(x)
-                if x == "萨卡兹_思绪舍弃" then appear('萨卡兹_第一个思绪') end
-                if not findOne("萨卡兹_第一个思绪") then return true end
-            end, 10, .2) then
-            return false
-        end
+    sarkaz.蓝图速通()
+    --zl.招募翻页()
+    -- tap("萨卡兹_收起负荷干员")
+    -- appear("萨卡兹_等待负荷干员列表出现", 2)
+    -- tap("萨卡兹_第一个思绪")
+    -- appearTap("萨卡兹_思绪舍弃", 1)
 
-        -- tap("萨卡兹_收起负荷干员")
-        -- appear("萨卡兹_等待负荷干员列表出现", 2)
-        -- tap("萨卡兹_第一个思绪")
-        -- appearTap("萨卡兹_思绪舍弃", 1)
-        ssleep(.5)
-        appearTap("萨卡兹_收起负荷干员", 1.5)
-        appear("萨卡兹_待编入负荷干员", 1)
-    end
     exit()
     -- local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
     -- log("刷新按钮位置", po)
