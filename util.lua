@@ -3425,17 +3425,14 @@ show_extra_ui = function()
     -- ui.addCheckBox(layout, "sand_fire_unstop", "打满也不结束", false)
 
     newRow(layout)
-    addTextView(layout, "===========多账户设置(同步)===========")
+    addTextView(layout, "===========账户设置(同步)===========")
 
     newRow(layout)
-    ui.addCheckBox(layout, "extra_multi_account_enable", "启用账号", false)
+    ui.addCheckBox(layout, "extra_multi_account_enable", "启用多账号", false)
     ui.addEditText(layout, "extra_multi_account_choice", "")
 
     newRow(layout)
-    addTextView(layout, "===========单账户设置(同步)===========")
-
-    newRow(layout)
-    ui.addCheckBox(layout, "extra_single_account_login", "启用此账户登录", false)
+    ui.addCheckBox(layout, "extra_single_account_login", "启用单账户登录", false)
 
     newRow(layout)
     addTextView(layout, "账户")
@@ -3443,66 +3440,152 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
 
-
     newRow(layout)
     addTextView(layout, "===========肉鸽相关===========")
 
     newRow(layout)
-    addButton(layout, nil, "傀影与猩红孤钻",
+    addTextView(layout, "通用选项")
+    newRow(layout)
+    addTextView(layout, [[选第]])
+    ui.addEditText(layout, "zl_best_operator_skz", [[-1]])
+    addTextView(layout, [[个近卫 开]])
+    ui.addEditText(layout, "zl_skill_times_skz", [[0]])
+    addTextView(layout, [[次]])
+    ui.addEditText(layout, "zl_skill_idx_skz", [[1]])
+    addTextView(layout, [[技能]])
+    ui.addCheckBox(layout, "zl_no_waste", "每8小时日常", false)
+
+    newRow(layout)
+    ui.addTabView(layout, "extra_tab")
+
+    local rouge_layout_傀影 = "extra_tab_zl1"
+    ui.addTab("extra_tab", rouge_layout_傀影, "傀影")
+    newRow(rouge_layout_傀影)
+    ui.addCheckBox(rouge_layout_傀影, "zl_ky", "启用傀影与猩红孤钻", false)
+    -- addButton(rouge_layout_傀影, nil, "傀影与猩红孤钻",
+    --     make_jump_ui_command(rouge_layout_傀影, nil,
+    --         "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
+
+    newRow(rouge_layout_傀影)
+    ui.addCheckBox(rouge_layout_傀影, "zl_more_repertoire", "多点剧目", false)
+    ui.addCheckBox(rouge_layout_傀影, "zl_more_experience", "多点蜡烛", false)
+    ui.addCheckBox(rouge_layout_傀影, "zl_skip_hard", "不打驯兽", false)
+
+    newRow(rouge_layout_傀影)
+    ui.addCheckBox(rouge_layout_傀影, "zl_accept_mg", "可打敏感", false)
+    ui.addCheckBox(rouge_layout_傀影, "zl_accept_yx", "可打臆想", false)
+    ui.addCheckBox(rouge_layout_傀影, "zl_accept_sc", "可打生存", false)
+
+    newRow(rouge_layout_傀影)
+    ui.addCheckBox(rouge_layout_傀影, "zl_skip_coin_ky", "跳过投币", false)
+    ui.addCheckBox(rouge_layout_傀影, "zl_only_coin_ky", "只是投币", false)
+
+    newRow(rouge_layout_傀影)
+    addTextView(rouge_layout_傀影, [[需求商品]])
+    ui.addEditText(rouge_layout_傀影, "zl_need_goods_ky", [[]])
+    addTextView(rouge_layout_傀影, [[等级]])
+    ui.addEditText(rouge_layout_傀影, "zl_max_level_ky", [[]])
+    addTextView(rouge_layout_傀影, [[源石锭]])
+    ui.addEditText(rouge_layout_傀影, "zl_max_coin_ky", [[]])
+
+    local rouge_layout_水月 = "extra_tab_zl2"
+    ui.addTab("extra_tab", rouge_layout_水月, "水月")
+    newRow(rouge_layout_水月)
+    addTextView(rouge_layout_水月, "暂未修复")
+
+    local rouge_layout_萨米 = "extra_tab_zl3"
+    ui.addTab("extra_tab", rouge_layout_萨米, "萨米")
+    newRow(rouge_layout_萨米)
+    ui.addCheckBox(rouge_layout_萨米, "zl_sami", "启用探索者的银淞止境", false)
+    addTextView(rouge_layout_萨米, "开发中")
+
+    local rouge_layout_萨卡兹 = "extra_tab_zl4"
+    ui.addTab("extra_tab", rouge_layout_萨卡兹, "萨卡兹")
+
+    newRow(rouge_layout_萨卡兹)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_skz", "启用萨卡兹的无终奇语", false)
+
+    newRow(rouge_layout_萨卡兹)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_skip_coin_skz", "跳过投币", false)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_only_coin_skz", "只是投币", false)
+
+    newRow(rouge_layout_萨卡兹)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_blueprint", "使用蓝图分队", false)
+    addTextView(rouge_layout_萨卡兹, [[分队位置]])
+    ui.addEditText(rouge_layout_萨卡兹, "zl_blueprint_position", [[3]]) --蓝图分队解锁的话 大多在第三个位置
+
+    newRow(rouge_layout_萨卡兹)
+    addTextView(rouge_layout_萨卡兹, [[需求商品]])
+    ui.addEditText(rouge_layout_萨卡兹, "zl_need_goods_skz", [[]])
+    addTextView(rouge_layout_萨卡兹, [[等级]])
+    ui.addEditText(rouge_layout_萨卡兹, "zl_max_level_skz", [[]])
+    addTextView(rouge_layout_萨卡兹, [[源石锭]])
+    ui.addEditText(rouge_layout_萨卡兹, "zl_max_coin_skz", [[]])
+
+    newRow(layout)
+    addButton(layout, nil, "肉鸽任务开始",
         make_jump_ui_command(layout, nil,
-            "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
+            "extra_mode='肉鸽任务';lock:remove(main_ui_lock)"))
+
+    -- newRow(layout)
+    -- addTextView(layout, "===========肉鸽相关===========")
+
+    -- newRow(layout)
+    -- addButton(layout, nil, "傀影与猩红孤钻",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
     -- addButton(layout, nil, "水月(仅720p)",
     --     make_jump_ui_command(layout, nil,
     --         "extra_mode='水月与深蓝之树';lock:remove(main_ui_lock)"))
     -- newRow(layout)
 
-    addButton(layout, nil, "探索者的银淞止境(开发中)",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='探索者的银淞止境';lock:remove(main_ui_lock)"))
-    newRow(layout)
-    addButton(layout, nil, "萨卡兹的无终奇语",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='萨卡兹的无终奇语';lock:remove(main_ui_lock)"))
+    -- addButton(layout, nil, "探索者的银淞止境(开发中)",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='探索者的银淞止境';lock:remove(main_ui_lock)"))
+    -- newRow(layout)
+    -- addButton(layout, nil, "萨卡兹的无终奇语",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='萨卡兹的无终奇语';lock:remove(main_ui_lock)"))
 
-    newRow(layout)
-    addTextView(layout, [[选第]])
-    ui.addEditText(layout, "zl_best_operator", [[-1]])
-    addTextView(layout, [[个近卫 开]])
-    ui.addEditText(layout, "zl_skill_times", [[0]])
-    addTextView(layout, [[次]])
-    ui.addEditText(layout, "zl_skill_idx", [[1]])
-    addTextView(layout, [[技能]])
+    -- newRow(layout)
+    -- addTextView(layout, [[选第]])
+    -- ui.addEditText(layout, "zl_best_operator", [[-1]])
+    -- addTextView(layout, [[个近卫 开]])
+    -- ui.addEditText(layout, "zl_skill_times", [[0]])
+    -- addTextView(layout, [[次]])
+    -- ui.addEditText(layout, "zl_skill_idx", [[1]])
+    -- addTextView(layout, [[技能]])
 
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_more_repertoire", "多点剧目", false)
-    ui.addCheckBox(layout, "zl_more_experience", "多点蜡烛", false)
-    ui.addCheckBox(layout, "zl_skip_coin", "跳过投币", false)
+    -- newRow(layout)
+    -- ui.addCheckBox(layout, "zl_more_repertoire", "多点剧目", false)
+    -- ui.addCheckBox(layout, "zl_more_experience", "多点蜡烛", false)
+    -- ui.addCheckBox(layout, "zl_skip_coin", "跳过投币", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_accept_mg", "可打敏感", false)
-    ui.addCheckBox(layout, "zl_accept_yx", "可打臆想", false)
-    ui.addCheckBox(layout, "zl_accept_sc", "可打生存", false)
+    -- newRow(layout)
+    -- ui.addCheckBox(layout, "zl_accept_mg", "可打敏感", false)
+    -- ui.addCheckBox(layout, "zl_accept_yx", "可打臆想", false)
+    -- ui.addCheckBox(layout, "zl_accept_sc", "可打生存", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_skip_hard", "不打驯兽", false)
-    ui.addCheckBox(layout, "zl_only_coin", "只是投币", false)
-    ui.addCheckBox(layout, "zl_no_waste", "每8小时日常", false)
+    -- newRow(layout)
+    -- ui.addCheckBox(layout, "zl_skip_hard", "不打驯兽", false)
+    -- ui.addCheckBox(layout, "zl_only_coin", "只是投币", false)
+    -- ui.addCheckBox(layout, "zl_no_waste", "每8小时日常", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_blueprint", "使用蓝图分队", false)
-    addTextView(layout, [[分队位置]])
-    ui.addEditText(layout, "zl_blueprint_position", [[3]]) --蓝图分队解锁的话 大多在第三个位置
+    -- newRow(layout)
+    -- ui.addCheckBox(layout, "zl_blueprint", "使用蓝图分队", false)
+    -- addTextView(layout, [[分队位置]])
+    -- ui.addEditText(layout, "zl_blueprint_position", [[3]]) --蓝图分队解锁的话 大多在第三个位置
 
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_get_coin", "测试功能", false)
+    -- newRow(layout)
+    -- ui.addCheckBox(layout, "zl_get_coin", "测试功能", false)
 
-    newRow(layout)
-    addTextView(layout, [[需求商品]])
-    ui.addEditText(layout, "zl_need_goods", [[]])
-    addTextView(layout, [[等级]])
-    ui.addEditText(layout, "zl_max_level", [[]])
-    addTextView(layout, [[源石锭]])
-    ui.addEditText(layout, "zl_max_coin", [[]])
+    -- newRow(layout)
+    -- addTextView(layout, [[需求商品]])
+    -- ui.addEditText(layout, "zl_need_goods", [[]])
+    -- addTextView(layout, [[等级]])
+    -- ui.addEditText(layout, "zl_max_level", [[]])
+    -- addTextView(layout, [[源石锭]])
+    -- ui.addEditText(layout, "zl_max_coin", [[]])
 
     -- newRow(layout)
     -- addTextView(layout,
@@ -4194,7 +4277,7 @@ predebug_hook = function()
     if not predebug then return end
     tap_interval = -1
     findOne_interval = -1
-    zl_skill_times = 100
+    zl_skill_times_ky = 100
 
     disable_game_up_check = true
     swip("HD-2")
@@ -5470,7 +5553,7 @@ update_state_from_debugui = function()
     findOne_interval = str2int(findOne_interval, -1)
     max_fight_times = str2int(max_fight_times, math.huge)
     tap_interval = str2int(tap_interval, -1)
-    zl_skill_times = str2int(zl_skill_times, 0)
+    zl_skill_times_ky = str2int(zl_skill_times_ky, 0)
     zl_skill_idx = str2int(zl_skill_idx, 1)
     tapall_duration = str2int(tapall_duration, -1)
     max_login_times = str2int(max_login_times, math.huge)

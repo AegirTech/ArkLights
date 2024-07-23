@@ -2819,7 +2819,8 @@ zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检�
             update_state_from_ui()
             run(no_extra_job)
         end
-        stop("肉鸽结束", '', false, true)
+        return true
+        -- stop("肉鸽结束", '', false, true)
     end
 
     if zl_coin_enough then
@@ -2829,7 +2830,8 @@ zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检�
             update_state_from_ui()
             run(no_extra_job)
         end
-        stop("肉鸽结束", '', false, true)
+        return true
+        -- stop("肉鸽结束", '', false, true)
     end
 
     if zl_max_level == 'max' then

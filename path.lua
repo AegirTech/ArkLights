@@ -6723,7 +6723,9 @@ path.前瞻投资 = function(lighter)
             update_state_from_ui()
             run(no_extra_job)
         end
-        stop("肉鸽结束", '', false, true)
+        傀影肉鸽完成 = true
+        return
+        -- stop("肉鸽结束", '', false, true)
     end
 
     if zl_coin_enough then
@@ -6733,7 +6735,9 @@ path.前瞻投资 = function(lighter)
             update_state_from_ui()
             run(no_extra_job)
         end
-        stop("肉鸽结束", '', false, true)
+        傀影肉鸽完成 = true
+        return
+        -- stop("肉鸽结束", '', false, true)
     end
 
     -- 检测等级
@@ -7918,6 +7922,50 @@ path.前瞻投资 = function(lighter)
 end
 
 path.战略前瞻投资 = never_end_wrapper(path.前瞻投资)
+
+path.肉鸽任务 = function()
+    log("肉鸽任务开始")
+    if zl_ky then
+        log("傀影")
+        傀影肉鸽完成 = false
+        zl_skip_coin = zl_skip_coin_ky
+        zl_only_coin = zl_only_coin_ky
+        zl_need_goods = zl_need_goods_ky
+        zl_max_level = zl_max_level_ky
+        zl_max_coin = zl_max_coin_ky
+        while true do
+            if 傀影肉鸽完成 then
+                break
+            end
+            path.前瞻投资()
+        end
+    end
+
+    if zl_mizuki then
+
+    end
+
+    if zl_sami then
+
+    end
+
+    if zl_skz then
+        log("萨卡兹")
+        萨卡兹肉鸽完成 = false
+        zl_skip_coin = zl_skip_coin_skz
+        zl_only_coin = zl_only_coin_skz
+        zl_need_goods = zl_need_goods_skz
+        zl_max_level = zl_max_level_skz
+        zl_max_coin = zl_max_coin_skz
+        while true do
+            if 萨卡兹肉鸽完成 then
+                break
+            end
+            path.萨卡兹的无终奇语前瞻投资()
+        end
+    end
+    stop("肉鸽结束", '', false, true)
+end
 
 path.公开招募加急 = function()
     -- 只处理第一个列表
