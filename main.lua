@@ -63,7 +63,10 @@ ui_small_submit_width = -2
 ui_small_submit_height = -2
 network_timeout = 300
 matrixOcr = ocr
-
+log_time = os.time()
+log_count = 0
+max_log_time = 15
+max_log_count = 1000
 -- update_source = 'https://arklights.pages.dev'
 -- update_source = 'https://gitee.com/bilabila/arknights/raw/master'
 -- update_source_fallback = update_source
@@ -117,14 +120,6 @@ if debug_mode then
     log("debug_mode")
     ssleep(1)
     -- 思绪过多,丢掉一个
-    sarkaz.蓝图速通()
-    --zl.招募翻页()
-    -- tap("萨卡兹_收起负荷干员")
-    -- appear("萨卡兹_等待负荷干员列表出现", 2)
-    -- tap("萨卡兹_第一个思绪")
-    -- appearTap("萨卡兹_思绪舍弃", 1)
-
-    exit()
     -- local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
     -- log("刷新按钮位置", po)
     -- exit()

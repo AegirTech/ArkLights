@@ -774,6 +774,15 @@ end
 -- log_history = {}
 log = function(...)
     if disable_log then return end
+    if os.time() - log_time > tonumber(max_log_time) * 60 then
+        console.clearLog()
+        log_time = os.time()
+    end
+    if log_count > tonumber(max_log_count) then
+        console.clearLog()
+        log_count = 0
+    end
+    log_count = log_count + 1
     local arg = { ... }
 
     local l = table.join({
@@ -3033,7 +3042,8 @@ end
 
 show_debug_ui = function()
     local layout = "debug"
-    ui.newLayout(layout, ui_page_width, -2)
+    debug_page_width = screen.width * 0.5
+    ui.newLayout(layout, debug_page_width, -2)
     ui.setTitleText(layout, "高级设置")
 
     newRow(layout)
@@ -3042,83 +3052,97 @@ show_debug_ui = function()
         nil, nil)
 
     newRow(layout)
-    addButton(layout, nil, "解锁", make_jump_ui_command(layout, 'gesture_capture'))
+    ui.addCheckBox(layout, "enable_log", "启用日志", true)
+    ui.addCheckBox(layout, "write_log", "保存日志到本地", false)
 
     newRow(layout)
-    addTextView(layout, "--------------------验证码设置--------------------")
+    addTextView(layout, "最大日志时长(分钟)")
+    ui.addEditText(layout, "max_log_time", "15")
+    newRow(layout)
+    addTextView(layout, "最大日志行数")
+    ui.addEditText(layout, "max_log_count", "1000")
 
     newRow(layout)
-    addTextView(layout, "图鉴用户名")
-    ui.addEditText(layout, "captcha_username", "")
+    ui.addTabView(layout, "debug_tab")
 
-    newRow(layout)
-    addTextView(layout, "图鉴密码")
-    ui.addEditText(layout, "captcha_password", "")
+    local debug_layout_验证码 = "debug_tab_yzm"
+    ui.addTab("debug_tab", debug_layout_验证码, "验证码")
 
-    newRow(layout)
-    ui.addCheckBox(layout, "use_jfbym", "使用云码API处理滑块验证码", false)
+    -- newRow(layout)
+    -- addButton(layout, nil, "解锁", make_jump_ui_command(layout, 'gesture_capture'))
 
-    newRow(layout)
-    addTextView(layout, "云码Token")
-    ui.addEditText(layout, "jfbym_token", "")
-    newRow(layout)
-    ui.addCheckBox(layout, "use_free_server_captcha", "使用免费服务器解决官服滑块验证码", false)
-    newRow(layout)
-    ui.addCheckBox(layout, "only_use_ttshitu", "不使用审判庭接码", true)
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "图鉴用户名")
+    ui.addEditText(debug_layout_验证码, "captcha_username", "")
 
-    newRow(layout)
-    addTextView(layout, "审判庭打码地址")
-    ui.addEditText(layout, "cloud_captcha_server", "")
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "图鉴密码")
+    ui.addEditText(debug_layout_验证码, "captcha_password", "")
 
-    newRow(layout)
-    addTextView(layout, "审判庭打码标识")
-    ui.addEditText(layout, "cloud_captcha_token", "")
+    newRow(debug_layout_验证码)
+    ui.addCheckBox(debug_layout_验证码, "use_jfbym", "使用云码API处理滑块验证码", false)
 
-    newRow(layout)
-    addTextView(layout, "--------------------云控设置--------------------")
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "云码Token")
+    ui.addEditText(debug_layout_验证码, "jfbym_token", "")
+    newRow(debug_layout_验证码)
+    ui.addCheckBox(debug_layout_验证码, "use_free_server_captcha", "使用免费服务器解决官服滑块验证码", false)
+    newRow(debug_layout_验证码)
+    ui.addCheckBox(debug_layout_验证码, "only_use_ttshitu", "不使用审判庭接码", true)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "cloud_get_task", "审判庭接受任务", false)
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "审判庭打码地址")
+    ui.addEditText(debug_layout_验证码, "cloud_captcha_server", "")
 
-    newRow(layout)
-    addTextView(layout, "审判庭服务地址")
-    ui.addEditText(layout, "cloud_server", "")
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "审判庭打码标识")
+    ui.addEditText(debug_layout_验证码, "cloud_captcha_token", "")
 
-    newRow(layout)
-    addTextView(layout, "审判庭设备标识")
-    ui.addEditText(layout, "cloud_device_token", "")
+    local debug_layout_云控 = "debug_tab_yk"
+    ui.addTab("debug_tab", debug_layout_云控, "云控")
 
-    newRow(layout)
-    ui.addCheckBox(layout, "log_login_to_cloud", "上报登录流程", false)
+    newRow(debug_layout_云控)
+    ui.addCheckBox(debug_layout_云控, "cloud_get_task", "审判庭接受任务", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "apply_remote_config", "接受远程配置更新", false)
+    newRow(debug_layout_云控)
+    addTextView(debug_layout_云控, "审判庭服务地址")
+    ui.addEditText(debug_layout_云控, "cloud_server", "")
 
-    newRow(layout)
-    addTextView(layout, "--------------------账户设置--------------------")
+    newRow(debug_layout_云控)
+    addTextView(debug_layout_云控, "审判庭设备标识")
+    ui.addEditText(debug_layout_云控, "cloud_device_token", "")
 
-    newRow(layout)
-    ui.addCheckBox(layout, "new_change_account_plan", "新版切号方案（测试）", false)
+    newRow(debug_layout_云控)
+    ui.addCheckBox(debug_layout_云控, "log_login_to_cloud", "上报登录流程", false)
 
-    newRow(layout)
-    addTextView(layout, "单号最大登录次数")
-    ui.addEditText(layout, "max_login_times", "")
+    newRow(debug_layout_云控)
+    ui.addCheckBox(debug_layout_云控, "apply_remote_config", "接受远程配置更新", false)
 
-    newRow(layout)
-    addTextView(layout, "单号15分钟内最大登录次数")
-    ui.addEditText(layout, "max_login_times_5min", "3")
+    local debug_layout_账户 = "debug_tab_account"
+    ui.addTab("debug_tab", debug_layout_账户, "账户设置")
 
-    newRow(layout)
-    addTextView(layout, "单关卡最大连续代理/导航失败次数")
-    ui.addEditText(layout, "max_fight_failed_times", "3")
+    newRow(debug_layout_账户)
+    ui.addCheckBox(debug_layout_账户, "new_change_account_plan", "新版切号方案（测试）", false)
 
-    newRow(layout)
-    addTextView(layout, "单号最大成功剿灭次数")
-    ui.addEditText(layout, "max_jmfight_times", "1")
+    newRow(debug_layout_账户)
+    addTextView(debug_layout_账户, "单号最大登录次数")
+    ui.addEditText(debug_layout_账户, "max_login_times", "")
 
-    newRow(layout)
-    addTextView(layout, "最大连续作战次数(达到重启游戏)")
-    ui.addEditText(layout, "max_fight_times", "")
+    newRow(debug_layout_账户)
+    addTextView(debug_layout_账户, "单号15分钟内最大登录次数")
+    ui.addEditText(debug_layout_账户, "max_login_times_5min", "3")
+
+    newRow(debug_layout_账户)
+    addTextView(debug_layout_账户, "单关卡最大连续代理/导航失败次数")
+    ui.addEditText(debug_layout_账户, "max_fight_failed_times", "3")
+
+    newRow(debug_layout_账户)
+    addTextView(debug_layout_账户, "单号最大成功剿灭次数")
+    ui.addEditText(debug_layout_账户, "max_jmfight_times", "1")
+
+    newRow(debug_layout_账户)
+    addTextView(debug_layout_账户, "最大连续作战次数(达到重启游戏)")
+    ui.addEditText(debug_layout_账户, "max_fight_times", "")
 
     -- newRow(layout)
     -- addTextView(layout, "多点点击时长(宿舍换班选不上人)")
@@ -3135,175 +3159,189 @@ show_debug_ui = function()
     --                "禁用自动吃48时到期理智药", false)
 
     for i = 1, 7 do
-        newRow(layout)
+        newRow(debug_layout_账户)
         local timenote = i == 1 and "“X小时”" or "“" .. (i - 1) .. "天”"
         local default = i < 3 and '99' or '1'
-        addTextView(layout, timenote .. "理智药最多吃")
-        ui.addEditText(layout, "max_drug_times_" .. i .. "day", default)
-        addTextView(layout, "次")
+        addTextView(debug_layout_账户, timenote .. "理智药最多吃")
+        ui.addEditText(debug_layout_账户, "max_drug_times_" .. i .. "day", default)
+        addTextView(debug_layout_账户, "次")
     end
 
-    newRow(layout)
-    ui.addCheckBox(layout, "continuous_battle", "自动使用最大连战次数,会导致作战次数错乱",
+
+    newRow(debug_layout_账户)
+    ui.addCheckBox(debug_layout_账户, "continuous_battle", "自动使用最大连战次数,会导致作战次数错乱",
         false)
-    newRow(layout)
-    ui.addCheckBox(layout, "zero_san_after_fight", "使用1-7清空剩余理智",
+    newRow(debug_layout_账户)
+    ui.addCheckBox(debug_layout_账户, "zero_san_after_fight", "使用1-7清空剩余理智",
         true)
-    newRow(layout)
-    ui.addCheckBox(layout, "restart_on_crontab_timeout",
-        "跨定时点结束后重启", true)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "auto_update_gameclient",
-        "自动更新游戏客户端", false)
-    ui.addSpinner(layout, "auto_update_mode", { "方式一", "方式二" }, 1)
-    ui.addSpinner(layout, "auto_update_game_select", { "官服和B服", "只更新官服", "只更新B服" }, 0)
+    local debug_layout_通知 = "debug_tab_notify"
+    ui.addTab("debug_tab", debug_layout_通知, "通知")
 
-    newRow(layout)
-    ui.addCheckBox(layout, "delete_download_floder",
-        "自动清理download文件夹", false)
+    newRow(debug_layout_通知)
+    addTextView(debug_layout_通知, "QQ通知账号")
+    ui.addEditText(debug_layout_通知, "QQ", "")
 
-    newRow(layout)
-    addTextView(layout, "搬商店时间在活动")
-    ui.addSpinner(layout, "shop_period", { "结束前", "结束后", "结束前后", "每一次" }, 0)
-    addTextView(layout, "的第")
-    ui.addSpinner(layout, "shop_day", { "1", "2", "3", "4", "5" }, 0)
-    addTextView(layout, "天当天")
+    newRow(debug_layout_通知)
+    addTextView(debug_layout_通知, "QQ通知自建服务地址")
+    ui.addEditText(debug_layout_通知, "qqimagedeliver", "")
 
-    newRow(layout)
-    addTextView(layout, "QQ通知账号")
-    ui.addEditText(layout, "QQ", "")
+    newRow(debug_layout_通知)
+    addTextView(debug_layout_通知, "pushplus通知账号(token)")
+    ui.addEditText(debug_layout_通知, "pushplus_token", "")
 
-    newRow(layout)
-    addTextView(layout, "QQ通知自建服务地址")
-    ui.addEditText(layout, "qqimagedeliver", "")
+    newRow(debug_layout_通知)
+    addTextView(debug_layout_通知, "pushplus通知渠道(channel)")
 
-    newRow(layout)
-    addTextView(layout, "pushplus通知账号(token)")
-    ui.addEditText(layout, "pushplus_token", "")
+    ui.addEditText(debug_layout_通知, "pushplus_channel", "")
 
-    newRow(layout)
-    addTextView(layout, "pushplus通知渠道(channel)")
-    ui.addEditText(layout, "pushplus_channel", "")
+    newRow(debug_layout_通知)
+    addTextView(debug_layout_通知, "Telegram推送api(可不填)")
+    ui.addEditText(debug_layout_通知, "telegram_api", "")
 
-    newRow(layout)
-    addTextView(layout, "Telegram推送api(可不填)")
-    ui.addEditText(layout, "telegram_api", "")
+    newRow(debug_layout_通知)
+    addTextView(debug_layout_通知, "Telegram Bot Token")
+    ui.addEditText(debug_layout_通知, "telegram_token", "")
 
-    newRow(layout)
-    addTextView(layout, "Telegram Bot Token")
-    ui.addEditText(layout, "telegram_token", "")
+    newRow(debug_layout_通知)
+    addTextView(debug_layout_通知, "Telegram chat ID")
+    ui.addEditText(debug_layout_通知, "telegram_chatid", "")
 
-    newRow(layout)
-    addTextView(layout, "Telegram chat ID")
-    ui.addEditText(layout, "telegram_chatid", "")
+    newRow(debug_layout_通知)
+    addTextView(debug_layout_通知, "企业微信 webhook地址")
+    ui.addEditText(debug_layout_通知, "wechat_webhook_url", "")
 
-    newRow(layout)
-    addTextView(layout, "企业微信 webhook地址")
-    ui.addEditText(layout, "wechat_webhook_url", "")
-
-    newRow(layout)
-    ui.addCheckBox(layout, "qqnotify_save",
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "qqnotify_save",
         "QQ通知保存到/sdcard/包名/ (保留一周)", true)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "qqnotify_quiet",
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "qqnotify_quiet",
         "QQ通知设备名与账号名只显示备注", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "qqnotify_notime", "QQ通知不显示发送时间",
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "qqnotify_notime", "QQ通知不显示发送时间",
         false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "qqnotify_nofailedfight",
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "qqnotify_nofailedfight",
         "QQ通知不显示代理失败信息", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "qqnotify_nofight", "QQ通知不显示作战信息",
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "qqnotify_nofight", "QQ通知不显示作战信息",
         false)
-    newRow(layout)
-    ui.addCheckBox(layout, "qqnotify_noruntime", "QQ通知不显示耗时信息",
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "qqnotify_noruntime", "QQ通知不显示耗时信息",
         false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "qqnotify_bar", "QQ通知显示悬浮按钮", false)
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "qqnotify_bar", "QQ通知显示悬浮按钮", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "qqnotify_beforemail",
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "qqnotify_beforemail",
         "QQ通知显示邮件收取前情况", true)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "qqnotify_afterenter",
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "qqnotify_afterenter",
         "QQ通知显示基建进入后情况", true)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "qqnotify_beforeleaving",
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "qqnotify_beforeleaving",
         "QQ通知显示基建退出前情况", true)
-    newRow(layout)
-    ui.addCheckBox(layout, "qqnotify_beforemission",
+
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "qqnotify_beforemission",
         "QQ通知显示任务收集前情况", true)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "collect_beforeleaving",
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "collect_beforeleaving",
         "基建离开前加一次基建收获", true)
 
-    newRow(layout)
-    addTextView(layout, "--------------------基建设置--------------------")
+    local debug_layout_基建 = "debug_tab_base"
+    ui.addTab("debug_tab", debug_layout_基建, "基建")
 
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_training_shift", "基建换班忽略训练室", false)
+    newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "disable_training_shift", "基建换班忽略训练室", false)
 
-    newRow(layout)
-    addTextView(layout, "基建训练室检测延迟")
-    ui.addEditText(layout, "training_check_time", '0.15')
+    newRow(debug_layout_基建)
+    addTextView(debug_layout_基建, "基建训练室检测延迟")
+    ui.addEditText(debug_layout_基建, "training_check_time", '0.15')
 
-    newRow(layout)
-    addTextView(layout, "基建换班心情阈值")
-    ui.addEditText(layout, "shift_min_mood", '12')
+    newRow(debug_layout_基建)
+    addTextView(debug_layout_基建, "基建换班心情阈值")
+    ui.addEditText(debug_layout_基建, "shift_min_mood", '12')
 
-    newRow(layout)
-    ui.addCheckBox(layout, "shift_prefer_speed", "基建换班禁用高产换班",
+    newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "shift_prefer_speed", "基建换班禁用高产换班",
         false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_dorm_shift", "基建换班禁用宿舍换班",
+    newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "disable_dorm_shift", "基建换班禁用宿舍换班",
         false)
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_control_shift",
+    newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "disable_control_shift",
         "基建换班禁用控制中枢换班", false)
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_meeting_shift",
+    newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "disable_meeting_shift",
         "基建换班禁用会客厅换班", false)
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_office_shift",
+    newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "disable_office_shift",
         "基建换班禁用办公室换班", false)
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_manu_shift",
+    newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "disable_manu_shift",
         "基建换班禁用制造站换班", false)
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_trading_shift",
+    newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "disable_trading_shift",
         "基建换班禁用贸易站换班", false)
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_overview_shift",
+    newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "disable_overview_shift",
         "基建换班禁用总览换班", false)
+    newRow(debug_layout_基建)
+    addTextView(debug_layout_基建, "多账号仅传递线索账号(线索小号)")
+    ui.addEditText(debug_layout_基建, "multi_account_disable_clue_unlock", '')
 
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_free_draw",
+    local debug_layout_其他 = "debug_tab_other"
+    ui.addTab("debug_tab", debug_layout_其他, "其他")
+
+    newRow(debug_layout_其他)
+    ui.addCheckBox(debug_layout_其他, "disable_free_draw",
         "限时活动禁用赠送寻访(每日单抽)", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_disable_lighter",
+    newRow(debug_layout_其他)
+    ui.addCheckBox(debug_layout_其他, "zl_disable_lighter",
         "前瞻投资禁用升级幕后筹备", false)
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_strick_account_check",
+
+    newRow(debug_layout_其他)
+    ui.addCheckBox(debug_layout_其他, "disable_strick_account_check",
         "多账号允许不填帐密(双号双服玩家)", false)
 
-    newRow(layout)
-    addTextView(layout, "多账号双休日跳过账号")
-    ui.addEditText(layout, "multi_account_choice_weekday_only", '')
-    newRow(layout)
-    addTextView(layout, "多账号仅传递线索账号(线索小号)")
-    ui.addEditText(layout, "multi_account_disable_clue_unlock", '')
+    newRow(debug_layout_基建)
+    addTextView(debug_layout_基建, "多账号双休日跳过账号")
+    ui.addEditText(debug_layout_基建, "multi_account_choice_weekday_only", '')
+
+    newRow(debug_layout_其他)
+    ui.addCheckBox(debug_layout_其他, "restart_on_crontab_timeout",
+        "跨定时点结束后重启", true)
+
+    newRow(debug_layout_其他)
+    ui.addCheckBox(debug_layout_其他, "auto_update_gameclient",
+        "自动更新游戏客户端", false)
+    ui.addSpinner(debug_layout_其他, "auto_update_mode", { "方式一", "方式二" }, 1)
+    ui.addSpinner(debug_layout_其他, "auto_update_game_select", { "官服和B服", "只更新官服", "只更新B服" }, 0)
+
+    newRow(debug_layout_其他)
+    ui.addCheckBox(debug_layout_其他, "delete_download_floder",
+        "自动清理download文件夹", false)
+
+    newRow(debug_layout_其他)
+    addTextView(debug_layout_其他, "搬商店时间在活动")
+    ui.addSpinner(debug_layout_其他, "shop_period", { "结束前", "结束后", "结束前后", "每一次" }, 0)
+    addTextView(debug_layout_其他, "的第")
+    ui.addSpinner(debug_layout_其他, "shop_day", { "1", "2", "3", "4", "5" }, 0)
+    addTextView(debug_layout_其他, "天当天")
+
+    local debug_layout_调试 = "debug_tab_setting"
+    ui.addTab("debug_tab", debug_layout_调试, "调试")
 
     -- newRow(layout)
     -- ui.addCheckBox(layout, "enable_keepalive",
@@ -3313,32 +3351,23 @@ show_debug_ui = function()
     -- newRow(layout)
     -- ui.addCheckBox(layout, "disable_shift_mood", "高产换班忽略心情", false)
 
-    newRow(layout)
-    addTextView(layout, [[
+    newRow(debug_layout_调试)
+    ui.addCheckBox(debug_layout_调试, "use_system_library", "使用系统支持库", true)
 
+    newRow(debug_layout_调试)
+    addTextView(debug_layout_调试, "游戏重启间隔(s)")
+    ui.addEditText(debug_layout_调试, "restart_game_interval", "900")
 
-以下设置仅用于调试，如有修改后果自负！！！
-
-
-]])
-
-    newRow(layout)
-    ui.addCheckBox(layout, "use_system_library", "使用系统支持库", true)
-
-    newRow(layout)
-    addTextView(layout, "游戏重启间隔(s)")
-    ui.addEditText(layout, "restart_game_interval", "900")
-
-    newRow(layout)
-    addTextView(layout, "完全重启间隔(s)")
-    ui.addEditText(layout, "restart_package_interval", "3600")
+    newRow(debug_layout_调试)
+    addTextView(debug_layout_调试, "完全重启间隔(s)")
+    ui.addEditText(debug_layout_调试, "restart_package_interval", "3600")
 
     -- newRow(layout)
     -- ui.addCheckBox(layout, "enable_disable_lmk",
     --                "禁用LMK(测试中,专用挂机设备建议勾)", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_restart_package", "禁用完全重启", false)
+    newRow(debug_layout_调试)
+    ui.addCheckBox(debug_layout_调试, "disable_restart_package", "禁用完全重启", false)
 
     -- newRow(layout)
     -- ui.addCheckBox(layout, "disable_killacc1", "禁用重启acc进程", false)
@@ -3347,56 +3376,50 @@ show_debug_ui = function()
     -- ui.addEditText(layout, "disable_killacc", "")
     -- ui.addCheckBox(layout, "enable_killacc", "启用重启acc进程", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "enable_log", "启用日志(会导致闪退)", false)
+    newRow(debug_layout_调试)
+    ui.addCheckBox(debug_layout_调试, "disable_oom_score_adj", "禁用oom_score_adj", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "write_log", "保存日志到本地", false)
+    newRow(debug_layout_调试)
+    addTextView(debug_layout_调试, "更新源")
+    ui.addEditText(debug_layout_调试, "custom_update_source", nil)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_oom_score_adj", "禁用oom_score_adj", false)
+    newRow(debug_layout_调试)
+    ui.addCheckBox(debug_layout_调试, "disable_hotupdate", "禁用自动更新", false)
 
-    newRow(layout)
-    addTextView(layout, "更新源")
-    ui.addEditText(layout, "custom_update_source", nil)
+    newRow(debug_layout_调试)
+    ui.addCheckBox(debug_layout_调试, "debug_mode", "启用测试模式", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "disable_hotupdate", "禁用自动更新", false)
+    newRow(debug_layout_调试)
+    ui.addCheckBox(debug_layout_调试, "enable_native_tap", "启用原生点击方式", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "debug_mode", "启用测试模式", false)
-
-    newRow(layout)
-    ui.addCheckBox(layout, "enable_native_tap", "启用原生点击方式", false)
-
-    newRow(layout)
-    ui.addCheckBox(layout, "enable_simultaneous_tap", "启用多点同步点击",
+    newRow(debug_layout_调试)
+    ui.addCheckBox(debug_layout_调试, "enable_simultaneous_tap", "启用多点同步点击",
         false)
 
-    newRow(layout)
-    addTextView(layout, "强制分辨率")
-    ui.addEditText(layout, "force_width", [[]])
-    addTextView(layout, "x")
-    ui.addEditText(layout, "force_height", [[]])
+    newRow(debug_layout_调试)
+    addTextView(debug_layout_调试, "强制分辨率")
+    ui.addEditText(debug_layout_调试, "force_width", [[]])
+    addTextView(debug_layout_调试, "x")
+    ui.addEditText(debug_layout_调试, "force_height", [[]])
 
-    newRow(layout)
-    addTextView(layout, "点击后等待(ms)")
-    ui.addEditText(layout, "tap_wait", "")
+    newRow(debug_layout_调试)
+    addTextView(debug_layout_调试, "点击后等待(ms)")
+    ui.addEditText(debug_layout_调试, "tap_wait", "")
 
-    newRow(layout)
-    addTextView(layout, "最小点击间隔(丢包模式)(ms)")
-    ui.addEditText(layout, "tap_interval", "")
+    newRow(debug_layout_调试)
+    addTextView(debug_layout_调试, "最小点击间隔(丢包模式)(ms)")
+    ui.addEditText(debug_layout_调试, "tap_interval", "")
 
-    newRow(layout)
-    addTextView(layout, "最小截屏间隔(ms)")
-    ui.addEditText(layout, "findOne_interval", "")
+    newRow(debug_layout_调试)
+    addTextView(debug_layout_调试, "最小截屏间隔(ms)")
+    ui.addEditText(debug_layout_调试, "findOne_interval", "")
 
-    newRow(layout)
-    ui.addEditText(layout, "after_require_hook", "-- after_require_hook")
-    newRow(layout)
-    ui.addEditText(layout, "before_account_hook", "-- before_account_hook")
-    newRow(layout)
-    ui.addEditText(layout, "after_all_hook", "-- after_all_hook")
+    newRow(debug_layout_调试)
+    ui.addEditText(debug_layout_调试, "after_require_hook", "-- after_require_hook")
+    newRow(debug_layout_调试)
+    ui.addEditText(debug_layout_调试, "before_account_hook", "-- before_account_hook")
+    newRow(debug_layout_调试)
+    ui.addEditText(debug_layout_调试, "after_all_hook", "-- after_all_hook")
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
@@ -3425,17 +3448,14 @@ show_extra_ui = function()
     -- ui.addCheckBox(layout, "sand_fire_unstop", "打满也不结束", false)
 
     newRow(layout)
-    addTextView(layout, "===========多账户设置(同步)===========")
+    addTextView(layout, "===========账户设置(同步)===========")
 
     newRow(layout)
-    ui.addCheckBox(layout, "extra_multi_account_enable", "启用账号", false)
+    ui.addCheckBox(layout, "extra_multi_account_enable", "启用多账号", false)
     ui.addEditText(layout, "extra_multi_account_choice", "")
 
     newRow(layout)
-    addTextView(layout, "===========单账户设置(同步)===========")
-
-    newRow(layout)
-    ui.addCheckBox(layout, "extra_single_account_login", "启用此账户登录", false)
+    ui.addCheckBox(layout, "extra_single_account_login", "启用单账户登录", false)
 
     newRow(layout)
     addTextView(layout, "账户")
@@ -3443,66 +3463,124 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
 
-
     newRow(layout)
     addTextView(layout, "===========肉鸽相关===========")
 
     newRow(layout)
-    addButton(layout, nil, "傀影与猩红孤钻",
+    addTextView(layout, "通用选项")
+    newRow(layout)
+    addTextView(layout, [[选第]])
+    ui.addEditText(layout, "zl_best_operator_skz", [[-1]])
+    addTextView(layout, [[个近卫 开]])
+    ui.addEditText(layout, "zl_skill_times_skz", [[0]])
+    addTextView(layout, [[次]])
+    ui.addEditText(layout, "zl_skill_idx_skz", [[1]])
+    addTextView(layout, [[技能]])
+
+    newRow(layout)
+    ui.addCheckBox(layout, "zl_no_waste", "每8小时日常", false)
+    addButton(layout, nil, "肉鸽任务开始",
         make_jump_ui_command(layout, nil,
-            "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
+            "extra_mode='肉鸽任务';lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addTextView(layout, "需要刷哪个肉鸽，去勾选启用，然后点击上面的【肉鸽任务开始】")
+    newRow(layout)
+
+    newRow(layout)
+    ui.addTabView(layout, "extra_tab")
+
+    local rouge_layout_傀影 = "extra_tab_zl1"
+    ui.addTab("extra_tab", rouge_layout_傀影, "傀影")
+    newRow(rouge_layout_傀影)
+    ui.addCheckBox(rouge_layout_傀影, "zl_ky", "启用傀影与猩红孤钻", false)
+    -- addButton(rouge_layout_傀影, nil, "傀影与猩红孤钻",
+    --     make_jump_ui_command(rouge_layout_傀影, nil,
+    --         "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
+
+    newRow(rouge_layout_傀影)
+    ui.addCheckBox(rouge_layout_傀影, "zl_more_repertoire", "多点剧目", true)
+    ui.addCheckBox(rouge_layout_傀影, "zl_more_experience", "多点蜡烛", true)
+    ui.addCheckBox(rouge_layout_傀影, "zl_skip_hard", "不打驯兽", true)
+
+    newRow(rouge_layout_傀影)
+    ui.addCheckBox(rouge_layout_傀影, "zl_accept_mg", "可打敏感", true)
+    ui.addCheckBox(rouge_layout_傀影, "zl_accept_yx", "可打臆想", true)
+    ui.addCheckBox(rouge_layout_傀影, "zl_accept_sc", "可打生存", true)
+
+    newRow(rouge_layout_傀影)
+    ui.addCheckBox(rouge_layout_傀影, "zl_skip_coin_ky", "跳过投币", true)
+    ui.addCheckBox(rouge_layout_傀影, "zl_only_coin_ky", "只是投币", false)
+
+    newRow(rouge_layout_傀影)
+    addTextView(rouge_layout_傀影, [[需求商品]])
+    ui.addEditText(rouge_layout_傀影, "zl_need_goods_ky", [[]])
+    addTextView(rouge_layout_傀影, [[等级]])
+    ui.addEditText(rouge_layout_傀影, "zl_max_level_ky", [[max]])
+    addTextView(rouge_layout_傀影, [[源石锭]])
+    ui.addEditText(rouge_layout_傀影, "zl_max_coin_ky", [[]])
+
+    local rouge_layout_水月 = "extra_tab_zl2"
+    ui.addTab("extra_tab", rouge_layout_水月, "水月")
+    newRow(rouge_layout_水月)
+    addTextView(rouge_layout_水月, "暂未修复")
+
+    local rouge_layout_萨米 = "extra_tab_zl3"
+    ui.addTab("extra_tab", rouge_layout_萨米, "萨米")
+    newRow(rouge_layout_萨米)
+    ui.addCheckBox(rouge_layout_萨米, "zl_sami", "启用探索者的银淞止境", false)
+    addTextView(rouge_layout_萨米, "| 已经勉强可以刷，线路优化未做")
+
+    newRow(rouge_layout_萨米)
+    addTextView(rouge_layout_萨米, [[需求商品]])
+    ui.addEditText(rouge_layout_萨米, "zl_need_goods_sami", [[]])
+    addTextView(rouge_layout_萨米, [[等级]])
+    ui.addEditText(rouge_layout_萨米, "zl_max_level_sami", [[]])
+    addTextView(rouge_layout_萨米, [[源石锭]])
+    ui.addEditText(rouge_layout_萨米, "zl_max_coin_sami", [[]])
+
+    local rouge_layout_萨卡兹 = "extra_tab_zl4"
+    ui.addTab("extra_tab", rouge_layout_萨卡兹, "萨卡兹")
+
+    newRow(rouge_layout_萨卡兹)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_skz", "启用萨卡兹的无终奇语", false)
+
+    newRow(rouge_layout_萨卡兹)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_skip_coin_skz", "跳过投币", false)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_only_coin_skz", "只是投币", false)
+
+    newRow(rouge_layout_萨卡兹)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_blueprint", "使用蓝图分队", false)
+    addTextView(rouge_layout_萨卡兹, [[分队位置]])
+    ui.addEditText(rouge_layout_萨卡兹, "zl_blueprint_position", [[3]]) --蓝图分队解锁的话 大多在第三个位置
+
+    newRow(rouge_layout_萨卡兹)
+    addTextView(rouge_layout_萨卡兹, [[需求商品]])
+    ui.addEditText(rouge_layout_萨卡兹, "zl_need_goods_skz", [[]])
+    addTextView(rouge_layout_萨卡兹, [[等级]])
+    ui.addEditText(rouge_layout_萨卡兹, "zl_max_level_skz", [[]])
+    addTextView(rouge_layout_萨卡兹, [[源石锭]])
+    ui.addEditText(rouge_layout_萨卡兹, "zl_max_coin_skz", [[]])
+
+
+
+    -- newRow(layout)
+    -- addTextView(layout, "===========肉鸽相关===========")
+
+    -- newRow(layout)
+    -- addButton(layout, nil, "傀影与猩红孤钻",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
     -- addButton(layout, nil, "水月(仅720p)",
     --     make_jump_ui_command(layout, nil,
     --         "extra_mode='水月与深蓝之树';lock:remove(main_ui_lock)"))
     -- newRow(layout)
-
-    addButton(layout, nil, "探索者的银淞止境(开发中)",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='探索者的银淞止境';lock:remove(main_ui_lock)"))
-    newRow(layout)
-    addButton(layout, nil, "萨卡兹的无终奇语",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='萨卡兹的无终奇语';lock:remove(main_ui_lock)"))
-
-    newRow(layout)
-    addTextView(layout, [[选第]])
-    ui.addEditText(layout, "zl_best_operator", [[-1]])
-    addTextView(layout, [[个近卫 开]])
-    ui.addEditText(layout, "zl_skill_times", [[0]])
-    addTextView(layout, [[次]])
-    ui.addEditText(layout, "zl_skill_idx", [[1]])
-    addTextView(layout, [[技能]])
-
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_more_repertoire", "多点剧目", false)
-    ui.addCheckBox(layout, "zl_more_experience", "多点蜡烛", false)
-    ui.addCheckBox(layout, "zl_skip_coin", "跳过投币", false)
-
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_accept_mg", "可打敏感", false)
-    ui.addCheckBox(layout, "zl_accept_yx", "可打臆想", false)
-    ui.addCheckBox(layout, "zl_accept_sc", "可打生存", false)
-
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_skip_hard", "不打驯兽", false)
-    ui.addCheckBox(layout, "zl_only_coin", "只是投币", false)
-    ui.addCheckBox(layout, "zl_no_waste", "每8小时日常", false)
-
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_blueprint", "使用蓝图分队", false)
-    addTextView(layout, [[分队位置]])
-    ui.addEditText(layout, "zl_blueprint_position", [[3]]) --蓝图分队解锁的话 大多在第三个位置
-
-    newRow(layout)
-    ui.addCheckBox(layout, "zl_get_coin", "测试功能", false)
-
-    newRow(layout)
-    addTextView(layout, [[需求商品]])
-    ui.addEditText(layout, "zl_need_goods", [[]])
-    addTextView(layout, [[等级]])
-    ui.addEditText(layout, "zl_max_level", [[]])
-    addTextView(layout, [[源石锭]])
-    ui.addEditText(layout, "zl_max_coin", [[]])
+    -- addButton(layout, nil, "探索者的银淞止境(开发中)",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='探索者的银淞止境';lock:remove(main_ui_lock)"))
+    -- newRow(layout)
+    -- addButton(layout, nil, "萨卡兹的无终奇语",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='萨卡兹的无终奇语';lock:remove(main_ui_lock)"))
 
     -- newRow(layout)
     -- addTextView(layout,
@@ -5476,6 +5554,9 @@ update_state_from_debugui = function()
     max_login_times = str2int(max_login_times, math.huge)
     max_login_times_5min = str2int(max_login_times_5min, 3)
     milesecond_after_click = str2int(tap_wait, milesecond_after_click)
+    max_log_time = str2int(max_log_time, 15)
+    max_log_count = str2int(max_log_count, 1000)
+
     if not (always_enable_log or enable_log) then run = disable_log_wrapper(run) end
     QQ = (QQ or ''):commonmap():trim()
     if QQ:find('#') then

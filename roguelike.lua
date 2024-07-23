@@ -683,7 +683,7 @@ end
     zl_navigation('萨卡兹_常规行动', '萨卡兹的无终奇语进入主题')
 
     --肉鸽 等级源石锭检查
-    zl_level_coin_inquire('萨卡兹_常规行动', '萨卡兹_等级检测范围', '萨卡兹_源石锭检测范围')
+    萨卡兹肉鸽完成 = zl_level_coin_inquire('萨卡兹_常规行动', '萨卡兹_等级检测范围', '萨卡兹_源石锭检测范围')
 
     -- 放弃探索
     if findOne("萨卡兹_放弃本次探索") then
@@ -1221,7 +1221,7 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     zl_navigation('萨米_常规行动', '探索者的银淞止境进入主题')
 
     --通用 肉鸽 等级源石锭检查
-    zl_level_coin_inquire('萨米_常规行动', '萨米_等级检测范围', '萨米_源石锭检测范围')
+    萨米肉鸽完成 = zl_level_coin_inquire('萨米_常规行动', '萨米_等级检测范围', '萨米_源石锭检测范围')
 
     --通用  放弃探索
     if not zl_abandon_explore('萨米') then return end
