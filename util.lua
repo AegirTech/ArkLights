@@ -774,6 +774,15 @@ end
 -- log_history = {}
 log = function(...)
     if disable_log then return end
+    if os.time() - log_time > tonumber(max_log_time) * 60 then
+        console.clearLog()
+        log_time = os.time()
+    end
+    if log_count > tonumber(max_log_count) then
+        console.clearLog()
+        log_count = 0
+    end
+    log_count = log_count + 1
     local arg = { ... }
 
     local l = table.join({
@@ -3043,10 +3052,15 @@ show_debug_ui = function()
         nil, nil)
 
     newRow(layout)
-    ui.addCheckBox(layout, "enable_log", "启用日志", false)
+    ui.addCheckBox(layout, "enable_log", "启用日志", true)
+    ui.addCheckBox(layout, "write_log", "保存日志到本地", false)
 
     newRow(layout)
-    ui.addCheckBox(layout, "write_log", "保存日志到本地", false)
+    addTextView(layout, "最大日志时长(分钟)")
+    ui.addEditText(layout, "max_log_time", "15")
+    newRow(layout)
+    addTextView(layout, "最大日志行数")
+    ui.addEditText(layout, "max_log_count", "1000")
 
     newRow(layout)
     ui.addTabView(layout, "debug_tab")
@@ -5540,6 +5554,9 @@ update_state_from_debugui = function()
     max_login_times = str2int(max_login_times, math.huge)
     max_login_times_5min = str2int(max_login_times_5min, 3)
     milesecond_after_click = str2int(tap_wait, milesecond_after_click)
+    max_log_time = str2int(max_log_time, 15)
+    max_log_count = str2int(max_log_count, 1000)
+
     if not (always_enable_log or enable_log) then run = disable_log_wrapper(run) end
     QQ = (QQ or ''):commonmap():trim()
     if QQ:find('#') then

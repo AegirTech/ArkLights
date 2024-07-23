@@ -52,6 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
+release_date = "07.23 22:36"
 release_date = "07.23 22:57"
 update_announcement = '最近更新：萨米肉鸽(测试)，优化萨卡兹只投资，优化肉鸽界面'
 ui_submit_color = "#ff0d47a1"
@@ -63,7 +64,10 @@ ui_small_submit_width = -2
 ui_small_submit_height = -2
 network_timeout = 300
 matrixOcr = ocr
-
+log_time = os.time()
+log_count = 0
+max_log_time = 15
+max_log_count = 1000
 -- update_source = 'https://arklights.pages.dev'
 -- update_source = 'https://gitee.com/bilabila/arknights/raw/master'
 -- update_source_fallback = update_source
