@@ -1378,9 +1378,9 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                     if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
                     if string.finds(str, { "虫" }) then
                         if zl_event_solve(3, "萨卡兹_战略帮助") then return true end
-                    elseif string.finds(str, { '相遇', '解', '故事', '高空', '不散' }) then
+                    elseif string.finds(str, { '解', '故事', '高空', '不散' }) then
                         if zl_event_solve(2, "萨卡兹_战略帮助") then return true end
-                    elseif string.finds(str, { "萨米", "维", "女士" }) then
+                    elseif string.finds(str, { '相遇', "萨米", "维", "女士" }) then
                         if zl_event_solve(1, "萨卡兹_战略帮助") then return true end
                     end
                 end
