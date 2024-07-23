@@ -2595,8 +2595,10 @@ zl_event_solve = function(xx, 战略帮助)
     local 战略帮助 = 战略帮助 or "战略帮助"
     local xx = xx or 1
     log('不期而遇事件处理：' .. xx)
-    --local t = time()
-    if not wait(function()
+    if not wait(function(reset_wait_start_time)
+            if findOne("正在提交反馈至神经") then
+                reset_wait_start_time()
+            end
             if findOne(战略帮助) then return true end
             tap("萨卡兹_不期而遇选项点击列表" .. xx)
         end, 15) then
@@ -2694,10 +2696,11 @@ zl_repos_path = function(放弃本次探索)
                 t = time()
                 tap("战略返回")
             end
-        end, 5) then
-        log('超时未找到等待开始页面标题,准备返回')
-        --mizuki_restart("超时未找到等待开始页面标题")
+        end, 10) then
+        log('超时未找到等待开始页面标题,准备结束')
+        return
     end
+    local t = time()
     wait(function()
         tap({ scale(1708), scale(900) }) --采用固定的坐标，一直点击直到出现 '战略返回'
         if time() - t > 1 * 1000 then    --有时候前面战略返回点击了也不会退出，间隔1s再点击一次

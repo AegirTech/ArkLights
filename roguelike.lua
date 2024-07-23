@@ -308,10 +308,28 @@
 
     -- 思绪过多,丢掉一个
     if findOne("萨卡兹_思维负荷红") then
-        tap("萨卡兹_收起负荷干员")
-        appear("萨卡兹_等待负荷干员列表出现", 2)
-        tap("萨卡兹_第一个思绪")
-        appearTap("萨卡兹_思绪舍弃", 1)
+        findTap("萨卡兹_思维负荷红")
+        local t = time()
+        if not wait(function()
+                if time() - t > 1000 then
+                    t = time()
+                    tap('招募说明关闭') --第一次加载会有这个弹窗
+                end
+                if findOne('萨卡兹_点击负荷干员') then return true end
+            end, 6, .2) then
+            return false
+        end
+        if not wait(function()
+                local x = appear({
+                    "萨卡兹_第一个思绪", "萨卡兹_思绪舍弃"
+                })
+                log(2575, x)
+                tap(x)
+                if x == "萨卡兹_思绪舍弃" then appear('萨卡兹_第一个思绪') end
+                if not findOne("萨卡兹_第一个思绪") then return true end
+            end, 10, .2) then
+            return false
+        end
         ssleep(.5)
         appearTap("萨卡兹_收起负荷干员", 1.5)
         appear("萨卡兹_待编入负荷干员", 1)
@@ -442,7 +460,13 @@
         if not findOne("萨卡兹_不期而遇判断") then
             不期而遇关卡寻找()
             if not findOne("萨卡兹_不期而遇判断") then
-                return zl_repos_path('萨卡兹_放弃本次探索')
+                --第二列没有刷新出不期而遇，直接返回放弃探索
+                toast('没有刷新出不期而遇，准备放弃')
+                findTap('战略退出')
+                disappear('战略退出')
+                appear('萨卡兹_常规行动')
+                return
+                --return zl_repos_path('萨卡兹_放弃本次探索')
             end
         end
     end
@@ -539,9 +563,39 @@
     -- 取钱
     if zl_get_coin then zl_shop_get_coin() end
 
-    log('只是投币，准备退出')
-    findTap('战略退出')
-    return
+    if zl_only_coin then
+        log('只是投币，准备退出')
+        findTap('战略返回')
+        -- back()
+        --appear('萨卡兹_放弃本次探索', 3)
+        --只投币的话 会马上退出，有时候退出投资了，投资提示还没消失，会退出又进来，重复而卡住一段时间
+        if not wait(function()
+                if not findOne('战略返回') then tap({ scale(1720), scale(498) }) end
+                if findOne('返回确认界面') then return true end
+            end, 10, .1) then
+            return
+        end
+        if not wait(function()
+                if findOne("返回确认界面") then
+                    tap("右右确认")
+                end
+                if findOne('萨卡兹_戛然而止') then return true end
+            end, 10, .1) then
+            return
+        end
+        return true
+    end
+
+    --购买商品  后续做起来  蓝图分队刷等级可能更快，所以需要把购买商品留下来
+    if not wait(function()
+            if findOne("诡意行商离开") then return true end
+            tap("开包skip")
+        end, 5) then
+        return
+    end
+    for i = 1, 10 do if not zl_shop_buy() then break end end
+
+    return goto_next_level()
 end
 
 path.探索者的银淞止境前瞻投资 = function(lighter)

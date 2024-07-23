@@ -3486,12 +3486,12 @@ show_extra_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "zl_skip_hard", "不打驯兽", false)
     ui.addCheckBox(layout, "zl_only_coin", "只是投币", false)
-    ui.addCheckBox(layout, "zl_no_waste", "每8小时做日常", false)
+    ui.addCheckBox(layout, "zl_no_waste", "每8小时日常", false)
 
     newRow(layout)
     ui.addCheckBox(layout, "zl_blueprint", "使用蓝图分队", false)
     addTextView(layout, [[分队位置]])
-    ui.addEditText(layout, "zl_blueprint_position", [[2]])
+    ui.addEditText(layout, "zl_blueprint_position", [[3]]) --蓝图分队解锁的话 大多在第三个位置
 
     newRow(layout)
     ui.addCheckBox(layout, "zl_get_coin", "测试功能", false)
