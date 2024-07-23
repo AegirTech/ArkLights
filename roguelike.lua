@@ -229,7 +229,7 @@ sarkaz.关卡刷新 = function()
     appear("萨卡兹_出发前往2", 1)
     log("关卡刷新")
     ssleep(0.1)
-    if findOne("萨卡兹_出发前往不期而遇") then return end
+    if findOne("萨卡兹_出发前往不期而遇") then return true end
     local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
     log("刷新按钮位置", po)
     if po then
@@ -250,11 +250,82 @@ sarkaz.关卡刷新 = function()
         appearTap("萨卡兹_刷新确认")
         disappear("萨卡兹_刷新确认")
     end
+    if findOne("萨卡兹_出发前往不期而遇") then return true end
+    return false
+end
+
+sarkaz.肉鸽选路 = function()
+    log("肉鸽选路")
+    local arr = {}
+    local arr1 = {}
+    local 地图名
+    local 有路 = false
+
+    keepCapture()
+
+    for j = 1, 0, -1 do
+        if 有路 == false then
+            for i = 0, 6 do
+                log(i, j)
+                arr[i] = -1
+                log(scale(541 + 675 * j), scale(1090 - 818 + 91 * i))
+                log(getColor(scale(541 + 675 * j), scale(1090 - 818 + 91 * i)))
+                if cmpColor(scale(541 + 675 * j), scale(1090 - 818 + 91 * i), "054EDE|066AC7|C2C00B|0F98D0|D09404|789512", 0.95) > 0 then -- BOSS
+                    arr[i] = 0
+                elseif cmpColor(scale(541 + 675 * j), scale(1090 - 818 + 91 * i), "6643A9", 0.95) > 0 then                                -- BOSS
+                    arr[i] = 0
+                elseif cmpColor(scale(541 + 675 * j), scale(1090 - 818 + 91 * i), "823131", 0.95) > 0 then                                -- 紧急
+                    arr[i] = 1
+                elseif cmpColor(scale(541 + 675 * j), scale(1090 - 818 + 91 * i), "5B528D", 0.95) > 0 then                                -- 普通
+                    arr[i] = 2
+                elseif cmpColor(scale(541 + 675 * j), scale(1090 - 818 + 91 * i), "2D757F", 0.95) > 0 then                                -- 不期而遇
+                    arr[i] = 3
+                elseif cmpColor(scale(541 + 675 * j), scale(1090 - 818 + 91 * i), "7A631F", 0.95) > 0 then                                -- 去伪存真
+                    arr[i] = 4
+                elseif cmpColor(scale(541 + 675 * j), scale(1090 - 818 + 91 * i), "244882", 0.95) > 0 then                                -- 安全的角落
+                    arr[i] = 5
+                elseif cmpColor(scale(541 + 675 * j), scale(1090 - 818 + 91 * i), "10513F", 0.95) > 0 then                                -- 商店
+                    arr[i] = 6
+                end
+                if arr[i] > -1 then
+                    log(i, j, arr[i])
+                    -- 右边右路就返回,右边没路说明到达新一层
+                    有路 = true
+                    选路位置 = j
+                end
+            end
+        end
+    end
+    releaseCapture()
+    log("选路位置", 选路位置)
+
+    if 选路位置 == 0 then
+        到达层数 = 到达层数 + 1
+        log(到达层数)
+    end
+
+    arr1 = shallowCopy(arr)
+    table.sort(list, function(a, b) return a[1] < b[1] end)
+    log(arr)
+    log(arr1)
+    肉鸽选路 = arr[0]
+
+    toast("到达第" .. 到达层数 .. "层,选择节点" .. 节点(arr[0]))
+
+
+    for i = 0, 6 do
+        if arr1[i] == arr[0] then
+            tap(scale(541 + 675 * 选路位置), 838 - 102 * i)
+            ssleep(.5)
+            break
+        end
+    end
 end
 
 sarkaz.蓝图速通 = function()
     log('start skz spdrun')
     初始队员 = { "维什戴尔", "谷米", "卡达" }
+    到达层数 = 0
     肉鸽商品评分 = {}
     肉鸽参数 = {
         hp = 0,

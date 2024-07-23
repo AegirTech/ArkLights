@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.23 23:47"
+release_date = "07.24 01:03"
 update_announcement = '最近更新：萨米肉鸽(测试)，优化萨卡兹只投资'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -107,7 +107,7 @@ remove_old_log()
 remove_lr_ad()
 detectServer()
 predebug_hook()
-showUI()
+--showUI()
 loadUIConfig()
 applyRemoteConfig()
 restart_mode_hook()
@@ -115,14 +115,14 @@ update_state_from_debugui()
 check_crontab_on_start()
 cloud.startHeartBeat()
 
---debug_mode = true
+debug_mode = true
 if debug_mode then
     log("debug_mode")
     ssleep(1)
     -- 思绪过多,丢掉一个
-    -- local po = find_color("萨卡兹_刷新按钮范围", "FCFCF9", 1, 0.95)
+    sarkaz.肉鸽选路()
     -- log("刷新按钮位置", po)
-    -- exit()
+    exit()
     --initPngdata()
     -- 萨卡兹_分支选择()
     -- zl_shop_get_coin()
