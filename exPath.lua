@@ -850,6 +850,9 @@ path.萨卡兹的无终奇语前瞻投资 = function()
 
     --肉鸽 等级源石锭检查
     萨卡兹肉鸽完成 = zl_level_coin_inquire('萨卡兹_常规行动', '萨卡兹_等级检测范围', '萨卡兹_源石锭检测范围')
+    if 萨卡兹肉鸽完成 then
+        return
+    end
 
     -- 放弃探索
     if findOne("萨卡兹_放弃本次探索") then
