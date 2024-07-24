@@ -6736,6 +6736,8 @@ path.前瞻投资 = function(lighter)
         captureqqimagedeliver("INFO", "肉鸽任务完成", table.join(qqmessage,
                 ' ') .. " " ..
             (zl_level or '') .. "等级已满")
+        傀影肉鸽完成 = true
+        return
     end
 
     -- 检测源石锭
@@ -6779,7 +6781,10 @@ path.前瞻投资 = function(lighter)
         captureqqimagedeliver("INFO", "肉鸽任务完成", table.join(qqmessage,
                 ' ') .. " " ..
             (zl_coin or '') .. "源石锭已满")
+        傀影肉鸽完成 = true
+        return
     end
+    log(4192)
 
     -- 等级/源石锭 阶段性通知
     if not zl_captcha_time or time() - zl_captcha_time > 3600 * 1000 then
@@ -6794,7 +6799,6 @@ path.前瞻投资 = function(lighter)
         captureqqimagedeliver("INFO", "肉鸽任务推送",
             table.join(qqmessage, ' ') .. " " .. info)
     end
-
     -- if not findOne("常规行动") then return end
 
     -- log(zl_coin, zl_level)
@@ -6878,7 +6882,7 @@ path.前瞻投资 = function(lighter)
         return
         -- return path.fallback.签到返回()
     end
-
+    log(4199)
     -- 回到常规行动？
 
     -- 点幕后筹备后继续
