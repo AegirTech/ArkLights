@@ -7906,7 +7906,19 @@ path.肉鸽任务 = function()
     end
 
     if zl_sami then
-
+        log("萨卡兹")
+        萨米肉鸽完成 = false
+        zl_skip_coin = zl_skip_coin_sami
+        zl_only_coin = zl_only_coin_sami
+        zl_need_goods = zl_need_goods_sami
+        zl_max_level = zl_max_level_sami
+        zl_max_coin = zl_max_coin_sami
+        while true do
+            if 萨米肉鸽完成 then
+                break
+            end
+            path.探索者的银淞止境前瞻投资()
+        end
     end
 
     if zl_skz then
