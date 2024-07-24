@@ -2819,6 +2819,7 @@ zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检�
             update_state_from_ui()
             run(no_extra_job)
         end
+        log("结束zl_level")
         return true
         -- stop("肉鸽结束", '', false, true)
     end
@@ -2830,6 +2831,7 @@ zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检�
             update_state_from_ui()
             run(no_extra_job)
         end
+        log("结束zl_coin")
         return true
         -- stop("肉鸽结束", '', false, true)
     end
@@ -2868,6 +2870,8 @@ zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检�
         captureqqimagedeliver("INFO", "肉鸽任务完成", table.join(qqmessage,
                 ' ') .. " " ..
             (zl_level or '') .. "等级已满")
+        log("等级已满")
+        return true
     end
 
 
@@ -2880,6 +2884,8 @@ zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检�
         captureqqimagedeliver("INFO", "肉鸽任务完成", table.join(qqmessage,
                 ' ') .. " " ..
             (zl_coin or '') .. "源石锭已满")
+        log("源石锭已满")
+        return true
     end
 
     -- 等级/源石锭 阶段性通知
