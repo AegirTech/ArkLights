@@ -2078,10 +2078,10 @@ trySolveCaptureFreeServer = function(rect)
     --ret数据出问题时候
     if not status then return end
     log(ret)
-    local distance = ret.target[1].距离
+    local distance = ret.target[1].distance
     local distance = str2int(distance, 0)
     log("distance:", distance)
-    if distance < 0 then
+    if distance < 1 then
         log(distance, "图片信息错误")
         releaseCapture() -- 释放捕获状态
         return false
@@ -2095,17 +2095,34 @@ trySolveCaptureFreeServer = function(rect)
         releaseCapture() -- 释放捕获状态
         return
     end
-
     log("准备开始滑动")
+    local sx, sy = scale(702), scale(686)
+    --  修正偏移
+    distance = distance + scale(5)
+    log(sx, sy)
+    -- 用于模拟滑动轨迹
     gesture({
         {
-            point = { { scale(460), scale(480) }, { distance + scale(460), scale(480) } },
+            point = {
+                { sx,                                        sy }, { sx + distance, sy },
+                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance + scale(math.random(5, 20)), sy },
+                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance + scale(math.random(5, 20)), sy },
+                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance - scale(math.random(5, 20)), sy },
+                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance - scale(math.random(5, 20)), sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+                { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+                { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+                { sx + distance, sy },
+            },
             start = 0,
-            duration = 600,
+            duration = 1000,
         },
     })
     log("滑动结束")
-    ssleep(2)        -- 等待验证码关闭或者重试
+    ssleep(1.5)      -- 等待验证码关闭或者重试
     releaseCapture() -- 释放捕获状态
 end
 
