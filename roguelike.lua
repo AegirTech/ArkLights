@@ -1410,8 +1410,7 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
             tap("萨米_第一次作战上")
             if not findOne('萨米_密文版') then return true end
         end) then
-        in_fight_return = "无法进入作战"
-        toast(in_fight_return)
+        toast("无法进入作战")
         zl_repos_path("萨米_放弃本次探索")
         goto fight_first
     end

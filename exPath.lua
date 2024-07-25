@@ -1122,6 +1122,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     ::fight_first::
     log("准备进入第一关作战")
     ssleep(.5)
+    if not 萨卡兹路线[1] then return end --有时候值为空会出错
     local 第一列 = 萨卡兹路线[1][1]
     table.remove(萨卡兹路线, 1)
     if not wait(function()

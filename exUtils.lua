@@ -2518,7 +2518,7 @@ zl_fight_after_sami = function()
             if findOne("萨米_战略帮助") then drop_page = true end
             local x = appear({
                 "萨米_目标生命拾取", "萨米_收藏品拾取", "萨米_招募券拾取",
-                "萨米_源石锭拾取", '萨米_道具收下',
+                "萨米_源石锭拾取", '萨米_道具收下', '萨米_密文版拿走',
                 '萨米_密文版拾取', "萨米_密文版选择左", "萨米_已领取所有奖励"
             })
             log(2555, x)
@@ -2698,7 +2698,7 @@ zl_repos_path = function(放弃本次探索)
             end
         end, 10) then
         log('超时未找到等待开始页面标题,准备结束')
-        return
+        return path.跳转('首页')
     end
     local t = time()
     wait(function()
@@ -2836,10 +2836,6 @@ zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检�
         -- stop("肉鸽结束", '', false, true)
     end
 
-    if zl_max_level == 'max' then
-        local now_month = str2int(os.date("%m"), 0) --获取当前月份
-        zl_max_level = 15 * (now_month - 7) + 50    -- 2025年再处理一次
-    end
     -- 检测等级 ，输入检测范围的名字
     --例如   zl_number_check()
     local zl_number_check = function(检测范围)
