@@ -1137,8 +1137,6 @@ show_extra_ui = function()
     addTextView(rouge_layout_萨卡兹, [[源石锭]])
     ui.addEditText(rouge_layout_萨卡兹, "zl_max_coin_skz", [[]])
 
-
-
     -- newRow(layout)
     -- addTextView(layout, "===========肉鸽相关===========")
 
@@ -1167,22 +1165,6 @@ show_extra_ui = function()
     --               [[999源石锭刷取耗时与难度、幕后筹备无关，与是否通关三结局、网络延迟有关，双结局耗时10时14分(97个/时)，三结局耗时8时10分(122个/时)，低网络延迟+三结局耗时7时21分(135个/时)。]] ..
     --               [[如需刷等级(蜡烛)，应选普通难度，勾“多点蜡烛”与“跳过投币”。]] ..
     --               [[商品需求可填商品名称关键字，用空格隔开(如填“玩 金 骑士”)，则刷到其中任一商品就会停止并通知QQ]])
-    -- newRow(layout)
-    -- addTextView(layout, "===========促融共竞===========")
-    -- newRow(layout)
-    -- addTextView(layout, "组队选择")
-    -- ui.addSpinner(layout, "extra_crgj_select", { "参与方", "房主" }, 0)
-
-    -- newRow(layout)
-    -- addTextView(layout, "房间号")
-    -- ui.addEditText(layout, "extra_crgj_room", "")
-
-    -- newRow(layout)
-    -- addTextView(layout, "房主请在进入房间后的页面开始，仅支持组队，不能用于匹配作战")
-    -- newRow(layout)
-    -- addButton(layout, nil, "促融共竞开始",
-    --     make_jump_ui_command(layout, nil,
-    --         "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     newRow(layout)
     addTextView(layout, "===========生息演算===========")
