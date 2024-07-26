@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.25 00:00"
+release_date = "07.26 18:38"
 update_announcement = '最近更新：萨米肉鸽(测试)，优化萨卡兹只投资'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -77,6 +77,7 @@ skill_path = getWorkPath() .. '/skill.zip'
 skill_extract_path = getWorkPath() .. '/skill'
 
 require('util')
+require('interface')
 require("point")
 require("path")
 require("tag")
@@ -90,7 +91,6 @@ require("sha2")
 require("skland")
 require("prts")
 require("exOcr")
-
 
 load(after_require_hook or '')()
 
