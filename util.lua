@@ -3935,6 +3935,7 @@ hd_wrapper = function(func)
     return f
 end
 
+-- 调试界面 某些功能的默认值
 update_state_from_debugui = function()
     multi_account_choice_weekday_only = expand_number_config(
         multi_account_choice_weekday_only or '')
@@ -4086,6 +4087,7 @@ strOr = function(x, y)
     return y or ''
 end
 str = tostring
+int = tonumber
 
 get = function(Obj, Field, ...)
     if Obj == nil or Field == nil or type(Obj) ~= 'table' then
@@ -4168,13 +4170,11 @@ ttshitu_report = function()
     log(ret, code)
 end
 
---释放耗时任务设备
-cloud_server = cloud_server or ''
-releaseDeviceByTaskInfoUrl = cloud_server .. "releaseDeviceByTaskInfo"
-releaseDeviceByTaskInfo = function()
-    local data = { token = cloud_device_token, taskType = cloud_task.taskType }
-    local ret, code = httpPost(releaseDeviceByTaskInfoUrl,
-        JsonEncode(data), 30,
-        "Content-Type: application/json;charset=UTF-8")
-    log(ret, code)
+isPhoneNumber = function(str)
+    local str = str:gsub("%D", "")
+    if #str == 11 then
+        return true
+    else
+        return false
+    end
 end

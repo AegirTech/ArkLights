@@ -349,7 +349,7 @@ Tales_within_the_sand.检查代币数量 = function()
         if cloud_get_task then
             log("云控上报")
             captureqqimagedeliver("INFO", "生息任务结束1", "繁荣值" .. nx, true)
-            releaseDeviceByTaskInfo()
+            cloud.releaseDeviceByTaskInfo()
         else
             log("非云控")
             log("生息演算任务完成,繁荣值" .. nx)
@@ -362,7 +362,7 @@ Tales_within_the_sand.检查代币数量 = function()
         if cloud_get_task then
             log("云控上报")
             captureqqimagedeliver("INFO", "生息任务结束2", "繁荣值" .. nx, true)
-            releaseDeviceByTaskInfo()
+            cloud.releaseDeviceByTaskInfo()
         else
             log("非云控")
             log("生息演算任务完成,繁荣值" .. nx)

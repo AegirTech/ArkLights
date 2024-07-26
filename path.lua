@@ -418,140 +418,6 @@ path.base = {
 
 }
 
-auto_skill = function()
-    --自己手打的时候自动放技能
-    local skillArray = {}
-    local skillUseOnce = { 横扫架势 = 0, }
-    local skillFind
-    local sameSkillInterval
-    local blackList = { { -1, -1 } }
-    local timeTick = os.time()
-    print(blackList)
-    local skillRelease = function()
-        print("try skillRelease")
-        wait(function()
-            tap("开技能")
-            if disappear("生命值蓝", 1) then
-                return true
-            else
-                tap("点cost")
-                disappear("生命值蓝", 1)
-            end
-        end)
-    end
-
-    local isInBlackList = function(tb1, tb2)
-        if tb2 and #tb2 > 0 then
-            for _, v in ipairs(tb2) do
-                if math.abs(tb1[1] - v[1]) + math.abs(tb1[2] - v[2]) < 20 then
-                    return true
-                end
-            end
-        end
-    end
-
-
-    while true do
-        skillFind1 = findOne("技能亮", 0.93)
-        skillFindAll = findOnes("技能亮", 0.93)
-        --[===[        if skillFind then
-		log(skillFind)
-		log(skillFindAll)
-		end]===]
-
-
-        startBattle = findOne("开始行动")
-        --startBattle = false
-        if startBattle then
-            blackList = { { -1, -1 } }
-            skillArray = {}
-            log("重新开始战斗，清理")
-        end
-
-
-
-        log(skillFindAll)
-
-        for i = 1, #skillFindAll do
-            skillFind = { skillFindAll[i]["x"], skillFindAll[i]["y"] }
-            log(skillFind)
-
-            -- xy坐标 + 时间戳
-            local skillUse = { skillFind[1], skillFind[2], os.time() }
-
-            -- 时间差
-            local usedTimeGap = -1
-            -- 查到的下标
-            local findIndex = 0
-
-            for i = 1, #skillArray do
-                --计算坐标绝对值差
-                local dx = skillArray[i][1] - skillUse[1]
-                local dy = skillArray[i][2] - skillUse[2]
-                log("坐标差")
-                log(math.abs(dx) + math.abs(dy))
-                if math.abs(dx) + math.abs(dy) < 10 then
-                    log("搜索到历史使用记录")
-                    findIndex = i
-                    usedTimeGap = skillUse[3] - skillArray[i][3]
-                    log("使用时间差")
-                    log(usedTimeGap)
-                    goto searchResult
-                end
-            end
-
-            ::searchResult::
-
-
-            if usedTimeGap ~= -1 and usedTimeGap < 10 then
-                log("时间差过小跳过执行,忽略本次查找到的结果")
-                goto continue
-            end
-
-            if findIndex == 0 then
-                -- 存入使用记录
-                log("新增使用记录")
-                table.insert(skillArray, skillUse)
-            end
-
-            if findIndex ~= 0 then
-                -- 存入使用记录
-                log("存入使用记录")
-                skillArray[findIndex] = skillUse
-            end
-
-
-            if not isInBlackList(skillFind, blackList) then
-                tap({ skillFind[1], skillFind[2] + scale(140) })
-                -- appear("技能ready", 5)
-                ssleep(0.1)
-                appear("生命值蓝", 5)
-                --ocr 干员技能名字
-                local skillName = ocr("技能名称范围")
-                if skillName and #skillName > 0 then
-                    print(blackList, skillFind)
-                    if skillName[1]["text"] == "横扫架势" then
-                        table.insert(blackList, skillFind)
-                        if skillUseOnce["横扫架势"] == 0 then
-                            skillUseOnce["横扫架势"] = 1
-                            print(blackList)
-                        else
-                            tap("点cost")
-                            disappear("生命值蓝", 1)
-                            goto noSkillRelease
-                        end
-                    end
-                end
-                skillRelease()
-                ::noSkillRelease::
-            end
-            ::continue::
-        end
-        ssleep(0.2)
-    end
-    exit()
-end
-
 path.bilibili_login = {
     b服年度报告 = function()
         tap("b服年度报告")
@@ -1747,9 +1613,6 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
 end
 
 start_time = parse_time("202101010400")
-
--- 对于不同用户的首次任务
-init_state = function() end
 
 -- 对于单个用户的不同任务
 update_state = function()
@@ -5305,10 +5168,6 @@ path.活动 = function(x)
         return
     end
     log("活动", x, skip_guide)
-    -- skip_guide = false
-    -- if removeTrailingDigits(last_guide) == removeTrailingDigits(x) then
-    --     skip_guide = true
-    -- end
 
     if not skip_guide then
         path.跳转("首页")
@@ -7963,7 +7822,6 @@ path.跳过剧情 = function()
 end
 
 path.生息沙洲遗闻 = function()
-    -- load(sand_code)()
     沙洲遗闻()
 end
 
@@ -8537,15 +8395,6 @@ end
 
 path.自动培养 = function()
     raise.auto_raise()
-end
-
-isPhoneNumber = function(str)
-    local str = str:gsub("%D", "")
-    if #str == 11 then
-        return true
-    else
-        return false
-    end
 end
 
 path.游戏监控 = function()

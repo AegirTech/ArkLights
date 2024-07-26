@@ -307,6 +307,15 @@ m.sanReport = function()
         'Content-Type: application/json')
 end
 
+--释放耗时任务设备
+m.releaseDeviceByTaskInfo = function()
+    local data = { token = cloud_device_token, taskType = cloud_task.taskType }
+    local ret, code = httpPost(m.server .. "releaseDeviceByTaskInfo",
+        JsonEncode(data), 30,
+        "Content-Type: application/json;charset=UTF-8")
+    log(ret, code)
+end
+
 restartSimpleMode = function(data)
     if not type(data) == 'table' then return end
     if not table.includes({ "daily", "rogue", "sand_fire" }, data.taskType) then return end
