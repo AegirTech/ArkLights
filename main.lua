@@ -87,7 +87,7 @@ require("tag")
 require('skill')
 --云控
 require("cloud")
---其他功能实现（基本不依靠懒人框架的实现内容）
+--其他功能实现（部分不依靠懒人框架的实现内容）
 require("func")
 --肉鸽
 require("roguelike")

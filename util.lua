@@ -4305,6 +4305,7 @@ nDeploy3 = function(src, dst, total)
     deploy(x1, dst[1], dst[2], dst[3])
 end
 
+-- 使用root权限判断文件夹是否存在
 folder_exists = function(folderpath)
     local ret = exec2(string.format([[su root sh -c 'if [ -d "%s" ]; then echo "true"; else echo "false"; fi']],
         folderpath))
@@ -4315,6 +4316,7 @@ folder_exists = function(folderpath)
     end
 end
 
+-- 使用root权限判断文件是否存在
 file_exists = function(filepath)
     local ret = exec2(string.format([[su root sh -c 'if [ -f "%s" ]; then echo "true"; else echo "false"; fi']], filepath))
     if string.find(ret, "true") then
@@ -4324,38 +4326,9 @@ file_exists = function(filepath)
     end
 end
 
+-- 使用root权限复制文件
 copy_files = function(s, d)
     exec(string.format([[su root sh -c 'cp -r "%s" "%s"']], s, d))
-end
-
--- 从字符串中提取数字，返回table
-extractNumbers = function(str)
-    local pattern = "%d+"
-    local numbers = {}
-    for number in string.gmatch(str, pattern) do
-        table.insert(numbers, tonumber(number))
-    end
-    return numbers
-end
-
--- 点击并判断前后颜色是否改变 默认比较点击位置
-tap_cmpcolor = function(x, colorposition, confidence, wait_time)
-    if type(x) == "string" and not x:find(coord_delimeter) then
-        x = point[x]
-        if type(x) == "string" then
-            local p = x:find(coord_delimeter)
-            local q = x:find(coord_delimeter, p + 1)
-            x = map(tonumber, { x:sub(1, p - 1), x:sub(p + 1, q - 1) })
-        end
-    end
-    if type(x) ~= "table" then return false end
-    local wait_time = wait_time or 0.1
-    local confidence = confidence or default_findcolor_confidence
-    local colorposition = colorposition or x
-    local oricol = getColor(colorposition[1], colorposition[2])
-    tap(x)
-    ssleep(wait_time)
-    return (not compareColor(colorposition[1], colorposition[2], string.format("#%s", oricol), confidence))
 end
 
 contains_character = function(str, table)
@@ -4388,41 +4361,6 @@ find_color = function(v, color, dir, condifence)
         return { x, y }
     else
         return nil
-    end
-end
-
--- 给定需要导航的活动坐标，判断是否已经三星通关，需要滑动后判断
-fight_perfect_pass = function(tap_coordinate)
-    -- 宽200 高50 00B2FF
-    area = { tap_coordinate[1] - scale(130), tap_coordinate[2] - scale(50), tap_coordinate[1] + scale(130),
-        tap_coordinate[2] + scale(50) }
-    log(area)
-    local count, b, g, r = 0, 0, 0, 0
-    keepCapture()
-    for y = area[2], area[4], 1 do
-        for x = area[1], area[3], 1 do
-            ori_color = getPixelColor(x, y)
-            b, g, r = colorToRGB(ori_color)
-            if r >= 0 and r <= 8 and g >= 134 and g <= 178 and b >= 198 and b <= 255 then
-                count = count + 1
-            end
-        end
-    end
-    releaseCapture()
-    local x = count / scale(scale(1300))
-    log(count, x)
-    if math.abs(x - 1) <= 0.03 then
-        return true
-    else
-        return false
-    end
-end
-
-int_is_in_range = function(ori, target, range)
-    if math.abs(ori - target) <= range then
-        return true
-    else
-        return false
     end
 end
 
