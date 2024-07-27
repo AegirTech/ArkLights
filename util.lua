@@ -4178,3 +4178,254 @@ isPhoneNumber = function(str)
         return false
     end
 end
+
+-- 以字符串格式找色
+findOneStr = function(x, confidence)
+    -- 每5秒确认游戏在前台
+    -- if (time() - findOne_game_up_check_last_time > 5000) then
+    --     findOne_game_up_check_last_time = time()
+    --     wait_game_up()
+    -- end
+
+    confidence = confidence or default_findcolor_confidence
+
+    if type(x) == "string" then
+        -- 控制截图频率
+        local current = time()
+        if findOne_interval > 0 and current - findOne_last_time > findOne_interval then
+            findOne_last_time = time()
+            keepCapture()
+        end
+
+        local pos
+
+        if cmpColorEx(x, confidence) == 1 then
+            pos = { str2int(x:match("^(%d+)|"), 0), str2int(x:match("^%d+|(%d+)|"), 0) }
+        end
+
+        return pos
+    end
+end
+
+-- 单点找色
+checkPointColor = function(pInfo, confidence)
+    -- 每5秒确认游戏在前台
+    -- if (time() - findOne_game_up_check_last_time > 5000) then
+    --     findOne_game_up_check_last_time = time()
+    --     wait_game_up()
+    -- end
+
+    confidence = confidence or default_findcolor_confidence
+
+    -- 控制截图频率
+    local current = time()
+    if findOne_interval > 0 and current - findOne_last_time > findOne_interval then
+        findOne_last_time = time()
+        keepCapture()
+    end
+
+    if type(pInfo) == "table" then
+        colorStr = pInfo[1] .. "|" .. pInfo[2] .. "|" .. pInfo[3]
+    elseif type(pInfo) == "string" then
+        colorStr = pInfo
+    end
+
+    -- 比色
+    if cmpColorEx(colorStr, confidence) == 1 then
+        return true
+    else
+        return false
+    end
+end
+
+-- 等待单点颜色出现
+waitUntilFindColor = function(pInfo, time)
+    local time = time or 5
+    return wait(function()
+        if checkPointColor(pInfo) then
+            return true
+        end
+    end, time)
+end
+
+-- 持续点击直到找到指定颜色
+tapUntilCheckedPointColor = function(pTap, pInfo, msg, sleep, time)
+    log(msg)
+    local sleep = sleep or 0
+    local time = time or 5
+    if wait(function()
+            if checkPointColor(pInfo) then
+                log(msg, "成功")
+                return true
+            end
+            tap({ pTap[1], pTap[2] })
+            ssleep(sleep)
+        end, time) then
+        return true
+    else
+        log("持续点击直到找到指定颜色失败")
+        return false
+    end
+end
+
+doIfCheckedColor = function(pInfo, func, time)
+    time = time or 15
+    if checkPointColor(pInfo) then
+        wait(function()
+            return func()
+        end, time)
+    end
+end
+
+tapIfCheckedColor = function(pTap, pInfo)
+    doIfCheckedColor(pInfo,
+        function()
+            tap({ pTap[1], pTap[2] })
+            return true
+        end)
+end
+
+-- 新deploy3 原deploy3有计算bug
+-- src: 从右数第几个干员
+-- dst: 目标位置，格式{x,y,direction} direction: 上1 右2 下3 左4
+-- total: 当前有几个干员，不同干员数影响干员位置
+nDeploy3 = function(src, dst, total)
+    total = total or 1
+    local max_op_width = scale(178) --  in loose mode, each operator's width
+    local x1
+    if total * max_op_width > screen.width then
+        -- tight
+        max_op_width = screen.width // total
+        x1 = src * max_op_width - max_op_width // 2
+    else
+        -- loose
+        -- x1 = screen.width - (total - src) * max_op_width - max_op_width // 2
+        x1 = screen.width - src * max_op_width + max_op_width // 2
+    end
+    deploy(x1, dst[1], dst[2], dst[3])
+end
+
+folder_exists = function(folderpath)
+    local ret = exec2(string.format([[su root sh -c 'if [ -d "%s" ]; then echo "true"; else echo "false"; fi']],
+        folderpath))
+    if string.find(ret, "true") then
+        return true
+    else
+        return false
+    end
+end
+
+file_exists = function(filepath)
+    local ret = exec2(string.format([[su root sh -c 'if [ -f "%s" ]; then echo "true"; else echo "false"; fi']], filepath))
+    if string.find(ret, "true") then
+        return true
+    else
+        return false
+    end
+end
+
+copy_files = function(s, d)
+    exec(string.format([[su root sh -c 'cp -r "%s" "%s"']], s, d))
+end
+
+-- 从字符串中提取数字，返回table
+extractNumbers = function(str)
+    local pattern = "%d+"
+    local numbers = {}
+    for number in string.gmatch(str, pattern) do
+        table.insert(numbers, tonumber(number))
+    end
+    return numbers
+end
+
+-- 点击并判断前后颜色是否改变 默认比较点击位置
+tap_cmpcolor = function(x, colorposition, confidence, wait_time)
+    if type(x) == "string" and not x:find(coord_delimeter) then
+        x = point[x]
+        if type(x) == "string" then
+            local p = x:find(coord_delimeter)
+            local q = x:find(coord_delimeter, p + 1)
+            x = map(tonumber, { x:sub(1, p - 1), x:sub(p + 1, q - 1) })
+        end
+    end
+    if type(x) ~= "table" then return false end
+    local wait_time = wait_time or 0.1
+    local confidence = confidence or default_findcolor_confidence
+    local colorposition = colorposition or x
+    local oricol = getColor(colorposition[1], colorposition[2])
+    tap(x)
+    ssleep(wait_time)
+    return (not compareColor(colorposition[1], colorposition[2], string.format("#%s", oricol), confidence))
+end
+
+contains_character = function(str, table)
+    for _, char in ipairs(table) do
+        if string.find(str, char) then
+            return char
+        end
+    end
+    return nil
+end
+
+find_color = function(v, color, dir, condifence)
+    local color = color or "000000"
+    if v == nil then v = { 0, 0, 0, 0 } end
+    if v == true then return true end
+    if type(v) == "function" then return v() end
+    if type(v) == "string" and not v:find(coord_delimeter) then v = point[v] end
+    if type(v) == "string" and v:find(coord_delimeter) then return nil end
+    if #v ~= 4 then return nil end
+    local dir = dir or 1
+    -- 0: 表示从左上向右下；
+    -- 1: 表示从中心往四周查找；
+    -- 2: 表示从右下向左上查找；
+    -- 3: 表示从左下向右上查找；
+    -- 4：表示从右上向左下查找
+    local condifence = condifence or default_findcolor_confidence
+    local index, x, y = findColor(v[1], v[2], v[3], v[4], color, dir, condifence)
+    -- log("find_color", v, index, x, y)
+    if x > -1 and y > -1 then
+        return { x, y }
+    else
+        return nil
+    end
+end
+
+-- 给定需要导航的活动坐标，判断是否已经三星通关，需要滑动后判断
+fight_perfect_pass = function(tap_coordinate)
+    -- 宽200 高50 00B2FF
+    area = { tap_coordinate[1] - scale(130), tap_coordinate[2] - scale(50), tap_coordinate[1] + scale(130),
+        tap_coordinate[2] + scale(50) }
+    log(area)
+    local count, b, g, r = 0, 0, 0, 0
+    keepCapture()
+    for y = area[2], area[4], 1 do
+        for x = area[1], area[3], 1 do
+            ori_color = getPixelColor(x, y)
+            b, g, r = colorToRGB(ori_color)
+            if r >= 0 and r <= 8 and g >= 134 and g <= 178 and b >= 198 and b <= 255 then
+                count = count + 1
+            end
+        end
+    end
+    releaseCapture()
+    local x = count / scale(scale(1300))
+    log(count, x)
+    if math.abs(x - 1) <= 0.03 then
+        return true
+    else
+        return false
+    end
+end
+
+int_is_in_range = function(ori, target, range)
+    if math.abs(ori - target) <= range then
+        return true
+    else
+        return false
+    end
+end
+
+get_cpu_arch = function()
+    return exec("getprop ro.product.cpu.abi")
+end

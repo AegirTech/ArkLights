@@ -67,28 +67,29 @@ log_time = os.time()
 log_count = 0
 max_log_time = 15
 max_log_count = 1000
--- update_source = 'https://arklights.pages.dev'
--- update_source = 'https://gitee.com/bilabila/arknights/raw/master'
--- update_source_fallback = update_source
 
 update_source = 'http://ark.aegirtech.com:8080'
 new_script_path = getWorkPath() .. '/newscript.lr'
 skill_path = getWorkPath() .. '/skill.zip'
 skill_extract_path = getWorkPath() .. '/skill'
 
+--工具类函数
 require('util')
+--界面
 require('interface')
+--所有的点位
 require("point")
+--日常任务实现
 require("path")
+--公招标签
 require("tag")
+--基建
 require('skill')
-require("fight")
 --云控
 require("cloud")
+--其他功能实现（基本不依靠懒人框架的实现内容）
+require("func")
 --肉鸽
-require("exPoint")
-require("exPath")
-require("exUtils")
 require("roguelike")
 --生息
 require("sand")
