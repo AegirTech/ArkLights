@@ -1413,15 +1413,6 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
         back()
     end
 
-    --彩六主大厅适配
-    if findOne("彩六主大厅") then
-        if not wait(function()
-                if not findOne("彩六主大厅") then return true end
-                tap("生息演算_全局_返回")
-            end, 5) then
-        end
-    end
-
     -- 生息演算页面适配
     if extra_mode == "生息沙洲遗闻" and findOne("生息底栏干员按钮") then
         log("生息")
@@ -6446,19 +6437,6 @@ path.前瞻投资 = function(lighter)
     -- 防止无障碍节点获取失效，而反复重启游戏（在7时42分记录中浪费了2分多钟）
     -- if zl_disable_game_up_check then disable_game_up_check = true end
     -- 3.6.0发现当节点获取失效时，点击、找色其实都出问题了
-    --
-    -- path.base.账号登录 = function()
-    --   if not wait(function()
-    --     tap("账号登录返回")
-    --     if disappear("账号登录") then return true end
-    --   end, 10) then stop("登录需要密码", false) end
-    -- end
-    -- path.base.手机验证码登录 = function()
-    --   if not wait(function()
-    --     tap("账号登录返回")
-    --     if disappear("手机验证码登录") then return true end
-    --   end, 10) then stop("登录需要密码", false) end
-    -- end
 
     if findOne("凋零残响") then
         -- local last_time_see = time()
