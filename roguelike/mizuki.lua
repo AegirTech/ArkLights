@@ -1706,10 +1706,138 @@ path.水月与深蓝之树前瞻投资_旧 = function()
     for i = 1, 4 do if not mizuki_start_from_select() then break end end
 end
 
+--水月肉鸽战斗后拾取战利品
+mizuki_fight_after = function()
+    local drop_page = false
+    if not wait(function()
+            if not drop_page then tap("战略确认") end
+            if findOne("水月_战略帮助") then drop_page = true end
+            local x = appear({
+                "水月_源石锭收下", "水月_投资次数收下", "水月_招募券收下",
+                "水月_目标生命收下", '水月_收藏品收下', '水月_用武器砸'
+            })
+            log(2555, x)
+            tap(x)
+            -- if x == '萨米_密文版拾取' then
+            --     appear('萨米_密文版选择左', 1)
+            --     findTap('萨米_密文版选择左')
+            -- end
+
+            -- 误触到招募券处理
+            if findOne("确认招募") then
+                -- 放弃招募
+                if zl_only_coin then
+                    if not wait(function()
+                            if not findOne("确认招募") then return true end
+                            tap("放弃招募")
+                        end, 5) then
+                        return
+                    end
+
+                    if not wait(function()
+                            if findOne("编队") then return true end
+                            tap("右右确认")
+                        end, 5) then
+                        return
+                    end
+                else
+                    -- 招募
+                    if findOne("确认招募") then
+                        local start_time = time()
+                        if not wait(function()
+                                if findOne("编队") then return true end
+                                if findOne("返回确认界面") then
+                                    if time() - start_time < 2000 then
+                                        tap("左取消")
+                                    else
+                                        tap("右确认")
+                                    end
+                                    disappear("返回确认界面")
+                                    ssleep(.5)
+                                end
+                                tap("近卫招募列表" .. 1)
+                                findTap("确认招募")
+                                tap("开包skip")
+                            end, 10) then
+                            return
+                        end
+                    end
+                end
+            end
+
+            if not findOne("战略返回") then
+                if not appear({ "战略返回", "水月_战略帮助" }) then
+                    tap("战略确认")
+                end
+            end
+            if findAny({ "水月_常规行动", "水月_战略帮助" }) and not findOne("确认招募") then
+                return true
+            end
+        end, 20) then
+        return false
+    end
+    return true
+end
+
+--水月不期而遇处理
+--水月_骰子确认
+mizuki_event_solve = function()
+    --判断不期而遇事件，并处理
+    log('水月 处理不期而遇事件')
+    --水月的事件处理，需要点击骰子，所以单独弄
+    local zl_event_solve = function(xx)
+        local xx = xx or 1
+        local tttap = time()
+        log('不期而遇事件处理：' .. xx)
+        if not wait(function(reset_wait_start_time)
+                if time() - tttap > 1.5 * 1000 and findOne('水月_骰子确认') then
+                    tap('水月_骰子确认')
+                    tttap = time()
+                end
+                if findOne("正在提交反馈至神经") then
+                    reset_wait_start_time()
+                end
+                if findOne('水月_战略帮助') then return true end
+                tap("萨卡兹_不期而遇选项点击列表" .. xx)
+            end, 15) then
+            return false
+        end
+        return true
+    end
+    if not wait(function()
+            local x = function()
+                local incident
+                if not wait(function()
+                        incident = ocr("水月_不期而遇事件名字检测")
+                        if incident[1] then return true end
+                        tap('战略确认')
+                        if findOne("水月_战略帮助") then return true end
+                    end, 5, .3) then
+                    return false
+                end
+                if not incident[1] then return false end
+                local str = incident[1].text
+                log('事件名字：', str)
+                if string.finds(str, { '郁金香' }) then
+                    if zl_event_solve(4, '水月_战略帮助') then return true end
+                elseif string.finds(str, { '狂徒妄念', '家园' }) then
+                    if zl_event_solve(3, '水月_战略帮助') then return true end
+                elseif string.finds(str, { '开端', '海外', '学者', '扩散', '狗眼' }) then
+                    if zl_event_solve(2, '水月_战略帮助') then return true end
+                elseif string.finds(str, { '继承', '如聚', '天灾', '悬高' }) then
+                    if zl_event_solve(1, '水月_战略帮助') then return true end
+                end
+            end
+            if x() then return true end
+            if findOne("水月_战略帮助") then return true end
+        end, 30) then
+        return false
+    end
+    return true
+end
 
 path.水月与深蓝之树前瞻投资 = function()
-    log(running .. ' start')
-
+    log('水月与深蓝之树前瞻投资 start')
     if findOne("水月_浪离灯熄") then
         wait(function(reset_wait_start_time)
             if not disappear({ "水月_常规行动", "面板" }, 1) then
@@ -1731,7 +1859,7 @@ path.水月与深蓝之树前瞻投资 = function()
         toast(in_fight_return or "重开")
         ssleep(2)
         if not request_memory_clean() then
-            path.萨米测试(true)
+            path.水月与深蓝之树前瞻投资(true)
         else
             path.跳转("首页")
         end
@@ -1924,6 +2052,7 @@ path.水月与深蓝之树前瞻投资 = function()
     local last_time_see_life = time()
     local skill_times = 0
     local zl_level = zl_level or -1
+    local jump = false
     if not wait(function()
             -- toast('当前等级：' .. zl_level, 0, scale(1080))
             if findOne("返回确认界面") then tap("左取消") end
@@ -1933,7 +2062,8 @@ path.水月与深蓝之树前瞻投资 = function()
             end
             if findOne("生命值") then last_time_see_life = time() end
             -- 超过3秒没看到生命值
-            if time() - last_time_see_life > 5000 then
+            if time() - last_time_see_life > 8000 then
+                log('8s未发现')
                 tap("战略确认")
                 return true
             end
@@ -1944,17 +2074,7 @@ path.水月与深蓝之树前瞻投资 = function()
                 skill_times = skill_times + 1
                 tap({ p[1], p[2] + scale(150) })
                 -- appear("技能ready", 5)
-                --appear("生命值蓝", 5)
-                wait(function()
-                    if findOne("萨卡兹_成功通过") then
-                        log('成功通过')
-                        jump = true
-                        return true
-                    end
-                    if findOne("生命值蓝") then return true end
-                end, 5)
-                if jump then return true end
-
+                appear("生命值蓝", 5)
                 wait(function()
                     tap("开技能")
                     if disappear("生命值蓝", 1) then return true end
@@ -1965,7 +2085,7 @@ path.水月与深蓝之树前瞻投资 = function()
         return restartapp(appid)
     end
 
-    appear({ "战略返回", "水月_浪离灯熄", '水月_联系中断', '水月_生态谱系' }, 20)
+    appear({ "战略返回", "水月_浪离灯熄", '水月_联系中断' }, 20)
     if findOne("水月_浪离灯熄") then
         log('浪离灯熄界面，准备返回')
         return
@@ -1987,7 +2107,7 @@ path.水月与深蓝之树前瞻投资 = function()
     end
     if not findOne("战略返回") then return end
 
-    if not zl_fight_after_mizuki() then return restart("未能完成战斗后拾取") end
+    if not mizuki_fight_after() then return restart("未能完成战斗后拾取") end
 
     log("完成一次战斗")
 
