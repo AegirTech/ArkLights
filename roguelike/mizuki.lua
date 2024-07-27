@@ -1183,7 +1183,7 @@ mizuki_start_from_select = function()
 end
 
 
-path.水月与深蓝之树前瞻投资 = function()
+path.水月与深蓝之树前瞻投资_旧 = function()
     mizuki_fight_time = mizuki_fight_time or 10
     log("开始水月肉鸽")
     log("检查浪离灯熄")
@@ -1704,4 +1704,396 @@ path.水月与深蓝之树前瞻投资 = function()
     end
 
     for i = 1, 4 do if not mizuki_start_from_select() then break end end
+end
+
+
+path.水月与深蓝之树前瞻投资 = function()
+    log(running .. ' start')
+
+    if findOne("水月_浪离灯熄") then
+        wait(function(reset_wait_start_time)
+            if not disappear({ "水月_常规行动", "面板" }, 1) then
+                return true
+            end
+            if findOne("正在提交反馈至神经") then
+                reset_wait_start_time()
+            end
+            tap("战略确认")
+        end, 15)
+        return
+    end
+
+    -- 肉鸽每8小时做日常
+    zl_eight_daily()
+
+    local in_fight_return = ""
+    local restart = function()
+        toast(in_fight_return or "重开")
+        ssleep(2)
+        if not request_memory_clean() then
+            path.萨米测试(true)
+        else
+            path.跳转("首页")
+        end
+    end
+    local jumpout
+    if findOne("战略返回") then path.fallback.战略返回其他肉鸽() end
+    if findOne("暂停中") and findOne("生命值") then restartapp(appid) end
+
+    --通用  先导航到常规行动
+    zl_navigation('水月_常规行动', '水月与深蓝之树进入主题')
+
+    --通用 肉鸽 等级源石锭检查
+    -- 水月肉鸽完成 = zl_level_coin_inquire('水月_常规行动', '水月_等级检测范围', '水月_源石锭检测范围')
+    -- if 水月肉鸽完成 then
+    --     return
+    -- end
+
+    --通用  放弃探索
+    if not zl_abandon_explore('水月') then return end
+    if jumpout then return end
+
+    -- 等级满了，放弃行动后回到首页再截个图
+    if zl_level_enough or zl_coin_enough then
+        captureqqimagedeliver("INFO", "肉鸽行动结束", table.join(qqmessage, " ") .. " 放弃行动后")
+        wait(function(reset_wait_start_time)
+            if not disappear("水月_常规行动") then
+                return true
+            end
+            if findOne("正在提交反馈至神经") then
+                reset_wait_start_time()
+            end
+            tap("战略确认")
+        end, 5)
+        return
+    end
+    log(4199)
+
+    -- 开始探索
+    local tt = time()
+    if not wait(function(reset_wait_start_time)
+            if findOne("战略返回") then return true end
+            -- 第二次数据更新处理
+            if time() - tt > 1000 and findOne("水月_难度确认") then --间隔点击一次，第一次作战需要选择难度
+                tap("水月_难度确认")
+                disappear("水月_难度确认")
+                tt = time()
+            end
+            if findAny({
+                    "面板", "活动公告返回", "签到返回", "签到返回黄",
+                    "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                }) then
+                jumpout = true
+                return true
+            end
+            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+            tap("战略确认")
+            tap("继续探索")
+        end, 5) then
+        return
+    end
+    if jumpout then return end
+
+
+    local first_time_see_first_card = 0
+    if not wait(function(reset_wait_start_time)
+            if findOne("水月_初始招募") then
+                return true
+            end
+            if findOne("正在提交反馈至神经") then
+                reset_wait_start_time()
+            end
+            tap("战略确认")
+            tap("战略确认")
+            tap("战略确认")
+            if findOne("水月_指挥分队") then
+                if first_time_see_first_card == 0 then
+                    first_time_see_first_card = time()
+                end
+                if time() - first_time_see_first_card > 2000 then
+                    tap("水月_指挥分队1")
+                    appear("水月_指挥分队确认", 1)
+                    ssleep(0.5)
+                    tap("水月_指挥分队确认")
+                    disappear("水月_指挥分队确认")
+                    first_time_see_first_card = 0
+                end
+            else
+                first_time_see_first_card = 0
+            end
+        end, 10) then
+        return
+    end
+
+    --放弃辅助
+    if not zl_放弃招募辅助('水月') then return end
+
+    --招募近卫
+    if not zl_招募近卫('水月') then return end
+
+    --招募医疗
+    if not zl_招募医疗('水月') then return end
+
+
+    if not appear("水月_初始招募") then return end
+    log(2698)
+
+    -- 进入探索 必须分为两段，否则产生位移
+    if not wait(function()
+            if not findOne("水月_初始招募") then return true end
+            tap("进入古堡")
+        end, 5) then
+        return
+    end
+    log(2700)
+    -- if not appear("战略帮助", 10) then return end
+
+    --点击进入探索之后，有一段时间的加载界面，需要点击
+    local xtime = time()
+    if not wait(function()
+            if findOne("战略返回") then return true end
+            tap("战略确认")
+            --第一次会弹出‘战略帮助’那个界面
+            if time() - xtime > 1.5 * 1000 then
+                xtime = time()
+                tap("招募说明关闭")
+                ssleep(.5)
+            end
+        end, 15) then
+        return
+    end
+
+    --延迟一会，否则会产生位移，
+    --未做线路优化  后续的延迟可以拿来后续做线路优化的筛选
+    --其实只要优化出  第一关走下面还是走上面就可以
+    --目前默认选择上面的线路
+    ssleep(1)
+
+
+    if not wait(function()
+            tap("水月_第一次作战上")
+            if appear("水月_战斗进入前界面", 1) then
+                return true
+            end
+        end, 5) then
+        in_fight_return = "无法进入第一次作战"
+        return restart(in_fight_return)
+    end
+
+
+    --检查作战关卡名字
+    if not zl_fight_name_ocr('水月') then return end
+    toast(now_fight_name)
+    if now_fight_name == '互助' then restart('互助 打不过溜了溜了') end
+    ssleep(.5)
+
+    --通用的  肉鸽的第一次作战编队 直接引用就可以
+    zl_first_edit_team()
+
+    ::mizuki_fight::
+    -- 开始游戏
+    if not wait(function()
+            tap("确认招募")
+            if not findOne("快捷编队") then return true end
+            -- 出现过在这儿卡死的
+            if not disappear("正在提交反馈至神经", network_timeout) then
+                restartapp(appid)
+                return true
+            end
+        end, 10) then
+        return
+    end
+    -- 等待加载游戏界面
+    if not wait(function()
+            if findOne("单选确认框") then return true end
+            if findOne("生命值") then return true end
+        end, 60) then
+        return
+    end
+
+    if not findOne("生命值") then return end
+
+    -- 需要等等才能点两倍速
+    appearTap("两倍速", 3)
+
+    -- 部署干员到关卡位置
+    zl_deploy2(point.水月作战关卡[now_fight_name])
+
+    appear("生命值")
+
+    local last_time_see_life = time()
+    local skill_times = 0
+    local zl_level = zl_level or -1
+    if not wait(function()
+            -- toast('当前等级：' .. zl_level, 0, scale(1080))
+            if findOne("返回确认界面") then tap("左取消") end
+            if findOne("暂停中") then
+                tap("开包skip")
+                disappear("暂停中")
+            end
+            if findOne("生命值") then last_time_see_life = time() end
+            -- 超过3秒没看到生命值
+            if time() - last_time_see_life > 5000 then
+                tap("战略确认")
+                return true
+            end
+
+            tap("开始行动1")
+            local p = findOne("技能亮")
+            if p and skill_times < zl_skill_times then
+                skill_times = skill_times + 1
+                tap({ p[1], p[2] + scale(150) })
+                -- appear("技能ready", 5)
+                --appear("生命值蓝", 5)
+                wait(function()
+                    if findOne("萨卡兹_成功通过") then
+                        log('成功通过')
+                        jump = true
+                        return true
+                    end
+                    if findOne("生命值蓝") then return true end
+                end, 5)
+                if jump then return true end
+
+                wait(function()
+                    tap("开技能")
+                    if disappear("生命值蓝", 1) then return true end
+                end)
+                ssleep(2) --开完技能延迟一会，不然像送葬人这种会马上关闭了
+            end
+        end, 300) then
+        return restartapp(appid)
+    end
+
+    appear({ "战略返回", "水月_浪离灯熄", '水月_联系中断', '水月_生态谱系' }, 20)
+    if findOne("水月_浪离灯熄") then
+        log('浪离灯熄界面，准备返回')
+        return
+    end
+    if findOne("水月_生态谱系") then
+        log('水月_生态谱系')
+        wait(function()
+            tap("战略确认")
+            if findOne("水月_常规行动", 1) then return true end
+        end, 8)
+
+        return
+    end
+    if findOne("水月_联系中断") then
+        log('水月_联系中断')
+        tap("战略确认")
+        appear({ "水月_浪离灯熄", '水月_常规行动' }, 8)
+        return
+    end
+    if not findOne("战略返回") then return end
+
+    if not zl_fight_after_mizuki() then return restart("未能完成战斗后拾取") end
+
+    log("完成一次战斗")
+
+    ::fight_select_mizuki::
+    log('在选择节点界面')
+    local idxs = -1
+    local idxs, maxIndex = zl_selection_node(0, '水月')
+    --如果maxIndex是1 2 则是战斗关卡   3 4 是不期而遇
+    if not idxs then return end
+    log('idxs:', idxs, ' maxIndex:', maxIndex)
+    if idxs > 0 then
+        log(idxs, maxIndex)
+        tap(point['水月_关卡节点坐标列表' .. idxs])
+        ssleep(.5)
+    end
+
+    if maxIndex == 1 or maxIndex == 2 then
+        --进入战斗
+        log("进入战斗")
+        --识别关卡名字
+        if not zl_fight_name_ocr('水月') then return end
+        toast(now_fight_name)
+        if now_fight_name == '互助' then restart('互助 打不过溜了溜了') end
+        ssleep(.5)
+
+        --进入编队界面
+        if not wait(function()
+                if findOne("快捷编队") then return true end
+                tap("进入")
+            end, 10) then
+            return
+        end
+
+        goto mizuki_fight
+    elseif maxIndex == 3 or maxIndex == 4 then
+        --进入不期而遇
+        log("进入不期而遇")
+        ssleep(0.5)
+        wait(function()
+            tap("进入")
+            if not findOne("水月_战略帮助") then return true end
+        end, 2)
+
+        if not mizuki_event_solve() then return end
+
+        goto fight_select_mizuki
+    elseif maxIndex == 5 and idxs ~= 3 then
+        log('得偿所愿这些')
+        ssleep(.5)
+        wait(function()
+            tap('进入')
+        end, 3, .3)
+        if findOne("水月_战略帮助") then
+            return restart('钥匙不足，准备重开')
+        end
+        --如果钥匙够，那么是进入看事件，需要去到不期而遇事件处理那里，解决这个事件
+        if not mizuki_event_solve() then return end
+        goto fight_select_mizuki
+    elseif idxs == 3 and maxIndex == 5 then
+        log('准备进入商店')
+
+        local goto_next_level = function()
+            local tt = time()
+            wait(function()
+                if not findOne("战略返回") then return true end
+                if time() - tt > 1.5 * 1000 then
+                    tap("水月_骰子确认")
+                    tt = time()
+                end
+                tap("诡意行商离开")
+            end, 10)
+            local tt = time()
+            wait(function()
+                if findOne("战略返回") then return true end
+                if time() - tt > 1.5 * 1000 then
+                    tap("水月_骰子确认")
+                    tt = time()
+                end
+                tap("诡意行商离开")
+            end, 10)
+            appear('战略返回')
+            findTap('战略返回')
+            appear('水月_常规行动', 5)
+        end
+
+        -- 商店
+        wait(function()
+            tap("进入")
+        end, 2)
+
+        if not zl_skip_coin then zl_shop_coin() end
+        if zl_only_coin then
+            log('只是投币，准备退出')
+            findTap('战略退出')
+            appear('水月_放弃本次探索', 3)
+            return true
+        end
+        --购买商品
+        if not wait(function()
+                if findOne("诡意行商离开") then return true end
+                tap("开包skip")
+            end, 5) then
+            return
+        end
+        for i = 1, 10 do if not zl_shop_buy() then break end end
+
+        return goto_next_level()
+    end
 end

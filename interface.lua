@@ -1068,7 +1068,7 @@ show_extra_ui = function()
     local rouge_layout_傀影 = "extra_tab_zl1"
     ui.addTab("extra_tab", rouge_layout_傀影, "傀影")
     newRow(rouge_layout_傀影)
-    ui.addCheckBox(rouge_layout_傀影, "zl_ky", "启用傀影与猩红孤钻", false)
+    ui.addCheckBox(rouge_layout_傀影, "zl_ky", "启用【傀影与猩红孤钻】", false)
     -- addButton(rouge_layout_傀影, nil, "傀影与猩红孤钻",
     --     make_jump_ui_command(rouge_layout_傀影, nil,
     --         "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
@@ -1098,19 +1098,36 @@ show_extra_ui = function()
     local rouge_layout_水月 = "extra_tab_zl2"
     ui.addTab("extra_tab", rouge_layout_水月, "水月")
     newRow(rouge_layout_水月)
-    addTextView(rouge_layout_水月, "暂未修复")
+    ui.addCheckBox(rouge_layout_水月, "zl_mizuki", "启用【水月与深蓝之树】", false)
+    addTextView(rouge_layout_水月, "| 已经勉强可以刷")
+
+    newRow(rouge_layout_水月)
+    ui.addCheckBox(rouge_layout_水月, "zl_skip_coin_mizuki", "跳过投币", false)
+    ui.addCheckBox(rouge_layout_水月, "zl_only_coin_mizuki", "只是投币", false)
+
+    newRow(rouge_layout_水月)
+    addTextView(rouge_layout_水月, [[需求商品]])
+    ui.addEditText(rouge_layout_水月, "zl_need_goods_mizuki", [[]])
+    addTextView(rouge_layout_水月, [[等级]])
+    ui.addEditText(rouge_layout_水月, "zl_max_level_mizuki", [[max]])
+    addTextView(rouge_layout_水月, [[源石锭]])
+    ui.addEditText(rouge_layout_水月, "zl_max_coin_mizuki", [[]])
 
     local rouge_layout_萨米 = "extra_tab_zl3"
     ui.addTab("extra_tab", rouge_layout_萨米, "萨米")
     newRow(rouge_layout_萨米)
-    ui.addCheckBox(rouge_layout_萨米, "zl_sami", "启用探索者的银淞止境", false)
-    addTextView(rouge_layout_萨米, "| 已经勉强可以刷，线路优化未做")
+    ui.addCheckBox(rouge_layout_萨米, "zl_sami", "启用【探索者的银淞止境】", false)
+    addTextView(rouge_layout_萨米, "| 已经勉强可以刷")
+
+    newRow(rouge_layout_萨米)
+    ui.addCheckBox(rouge_layout_萨米, "zl_skip_coin_sami", "跳过投币", false)
+    ui.addCheckBox(rouge_layout_萨米, "zl_only_coin_sami", "只是投币", false)
 
     newRow(rouge_layout_萨米)
     addTextView(rouge_layout_萨米, [[需求商品]])
     ui.addEditText(rouge_layout_萨米, "zl_need_goods_sami", [[]])
     addTextView(rouge_layout_萨米, [[等级]])
-    ui.addEditText(rouge_layout_萨米, "zl_max_level_sami", [[]])
+    ui.addEditText(rouge_layout_萨米, "zl_max_level_sami", [[max]])
     addTextView(rouge_layout_萨米, [[源石锭]])
     ui.addEditText(rouge_layout_萨米, "zl_max_coin_sami", [[]])
 
@@ -1118,7 +1135,7 @@ show_extra_ui = function()
     ui.addTab("extra_tab", rouge_layout_萨卡兹, "萨卡兹")
 
     newRow(rouge_layout_萨卡兹)
-    ui.addCheckBox(rouge_layout_萨卡兹, "zl_skz", "启用萨卡兹的无终奇语", false)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_skz", "启用【萨卡兹的无终奇语】", false)
 
     newRow(rouge_layout_萨卡兹)
     ui.addCheckBox(rouge_layout_萨卡兹, "zl_skip_coin_skz", "跳过投币", false)

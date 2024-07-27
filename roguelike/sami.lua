@@ -169,7 +169,7 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     ssleep(.5)
 
     --通用的  肉鸽的第一次作战编队 直接引用就可以
-    zl_first_edit_team()
+    if not zl_first_edit_team() then return end
 
     ::sami_fight::
     -- 开始游戏
@@ -258,7 +258,7 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     ::fight_select::
     log('在选择节点界面')
     local idxs = -1
-    local idxs, maxIndex = zl_selection_node_skz(0, '萨米')
+    local idxs, maxIndex = zl_selection_node(0, '萨米')
     --如果maxIndex是1 2 则是战斗关卡   3 4 是不期而遇
     if not idxs then return end
     if idxs > 0 then

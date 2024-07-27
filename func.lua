@@ -715,15 +715,14 @@ zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型)
     --招募界面出来之后的，‘初始招募’界面色点
     local 初始招募界面 = 初始招募界面 or "初始招募"
     wait(function()
-        if findOne("萨卡兹_希望源石锭界面") then return true end
-        --if findAny({ 初始招募界面, '确认招募' }) then return true end
+        if findAny({ "萨卡兹_希望源石锭界面", '水月_希望源石锭钥匙界面' }) then return true end
         if findOne("战略助战确认界面") then tap("战略助战确认") end
         if not findOne("战略助战确认界面") then tap("开包skip") end
     end, 10)
 end
 
 --肉鸽挑选节点，改关卡类型和坐标位置，可以适应其他肉鸽
-zl_selection_node_skz = function(select_number, rogueType)
+zl_selection_node = function(select_number, rogueType)
     local rogueType = rogueType or '萨卡兹'
     local select_number = select_number or 0
     local paths = { -1, -1, -1, -1, -1 }
@@ -733,8 +732,11 @@ zl_selection_node_skz = function(select_number, rogueType)
         关卡类型 = { "822E2E", "7268A9", "5B528D", "2E757F", "115340" }
     elseif rogueType == '萨米' then
         关卡类型 = { "994649", "7268A9", "468C9A", "4890A2", "2B6D5B" }
+    elseif rogueType == '水月' then
+        --紧急B35480 普通856BE2 兴致盎然 得偿所愿和商店一样 地区委托0EC6C8 不期而遇1ECBCE  商店149D81
+        关卡类型 = { "B35480", "856BE2", "0EC6C8", "1ECBCE", "149D81" }
     end
-    --local 萨米关卡类型 = { "943E40", "7268A9", "468C9A", "4890A2", "246757" }
+
     if select_number > 3 then
         log('校准线路次数超过3次，放弃本次探索重新来')
         back()
@@ -748,7 +750,7 @@ zl_selection_node_skz = function(select_number, rogueType)
             end
 
             -- 遍历关卡类型
-            for i = 1, #关卡类型 do
+            for i = 1, #point[rogueType .. '_关卡节点坐标列表'] do
                 local xx = point[rogueType .. '_关卡节点坐标列表' .. i]
                 local path_pos = xx[1] .. "|" .. xx[2]
                 for j = 1, #关卡类型 do
@@ -756,21 +758,15 @@ zl_selection_node_skz = function(select_number, rogueType)
                     --print(path_pos_color)
                     local res = cmpColorEx(path_pos_color, 0.9)
                     if res == 1 then
-                        print(path_pos_color)
+                        print(rogueType, path_pos_color)
                         paths[i] = j
                     end
                 end
             end
-            --print(paths)
-            --找到的话就退出，判断和是不是大于0，如果没有找到则是{0,0,0,0,0}
-            --找到的话，至少会是1
-            local paths_sum = 0
-            for i = 1, #paths do
-                paths_sum = paths_sum + paths[i]
-                if paths_sum > 0 then
-                    --print(paths_sum)
-                    return true
-                end
+            -- print(paths)
+            --找到的话就退出，至少会是1，如果没有找到则是{ -1, -1, -1, -1, -1 }
+            for _, v in ipairs(paths) do
+                if v > 0 then return true end
             end
         end, 3, .05) then
         log('找不到节点，重新校准路线')
@@ -1713,6 +1709,14 @@ zl_fight_name_ocr = function(rogueType)
             ["度假村冤魂"] = { "度", "假", "村", "冤", "魂" },
             ["事不过四"] = { "事", "过", "四" },
             ["苔手"] = { "苔", "手" },
+        }
+    elseif rogueType == '水月' then
+        zl_fight_name = {
+            ["蓄水池"] = { "池", "水", "池" },
+            ["虫群横行"] = { "虫", "群", "横", "行" },
+            ["射手部队"] = { "射", "手", "部", "队" },
+            ["共生"] = { "共", "生" },
+            ["互助"] = { "互", "助" },
         }
     end
     print(zl_fight_name)

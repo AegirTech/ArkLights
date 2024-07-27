@@ -7739,7 +7739,20 @@ path.肉鸽任务 = function()
     end
 
     if zl_mizuki then
-
+        log("水月任务开始")
+        水月肉鸽完成 = false
+        zl_skip_coin = zl_skip_coin_ky
+        zl_only_coin = zl_only_coin_ky
+        zl_need_goods = zl_need_goods_ky
+        zl_max_level = zl_max_level_ky
+        zl_max_coin = zl_max_coin_ky
+        if zl_max_level_sy == 'max' then zl_max_level = '170' end --填max的时候，默认为170级
+        while true do
+            if 水月肉鸽完成 then
+                break
+            end
+            path.水月与深蓝之树前瞻投资()
+        end
     end
 
     if zl_sami then
@@ -7750,6 +7763,7 @@ path.肉鸽任务 = function()
         zl_need_goods = zl_need_goods_sami
         zl_max_level = zl_max_level_sami
         zl_max_coin = zl_max_coin_sami
+        if zl_max_level_sami == 'max' then zl_max_level = '155' end --填max的时候，默认为155级
         while true do
             if 萨米肉鸽完成 then
                 break
