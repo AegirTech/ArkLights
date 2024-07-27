@@ -10,6 +10,7 @@
 *.zip
 tmp*
 /*/
+!/roguelike/
 !/docs/
 node_modules/
 dist/

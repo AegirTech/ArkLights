@@ -143,12 +143,20 @@ def save():
         f.write(ss)
 
     # 获取当前目录下所有的.lua文件
-    lua_files = [f for f in os.listdir(".") if f.endswith(".lua")]
-    for lua_file in lua_files:
+    def get_lua_files(directory):
+        return [
+            os.path.abspath(os.path.join(directory, f))
+            for f in os.listdir(directory)
+            if f.endswith(".lua")
+        ]
+
+    all_lua_files = get_lua_files(".") + get_lua_files("roguelike")
+    for lua_file in all_lua_files:
         # 把lua_file以utf-8的格式打开，然后以GB18030的格式写入到"D:\ArkLights\main\脚本"目录下
         with open(lua_file, "r", encoding="utf-8") as f:
+            file_name = os.path.basename(lua_file)
             with open(
-                os.path.join(path, "脚本", lua_file), "w", encoding="GB18030"
+                os.path.join(path, "脚本", file_name), "w", encoding="GB18030"
             ) as f1:
                 f1.write(f.read())
 
