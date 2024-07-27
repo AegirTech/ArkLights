@@ -1798,8 +1798,8 @@ mizuki_event_solve = function()
                     reset_wait_start_time()
                 end
                 if findOne('水月_战略帮助') then return true end
-                tap("萨卡兹_不期而遇选项点击列表" .. xx)
-            end, 15) then
+                tap("水月_不期而遇选项点击列表" .. xx)
+            end, 15, .2) then
             return false
         end
         return true
@@ -2012,7 +2012,9 @@ path.水月与深蓝之树前瞻投资 = function()
     --检查作战关卡名字
     if not zl_fight_name_ocr('水月') then return end
     toast(now_fight_name)
-    if now_fight_name == '互助' then restart('互助 打不过溜了溜了') end
+    if now_fight_name == '互助' then
+        return restart('互助 打不过溜了溜了')
+    end
     ssleep(.5)
 
     --通用的  肉鸽的第一次作战编队 直接引用就可以
@@ -2062,8 +2064,8 @@ path.水月与深蓝之树前瞻投资 = function()
             end
             if findOne("生命值") then last_time_see_life = time() end
             -- 超过3秒没看到生命值
-            if time() - last_time_see_life > 8000 then
-                log('8s未发现')
+            if time() - last_time_see_life > 5000 then
+                log('5s未发现')
                 tap("战略确认")
                 return true
             end
@@ -2130,7 +2132,9 @@ path.水月与深蓝之树前瞻投资 = function()
         --识别关卡名字
         if not zl_fight_name_ocr('水月') then return end
         toast(now_fight_name)
-        if now_fight_name == '互助' then restart('互助 打不过溜了溜了') end
+        if now_fight_name == '互助' then
+            return restart('互助 打不过溜了溜了')
+        end
         ssleep(.5)
 
         --进入编队界面
