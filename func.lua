@@ -723,7 +723,7 @@ zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型)
 end
 
 --肉鸽挑选节点，改关卡类型和坐标位置，可以适应其他肉鸽
-function zl_selection_node_skz(select_number, rogueType)
+zl_selection_node_skz = function(select_number, rogueType)
     local rogueType = rogueType or '萨卡兹'
     local select_number = select_number or 0
     local paths = { -1, -1, -1, -1, -1 }
@@ -780,7 +780,7 @@ function zl_selection_node_skz(select_number, rogueType)
 
 
     --print(paths)
-    function findMaxCoordinate(coords) --五个坐标里面取出权重最大的那个
+    local findMaxCoordinate = function(coords) --五个坐标里面取出权重最大的那个
         local maxCoord = coords[1]
         local maxIndex = 1
         for i = 2, #coords do
@@ -1739,7 +1739,6 @@ zl_fight_name_ocr = function(rogueType)
 
     return true
 end
-
 
 zl_不期而遇处理_萨卡兹 = function()
     log('处理不期而遇事件')
