@@ -4,6 +4,9 @@
 -- ===========================================
 reachFourthDay = false
 Tales_within_the_sand = {}
+
+path.生息演算沙中之火 = never_end_wrapper(path.沙中之火)
+
 沙洲遗闻 = function()
     log("沙洲遗闻开始")
     if findOne("主页长期探索_生息演算") then

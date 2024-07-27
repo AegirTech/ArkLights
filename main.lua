@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.27 14:59"
+release_date = "07.27 15:05"
 update_announcement = '最近更新：萨米肉鸽(测试)，优化萨卡兹只投资'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -83,14 +83,23 @@ require("path")
 require("tag")
 require('skill')
 require("fight")
+--云控
 require("cloud")
-require("ex")
+--肉鸽
+require("exPoint")
+require("exPath")
+require("exUtils")
+require("roguelike")
+--生息
 require("sand")
-require("raise")
+--森空岛
 require("sha2")
 require("skland")
+--自动作战
 require("prts")
 require("exOcr")
+--自动养成
+require("raise")
 
 load(after_require_hook or '')()
 
@@ -124,7 +133,6 @@ if debug_mode then
     -- log("刷新按钮位置", po)
     -- exit()
     --initPngdata()
-    -- 萨卡兹_分支选择()
     -- zl_shop_get_coin()
     --exit()
     --用于获取活动的剧情关，教学关三星颜色信息
