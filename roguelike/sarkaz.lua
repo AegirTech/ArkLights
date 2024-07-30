@@ -4,6 +4,91 @@
 
 -- 萨卡兹肉鸽函数
 sarkaz = {}
+
+--萨卡兹战略重启
+sarkaz.restart = function(in_fight_return)
+    local in_fight_return = in_fight_return or ''
+    toast(in_fight_return or '重开')
+    ssleep(3)
+    if not request_memory_clean() then
+        path.萨卡兹的无终奇语前瞻投资(true)
+    else
+        path.跳转("首页")
+    end
+end
+
+sarkaz.不期而遇处理 = function()
+    log("进入不期而遇")
+    appear('萨卡兹_不期而遇节点出现')
+
+    wait(function()
+        tap("萨卡兹_不期而遇节点出现")
+        if not findOne("萨卡兹_不期而遇节点出现") then return true end
+    end, 3, .4)
+    local t = time()
+    if not wait(function()
+            tap("战略确认")
+            if time() - t > 1 * 600 and findOne("萨卡兹_思维混乱确认红") then
+                t = time()
+                tap({ scale(821), scale(577) }) --本次不再提醒 的位置
+                ssleep(.2)
+                tap("萨卡兹_思维混乱确认红") -- 处理可能出现的思维负载
+            end
+            if not findOne("萨米_战略帮助") and findOne('战略返回') then return true end
+        end, 5) then
+        return sarkaz.restart('进入不期而遇出错, 可能误点到了什么')
+    end
+
+    local event, incident, startTime = nil, nil, time()
+    if not wait(function()
+            if findOne("萨卡兹_战略帮助") then return false end
+            incident = ocr("萨卡兹_不期而遇事件名字检测")
+            if time() - startTime > 700 then
+                startTime = time()
+                log(366)
+                if not findOne('萨米_希望源石锭界面') then tap("萨卡兹_不期而遇确认点击") end
+            end
+
+            if not incident[1] then
+                event = ''
+            else
+                event = incident[1].text or ''
+            end
+            --只有识别到下面的字符串才做返回
+            if string.finds(event, { "萨米", "维", "女士", '相', '黑', '解', '故事', '高空', '不散', '虫' }) then return true end
+        end, 8, .15) then
+        log('不能检测到事件')
+        return false
+    end
+
+    local str = incident[1].text
+    log('事件名字：', str)
+
+    -- 处理界面操作
+    if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
+    if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
+
+    -- 检查是否出现思维负荷阻滞
+    if findOne('萨卡兹_思维负荷阻滞') then
+        back()
+        return false
+    end
+
+
+    if string.finds(str, { "虫", '故事' }) then
+        return zl_event_solve(3, "萨卡兹_战略帮助")
+    elseif string.finds(str, { '解', '高空', '不散' }) then
+        return zl_event_solve(2, "萨卡兹_战略帮助")
+    elseif string.finds(str, { "萨米", "维", "女士" }) then
+        return zl_event_solve(1, "萨卡兹_战略帮助")
+    elseif string.finds(str, { '相', '黑' }) then
+        return zl_event_solve(5, "萨卡兹_战略帮助")
+    end
+
+    return true
+end
+
+
 sarkaz.跳转 = function()
     if findOne("萨卡兹_戛然而止") then
         log('萨卡兹_戛然而止')
@@ -1211,7 +1296,7 @@ sarkaz.蓝图分队 = function()
 
     if 萨卡兹路线[1][2] ~= "不期而遇" then
         log("第一列不存在不期而遇")
-        return zl_repos_path('萨卡兹_放弃本次探索')
+        return sarkaz.restart("第一列不存在不期而遇")
     end
 
     sx = { scale(1761), scale(846) }
@@ -1227,26 +1312,27 @@ sarkaz.蓝图分队 = function()
     table.remove(萨卡兹路线, 1)
     ssleep(.5)
     appear("萨卡兹_不期而遇判断", 3)
-    不期而遇处理 = function()
-        --判断不期而遇事件，并处理
-        log("进入不期而遇")
-        appear('萨卡兹_不期而遇节点出现')
-        wait(function()
-            tap("萨卡兹_进入")
-            tap("萨卡兹_思维混乱确认红") --偶尔有情况 思维负载太多了，第一第二个节点都是作战时候，第三个节点有概率出现
-        end, 2)
-        if not wait(function()
-                if not findOne("萨米_战略帮助") then return true end
-                tap("战略确认")
-            end, 15) then
-            toast('进入不期而遇出错,可能误点到了什么')
-            return restartapp(appid)
-        end
+    -- 不期而遇处理 = function()
+    --     --判断不期而遇事件，并处理
+    --     log("进入不期而遇")
+    --     appear('萨卡兹_不期而遇节点出现')
+    --     wait(function()
+    --         tap("萨卡兹_进入")
+    --         tap("萨卡兹_思维混乱确认红") --偶尔有情况 思维负载太多了，第一第二个节点都是作战时候，第三个节点有概率出现
+    --     end, 2)
+    --     if not wait(function()
+    --             if not findOne("萨米_战略帮助") then return true end
+    --             tap("战略确认")
+    --         end, 5) then
+    --         restart('进入不期而遇出错,可能误点到了什么') --减少重启次数
+    --         return false
+    --     end
 
-        if not zl_不期而遇处理_萨卡兹() then return false end
-    end
+    --     if not zl_不期而遇处理_萨卡兹() then return false end
+    --     return true
+    -- end
 
-    不期而遇处理()
+    if not sarkaz.不期而遇处理() then return end --有时候出错就重开
     ssleep(0.5)
     if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
     if not wait(function()
@@ -1301,7 +1387,7 @@ sarkaz.蓝图分队 = function()
     table.remove(萨卡兹路线, 1)
     ssleep(.5)
     appear("萨卡兹_不期而遇判断", 3)
-    不期而遇处理()
+    if not sarkaz.不期而遇处理() then return end --有时候出错就重开
 
     ssleep(0.5)
     if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
@@ -1336,7 +1422,7 @@ sarkaz.蓝图分队 = function()
     table.remove(萨卡兹路线, 1)
     ssleep(.5)
     appear("萨卡兹_不期而遇判断", 3)
-    不期而遇处理()
+    if not sarkaz.不期而遇处理() then return end --有时候出错就重开
 
     ssleep(0.5)
     if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
@@ -1884,7 +1970,10 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     end
     if findOne("萨卡兹_联系中断") then
         log('重启')
-        restartapp(appid)
+        tap('战略确认')
+        appear('萨卡兹_戛然而止')
+        ssleep(1) --减少重启次数
+        --restartapp(appid)
         return
     end
     if not findOne("战略返回") then return end
@@ -1968,8 +2057,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                 if not findOne("萨米_战略帮助") then return true end
                 tap("战略确认")
             end, 15) then
-            toast('进入不期而遇出错,可能误点到了什么')
-            return restartapp(appid)
+            return sarkaz.restart('进入不期而遇出错,可能误点到了什么') --减少重启次数
         end
 
         --判断不期而遇事件，并处理

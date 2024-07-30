@@ -1822,7 +1822,7 @@ mizuki_event_solve = function()
                     if zl_event_solve(4, '水月_战略帮助') then return true end
                 elseif string.finds(str, { '狂徒妄念', '家园' }) then
                     if zl_event_solve(3, '水月_战略帮助') then return true end
-                elseif string.finds(str, { '开端', '海外', '学者', '扩散', '狗眼' }) then
+                elseif string.finds(str, { '开端', '海外', '学者', '扩散', '狗眼', '现买' }) then
                     if zl_event_solve(2, '水月_战略帮助') then return true end
                 elseif string.finds(str, { '继承', '如聚', '天灾', '悬高' }) then
                     if zl_event_solve(1, '水月_战略帮助') then return true end

@@ -974,8 +974,8 @@ zl_event_solve = function(xx, 战略帮助)
                 reset_wait_start_time()
             end
             if findOne(战略帮助) then return true end
-            tap("萨卡兹_不期而遇选项点击列表" .. xx)
-        end, 15) then
+            tap("不期而遇选项点击列表" .. xx)
+        end, 8, .05) then
         return false
     end
     return true
