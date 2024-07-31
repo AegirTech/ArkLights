@@ -886,6 +886,9 @@ show_debug_ui = function()
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "zl_disable_lighter",
         "前瞻投资禁用升级幕后筹备", false)
+    newRow(debug_layout_其他)
+    ui.addCheckBox(debug_layout_其他, "zl_disable_inspect_level",
+        "前瞻投资禁用检测等级源石锭", false) --有些手机cpu不能使用ocr插件
 
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "disable_strick_account_check",

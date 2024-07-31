@@ -1183,6 +1183,7 @@ end
 
 --肉鸽 等级源石锭检查
 zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检测范围)
+    if zl_disable_inspect_level then return end
     local 常规行动 = 常规行动 or '常规行动'
     local 等级检测范围 = 等级检测范围 or '等级检测范围'
     local 源石锭检测范围 = 源石锭检测范围 or '源石锭检测范围'

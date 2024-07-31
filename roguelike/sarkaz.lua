@@ -36,6 +36,12 @@ sarkaz.不期而遇处理 = function()
             end
             if not findOne("萨米_战略帮助") and findOne('战略返回') then return true end
         end, 5) then
+        -- 检查是否出现思维负荷阻滞
+        if findOne('萨卡兹_思维负荷阻滞') then
+            log('萨卡兹_思维负荷阻滞')
+            tap({ scale(50), scale(20) })
+            appear('战略返回')
+        end
         return sarkaz.restart('进入不期而遇出错, 可能误点到了什么')
     end
 
@@ -55,8 +61,8 @@ sarkaz.不期而遇处理 = function()
                 event = incident[1].text or ''
             end
             --只有识别到下面的字符串才做返回
-            if string.finds(event, { "萨米", "维", "女士", '相', '黑', '解', '故事', '高空', '不散', '虫' }) then return true end
-        end, 8, .15) then
+            if string.finds(event, { "萨米", "维", "女士", '相', '黑', '解', '故事', '高空', '不散', '虫', '之店' }) then return true end
+        end, 8, .1) then
         log('不能检测到事件')
         return false
     end
@@ -68,14 +74,8 @@ sarkaz.不期而遇处理 = function()
     if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
     if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
 
-    -- 检查是否出现思维负荷阻滞
-    if findOne('萨卡兹_思维负荷阻滞') then
-        back()
-        return false
-    end
 
-
-    if string.finds(str, { "虫", '故事' }) then
+    if string.finds(str, { "虫", '故事', '之店' }) then
         return zl_event_solve(3, "萨卡兹_战略帮助")
     elseif string.finds(str, { '解', '高空', '不散' }) then
         return zl_event_solve(2, "萨卡兹_战略帮助")
@@ -88,6 +88,55 @@ sarkaz.不期而遇处理 = function()
     return true
 end
 
+--手机适配的时候，之前那个zl_shop_buy有点不适用
+sarkaz.商店购物 = function()
+    local p = appear(point["萨卡兹_战略商品列表"], 1)
+    p = findAny(point["萨卡兹_战略商品列表"])
+    if not p then return end
+    if not wait(function()
+            local x, y = point[p]:match("(%d+)" .. coord_delimeter .. "(%d+)")
+            tap({ tonumber(x) - scale(111), tonumber(y) - scale(100) })
+            if disappear(p, 1) then return true end
+        end) then
+        return
+    end
+
+    disappear("诡意行商离开", 1)
+    if not wait(function(reset_wait_start_time)
+            tap("诡意行商确认投资")
+            if findOne("诡意行商离开") then return true end
+            if findOne("确认招募") then
+                local start_time = time()
+                if not wait(function(reset_wait_start_time2)
+                        if findOne("编队") then return true end
+                        if findOne("返回确认界面") then
+                            if time() - start_time < 2000 then
+                                tap("左取消")
+                            else
+                                tap("右确认")
+                            end
+                            disappear("返回确认界面")
+                            ssleep(.5)
+                        end
+                        if findOne("正在提交反馈至神经") then
+                            reset_wait_start_time()
+                            reset_wait_start_time2()
+                        end
+                        tap("近卫招募列表" .. 1)
+                        findTap("确认招募")
+                        tap("开包skip")
+                    end, 10) then
+                    return
+                end
+            end
+            if findOne("正在提交反馈至神经") then
+                reset_wait_start_time()
+            end
+        end, 10) then
+        return
+    end
+    return true
+end
 
 sarkaz.跳转 = function()
     if findOne("萨卡兹_戛然而止") then
@@ -1082,11 +1131,11 @@ sarkaz.蓝图分队 = function()
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
             tap("新战略确认")
             tap("继续探索")
-            if time() - t > 2 * 1000 then --第一次时候，需要选择难度等级
+            if time() - t > 2 * 1000 and findOne('萨卡兹_选择一次难度等级') then --第一次时候，需要选择难度等级
                 ssleep(1)
                 t = time()
                 log('选择一次难度等级')
-                tap({ scale(1759), scale(567) })
+                tap('萨卡兹_选择一次难度等级')
             end
         end, 15) then
         -- 初始选难度
@@ -1099,14 +1148,12 @@ sarkaz.蓝图分队 = function()
     -- 开始探索 一路按到 招募干员
     -- local first_time_see_first_card = 0
 
-    local tapy = scale(904)
-    local tapx = scale(258) + scale(414) * (tonumber(zl_blueprint_position) - 1)
+    --local tapy = scale(904)
+    --local tapx = scale(258) + scale(414) * (tonumber(zl_blueprint_position) - 1)
     if not wait(function(reset_wait_start_time)
             if findOne("萨卡兹_初始招募") then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
-            tap({ tapx, tapy })
-            tap({ tapx, tapy })
-            tap({ tapx, tapy })
+            tap('萨卡兹_蓝图分队位置列表' .. zl_blueprint_position)
         end, 10) then
         return
     end
@@ -1206,7 +1253,7 @@ sarkaz.蓝图分队 = function()
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
             if not findOne("萨卡兹_初始招募") then return true end
-            tap("萨卡兹_进入探索")
+            tap("进入古堡")
         end, 5) then
         return
     end
@@ -1484,7 +1531,7 @@ sarkaz.蓝图分队 = function()
         --appear('萨卡兹_放弃本次探索', 3)
         --只投币的话 会马上退出，有时候退出投资了，投资提示还没消失，会退出又进来，重复而卡住一段时间
         if not wait(function()
-                if not findOne('战略返回') then tap({ scale(1720), scale(498) }) end
+                if not findOne('战略返回') then tap('萨卡兹_只投资放弃本次探索') end
                 if findOne('返回确认界面') then return true end
             end, 10, .1) then
             return
@@ -1499,7 +1546,6 @@ sarkaz.蓝图分队 = function()
         end
         return true
     end
-
     --购买商品  后续做起来  蓝图分队刷等级可能更快，所以需要把购买商品留下来
     if not wait(function()
             if findOne("诡意行商离开") then return true end
@@ -1507,7 +1553,7 @@ sarkaz.蓝图分队 = function()
         end, 5) then
         return
     end
-    for i = 1, 10 do if not zl_shop_buy() then break end end
+    for i = 1, 10 do if not sarkaz.商店购物() then break end end
 
     return goto_next_level()
 end
