@@ -5836,7 +5836,7 @@ path.商店搬空 = function()
             ::startshop::
             回到商店主页()
             if not findOne("商店主页") then return end -- 防止跳到其他页面
-            local 商品 = find_color("商店全部商品范围", point["商店货币颜色"], 1, 0.9)
+            local 商品 = find_color("商店全部商品范围", point["商店货币颜色"], 0, 0.9)
             if not 商品 then
                 log("商品已售空")
                 break
