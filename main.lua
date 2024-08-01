@@ -129,12 +129,7 @@ debug_mode = true
 if debug_mode then
     log("debug_mode")
     ssleep(1)
-    -- 思绪过多,丢掉一个
-    -- sarkaz.肉鸽选路()
-    -- log("刷新按钮位置", po)
-    -- exit()
-    --initPngdata()
-    -- zl_shop_get_coin()
+    --Tales_within_the_sand.切换难度()
     --exit()
     --用于获取活动的剧情关，教学关三星颜色信息
     -- local x = 'HD-TR-2'
