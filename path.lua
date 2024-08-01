@@ -7741,11 +7741,11 @@ path.肉鸽任务 = function()
     if zl_mizuki then
         log("水月任务开始")
         水月肉鸽完成 = false
-        zl_skip_coin = zl_skip_coin_ky
-        zl_only_coin = zl_only_coin_ky
-        zl_need_goods = zl_need_goods_ky
-        zl_max_level = zl_max_level_ky
-        zl_max_coin = zl_max_coin_ky
+        zl_skip_coin = zl_skip_coin_mizuki
+        zl_only_coin = zl_only_coin_mizuki
+        zl_need_goods = zl_need_goods_mizuki
+        zl_max_level = zl_max_level_mizuki
+        zl_max_coin = zl_max_coin_mizuki
         if zl_max_level_sy == 'max' then zl_max_level = '170' end --填max的时候，默认为170级
         while true do
             if 水月肉鸽完成 then
