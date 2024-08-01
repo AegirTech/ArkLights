@@ -919,6 +919,10 @@ show_debug_ui = function()
     ui.addSpinner(debug_layout_其他, "shop_day", { "1", "2", "3", "4", "5" }, 0)
     addTextView(debug_layout_其他, "天当天")
 
+    newRow(debug_layout_其他)
+    addTextView(debug_layout_其他, "无障碍模式关闭app方式")
+    ui.addSpinner(debug_layout_其他, "app_close_way", { "不关闭", "节点强退", "懒人自带", "首页退出" }, 0)
+
     local debug_layout_调试 = "debug_tab_setting"
     ui.addTab("debug_tab", debug_layout_调试, "调试")
 

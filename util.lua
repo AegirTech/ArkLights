@@ -2011,31 +2011,45 @@ closeapp = function(package)
     if not isAppInstalled(package) then return end
     if root_mode then
         exec("su root sh -c 'am force-stop " .. package .. "'")
-    elseif false then
-        local intent = {
-            action = "android.settings.APPLICATION_DETAILS_SETTINGS",
-            uri = "package:" .. package,
-        }
-        runIntent(intent)
-        log(intent)
-        local stop_node
-        stop_node = appear({
-            { text = "*停止*" }, { text = "*结束*" }, { text = "*STOP*" },
-        }, 10)
-        if not stop_node then return end
-        stop_node = findNode(stop_node)
-        if not stop_node or not stop_node.enabled then return back() end
-        tap(stop_node)
+    else
+        log("无障碍模式关闭app方式", app_close_way)
+        if app_close_way == 1 then
+            local intent = {
+                action = "android.settings.APPLICATION_DETAILS_SETTINGS",
+                uri = "package:" .. package,
+            }
+            runIntent(intent)
+            log(intent)
+            local stop_node
+            stop_node = appear({
+                { text = ".*停止.*" }, { text = ".*结束.*" }, { text = ".*STOP.*" },
+            }, 10)
+            log(stop_node)
+            if not stop_node then return end
+            stop_node = findNode(stop_node)
+            if not stop_node or not stop_node.enabled then return back() end
+            tap(stop_node)
 
-        ok_node = nil
-        ok_node = appear({ { text = "*确*" }, { text = "*OK*" } }, 5)
-        if not ok_node then return end
-        ok_node = findNode(ok_node)
-        if not ok_node or not ok_node.enabled then return back() end
-        tap(ok_node)
-        disappear(ok_node)
-        back()
-        disappear(stop_node)
+            ok_node = nil
+            ok_node = appear({ { text = ".*确.*" }, { text = ".*OK.*" } }, 5)
+            if not ok_node then return end
+            ok_node = findNode(ok_node)
+            if not ok_node or not ok_node.enabled then return back() end
+            tap(ok_node)
+            disappear(ok_node)
+            back()
+            disappear(stop_node)
+            ssleep(1)
+        elseif app_close_way == 2 then
+            stopApp(package)
+        elseif app_close_way == 3 then
+            path.跳转("首页")
+            back()
+            appear("右确认")
+            ssleep(1)
+            tap("右确认")
+            ssleep(1)
+        end
     end
 end
 closeapp = disable_game_up_check_wrapper(closeapp)
