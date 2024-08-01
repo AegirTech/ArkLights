@@ -4,11 +4,15 @@ local 是否保全图 = 0
 local 添加低信赖 = false
 
 fetchMaps = function()
-    if dev_mode then return end
     local path = getWorkPath() .. '/maps.zip'
     local extract_path = getWorkPath() .. '/maps'
     --print(extract_path)
-    -- extractAssets("main.rc", getWorkPath(), "maps.zip")
+    if dev_mode then
+        -- 解压本地地图包
+        extractAssets("main.rc", getWorkPath(), "maps.zip")
+        unZip(path, extract_path)
+        return
+    end
     local url = "https://arktoken.enlysure.com:21999/get_ark_file?name=maps.zip&verify=arklights"
     local ret, code = httpGet(url, 5)
     -- log(ret, code)
