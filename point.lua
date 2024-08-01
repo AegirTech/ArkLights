@@ -1681,7 +1681,7 @@ point = {
 
         ["HD-ST-1"] = "315|480|00AEF7",
         ["HD-1"] = { 960, 654 },
-        ["HD-TR-1"] = "825|405|00AEF7",
+        ["HD-TR-1"] = "1079|394|00B3FD",
         ["HD-2"] = { 960, 507 },
         ["HD-3"] = { 960, 624 },
         ["HD-4"] = { 960, 516 },
@@ -2778,7 +2778,7 @@ center = {
 distance = {
     ["HD-ST-1"] = { swip_right_max, -0 },
     ["HD-1"] = { swip_right_max, -0 },
-    ["HD-TR-1"] = { swip_right_max, -185 },
+    ["HD-TR-1"] = { swip_right_max, -0 },
     ["HD-2"] = { swip_right_max, -369 },
     ["HD-3"] = { swip_right_max, -599 },
     ["HD-4"] = { swip_right_max, -827 },
