@@ -75,8 +75,8 @@ if response.status_code == 200:
             char_table[character_id] = selected_data
             char_table[character_id]["name"] = character_data["name"]
 
-    save_to_json("character_type_list.json", character_type_list)
-    save_to_json("char_table.json", char_table)
+    save_to_json("./res/char_type/character_type_list.json", character_type_list)
+    save_to_json("./res/char_type/char_table.json", char_table)
 
 else:
     print("无法获取JSON数据")

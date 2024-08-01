@@ -80,11 +80,11 @@ Tales_within_the_sand.生息跳转 = function()
 end
 
 Tales_within_the_sand.切换难度 = function()
-    if findOne("沙洲遗闻标准模式") then return true end
+    if findOne("沙洲遗闻标准模式") or findOne("沙洲遗闻休养模式") then return true end
     if findOne("生息演算主页进入") and findOne("沙洲遗闻挑战模式") then
         tap("沙洲遗闻挑战模式")
-        appearTap("沙洲遗闻切换确认")
-        appear("生息演算主页进入", .5)
+        appearTap("沙洲遗闻切换选择", 2)
+        appear("生息演算主页进入", 1)
     end
 end
 
