@@ -5803,9 +5803,13 @@ path.商店搬空 = function()
     if not wait(function()
             tap("活动商店导航")
             if findOne("商店主页") then return true end
+            local coll = find_color("商店右上角代币范围", point["商店主题色"], 1, 0.9)
+            if coll then
+                return true
+            end
         end, 5) then
     end
-
+    ssleep(0.5)
     disappear("正在提交反馈至神经", network_timeout)
 
     -- 防止各种掉帧等导致卡在领取等页面
@@ -5818,86 +5822,84 @@ path.商店搬空 = function()
             return
         end
     end
-
+    ssleep(0.5)
     if not findOne("商店主页") then return end
-    local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], point["商店物品间隔"][1], point["商店物品间隔"][2]
+    -- local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], scale(516), scale(242)
     回到商店主页()
     while true do
-        if os.time() - t > 4 * 60 then -- 任务总时长4分钟
+        if os.time() - t > 3 * 60 then -- 任务总时长3分钟
             log("商店任务超时")
             return
         end
-        for x = 0, 2 do -- 3*3商品进行购买
-            for y = 0, 2 do
-                local gt = 0
-                ::startshop::
-                local sx = { 初始物品[1] + x * 物品横间距, 初始物品[2] + y * 物品纵间距 }
-                log(x, y, sx[1], sx[2])
-                回到商店主页()
-                ssleep(0.5)
-                if not findOne("商店主页") then return end -- 防止跳到其他页面
-                --商店是否有皮肤判断
-                if x == point['商店购买皮肤位置'][1] and y == point['商店购买皮肤位置'][2] then
-                    log('皮肤购买')
-                    tap(sx)
-                    if not appear('商店皮肤支付', 3) then goto continue end
-                    tap('商店皮肤支付') --皮肤购买
-                    disappear('商店皮肤支付')
-                    wait(function()
-                        if findOne("商店主页") then return true end
-                        tap("开包skip")
-                    end, 8)
-                    goto continue
-                end
-                -- 点击商品，进入购买页面判断
-                if not wait(function()
-                        tap(sx)
-                        ssleep(.5)
-                        if findOne("商店购买页面") then return true end
-                    end, 1.6) then
-                end
-                if findOne("商店主页") then
-                    log("未能进入商品，大概是售空了吧~")
-                    goto continue
-                end
-
-                -- 点击购买,只能点一次,点多了会点到右下角龙门币
-                if appear("商店购买页面", 1) then
-                    ssleep(0.2)
-                    tap("商店最多")
-                    ssleep(0.2)
-                    tap("商店支付")
-                    ssleep(0.4)
-                end
-                if not wait(function()
-                        if findOne("获得物资") then
-                            tap("获得物资")
-                            ssleep(.6)
-                        end
-                        if findOne("商店主页") then return true end
-                        tap("商店购买页面")
-                        ssleep(.3)
-                    end, 4) then
-                end
-
-                if findOne("商店购买页面", 1) then
-                    log("购买失败，大抵是没钱了吧~")
-                    return true
-                end
-                disappear("正在提交反馈至神经", network_timeout)
-
-                if x == 0 and y == 0 and gt < 7 then
-                    gt = gt + 1
-                    goto startshop -- 针对信物修复
-                end
-
-                ::continue::
-                回到商店主页()
-                log("开始下一个商品")
+        local gt = 0 -- 购买次数 最多25次
+        while true do
+            ::startshop::
+            回到商店主页()
+            if not findOne("商店主页") then return end -- 防止跳到其他页面
+            local 商品 = find_color("商店全部商品范围", point["商店货币颜色"], 1, 0.9)
+            if not 商品 then
+                log("商品已售空")
+                break
             end
+            gt = gt + 1
+            if gt > 26 then
+                log("强制翻页")
+                break
+            end
+
+            -- 点击商品，进入购买页面判断
+            if not wait(function()
+                    tap(商品)
+                    ssleep(.5)
+                    if find_color("商店购买页面单价范围", point["商店货币颜色"], 1, 0.9) then return true end -- 表示已经进入商店
+                end, 1.6) then
+            end
+
+            -- 点击购买,只能点一次,点多了会点到右下角龙门币
+            local tap_x = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
+            tap_x[1] = tap_x[1] + scale(50)
+            tap_x[2] = tap_x[2] + scale(20)
+            if not tap_x then
+                log("未找到购买按钮")
+                goto continue
+            else
+                ssleep(0.2)
+                tap("商店最多")
+                ssleep(0.2)
+                tap(tap_x)
+                ssleep(0.4)
+                if not wait(function()
+                        tap(tap_x)
+                        ssleep(0.2)
+                        if findOne("商店主页") then return true end
+                    end, 0.8) then
+                end
+            end
+
+            if not wait(function()
+                    if findOne("获得物资") then
+                        tap("获得物资")
+                        ssleep(.6)
+                    end
+                    if findOne("商店主页") then return true end
+                    tap("商店购买页面")
+                    ssleep(.3)
+                end, 2) then
+            end
+
+            if find_color("商店购买页面单价范围", point["商店货币颜色"], 1, 0.9) then
+                -- 还在购买页面
+                log("购买失败，大抵是没钱了吧~")
+                return true
+            end
+            disappear("正在提交反馈至神经", network_timeout)
+
+            ::continue::
+            回到商店主页()
+            log("开始下一个商品")
         end
         回到商店主页()
-        ssleep(1)
+        ssleep(0.8)
         if not findOne("商店主页") then return end -- 防止跳到其他页面
         local sx = { screen.width * 0.8, screen.height * 0.5 }
         local oricol = getColor(sx[1], sx[2])
