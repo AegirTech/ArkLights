@@ -2783,7 +2783,6 @@ distance = {
     ["HD-9"] = { swip_right_max, -2033 },
     ["HD-ST-3"] = { swip_right_max, -2151 },
 
-
     ["CW-6"] = { swip_right_max, -1349 },
     ["GT-5"] = { swip_right_max, -1535 },
 

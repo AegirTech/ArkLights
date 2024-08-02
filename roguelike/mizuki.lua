@@ -1954,13 +1954,13 @@ path.水月与深蓝之树前瞻投资 = function()
     end
 
     --放弃辅助
-    if not zl_放弃招募辅助('水月') then return end
+    if not zl.放弃招募辅助('水月') then return end
 
     --招募近卫
-    if not zl_招募近卫('水月') then return end
+    if not zl.招募近卫('水月') then return end
 
     --招募医疗
-    if not zl_招募医疗('水月') then return end
+    if not zl.招募医疗('水月') then return end
 
 
     if not appear("水月_初始招募") then return end
@@ -2010,7 +2010,7 @@ path.水月与深蓝之树前瞻投资 = function()
 
 
     --检查作战关卡名字
-    if not zl_fight_name_ocr('水月') then return end
+    if not zl.fight_name_ocr('水月') then return end
     toast(now_fight_name)
     if now_fight_name == '互助' then
         return restart('互助 打不过溜了溜了')
@@ -2018,7 +2018,7 @@ path.水月与深蓝之树前瞻投资 = function()
     ssleep(.5)
 
     --通用的  肉鸽的第一次作战编队 直接引用就可以
-    zl_first_edit_team()
+    zl.first_edit_team()
 
     ::mizuki_fight::
     -- 开始游戏
@@ -2116,7 +2116,7 @@ path.水月与深蓝之树前瞻投资 = function()
     ::fight_select_mizuki::
     log('在选择节点界面')
     local idxs = -1
-    local idxs, maxIndex = zl_selection_node(0, '水月')
+    local idxs, maxIndex = zl.selection_node(0, '水月')
     --如果maxIndex是1 2 则是战斗关卡   3 4 是不期而遇
     if not idxs then return end
     log('idxs:', idxs, ' maxIndex:', maxIndex)
@@ -2130,7 +2130,7 @@ path.水月与深蓝之树前瞻投资 = function()
         --进入战斗
         log("进入战斗")
         --识别关卡名字
-        if not zl_fight_name_ocr('水月') then return end
+        if not zl.fight_name_ocr('水月') then return end
         toast(now_fight_name)
         if now_fight_name == '互助' then
             return restart('互助 打不过溜了溜了')

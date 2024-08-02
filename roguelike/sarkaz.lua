@@ -1886,7 +1886,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     end
 
     --检查作战关卡名字
-    if not zl_fight_name_ocr() then return end
+    if not zl.fight_name_ocr() then return end
     toast(now_fight_name)
     ssleep(1)
     if not wait(function()
@@ -2081,7 +2081,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     if maxIndex <= 3 then
         --进入战斗
         --检测作战关卡名字
-        zl_fight_name_ocr()
+        zl.fight_name_ocr()
 
         log("进入战斗")
         if not wait(function()
@@ -2200,4 +2200,132 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     for i = 1, 10 do if not zl_shop_buy() then break end end
 
     return goto_next_level()
+end
+
+zl_不期而遇处理_萨卡兹 = function()
+    log('处理不期而遇事件')
+    if not wait(function()
+            local function x()
+                local incident
+                local t = time()
+                if not wait(function()
+                        incident = ocr("萨卡兹_不期而遇事件名字检测")
+                        if time() - t > 1000 then
+                            t = time()
+                            log(366)
+                            if not findOne('萨米_希望源石锭界面') then tap("萨卡兹_不期而遇确认点击") end
+                        end
+                        return incident[1] or findOne("萨卡兹_战略帮助")
+                    end, 8) then
+                    return false
+                end
+                if not incident[1] then return false end
+                local str = incident[1].text
+                log('事件名字：', str)
+                if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
+                if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
+                if string.finds(str, { "虫" }) then
+                    return zl_event_solve(3, "萨卡兹_战略帮助")
+                elseif string.finds(str, { '相遇', '解', '故事', '高空', '不散' }) then
+                    return zl_event_solve(2, "萨卡兹_战略帮助")
+                elseif string.finds(str, { "萨米", "维", "女士" }) then
+                    return zl_event_solve(1, "萨卡兹_战略帮助")
+                end
+            end
+            return x() or findOne("萨卡兹_战略帮助")
+        end, 30) then
+        return false
+
+        --用1处理的事件
+        --'高空坠物', '驮兽旅行家', '竣工仪式'
+
+        --用2处理的事件
+        --         '在故事', '不请自来', '巴别塔雇员', '魂灵', '热门景点',
+        -- '未来猎手', '绝境', '相遇', '阴魂', '卫国前夜', '价高者得',
+        -- '解惑', '前瞻', '深坑', '变换',
+        -- '敬虔之人', '好心的女士', '疤痕国际', '沉默拳王',
+        -- '离去者的庭院', '温暖余韵',
+
+        --用3处理的事件
+        --'造物', '刀口舔血', '淡然面对', '修正时代', '虫卡', '聚思成塔', '失落财宝', '解读变迁'
+    end
+    return true
+end
+
+--萨卡兹肉鸽战斗后拾取战利品
+zl_fight_after_skz = function()
+    local drop_page = false
+    if not wait(function()
+            if not drop_page then tap("战略确认") end
+            if findOne("萨卡兹_战略帮助") then drop_page = true end
+            if zl_only_coin and findOne("萨卡兹_不要了") then
+                tap("萨卡兹_不要了")
+                if not wait(function()
+                        tap("萨卡兹_不要了确认")
+                        if findAny({ "战略返回", "萨卡兹_战略帮助" }) then return true end
+                    end, 2) then
+                end
+            end
+            local x = appear({
+                "萨卡兹_收藏品拾取", "萨卡兹_招募券收下", "萨卡兹_源石锭收下",
+                "萨卡兹_思绪收下", --好像还有地雷收下的我没有收录
+            })
+            log(2555, x)
+            tap(x)
+
+            -- 误触到招募券处理
+            if findOne("确认招募") then
+                -- 放弃招募
+                if zl_only_coin then
+                    if not wait(function()
+                            if not findOne("确认招募") then return true end
+                            tap("放弃招募")
+                        end, 5) then
+                        return
+                    end
+
+                    if not wait(function()
+                            if findOne("编队") then return true end
+                            tap("右右确认")
+                        end, 5) then
+                        return
+                    end
+                else
+                    -- 招募
+                    if findOne("确认招募") then
+                        local start_time = time()
+                        if not wait(function()
+                                if findOne("编队") then return true end
+                                if findOne("返回确认界面") then
+                                    if time() - start_time < 2000 then
+                                        tap("左取消")
+                                    else
+                                        tap("右确认")
+                                    end
+                                    disappear("返回确认界面")
+                                    ssleep(.5)
+                                end
+                                tap("近卫招募列表" .. 1)
+                                findTap("确认招募")
+                                tap("开包skip")
+                            end, 10) then
+                            return
+                        end
+                    end
+                end
+            end
+
+            if not findOne("战略返回") then
+                if not appear({ "战略返回", "萨卡兹_战略帮助" }) then
+                    tap("战略确认")
+                end
+            end
+            -- if disappear("战略返回",0.5) then return true end
+            if findAny({ "萨卡兹_常规行动", "萨卡兹_战略帮助" }) and not findOne("确认招募") then
+                return true
+            end
+        end, 30) then
+        return false
+    end
+    return true
 end

@@ -110,13 +110,13 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     end
 
     --放弃辅助
-    if not zl_放弃招募辅助('萨米') then return end
+    if not zl.放弃招募辅助('萨米') then return end
 
     --招募近卫
-    if not zl_招募近卫('萨米') then return end
+    if not zl.招募近卫('萨米') then return end
 
     --招募医疗
-    if not zl_招募医疗('萨米') then return end
+    if not zl.招募医疗('萨米') then return end
 
     if not appear("萨米_初始招募") then return end
     log(2698)
@@ -164,12 +164,12 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
 
 
     --检查作战关卡名字
-    if not zl_fight_name_ocr('萨米') then return end
+    if not zl.fight_name_ocr('萨米') then return end
     toast(now_fight_name)
     ssleep(.5)
 
     --通用的  肉鸽的第一次作战编队 直接引用就可以
-    if not zl_first_edit_team() then return end
+    if not zl.first_edit_team() then return end
 
     ::sami_fight::
     -- 开始游戏
@@ -258,7 +258,7 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     ::fight_select::
     log('在选择节点界面')
     local idxs = -1
-    local idxs, maxIndex = zl_selection_node(0, '萨米')
+    local idxs, maxIndex = zl.selection_node(0, '萨米')
     --如果maxIndex是1 2 则是战斗关卡   3 4 是不期而遇
     if not idxs then return end
     if idxs > 0 then
@@ -271,7 +271,7 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
         --进入战斗
         log("进入战斗")
         --识别关卡名字
-        if not zl_fight_name_ocr('萨米') then return end
+        if not zl.fight_name_ocr('萨米') then return end
         toast(now_fight_name)
         ssleep(.5)
 
@@ -367,4 +367,82 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     for i = 1, 10 do if not zl_shop_buy() then break end end
 
     return goto_next_level()
+end
+
+--萨米肉鸽战斗后拾取战利品
+zl_fight_after_sami = function()
+    local drop_page = false
+    if not wait(function()
+            if not drop_page then tap("战略确认") end
+            if findOne("萨米_战略帮助") then drop_page = true end
+            local x = appear({
+                "萨米_目标生命拾取", "萨米_收藏品拾取", "萨米_招募券拾取",
+                "萨米_源石锭拾取", '萨米_道具收下', '萨米_密文版拿走',
+                '萨米_密文版拾取', "萨米_密文版选择左", "萨米_已领取所有奖励"
+            })
+            log(2555, x)
+            tap(x)
+            if x == '萨米_密文版拾取' then
+                -- wait(function()
+                --     if tap("萨米_已领取所有奖励") then return true end
+                --     tap("萨米_密文版选择左")
+                -- end, 5)
+                appear('萨米_密文版选择左', 1)
+                findTap('萨米_密文版选择左')
+            end
+
+            -- 误触到招募券处理
+            if findOne("确认招募") then
+                -- 放弃招募
+                if zl_only_coin then
+                    if not wait(function()
+                            if not findOne("确认招募") then return true end
+                            tap("放弃招募")
+                        end, 5) then
+                        return
+                    end
+
+                    if not wait(function()
+                            if findOne("编队") then return true end
+                            tap("右右确认")
+                        end, 5) then
+                        return
+                    end
+                else
+                    -- 招募
+                    if findOne("确认招募") then
+                        local start_time = time()
+                        if not wait(function()
+                                if findOne("编队") then return true end
+                                if findOne("返回确认界面") then
+                                    if time() - start_time < 2000 then
+                                        tap("左取消")
+                                    else
+                                        tap("右确认")
+                                    end
+                                    disappear("返回确认界面")
+                                    ssleep(.5)
+                                end
+                                tap("近卫招募列表" .. 1)
+                                findTap("确认招募")
+                                tap("开包skip")
+                            end, 10) then
+                            return
+                        end
+                    end
+                end
+            end
+
+            if not findOne("战略返回") then
+                if not appear({ "战略返回", "萨米_战略帮助" }) then
+                    tap("战略确认")
+                end
+            end
+            if findAny({ "萨米_常规行动", "萨米_战略帮助" }) and not findOne("确认招募") then
+                return true
+            end
+        end, 20) then
+        return false
+    end
+    return true
 end
