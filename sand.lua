@@ -5,10 +5,12 @@
 reachFourthDay = false
 Tales_within_the_sand = {}
 
-path.生息演算沙中之火 = never_end_wrapper(path.沙中之火)
-
 沙洲遗闻 = function()
     log("沙洲遗闻开始")
+    if sand_skip_repeat then
+        Tales_within_the_sand.连续跳过()
+        return
+    end
     if findOne("主页长期探索_生息演算") then
         tap("主页长期探索_生息演算", 0.1)
     end
@@ -278,7 +280,12 @@ Tales_within_the_sand.回到三天前存档 = function()
             if not findOne("生息底栏弹出页面") then
                 tap("生息底栏更多按钮")
             end
-            if findOne("生息底栏弹出页面") then tap("生息底栏更多_读取存档") end
+            -- 天数过高位置不一样
+            local xp = find_color("生息底栏更多_读取存档查找范围", "B1B056", 1, 0.95)
+            if xp then
+                tap(xp)
+            end
+            -- if findOne("生息底栏弹出页面") then tap("生息底栏更多_读取存档") end
             appearTap("生息读取存档确认", .1)
             if findOne("生息读取存档确认红") then
                 tap("生息读取存档确认红")
@@ -296,6 +303,7 @@ Tales_within_the_sand.回到三天前存档 = function()
             if findOne("沙洲遗闻开启今日") then
                 if not wait(function()
                         if not findOne("沙洲遗闻开启今日") then return true end
+                        if findOne("生息底栏烹饪按钮") then return true end
                         tap("沙洲遗闻开启今日")
                         ssleep(.1)
                     end, 7) then
@@ -785,6 +793,7 @@ Tales_within_the_sand.下一天 = function()
     if not findOne("生息演算消磨时间") then
         tap("生息演算右上角生息日")
     end
+    开启今日 = false
     if not wait(function()
             if findOne("生息演算消磨时间") then tap("生息演算消磨时间") end
             if findOne("生息演算跳过当日确认") then tap("生息演算跳过当日确认") end
@@ -792,9 +801,14 @@ Tales_within_the_sand.下一天 = function()
             if findOne("生息演算进入下一天") then tap("生息演算进入下一天") end
             if findOne("生息演算完成生存周期") then tap("沙洲遗闻开启今日") end
             appearTap("沙洲遗闻开启今日", .1)
+            if 开启今日 and findOne("生息底栏烹饪按钮") then
+                return true
+            end
             if findOne("沙洲遗闻开启今日") then
+                开启今日 = true
                 if not wait(function()
                         tap("沙洲遗闻开启今日")
+                        if findOne("生息底栏烹饪按钮") then return true end
                         if not findOne("沙洲遗闻开启今日") then return true end
                     end, 7) then
                     return false
@@ -844,9 +858,9 @@ Tales_within_the_sand.商店购买 = function()
         log("未找到商店")
         return
     end
-    local 物品横间距, 物品纵间距 = point["商店物品间隔"][1], point["商店物品间隔"][2]
+    local 物品横间距, 物品纵间距 = scale(516), scale(242)
     回到商店主页()
-    t = os.time()
+    local t = os.time()
     while true do
         if os.time() - t > 5 * 60 then -- 任务总时长5分钟
             log("商店任务超时")
@@ -907,4 +921,31 @@ Tales_within_the_sand.商店购买 = function()
         end
     end
     return true
+end
+
+Tales_within_the_sand.连续跳过 = function()
+    ssleep(1)
+    log("沙洲遗闻")
+    if findOne("主页长期探索_生息演算") then
+        tap("主页长期探索_生息演算", 0.1)
+    end
+    if not findOne("生息底栏烹饪按钮") then
+        log("非游戏内")
+        if not findOne("生息演算主页进入") then
+            log("未找到主页，从头开始")
+            Tales_within_the_sand.生息跳转()
+        end
+        if not wait(function()
+                if not findOne("生息底栏烹饪按钮") then tap("生息演算主页进入") end
+                if findOne("生息底栏烹饪按钮") then return true end
+            end, 3) then
+            return
+        end
+    end
+    while true do
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.回到三天前存档()
+    end
 end
