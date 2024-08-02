@@ -328,19 +328,17 @@ Tales_within_the_sand.检查代币数量 = function()
     end
     local nx = 0
     local text = ocro("生息演算代币范围")
-
     if text ~= nil then
         text = text:gsub(" ", "")
         text = text:gsub("O", "0")
         text = text:gsub("l", "1")
         nx = str2int(text:match("%d+"))
-        log("识别结果：" .. text)
-        log("匹配结果：" .. nx)
+        --log("识别结果：" .. text)
     else
         x = -1
         return false
     end
-
+    log("代币数量：" .. nx)
     --繁荣度和上一次一样的话，记录
     if prosperity_temp == nx then
         Prosperity_same_number = Prosperity_same_number + 1
@@ -449,16 +447,6 @@ Tales_within_the_sand.生息演算奇遇 = function(关卡)
         if not wait(function()
                 tap("沙洲遗闻奇遇确定")
                 ssleep(.2)
-                --[[if findOne("生息演算奇遇_右上角_资源不足") then
-                    local tx = ocr("生息演算奇遇右上角ocr")
-                    tx = table2string(tx)
-                    if tx:find("不足") or tx:find("所") or tx:find("资源") then
-                        tap("生息演算右上角生息日")
-                        disappear("生息演算奇遇_右上角_资源不足", 3)
-                        return true
-                    end
-                end]]
-                --
                 if findOne("沙洲遗闻奇遇标签") then
                     tap("沙洲遗闻奇遇标签")
                     log("奇遇缺少材料")
@@ -469,15 +457,6 @@ Tales_within_the_sand.生息演算奇遇 = function(关卡)
         end
         if q then break end
         if not wait(function()
-                --[[if findOne("生息演算奇遇_右上角_资源不足") then
-                    local tx = ocr("生息演算奇遇右上角ocr")
-                    tx = table2string(tx)
-                    if tx:find("不足") or tx:find("所") or tx:find("资源") then
-                        tap("生息演算右上角生息日")
-                        disappear("生息演算奇遇_右上角_资源不足", 3)
-                        return true
-                    end
-                end]]
                 local p = findOne("沙洲遗闻对话确定")
                 if p then
                     tap(p)
@@ -507,7 +486,16 @@ Tales_within_the_sand.生息演算奇遇 = function(关卡)
             if findOne("生息演算跳过当日确认") then tap("生息演算跳过当日确认") end
             if findOne("沙洲遗闻奇遇标签") then tap("沙洲遗闻奇遇标签") end
             if findOne("生息演算进入下一天") then tap("生息演算进入下一天") end
-            if findOne("生息演算完成生存周期") then tap("沙洲遗闻开启今日") end
+            if findOne("生息演算完成生存周期") then
+                ssleep(1)
+                local text = ocro("沙洲遗闻转化繁荣点数")
+                log(text)
+                if text == "MAX" or (text ~= nil and tonumber(text) == nil) then
+                    log("繁荣点数已满")
+                    Prosperity_same_number = 6
+                end
+                tap("沙洲遗闻开启今日")
+            end
             appearTap("沙洲遗闻开启今日", .1)
             if findOne("沙洲遗闻开启今日") then
                 ssleep(.3)
@@ -553,6 +541,7 @@ Tales_within_the_sand.敌袭1 = function()
         tap("生息演算近卫选择")
         appear("生息演算近卫选择", .5)
     end
+
     local oper_selected = 0
     for i = 1, 8 do
         tap("生息演算干员选择列表" .. i)

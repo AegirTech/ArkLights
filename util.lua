@@ -2019,12 +2019,12 @@ closeapp = function(package)
                 uri = "package:" .. package,
             }
             runIntent(intent)
-            log(intent)
+            --log(intent)
             local stop_node
             stop_node = appear({
                 { text = ".*停止.*" }, { text = ".*结束.*" }, { text = ".*STOP.*" },
             }, 10)
-            log(stop_node)
+            --log(stop_node)
             if not stop_node then return end
             stop_node = findNode(stop_node)
             if not stop_node or not stop_node.enabled then return back() end
