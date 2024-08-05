@@ -8462,10 +8462,8 @@ path.宝石铭刻寻找课程 = function()
     end
     toast('寻找未结课的课程')
 
-    当前课程序号 = 0 --记录当前属于第几个课程
-    手牌数量 = 0 --记录当前手牌数量
-    工艺底座数量 = 2 --记录底座的数量
-    当前轮数 = 1 --记录当前第几轮
+    local 当前课程序号 = 0 --记录当前属于第几个课程
+
     --寻找未结课的课程
     if not wait(function()
             当前课程序号 = 当前课程序号 + 1
@@ -8488,16 +8486,17 @@ path.宝石铭刻寻找课程 = function()
     --第一课的情况
     if 当前课程序号 == 1 then
         return path.宝石铭刻第1课教程()
-    end
-    if 当前课程序号 <= 5 and 当前课程序号 >= 2 then
-        return path.宝石铭刻第2345课教程()
-    end
-    if 当前课程序号 >= 6 then
-        ssleep(100000)
+    elseif 当前课程序号 <= 5 then
+        return path.宝石铭刻第2345课教程(当前课程序号)
+    elseif 当前课程序号 <= 8 then
+        return path.宝石铭刻第678课教程(当前课程序号)
+    elseif 当前课程序号 == 9 then
+        return path.宝石铭刻第9课教程()
     end
 end
 
 path.宝石铭刻第1课教程 = function()
+    local 手牌数量 = 0 --记录当前手牌数量
     log('宝石铭刻第一课教程')
     if not wait(function()
             tap('宝石铭刻_开始上课')
@@ -8545,8 +8544,50 @@ path.宝石铭刻第1课教程 = function()
         tap('宝石铭刻_铭刻完下一轮')
     end, 120)
 end
-
-path.宝石铭刻第2345课教程 = function()
+path.宝石铭刻摆放手牌 = function(工艺底座数量, 识别不占用底座, 当前课程序号)
+    appear('宝石铭刻_铭刻界面')
+    ssleep(.5)
+    local x, y = scale(55), -1
+    local 手牌变化量 = 0
+    for i = 1, 工艺底座数量 do
+        -- 左起第一张牌
+        ::查找::
+        x, y = findMultiColor(x, scale(956), scale(1900), scale(957),
+            "565656", scale(7) .. "|0|191515", 0, 0.9)
+        log(x, y)
+        if y ~= -1 then
+            tap({ x + scale(30), y })
+            ssleep(.1)
+            if 识别不占用底座 then
+                ssleep(.6)
+                local text = ocr("宝石铭刻_工艺说明")
+                text = table.findv(text, function(x) return x.text:find('工艺区') end)
+                if text then
+                    x = x + scale(160)
+                    goto 查找
+                else
+                    识别不占用底座 = false
+                end
+            end
+            tap("宝石铭刻_工作台列表" .. i)
+            if 当前课程序号 >= 7 then
+                手牌变化量 = 手牌变化量 - 1
+            end
+            ssleep(.1)
+        else
+            break
+        end
+    end
+    wait(function()
+        tap('宝石铭刻_开始铭刻')
+        if not findOne("宝石铭刻_开始铭刻") then return true end
+    end, 10)
+    return 手牌变化量
+end
+path.宝石铭刻第2345课教程 = function(当前课程序号)
+    local 手牌数量 = 0 --记录当前手牌数量
+    local 工艺底座数量 = 2 --记录底座的数量
+    local 当前轮数 = 1 --记录当前第几轮
     log('宝石铭刻第2345课教程')
     if not wait(function()
             tap('宝石铭刻_开始上课')
@@ -8555,7 +8596,6 @@ path.宝石铭刻第2345课教程 = function()
         end, 10) then
         return
     end
-
 
     local 宝石工艺可升级判断并购买 = function()
         ssleep(1)
@@ -8591,7 +8631,6 @@ path.宝石铭刻第2345课教程 = function()
             log('特殊情况跳过购买')
             return
         end
-
 
         local p = appear(point["宝石铭刻_优先购买的工艺列表"], 1)
         p = findAny(point["宝石铭刻_优先购买的工艺列表"])
@@ -8645,74 +8684,433 @@ path.宝石铭刻第2345课教程 = function()
                     手牌数量 = 手牌数量 + 1
                     ssleep(1)
                 end
+                if i == 2 then return true end
             end
         end, 15) then
         return
     end
 
-    ::tag_1::
-    log('工艺底座数量:', 工艺底座数量, ' 手牌数量:', 手牌数量, '当前轮数 :', 当前轮数)
+    while true do
+        log('工艺底座数量:', 工艺底座数量, ' 手牌数量:', 手牌数量, '当前轮数 :', 当前轮数)
 
-    --购买完之后  准备进入【开始铭刻】界面
-    if not wait(function()
-            tap('宝石铭刻_下一个课程')
-            if findOne('宝石铭刻_铭刻界面') then return true end
-        end, 15) then
-        return
+        --购买完之后  准备进入【开始铭刻】界面
+        if not wait(function()
+                tap('宝石铭刻_下一个课程')
+                if findOne('宝石铭刻_铭刻界面') then return true end
+            end, 15) then
+            return
+        end
+
+        log('开始铭刻', 工艺底座数量)
+        path.宝石铭刻摆放手牌(工艺底座数量)
+
+        --【开始铭刻】之后，准备进入下一轮的购买的界面
+        log('准备下一轮')
+        local jump = false
+        if not wait(function()
+                if findOne('宝石铭刻_铭刻完下一轮') then return true end
+                if findOne('宝石铭刻_结束课程') then
+                    jump = true
+                    return true
+                end
+            end, 10, .2) then
+            return
+        end
+
+        if jump then break end --遇到课程完事了情况 跳出
+        log(3580)
+        if not wait(function()
+                tap('宝石铭刻_铭刻完下一轮')
+                if not findOne('宝石铭刻_铭刻完下一轮') then return true end
+            end, 10, .2) then
+            return
+        end
+        log(3581)
+        if not appear('宝石铭刻_购买工艺界面') then return end
+        if not wait(function()
+                if findOne('宝石铭刻_工艺购买') and findOne('宝石铭刻_购买工艺界面') then return true end
+            end, 10, .2) then
+            return
+        end
+        log(3582)
+        当前轮数 = 当前轮数 + 1
+        --优先级为  升级> 0刷新 > 购买底座
+        --目前是在下一轮界面内
+        log('工艺底座数量:', 工艺底座数量, ' 手牌数量:', 手牌数量, '当前轮数 :', 当前轮数)
+        宝石工艺可升级判断并购买()
+
+        if 判断是否有0刷新() then 宝石工艺可升级判断并购买() end
+
+        增加操作台购买判断()
+        if 工艺底座数量 > 手牌数量 then
+            手牌数量再购买一张()
+        end
+        宝石工艺可升级判断并购买() --有时候买完新卡，会有可以升级工艺的情况在
+
+        --特殊关卡在额外买一张
+        if 当前课程序号 == 2 and 当前轮数 == 3 then
+            log('第二课 第三轮再买一张')
+            手牌数量再购买一张()
+        end
     end
-    log('开始铭刻')
-    宝石铭刻.摆放手牌到工作台()
+    log('宝石铭刻 end')
+end
+path.宝石铭刻第678课教程 = function(当前课程序号)
+    local 手牌数量 = 0 --记录当前手牌数量
+    local 工艺底座数量 = 2 --记录底座的数量
+    local 当前轮数 = 1 --记录当前第几轮
+    手牌 = {
+        红 = 0,
+        黄 = 0,
+        青1 = 0,
+        青2 = 0,
+        青3 = 0,
+        紫 = 0
+    }
 
-    --【开始铭刻】之后，准备进入下一轮的购买的界面
-    log('准备下一轮')
-    local jump = false
-    if not wait(function()
-            if findOne('宝石铭刻_铭刻完下一轮') then return true end
-            if findOne('宝石铭刻_结束课程') then
-                jump = true
-                return true
+    local 宝石铭刻购买 = function()
+        local 商店列表 = {}
+        local 免费刷新 = false
+        local 购买次数 = 0
+        local 购买一次 = function(商品, 刷新前)
+            log("购买一次")
+            --先买升级
+            local 购买 = function(i, 不增加手牌)
+                tap("宝石铭刻_工艺购买" .. i)
+                ssleep(.1)
+                tap("宝石铭刻_购买工艺")
+                ssleep(.3)
+                disappear("正在提交反馈至神经", network_timeout)
+                if not 不增加手牌 then
+                    手牌数量 = 手牌数量 + 1
+                end
+                商品 = path.宝石铭刻识别()
+                购买次数 = 购买次数 + 1
             end
-        end, 10, .2) then
-        return
+            for i = 1, 3 do
+                if 商品[i][2] == 1 and 商品[i][1] ~= "青1" then
+                    if findOne("宝石铭刻_钱不足" .. i) then
+                        return
+                    end
+                    购买(i, true)
+                end
+            end
+            if 当前课程序号 >= 7 then
+                for i = 1, 3 do
+                    if 商品[i][2] == 0 and 商品[i][1] == "红" then
+                        if findOne("宝石铭刻_钱不足" .. i) then
+                            return
+                        end
+                        购买(i)
+                        手牌["红"] = 手牌["红"] + 1
+                    end
+                    if 商品[i][2] == 1 and 商品[i][1] == "红" then
+                        if findOne("宝石铭刻_钱不足" .. i) then
+                            return
+                        end
+                        购买(i, true)
+                        手牌["红"] = 手牌["红"] + 1
+                    end
+                end
+            end
+            for i = 1, 3 do
+                if 商品[i][1] == "黄" then
+                    if findOne("宝石铭刻_钱不足" .. i) then
+                        return
+                    end
+                    购买(i)
+                    手牌["黄"] = 手牌["黄"] + 1
+                end
+            end
+            for i = 1, 3 do
+                if 商品[i][2] == 0 and 商品[i][1] == "青1" then
+                    if 手牌数量 >= 工艺底座数量 + 1 or findOne("宝石铭刻_钱不足" .. i) then
+                        return
+                    end
+                    购买(i)
+                    手牌["青1"] = 手牌["青1"] + 1
+                    break
+                end
+            end
+            if 手牌["青1"] > 0 or not 刷新前 then
+                for i = 1, 3 do
+                    if 商品[i][2] == 0 and 商品[i][1] == "青2" then
+                        if 手牌数量 >= 工艺底座数量 + 1 or findOne("宝石铭刻_钱不足" .. i) then
+                            return
+                        end
+                        购买(i)
+                        手牌["青2"] = 手牌["青2"] + 1
+                        break
+                    end
+                end
+            end
+            if 手牌["青2"] > 0 then
+                for i = 1, 3 do
+                    if 商品[i][2] == 0 and 商品[i][1] == "青3" then
+                        if 手牌数量 >= 工艺底座数量 + 1 or findOne("宝石铭刻_钱不足" .. i) then
+                            return
+                        end
+                        购买(i)
+                        手牌["青3"] = 手牌["青3"] + 1
+                        break
+                    end
+                end
+            end
+            if 手牌["红"] > 0 or not 刷新前 then
+                for i = 1, 3 do
+                    if 商品[i][2] == 0 and 商品[i][1] == "红" then
+                        if 手牌数量 >= 工艺底座数量 or findOne("宝石铭刻_钱不足" .. i) then
+                            return
+                        end
+                        购买(i)
+                        手牌["红"] = 手牌["红"] + 1
+                    end
+                    if 商品[i][2] == 1 and 商品[i][1] == "红" then
+                        if findOne("宝石铭刻_钱不足" .. i) then
+                            return
+                        end
+                        购买(i, true)
+                        手牌["红"] = 手牌["红"] + 1
+                    end
+                end
+            end
+            return true
+        end
+        商店列表, 免费刷新 = path.宝石铭刻识别()
+        if 免费刷新 then
+            购买一次(商店列表, 免费刷新)
+            tap("宝石铭刻_0刷新")
+            ssleep(1)
+            disappear("正在提交反馈至神经", network_timeout)
+            ssleep(1)
+        end
+        商店列表 = path.宝石铭刻识别()
+        购买一次(商店列表)
+        if 当前轮数 > 5 then
+            local 有钱 = true
+            while 购买次数 < 3 and 有钱 do
+                tap("宝石铭刻_0刷新")
+                ssleep(1)
+                disappear("正在提交反馈至神经", network_timeout)
+                ssleep(1)
+                有钱 = 购买一次(商店列表)
+            end
+        end
+        if findOne("宝石铭刻_钱不足底座") then
+            return
+        end
+        tap('宝石铭刻_新增工作台')
+        ssleep(.1)
+        tap('宝石铭刻_购买工艺')
+        ssleep(.2)
+        工艺底座数量 = 工艺底座数量 + 1
+        disappear("正在提交反馈至神经", network_timeout)
+        商店列表 = path.宝石铭刻识别()
+        购买一次(商店列表)
     end
 
-    if jump then return end --遇到课程完事了情况 跳出
-    log(3580)
+    log("宝石铭刻第" .. 当前课程序号 .. "课教程")
     if not wait(function()
-            tap('宝石铭刻_铭刻完下一轮')
-            if not findOne('宝石铭刻_铭刻完下一轮') then return true end
-        end, 10, .2) then
+            tap('宝石铭刻_开始上课')
+            tap('宝石铭刻_开始课程')
+            if findOne("宝石铭刻_购买工艺界面") then return true end
+        end, 10) then
         return
     end
-    log(3581)
-    if not appear('宝石铭刻_购买工艺界面') then return end
+
+    log('第一轮  购买两个工艺，不用判断')
+    appear('宝石铭刻_工艺购买', 5)
+
+
+    while true do
+        ssleep(2.5)
+        宝石铭刻购买()
+        log('工艺底座数量:', 工艺底座数量, ' 手牌数量:', 手牌数量, '当前轮数 :', 当前轮数, "手牌", 手牌)
+        if 手牌["红"] >= 3 then
+            手牌数量 = 手牌数量 - 1
+            手牌["红"] = 手牌["红"] - 3
+        end
+        --购买完之后  准备进入【开始铭刻】界面
+        if not wait(function()
+                tap('宝石铭刻_下一个课程')
+                if findOne('宝石铭刻_铭刻界面') then return true end
+            end, 15) then
+            return
+        end
+
+        log('开始铭刻', 工艺底座数量)
+        手牌数量 = 手牌数量 + path.宝石铭刻摆放手牌(工艺底座数量, 1, 当前课程序号)
+
+        --【开始铭刻】之后，准备进入下一轮的购买的界面
+        log('准备下一轮')
+        local jump = false
+        if not wait(function()
+                if findOne('宝石铭刻_铭刻完下一轮') then return true end
+                if findOne('宝石铭刻_结束课程') then
+                    jump = true
+                    return true
+                end
+            end, 10, .2) then
+            return
+        end
+
+        if jump then break end --遇到课程完事了情况 跳出
+        log(3580)
+        if not wait(function()
+                tap('宝石铭刻_铭刻完下一轮')
+                if not findOne('宝石铭刻_铭刻完下一轮') then return true end
+            end, 10, .2) then
+            return
+        end
+        log(3581)
+        if not appear('宝石铭刻_购买工艺界面') then return end
+        if not wait(function()
+                if findOne('宝石铭刻_工艺购买') and findOne('宝石铭刻_购买工艺界面') then return true end
+            end, 10, .2) then
+            return
+        end
+        log(3582)
+        当前轮数 = 当前轮数 + 1
+        --优先级为  升级> 0刷新 > 购买底座
+        --目前是在下一轮界面内
+    end
+    log('宝石铭刻 end')
+end
+
+path.宝石铭刻识别 = function()
+    local 商品间距 = 167
+    local 商品 = {}
+    local 刷新 = false
+    keepCapture()
+    for i = 1, 3 do
+        商品[i] = { "无商品", 0 }
+        for i = 1, 3 do
+            商品[i] = { "无商品", 0 }
+            if cmpColor(scale(商品间距 * (i - 1) + 6 * math.floor(i / 3) + 617), scale(310), "DA9A39", 0.85) == 1 then
+                商品[i][1] = "黄"
+            elseif cmpColor(scale(商品间距 * (i - 1) + 6 * math.floor(i / 3) + 612), scale(312), "6E1829", 0.87) == 1 then
+                商品[i][1] = "红"
+            elseif cmpColor(scale(商品间距 * (i - 1) + 6 * math.floor(i / 3) + 611), scale(317), "32B99F", 0.85) == 1 then
+                商品[i][1] = "青"
+                if cmpColor(scale(商品间距 * (i - 1) + 6 * math.floor(i / 3) + 621), scale(321), "14FEF9", 0.85) == 1 then
+                    商品[i][1] = "青1"
+                elseif cmpColor(scale(商品间距 * (i - 1) + 6 * math.floor(i / 3) + 621), scale(322), "120D0C", 0.8) == 1 then
+                    商品[i][1] = "青2"
+                elseif cmpColor(scale(商品间距 * (i - 1) + 6 * math.floor(i / 3) + 620), scale(319), "161A1A", 0.8) == 1 then
+                    商品[i][1] = "青3"
+                end
+            elseif cmpColor(scale(商品间距 * (i - 1) + 6 * math.floor(i / 3) + 590), scale(322), "242282", 0.87) == 1 then
+                商品[i][1] = "紫"
+            else
+                商品[i][1] = "无商品"
+            end
+            if cmpColor(scale(商品间距 * (i - 1) + 6 * math.floor(i / 3) + 727), scale(331), "FFFFFF", 0.9) == 1 then
+                --升级
+                商品[i][2] = 1
+            else
+                商品[i][2] = 0
+            end
+        end
+    end
+    log(商品)
+    if findOne("宝石铭刻_0刷新") then 刷新 = true end
+    releaseCapture()
+    return 商品, 刷新
+end
+
+path.宝石铭刻第9课教程 = function()
+    local 当前课程序号 = 9
+    local 手牌数量 = 0 --记录当前手牌数量
+    local 工艺底座数量 = 2 --记录底座的数量
+    local 当前轮数 = 1 --记录当前第几轮
+
+    local 宝石铭刻购买 = function()
+        if findOne("宝石铭刻_钱不足底座") or 工艺底座数量 == 6 then
+            return
+        end
+        tap('宝石铭刻_新增工作台')
+        ssleep(.1)
+        tap('宝石铭刻_购买工艺')
+        ssleep(.2)
+        工艺底座数量 = 工艺底座数量 + 1
+        disappear("正在提交反馈至神经", network_timeout)
+    end
+
+    log("宝石铭刻第" .. 当前课程序号 .. "课教程")
     if not wait(function()
-            if findOne('宝石铭刻_工艺购买') and findOne('宝石铭刻_购买工艺界面') then return true end
-        end, 10, .2) then
+            tap('宝石铭刻_开始上课')
+            tap('宝石铭刻_开始课程')
+            if findOne("宝石铭刻_钱不足底座") then return true end
+        end, 10) then
         return
     end
-    log(3582)
-    当前轮数 = 当前轮数 + 1
-    --优先级为  升级> 0刷新 > 购买底座
-    --目前是在下一轮界面内
-    log('工艺底座数量:', 工艺底座数量, ' 手牌数量:', 手牌数量, '当前轮数 :', 当前轮数)
-    宝石工艺可升级判断并购买()
 
-    if 判断是否有0刷新() then 宝石工艺可升级判断并购买() end
+    log('第一轮  购买两个工艺，不用判断')
+    appear('宝石铭刻_钱不足底座', 5)
 
-    增加操作台购买判断()
-    if 工艺底座数量 > 手牌数量 then
-        手牌数量再购买一张()
+    while true do
+        ssleep(2.5)
+        宝石铭刻购买()
+
+        --购买完之后  准备进入【开始铭刻】界面
+        if not wait(function()
+                tap('宝石铭刻_下一个课程')
+                if findOne('宝石铭刻_铭刻界面') then return true end
+            end, 15) then
+            return
+        end
+
+        if 工艺底座数量 < 5 then
+            --单出红4
+            tap("宝石铭刻_第九关红4")
+            ssleep(.1)
+            tap("宝石铭刻_工作台列表1")
+            ssleep(.2)
+        else
+            for i = 1, 工艺底座数量 do
+                tap("宝石铭刻_第九关出" .. 工艺底座数量 .. "牌列表" .. i)
+                ssleep(.1)
+                tap("宝石铭刻_工作台列表" .. i)
+                ssleep(.2)
+            end
+        end
+        wait(function()
+            tap('宝石铭刻_开始铭刻')
+            if not findOne("宝石铭刻_开始铭刻") then return true end
+        end, 10)
+
+        --【开始铭刻】之后，准备进入下一轮的购买的界面
+        log('准备下一轮')
+        local jump = false
+        if not wait(function()
+                if findOne('宝石铭刻_铭刻完下一轮') then return true end
+                if findOne('宝石铭刻_结束课程') then
+                    jump = true
+                    return true
+                end
+            end, 10, .2) then
+            return
+        end
+        --点数不够可以打无尽
+        if jump then break end --遇到课程完事了情况 跳出
+        log(3580)
+        if not wait(function()
+                tap('宝石铭刻_铭刻完下一轮')
+                if not findOne('宝石铭刻_铭刻完下一轮') then return true end
+            end, 10, .2) then
+            return
+        end
+        log(3581)
+        if not appear('宝石铭刻_购买工艺界面') then return end
+        if not wait(function()
+                if findOne('宝石铭刻_周边部') and findOne('宝石铭刻_购买工艺界面') then return true end
+            end, 10, .2) then
+            return
+        end
+        log(3582)
+        当前轮数 = 当前轮数 + 1
+        --优先级为  升级> 0刷新 > 购买底座
+        --目前是在下一轮界面内
     end
-    宝石工艺可升级判断并购买() --有时候买完新卡，会有可以升级工艺的情况在
-
-    --特殊关卡在额外买一张
-    if 当前课程序号 == 2 and 当前轮数 == 3 then
-        log('第二课 第三轮再买一张')
-        手牌数量再购买一张()
-    end
-
-    goto tag_1
-
     log('宝石铭刻 end')
 end
