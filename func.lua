@@ -623,3 +623,48 @@ string.finds = function(x, targetStr)
     end
     return false
 end
+
+宝石铭刻 = {}
+宝石铭刻.摆放手牌到工作台 = function()
+    log('滑动')
+    local g6 = { scale(1336), scale(501) } --第六个工作台
+    local p = {}
+    if 手牌数量 == 4 then
+        p = {
+            { scale(700), scale(875) }, { scale(766), scale(850) },
+            { scale(766), scale(850) }, { scale(971), scale(850) }
+        }
+        --elseif 手牌数量 ==3 then
+        --elseif 手牌数量 == 2 then
+    else
+        p = { --手牌位置，没有考虑顺序，就随便取的
+            { scale(838), scale(904) }, { scale(900), scale(925) },
+            { scale(900), scale(925) }, { scale(900), scale(925) },
+            { scale(900), scale(925) }
+        }
+    end
+
+    if 当前课程序号 == 2 and 当前轮数 == 3 then --特殊关卡替换卡牌出场顺序
+        log('第二课 第三轮特殊摆放')
+        p = {
+            { scale(700), scale(875) }, { scale(766), scale(850) },
+            { scale(766), scale(850) }
+        }
+    end
+
+    for _, v in ipairs(p) do
+        gesture({
+            {
+                point = { v, g6 },
+                start = 0,
+                duration = 200,
+            },
+        })
+        ssleep(.5)
+    end
+
+    wait(function()
+        tap('宝石铭刻_开始铭刻')
+        if not findOne("宝石铭刻_开始铭刻") then return true end
+    end, 10)
+end
