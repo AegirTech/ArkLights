@@ -535,7 +535,7 @@ make_jump_ui = function(layout)
     local buttons = {
         { nil, "多账户", make_jump_ui_command(layout, 'multi_account') },
         { nil, "测试功能", make_jump_ui_command(layout, "auto") },
-        { nil, "肉鸽/公招", make_jump_ui_command(layout, "extra") },
+        { nil, "肉鸽/其他", make_jump_ui_command(layout, "extra") },
         { nil, "退出", make_jump_ui_command(layout, nil, "saveConfig('Not_Restart','true');peaceExit()") }, {
         readme_btn, "必读", make_jump_ui_command(layout, nil,
         "saveConfig('readme_already_read','1');jump_readme()"),
@@ -1045,6 +1045,15 @@ show_extra_ui = function()
     ui.addEditText(layout, "extra_single_account", "")
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
+
+    newRow(layout)
+    addTextView(layout, "===========宝石铭刻===========")
+    newRow(layout)
+    addButton(layout, nil, "宝石铭刻——夏活小游戏",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='宝石铭刻活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+
 
     newRow(layout)
     addTextView(layout, "===========肉鸽相关===========")
