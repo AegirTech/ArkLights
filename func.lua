@@ -227,7 +227,7 @@ end
 
 -- 设置官服登录账户
 official_set_login_user = function(data)
-    data = data or ""
+    local data = data or ""
     if data == "" then
         log("data为空")
         return false
@@ -257,39 +257,54 @@ exec2 = function(command)
 end
 
 -- 保存自定义配置
-save_local_config = function(filename, key, value)
-    local value = value or ""
-    local filePath = getWorkPath() .. "/" .. filename .. ".json"
-    local Config = {}
+save_local_config = function()
+    local filePath = getWorkPath() .. "/account_data.json"
+    local file = io.open(filePath, "w")
+    file:write(JsonEncode(account_data))
+    file:close()
+end
+
+-- 初始化账户配置
+read_local_config = function()
+    local filePath = getWorkPath() .. "/account_data.json"
     local file = io.open(filePath, "r")
     if file then
         local json = file:read("*a")
-        Config = JsonDecode(json)
+        account_data = JsonDecode(json)
         file:close()
-    end
-    Config[key] = value
-    file = io.open(filePath, "w")
-    if file then
-        local json = JsonEncode(Config)
-        file:write(json)
-        file:close()
-        return true
+        return
     else
-        return false
+        file = io.open(filePath, "w")
+        file:write(JsonEncode(account_data))
+        file:close()
+        return
     end
 end
 
--- 读取自定义配置
-read_local_config = function(filename, key)
-    local filePath = getWorkPath() .. "/" .. filename .. ".json"
-    local file = io.open(filePath, "r")
-    if file then
-        local json = file:read("*a")
-        local config = JsonDecode(json)
-        file:close()
-        return config[key]
-    else
-        return nil
+account_data = {}
+read_local_config()
+
+switch_account = function()
+    -- 无密码切号方案
+    if new_change_account_plan and root_mode and account_data[username] then
+        log("切号测试")
+        _G.快速切号功能状态 = false
+        closeapp(appid)
+        if server == 0 and account_data[username]["hyper"] then
+            local user_token = account_data[username]["token"]
+            if user_token and #user_token > 10 then
+                log("官服快速登录")
+                user_token = decodeBase64(user_token)
+                _G.快速切号功能状态 = official_set_login_user(user_token)
+            end
+        elseif server ~= 0 and account_data[username]["bili"] then
+            local userid = account_data[username]["userid"]
+            if userid and #userid > 1 and bilibili_is_uid_exist(userid) then
+                log("b服快速登录")
+                log(userid)
+                _G.快速切号功能状态 = bilibili_set_login_uid(userid)
+            end
+        end
     end
 end
 
@@ -611,17 +626,6 @@ hidden_front_navigation = function()
     end
 
     log('导航成功')
-end
-
-string.finds = function(x, targetStr)
-    local targetStr = targetStr or {}
-    for _, v in ipairs(targetStr) do
-        if string.find(x, v, 1, true) then
-            log(x, ' find ', v)
-            return true
-        end
-    end
-    return false
 end
 
 宝石铭刻 = {}

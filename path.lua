@@ -1245,18 +1245,19 @@ path.账户数据保存 = function()
             if user_token then
                 log("官服登录保存登录数据ing")
                 user_token = encodeBase64(user_token)
-                save_local_config("account", username .. "token", user_token)
-                save_local_config("account", username .. "hyperautologin", true)
+                account_data[username]["hyper"] = true
+                account_data[username]["token"] = user_token
             end
         elseif appid == "com.hypergryph.arknights.bilibili" then
             local userid = bilibili_get_lastlogin_uid()
             if userid then
                 log("b服登录保存userid")
-                save_local_config("account", username .. "userid", userid)
-                save_local_config("account", username .. "biliautologin", true)
+                account_data[username]["bili"] = true
+                account_data[username]["userid"] = userid
             end
         end
     end
+    save_local_config()
     return true
 end
 

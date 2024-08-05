@@ -121,6 +121,15 @@ activity_materials_stage = {
 -- 初始化数据及玩家信息
 raise.init = function()
     log(raise_plan_text)
+    -- 读取培养计划
+    local status, raise_plan
+    status, raise_plan = pcall(JsonDecode, raise_plan_text)
+
+    log("培养计划", raise_plan)
+    if not status then
+        log("传入培养计划格式错误")
+        return
+    end
     if not character_table then
         -- 解包干员数据
         character_table = JsonDecode(readFile("char_table.json"))
@@ -131,20 +140,6 @@ raise.init = function()
     end
     -- 正在进行技能专精
     mastering = false
-    --log(character_table)
-    --[[if not item_table then
-        file = io.open(getWorkPath() .. "/gamedata/excel/item_table.json", "r")
-        -- 游戏内物品数据
-        item_table = file:read("*a")
-        file:close()
-        local status
-        status, item_table = pcall(JsonDecode, item_table)
-        if not status then
-            log("游戏数据item_table读取失败")
-            return
-        end
-    end
-    ]]
     if not character_name2id then
         character_name2id = {}
         for k, v in pairs(character_table) do
@@ -167,15 +162,6 @@ raise.init = function()
     end
     --log("干员数据", player_character_info)
     log("仓库数据", player_inventory_info)
-    -- 读取培养计划
-    local status
-    status, raise_plan = pcall(JsonDecode, raise_plan_text)
-
-    log("培养计划", raise_plan)
-    if not status then
-        log("传入培养计划格式错误")
-        return
-    end
     return true
 end
 
@@ -215,7 +201,7 @@ end
 -- 初始化玩家干员数据
 player_info_init = function(player_data)
     player_character_info = {} -- 玩家干员数据
-    player_inventory_info = {}
+    player_inventory_info = {} -- 玩家仓库数据
     if type(player_data) ~= "table" or player_data == {} or player_data["characters"] == nil then
         log("player_data解析出错")
         return
