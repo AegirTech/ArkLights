@@ -1234,6 +1234,8 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "hidden_front_award", "隐秘战线打完领取奖励", true)
 
     newRow(layout)
+    addTextView(layout, "===========连续公招===========")
+    newRow(layout)
     addButton(layout, layout .. "_recruit", "公开招募加急",
         make_jump_ui_command(layout, nil,
             "extra_mode='公开招募加急';lock:remove(main_ui_lock)"))
