@@ -17,6 +17,8 @@ Headers = {
     ["Content-Type"] = "application/json"
 }
 
+skland = {}
+
 -- 鹰角通行证登录，成功返回token
 arknights_login = function(account, password)
     log("[1]获取token开始")
@@ -81,8 +83,8 @@ skland_get_cred_by_token = function(code)
 end
 
 --生成签名sign值，并直接设置Headers
-skland_sign = function(url, data)
-    skland_refresh_token()
+skland.sign = function(url, data)
+    skland.get_refresh_token()
     local data = data or ""
     local sha = require("sha2")
     local hmac = sha.hmac
@@ -108,17 +110,33 @@ skland_sign = function(url, data)
 end
 
 -- 登录获取cred，并直接设置Headers
-skland_get_cred = function(account, password)
+skland.get_cred = function(account, password)
     cred = skland_get_cred_by_token(get_grant_code(arknights_login(account, password)))
     Headers["cred"] = cred
     return cred
 end
 
+skland.request = function(method, url, data)
+    local data = data or ""
+    local method = method or "GET"
+    if type(data) == "table" then
+        data = JsonEncode(data)
+    end
+    skland.sign(url, data)
+    if method == "GET" then
+        local ret = curl_get(API .. url, Headers, 5, nil)
+        log(method, url, ret)
+        return ret
+    elseif method == "POST" then
+        local ret = curl_post(API .. url, Headers, data, 5, nil)
+        log(method, url, ret)
+        return ret
+    end
+end
+
 -- 获取森空岛绑定的账户信息
-skland_get_bind_info = function()
-    local url = API .. "/game/player/binding"
-    skland_sign("/game/player/binding", "")
-    local ret = curl_get(url, Headers, 5, nil)
+skland.get_bind_info = function()
+    local ret = skland.request("GET", "/game/player/binding")
     local status, ret = pcall(JsonDecode, ret)
     if status then
         if get(ret, 'code') == 0 then
@@ -133,20 +151,33 @@ skland_get_bind_info = function()
         end
     else
         log("json解析失败" .. ret)
-        return {}
+        return nil
+    end
+end
+
+skland.account_check = function()
+    local result = skland.request("GET", "/user/me")
+    local status, result = pcall(JsonDecode, result)
+    if status then
+        -- local code = get(result, "code")
+        local msg = get(result, "message")
+        if string.find(msg, "用户未登录") then
+            return false
+        else
+            return true
+        end
+    else
+        log("json解析失败")
+        return false
     end
 end
 
 -- 森空岛签到接口 成功返回0，重复签到返回1，其他各种失败原因返回2
-skland_checkin = function(uid, server)
-    local url = API .. "/game/attendance"
+skland.checkin = function(uid, server)
     local data = {}
     data["uid"] = uid
     data["gameId"] = tonumber(server)
-    data = JsonEncode(data)
-    skland_sign("/game/attendance", data)
-    local ret = curl_post(url, Headers, data, 5, nil)
-    log(ret)
+    local ret = skland.request("POST", "/game/attendance", data)
     local status, ret = pcall(JsonDecode, ret)
     if status then
         local code = get(ret, "code")
@@ -164,21 +195,63 @@ skland_checkin = function(uid, server)
     end
 end
 
--- 刷新token
-skland_refresh_token = function()
-    url = API .. "/auth/refresh"
-    local headers = shallowCopy(Headers)
-    headers["sign_enable"] = false
-    -- headers["timestamp"] = os.time()
-    headers["sign"] = nil
-    local ret = curl_get(url, headers, 5, nil)
+-- 获取绑定的游戏信息
+skland.get_game_info = function(uid)
+    local url = API .. "/game/player/info"
+    local params = {
+        ["uid"] = uid
+    }
+    skland.sign("/game/player/info", "uid=" .. uid)
+    local ret = curl_get(url .. "?uid=" .. uid, Headers, 10, nil)
+    local status
+    status, ret = pcall(JsonDecode, ret)
+    if status then
+        if get(ret, 'code') == 0 then
+            return ret
+        else
+            return {}
+        end
+    else
+        log("json解析失败", ret)
+        return {}
+    end
+end
+
+-- 获取干员和材料
+skland.cultivate = function(uid)
+    local url = API .. "/game/cultivate/player"
+    params = {
+        ["uid"] = uid
+    }
+    skland.sign("/game/cultivate/player", "uid=" .. uid)
+    local ret = curl_get(url .. "?uid=" .. uid, Headers, 10, nil)
     log(ret)
+    local status
+    status, ret = pcall(JsonDecode, ret)
+    if status then
+        if get(ret, 'code') == 0 then
+            return ret
+        else
+            return {}
+        end
+    else
+        log("json解析失败", ret)
+        return {}
+    end
+end
+
+
+-- 刷新token
+skland.get_refresh_token = function()
+    url = API .. "/auth/refresh"
+    local ret = curl_get(url, nil, 5, nil)
     local status, ret = pcall(JsonDecode, ret)
+    log(ret)
     if status then
         local code = get(ret, "code")
         if code == 0 then
             Skland_sign_token = get(ret, "data", "token")
-            log("森空岛刷新token成功" .. Skland_sign_token)
+            log("森空岛刷新token成功", Skland_sign_token)
         else
             log("森空岛刷新token失败")
         end
@@ -187,102 +260,41 @@ skland_refresh_token = function()
     end
 end
 
--- 获取森空岛账户信息
-skland_get_account_info = function(cred)
-    local url = API .. "/user"
-    skland_sign("/user", "")
-    local ret = curl_get(url, Headers, 5, nil)
-    log(ret)
-    local status, ret = pcall(JsonDecode, ret)
-    if status then
-        return ret
-    else
-        log("json解析失败" .. ret)
-        return 0
-    end
-end
-
 -- 森空岛每日签到
 skland_daily_checkin = function(account, password)
     log("森空岛签到开始")
     local curtime = os.date('%y%m%d')
-    local lasttime = read_local_config("account", account .. "lastcheckintime")
+    local lasttime = get(account_data, str(account), "lastcheckintime")
     if lasttime == curtime then
         log("森空岛签到跳过")
         table.insert(qqmessage, "森空岛签到跳过")
         return true
     end
-    local cred = read_local_config("account", account .. "cred")
-    if cred == nil or cred == "" or #cred < 5 then
-        log("cred无效，等待重新获取")
-        cred = skland_get_cred(account, password)
-        if cred ~= 0 then
-            save_local_config("account", account .. "cred", cred)
-            log("cred获取完成" .. cred)
+    skland_init(account, password)
+    local list = skland.get_bind_info()
+    if list == nil then
+        log("森空岛签到失败")
+        table.insert(qqmessage, "森空岛签到失败,获取绑定id失败")
+        return false
+    end
+    for i, v in pairs(list) do
+        local gameuid = list[i]["uid"]
+        local server = list[i]["channelMasterId"]
+        log(i, gameuid, server)
+        ret = skland.checkin(gameuid, server)
+        if ret == 0 then
+            log("森空岛签到完成")
+            table.insert(qqmessage, "森空岛签到完成")
+        elseif ret == 1 then
+            log("森空岛签到重复")
+            table.insert(qqmessage, "森空岛签到重复")
         else
-            log("cred无效，登录存在错误，请联系开发者")
-            table.insert(qqmessage, "森空岛签到登录发生错误")
+            table.insert(qqmessage, "森空岛签到未知错误，请联系开发者")
         end
     end
-    log("从配置中读取cred" .. cred)
-    if cred == 0 then
-        log("森空岛登录失败")
-        table.insert(qqmessage, "森空岛登录失败")
-        return false
-    end
-
-    Headers["cred"] = cred
-    if type(cred) == "string" and #cred > 5 then
-        list = skland_get_bind_info()
-        if list == nil then
-            log("森空岛签到失败")
-            table.insert(qqmessage, "森空岛签到失败,cred无效")
-            save_local_config("account", account .. "cred", "")
-            return false
-        end
-        for i, v in pairs(list) do
-            local gameuid = list[i]["uid"]
-            local server = list[i]["channelMasterId"]
-            log(i, gameuid, server)
-            ret = skland_checkin(gameuid, server)
-            if ret == 0 then
-                log("森空岛签到完成")
-                table.insert(qqmessage, "森空岛签到完成")
-            elseif ret == 1 then
-                log("森空岛签到重复")
-                table.insert(qqmessage, "森空岛签到重复")
-            else
-                table.insert(qqmessage, "森空岛签到未知错误，请联系开发者")
-            end
-        end
-        save_local_config("account", account .. "lastcheckintime", curtime)
-        return true
-    else
-        log("未知错误")
-        table.insert(qqmessage, "森空岛签到未知错误，请联系开发者")
-        save_local_config("account", account .. "lastcheckintime", curtime)
-        return false
-    end
-end
-
-skland_account_check = function()
-    local url = API .. "/user/me"
-    skland_sign("/user/me", "")
-    local result = curl_get(url, Headers)
-    local status, result = pcall(JsonDecode, result)
-    log(result)
-    if status then
-        -- local code = get(result, "code")
-        local msg = get(result, "message")
-        if string.find(msg, "用户未登录") then
-            return false
-        else
-            return true
-        end
-    else
-        log("json解析失败")
-        return false
-    end
+    account_data[account]["lastcheckintime"] = curtime
+    save_local_config()
+    return true
 end
 
 -- 获取当前时间戳 使用淘宝接口，解决部分设备时间不对的情况 类型1 返回10位时间戳 类型2 返回13位时间戳 默认1
@@ -311,82 +323,41 @@ end
 -- 森空岛初始化
 skland_init = function(account, password)
     log("森空岛初始化")
-    cred = read_local_config("account", account .. "cred")
+    cred = get(account_data, str(account), "cred")
+    if not account_data[account] then
+        account_data[account] = {}
+    end
     if type(cred) ~= "string" or #cred < 5 then
-        log("cred无效，等待重新获取")
-        cred = skland_get_cred(account, password)
+        log("cred无效")
+        cred = skland.get_cred(account, password)
         if type(cred) == "string" and #cred > 5 then
-            save_local_config("account", account .. "cred", cred)
-            log("cred获取完成", cred)
+            account_data[account]["cred"] = cred
+            log("cred获取", cred)
         else
-            log("cred无效，登录存在错误，请联系开发者")
+            log("cred登录存在错误")
             return false
         end
     else
         log("从配置中读取cred", cred)
         Headers["cred"] = cred
-        if skland_account_check() then
+        if skland.account_check() then
             log("森空岛初始化完成")
             return true
         else
-            log("cred无效，等待重新获取")
-            cred = skland_get_cred(account, password)
+            log("cred无效")
+            cred = skland.get_cred(account, password)
             if cred ~= 0 then
-                save_local_config("account", account .. "cred", cred)
+                account_data[account]["cred"] = cred
                 log("cred获取完成", cred)
             else
-                log("cred无效，登录存在错误，请联系开发者")
+                log("cred登录存在错误")
                 return false
             end
         end
     end
     Headers["cred"] = cred
+    save_local_config()
     return true
-end
-
--- 获取绑定的游戏信息
-skland_get_game_info = function(uid)
-    local url = API .. "/game/player/info"
-    params = {
-        ["uid"] = uid
-    }
-    skland_sign("/game/player/info", "uid=" .. uid)
-    local ret = curl_get(url .. "?uid=" .. uid, Headers, 10, nil)
-    local status
-    status, ret = pcall(JsonDecode, ret)
-    if status then
-        if get(ret, 'code') == 0 then
-            return ret
-        else
-            return {}
-        end
-    else
-        log("json解析失败", ret)
-        return {}
-    end
-end
-
--- 获取干员和材料
-skland_cultivate = function(uid)
-    local url = API .. "/game/cultivate/player"
-    params = {
-        ["uid"] = uid
-    }
-    skland_sign("/game/cultivate/player", "uid=" .. uid)
-    local ret = curl_get(url .. "?uid=" .. uid, Headers, 10, nil)
-    log(ret)
-    local status
-    status, ret = pcall(JsonDecode, ret)
-    if status then
-        if get(ret, 'code') == 0 then
-            return ret
-        else
-            return {}
-        end
-    else
-        log("json解析失败", ret)
-        return {}
-    end
 end
 
 -- 获取游戏信息 完整流程 如果账户绑定了多个b服则需要指定，大部分情况不用考虑
@@ -394,7 +365,7 @@ get_game_info = function(account, password, require_uid, require_server)
     require_uid = require_uid or 0
     require_server = require_server or 0
     skland_init(account, password)
-    list = skland_get_bind_info()
+    list = skland.get_bind_info()
     if list == nil then
         log("绑定列表获取失败")
         return false
@@ -412,7 +383,7 @@ get_game_info = function(account, password, require_uid, require_server)
             goto countinue
         end
         log(i, gameuid, server)
-        ret = skland_cultivate(gameuid)
+        ret = skland.cultivate(gameuid)
         if ret ~= {} then
             log("获取完成，后续跳过")
             --log("ret:", ret)
