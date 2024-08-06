@@ -8821,46 +8821,48 @@ path.宝石铭刻第678课教程 = function(当前课程序号)
                     end
                 end
             end
-            for i = 1, 3 do
-                if 商品[i][1] == "黄" then
-                    if findOne("宝石铭刻_钱不足" .. i) then
-                        return
-                    end
-                    购买(i)
-                    手牌["黄"] = 手牌["黄"] + 1
-                end
-            end
-            for i = 1, 3 do
-                if 商品[i][2] == 0 and 商品[i][1] == "青1" then
-                    if 手牌数量 >= 工艺底座数量 + 1 or findOne("宝石铭刻_钱不足" .. i) then
-                        return
-                    end
-                    购买(i)
-                    手牌["青1"] = 手牌["青1"] + 1
-                    break
-                end
-            end
-            if 手牌["青1"] > 0 or not 刷新前 then
+            if 当前课程序号 < 8 then
                 for i = 1, 3 do
-                    if 商品[i][2] == 0 and 商品[i][1] == "青2" then
+                    if 商品[i][1] == "黄" then
+                        if findOne("宝石铭刻_钱不足" .. i) then
+                            return
+                        end
+                        购买(i)
+                        手牌["黄"] = 手牌["黄"] + 1
+                    end
+                end
+                for i = 1, 3 do
+                    if 商品[i][2] == 0 and 商品[i][1] == "青1" then
                         if 手牌数量 >= 工艺底座数量 + 1 or findOne("宝石铭刻_钱不足" .. i) then
                             return
                         end
                         购买(i)
-                        手牌["青2"] = 手牌["青2"] + 1
+                        手牌["青1"] = 手牌["青1"] + 1
                         break
                     end
                 end
-            end
-            if 手牌["青2"] > 0 then
-                for i = 1, 3 do
-                    if 商品[i][2] == 0 and 商品[i][1] == "青3" then
-                        if 手牌数量 >= 工艺底座数量 + 1 or findOne("宝石铭刻_钱不足" .. i) then
-                            return
+                if 手牌["青1"] > 0 or not 刷新前 then
+                    for i = 1, 3 do
+                        if 商品[i][2] == 0 and 商品[i][1] == "青2" then
+                            if 手牌数量 >= 工艺底座数量 + 1 or findOne("宝石铭刻_钱不足" .. i) then
+                                return
+                            end
+                            购买(i)
+                            手牌["青2"] = 手牌["青2"] + 1
+                            break
                         end
-                        购买(i)
-                        手牌["青3"] = 手牌["青3"] + 1
-                        break
+                    end
+                end
+                if 手牌["青2"] > 0 then
+                    for i = 1, 3 do
+                        if 商品[i][2] == 0 and 商品[i][1] == "青3" then
+                            if 手牌数量 >= 工艺底座数量 + 1 or findOne("宝石铭刻_钱不足" .. i) then
+                                return
+                            end
+                            购买(i)
+                            手牌["青3"] = 手牌["青3"] + 1
+                            break
+                        end
                     end
                 end
             end
@@ -8894,13 +8896,14 @@ path.宝石铭刻第678课教程 = function(当前课程序号)
         end
         商店列表 = path.宝石铭刻识别()
         购买一次(商店列表)
-        if 当前轮数 > 5 then
+        if 当前轮数 >= 5 or 当前课程序号 == 8 then
             local 有钱 = true
-            while (购买次数 < 3 or (当前课程序号 == 8 and 手牌数量 < 工艺底座数量)) and 有钱 do
+            while (购买次数 < 3 or 手牌数量 < 工艺底座数量) and 有钱 do
                 tap("宝石铭刻_0刷新")
                 ssleep(1)
                 disappear("正在提交反馈至神经", network_timeout)
                 ssleep(1)
+                商店列表 = path.宝石铭刻识别()
                 有钱 = 购买一次(商店列表)
             end
         end
