@@ -8540,9 +8540,12 @@ path.宝石铭刻第1课教程 = function()
         if findOne('宝石铭刻_开始铭刻') then
             宝石铭刻.摆放手牌到工作台()
         end
-        if findOne('宝石铭刻_结束课程') then return true end
-        tap('宝石铭刻_铭刻完下一轮')
-    end, 120)
+        if findAny({ '宝石铭刻_本轮成绩', '宝石铭刻_结束课程' }) then return true end
+        if findOne('宝石铭刻_目标达成一轮结算') then
+            tap('宝石铭刻_铭刻完下一轮')
+            ssleep(2)
+        end
+    end, 120, .1)
 end
 path.宝石铭刻摆放手牌 = function(工艺底座数量, 识别不占用底座, 当前课程序号)
     appear('宝石铭刻_铭刻界面')
@@ -8702,7 +8705,7 @@ path.宝石铭刻第2345课教程 = function(当前课程序号)
         end
 
         log('开始铭刻', 工艺底座数量)
-        path.宝石铭刻摆放手牌(工艺底座数量)
+        path.宝石铭刻摆放手牌(工艺底座数量, false, 当前课程序号)
 
         --【开始铭刻】之后，准备进入下一轮的购买的界面
         log('准备下一轮')
