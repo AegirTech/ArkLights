@@ -8896,7 +8896,7 @@ path.宝石铭刻第678课教程 = function(当前课程序号)
         购买一次(商店列表)
         if 当前轮数 > 5 then
             local 有钱 = true
-            while 购买次数 < 3 and 有钱 do
+            while (购买次数 < 3 or (当前课程序号 == 8 and 手牌数量 < 工艺底座数量)) and 有钱 do
                 tap("宝石铭刻_0刷新")
                 ssleep(1)
                 disappear("正在提交反馈至神经", network_timeout)
