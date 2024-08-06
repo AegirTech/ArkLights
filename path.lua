@@ -8571,7 +8571,7 @@ path.宝石铭刻摆放手牌 = function(工艺底座数量, 识别不占用底�
                 local text = ocr("宝石铭刻_工艺说明")
                 text = table.findv(text, function(x) return x.text:find('工艺区') end)
                 if text then
-                    x = x + scale(160)
+                    x = x + scale(150)
                     goto 查找
                 else
                     识别不占用底座 = false
@@ -8821,16 +8821,16 @@ path.宝石铭刻第678课教程 = function(当前课程序号)
                     end
                 end
             end
-            if 当前课程序号 < 8 then
-                for i = 1, 3 do
-                    if 商品[i][1] == "黄" then
-                        if findOne("宝石铭刻_钱不足" .. i) then
-                            return
-                        end
-                        购买(i)
-                        手牌["黄"] = 手牌["黄"] + 1
+            for i = 1, 3 do
+                if 商品[i][1] == "黄" then
+                    if findOne("宝石铭刻_钱不足" .. i) then
+                        return
                     end
+                    购买(i)
+                    手牌["黄"] = 手牌["黄"] + 1
                 end
+            end
+            if 当前课程序号 < 8 then
                 for i = 1, 3 do
                     if 商品[i][2] == 0 and 商品[i][1] == "青1" then
                         if 手牌数量 >= 工艺底座数量 + 1 or findOne("宝石铭刻_钱不足" .. i) then
@@ -8896,9 +8896,10 @@ path.宝石铭刻第678课教程 = function(当前课程序号)
         end
         商店列表 = path.宝石铭刻识别()
         购买一次(商店列表)
-        if 当前轮数 >= 5 or 当前课程序号 == 8 then
+        if 当前轮数 >= 5 then
             local 有钱 = true
-            while (购买次数 < 3 or 手牌数量 < 工艺底座数量) and 有钱 do
+            while (购买次数 < 3 or (当前课程序号 == 8 and 手牌数量 < 工艺底座数量)) and 有钱 do
+                if findOne("宝石铭刻_钱不足刷新") then break end
                 tap("宝石铭刻_0刷新")
                 ssleep(1)
                 disappear("正在提交反馈至神经", network_timeout)
