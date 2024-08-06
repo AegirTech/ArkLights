@@ -8410,6 +8410,7 @@ path.游戏监控 = function()
 end
 
 path.宝石铭刻活动 = function()
+    第九关打完了 = false
     forever(path.宝石铭刻寻找课程)
 end
 
@@ -8436,6 +8437,14 @@ path.宝石铭刻寻找课程 = function()
 
     log('3064')
 
+    if 第九关打完了 then
+        log('全打完了，准备领取奖励')
+        wait(function()
+            tap('宝石铭刻_结业奖励入口')
+            tap('宝石铭刻_结业奖励全部领取')
+        end, 5)
+        exit()
+    end
     --准备进入【宝石铭刻】
     if not wait(function()
             tap('宝石铭刻入口')
@@ -8445,10 +8454,25 @@ path.宝石铭刻寻找课程 = function()
     end
 
     --点击进入宝石铭刻之后会有新手教程和一些教程提示，需要点击关闭
+    local jump = false
     if not wait(function()
             tap('招募说明关闭')
             if findOne("宝石铭刻_主界面") then return true end
+            if findOne('宝石铭刻_下课1') then
+                tap('宝石铭刻_下课1')
+                jump = true
+                return true
+            end
         end, 10) then
+        return
+    end
+
+    --如果进来了，发现前面的课程还未结算，在上课中，先放弃本轮
+    if jump then
+        wait(function()
+            tap('宝石铭刻_下课2')
+            if findOne("宝石铭刻_本轮成绩") then return true end
+        end, 10, .1)
         return
     end
 
@@ -9104,7 +9128,10 @@ path.宝石铭刻第9课教程 = function()
             return
         end
         --点数不够可以打无尽
-        if jump then break end --遇到课程完事了情况 跳出
+        if jump then
+            第九关打完了 = true
+            break
+        end --遇到课程完事了情况 跳出
         log(3580)
         if not wait(function()
                 tap('宝石铭刻_铭刻完下一轮')
