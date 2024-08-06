@@ -1049,7 +1049,7 @@ show_extra_ui = function()
     newRow(layout)
     addTextView(layout, "===========宝石铭刻===========")
     newRow(layout)
-    addButton(layout, nil, "宝石铭刻——夏活小游戏",
+    addButton(layout, nil, "宝石铭刻——夏活小游戏(测试)",
         make_jump_ui_command(layout, nil,
             "extra_mode='宝石铭刻活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     newRow(layout)

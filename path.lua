@@ -8475,7 +8475,12 @@ path.宝石铭刻寻找课程 = function()
         end
         if findOne('宝石铭刻_开始上课') and not findOne("宝石铭刻_已结课") then
             log('该课程【未结课】,准备上课')
-            当前课程序号 = i
+            if findOne("宝石铭刻课程序号列表1") then
+                当前课程序号 = 1
+            else
+                当前课程序号 = i
+            end
+
             break
         end
         ssleep(.8) --翻页有动画需要加载，卡的话多给一点
