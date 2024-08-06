@@ -8465,20 +8465,20 @@ path.宝石铭刻寻找课程 = function()
     local 当前课程序号 = 0 --记录当前属于第几个课程
 
     --寻找未结课的课程
-    if not wait(function()
-            当前课程序号 = 当前课程序号 + 1
-            if findOne('宝石铭刻_开始上课') and not findOne("宝石铭刻_已结课") then
-                log('该课程【未结课】,准备上课')
-                return true
-            end
-            if findOne("宝石铭刻_已结课") then
-                log('该课程【已结课】')
-                tap('宝石铭刻_下一个课程')
-                ssleep(2) --可以用其他方法判断是否到了下一个课程，这里简单用延迟
-            end
-            ssleep(.5)
-        end, 20) then
-        return
+    for i = 2, #point['宝石铭刻课程序号列表'] do
+        local color = '宝石铭刻课程序号列表' .. i
+        if findOne("宝石铭刻_已结课") then
+            log('该课程【已结课】')
+            tap('宝石铭刻_下一个课程')
+            appear(color, 2)
+            -- ssleep(2) --可以用其他方法判断是否到了下一个课程，这里简单用延迟
+        end
+        if findOne('宝石铭刻_开始上课') and not findOne("宝石铭刻_已结课") then
+            log('该课程【未结课】,准备上课')
+            当前课程序号 = i
+            break
+        end
+        ssleep(.8) --翻页有动画需要加载，卡的话多给一点
     end
 
     log('准备【开始上课】 第' .. 当前课程序号 .. '课')

@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "08.06 03:40"
+release_date = "08.06 13:55"
 update_announcement = '最近更新：夏活导航，商店皮肤修复,优化生息'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -125,14 +125,44 @@ update_state_from_debugui()
 check_crontab_on_start()
 cloud.startHeartBeat()
 
---debug_mode = true
+debug_mode = false
 if debug_mode then
     log("debug_mode")
     ssleep(1)
+    --寻找未结课的课程
+    for i = 2, #point['宝石铭刻课程序号列表'] do
+        local color = '宝石铭刻课程序号列表' .. i
+        if findOne("宝石铭刻_已结课") then
+            log('该课程【已结课】')
+            tap('宝石铭刻_下一个课程')
+            appear(color, 2)
+            -- ssleep(2) --可以用其他方法判断是否到了下一个课程，这里简单用延迟
+        end
+        if findOne('宝石铭刻_开始上课') and not findOne("宝石铭刻_已结课") then
+            log('该课程【未结课】,准备上课')
+            当前课程序号 = i
+            break
+        end
+        ssleep(.5)
+    end
+
+    -- local px, py = scale(780), scale(980) --825
+    -- for i = 1, 9 do
+    --     local px = px + (i - 1) * 45
+    --     local color = tostring(px) .. coord_delimeter
+    --         .. tostring(py) .. coord_delimeter
+    --         .. '42DFAD'
+    --     -- if cmpColorEx(color, 0.9) == 1 then
+    --     --     当前课程序号 = i
+    --     --     break
+    --     -- end
+    --     print(color)
+    -- end
+    log('当前课程序号:' .. 当前课程序号)
     --宝石铭刻.摆放手牌到工作台(2)
     --path.宝石铭刻识别()
     --path.宝石铭刻第9课教程()
-    --exit()
+    exit()
     --用于获取活动的剧情关，教学关三星颜色信息
     -- local x = 'HD-TR-2'
     -- swip(x)
