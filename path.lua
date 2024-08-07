@@ -8449,17 +8449,11 @@ path.宝石铭刻寻找课程 = function()
 
     if 第九关打完了 then
         log('全打完了，准备领取奖励')
-        -- wait(function()
-        --     tap('宝石铭刻_结业奖励入口')
-        --     tap('宝石铭刻_结业奖励全部领取')
-        -- end, 5, .1)
-        if not wait(function()
-                tap('宝石铭刻_结业奖励入口')
-                if not findOne("活动导航0") then return true end
-            end, 10) then
-            return
-        end
-        if not appear('宝石铭刻_结业奖励全部领取') then return end
+        wait(function()
+            tap('宝石铭刻_结业奖励入口')
+            if not findOne("活动导航0") then return true end
+        end, 10)
+        appear('宝石铭刻_结业奖励全部领取', 5)
         wait(function()
             tap('宝石铭刻_结业奖励全部领取')
         end, 3, .1)
@@ -8526,6 +8520,10 @@ path.宝石铭刻寻找课程 = function()
             end
 
             break
+        end
+        if i == 9 and findOne("宝石铭刻_已结课") then --有时候第九关打完了，还在无限循环
+            第九关打完了 = true
+            return true
         end
         ssleep(.8) --翻页有动画需要加载，卡的话多给一点
     end
@@ -8601,6 +8599,8 @@ path.宝石铭刻摆放手牌 = function(工艺底座数量, 识别不占用底�
     ssleep(.5)
     local x, y = scale(55), -1
     local 手牌变化量 = 0
+    local 宝石铭刻_放牌延迟 = str2int(宝石铭刻_放牌延迟)
+    log('宝石铭刻_放牌延迟', 宝石铭刻_放牌延迟)
     for i = 1, 工艺底座数量 do
         -- 左起第一张牌
         ::查找::
@@ -8625,7 +8625,7 @@ path.宝石铭刻摆放手牌 = function(工艺底座数量, 识别不占用底�
             if 当前课程序号 >= 7 then
                 手牌变化量 = 手牌变化量 - 1
             end
-            ssleep(.1)
+            sleep(宝石铭刻_放牌延迟)
         else
             break
         end

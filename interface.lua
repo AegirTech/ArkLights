@@ -1049,9 +1049,12 @@ show_extra_ui = function()
     newRow(layout)
     addTextView(layout, "===========宝石铭刻===========")
     newRow(layout)
-    addButton(layout, nil, "宝石铭刻——夏活小游戏(分辨率最好是1920*1080，平板模式)",
+    addButton(layout, nil, "宝石铭刻——夏活小游戏(最好是1080p，平板模式)",
         make_jump_ui_command(layout, nil,
             "extra_mode='宝石铭刻活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addTextView(layout, [[放牌延迟(ms)]])
+    ui.addEditText(layout, "宝石铭刻_放牌延迟", [[100]])
     newRow(layout)
 
 
