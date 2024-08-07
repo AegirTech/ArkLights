@@ -8990,17 +8990,11 @@ path.宝石铭刻第678课教程 = function(当前课程序号)
         if not wait(function()
                 tap('宝石铭刻_下一个课程')
                 if findOne('宝石铭刻_铭刻界面') then return true end
-                if findOne('宝石铭刻_免费次数未用完') then
-                    toast('免费次数未用完，重开')
-                    tap('宝石铭刻_离开课程')
-                    appear('宝石铭刻_下课1')
-                    jump = true
-                    return true
-                end
-            end, 15) then
+            end, 10, 1) then
+            --if findOne('宝石铭刻_免费次数未用完') then   toast('免费次数未用完，重开')    end
             return
         end
-        if jump then return end --有时候出现免费次数未用完的情况，不继续购买直接重开
+        --if jump then return end --有时候出现免费次数未用完的情况，不继续购买直接重开
 
         log('开始铭刻', 工艺底座数量)
         手牌数量 = 手牌数量 + path.宝石铭刻摆放手牌(工艺底座数量, 1, 当前课程序号)
