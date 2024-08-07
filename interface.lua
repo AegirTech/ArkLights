@@ -1049,7 +1049,7 @@ show_extra_ui = function()
     newRow(layout)
     addTextView(layout, "===========宝石铭刻===========")
     newRow(layout)
-    addButton(layout, nil, "宝石铭刻——夏活小游戏",
+    addButton(layout, nil, "宝石铭刻——夏活小游戏(分辨率最好是1920*1080)",
         make_jump_ui_command(layout, nil,
             "extra_mode='宝石铭刻活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     newRow(layout)
@@ -1233,6 +1233,8 @@ show_extra_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "hidden_front_award", "隐秘战线打完领取奖励", true)
 
+    newRow(layout)
+    addTextView(layout, "===========连续公招===========")
     newRow(layout)
     addButton(layout, layout .. "_recruit", "公开招募加急",
         make_jump_ui_command(layout, nil,

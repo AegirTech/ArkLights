@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "08.05 18:34"
+release_date = "08.06 19:23"
 update_announcement = '最近更新：夏活导航，商店皮肤修复,优化生息'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -125,10 +125,10 @@ update_state_from_debugui()
 check_crontab_on_start()
 cloud.startHeartBeat()
 
+debug_mode = false
 if debug_mode then
     log("debug_mode")
-    --ssleep(1)
-    --Tales_within_the_sand.切换难度()
+    ssleep(1)
     --exit()
     --用于获取活动的剧情关，教学关三星颜色信息
     -- local x = 'HD-TR-2'
