@@ -8430,6 +8430,12 @@ path.宝石铭刻寻找课程 = function()
             if findOne('宝石铭刻_开始上课') then return true end
         end, 10, .2)
     end
+    if findOne('宝石铭刻_离开课程') then
+        toast('宝石铭刻_离开课程')
+        tap('宝石铭刻_离开课程')
+        appear('宝石铭刻_下课1')
+        return
+    end
 
     path.跳转('首页')
 
@@ -8439,10 +8445,20 @@ path.宝石铭刻寻找课程 = function()
 
     if 第九关打完了 then
         log('全打完了，准备领取奖励')
+        -- wait(function()
+        --     tap('宝石铭刻_结业奖励入口')
+        --     tap('宝石铭刻_结业奖励全部领取')
+        -- end, 5, .1)
+        if not wait(function()
+                tap('宝石铭刻_结业奖励入口')
+                if not findOne("活动导航0") then return true end
+            end, 10) then
+            return
+        end
+        if not appear('宝石铭刻_结业奖励全部领取') then return end
         wait(function()
-            tap('宝石铭刻_结业奖励入口')
             tap('宝石铭刻_结业奖励全部领取')
-        end, 5)
+        end, 3, .1)
         exit()
     end
     --准备进入【宝石铭刻】
@@ -8957,7 +8973,7 @@ path.宝石铭刻第678课教程 = function(当前课程序号)
     log('第一轮  购买两个工艺，不用判断')
     appear('宝石铭刻_工艺购买', 5)
 
-
+    local jump = false
     while true do
         ssleep(2.5)
         宝石铭刻购买()
@@ -8970,9 +8986,17 @@ path.宝石铭刻第678课教程 = function(当前课程序号)
         if not wait(function()
                 tap('宝石铭刻_下一个课程')
                 if findOne('宝石铭刻_铭刻界面') then return true end
+                if findOne('宝石铭刻_免费次数未用完') then
+                    toast('免费次数未用完，重开')
+                    tap('宝石铭刻_离开课程')
+                    appear('宝石铭刻_下课1')
+                    jump = true
+                    return true
+                end
             end, 15) then
             return
         end
+        if jump then return end --有时候出现免费次数未用完的情况，不继续购买直接重开
 
         log('开始铭刻', 工艺底座数量)
         手牌数量 = 手牌数量 + path.宝石铭刻摆放手牌(工艺底座数量, 1, 当前课程序号)
