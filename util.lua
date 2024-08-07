@@ -1215,10 +1215,16 @@ zoom = function(retry)
             { point = { { 0, 0 }, { 5, 0 } }, duration = duration },
         }
     else
+        -- 更改为基建右上角的那一块空白
+        log("miui缩放测试")
         finger = {
-            { point = { { 0, 0 } },           duration = duration },
-            { point = { { 0, 5 }, { 0, 0 } }, duration = duration },
+            { point = { point["miui缩放开始"] }, duration = duration },
+            { point = { point["miui缩放结束"], point["miui缩放开始"] }, duration = duration },
         }
+        -- finger = {
+        --     { point = { { 0, 0 } },           duration = duration },
+        --     { point = { { 0, 5 }, { 0, 0 } }, duration = duration },
+        -- }
     end
     -- local w =screen.width//2
     --   local h=screen.height//2
