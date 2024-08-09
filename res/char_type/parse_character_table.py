@@ -57,6 +57,11 @@ if response.status_code == 200:
     character_type_list = {}
     for character_name in character_table_dict.keys():
         character_data = character_table_dict[character_name]
+        if (
+            character_data["name"] in character_type_list
+            and character_data["profession"] == "TRAP"
+        ):
+            continue
         character_type_list[character_data["name"]] = character_data["profession"]
 
     # 干员精英化及专精数据,自动养成用
