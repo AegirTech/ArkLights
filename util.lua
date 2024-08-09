@@ -2408,6 +2408,11 @@ updateLr = function(update_info)
 end
 
 updateSkill = function(update_info)
+    if dev_mode then
+        extractAssets("main.rc", getWorkPath(), "skill.zip")
+        unZip(skill_path, skill_extract_path)
+        return
+    end
     if update_info.updateSkill then
         toast("正在更新基建图标...")
         if downloadFile(update_info.skillUrl, skill_path) == -1 then
@@ -3178,12 +3183,13 @@ ocr = function(r, max_height)
     if type(r) ~= 'table' then
         return {}
     end
-    log("ocrinput", r, max_height)
+    log("ocrinput", r, max_height, handle)
     local d1 = scale(math.random(-1, 1))
     local d2 = scale(math.random(-1, 1))
     local d3 = scale(math.random(-1, 1))
     local d4 = scale(math.random(-1, 1))
     r = ocrEx(r[1] + d1, r[2] + d2, r[3] + d3, r[4] + d4) or {}
+
     if max_height then
         r = table.filter(r, function(x) return (x.b - x.t) <= max_height end)
     end
@@ -3191,8 +3197,57 @@ ocr = function(r, max_height)
     return r
 end
 
+init_ocr = function()
+    local ocr_model_path = "mnt/sdcard/Pictures/chi_sim.traineddata"
+    if not fileExist(ocr_model_path) then
+        extractAssets("main.rc", "mnt/sdcard/Pictures/", "chi_sim.traineddata")
+    end
+    ocr_handle = createOcr(ocr_model_path, 6)
+    if ocr_handle then log("初始化ocr成功", ocr_handle) end
+end
+
+ocrex1 = function(r, white_list, max_height)
+    -- releaseCapture()
+    if type(r) == 'string' then
+        r = point[r]
+    end
+    if type(r) ~= 'table' then
+        return {}
+    end
+    log("ocrinput", r, ocr_handle)
+    if white_list then
+        log("本次ocr白名单:", white_list)
+        setWhiteList(ocr_handle, white_list)
+    end
+    local d1 = scale(math.random(-1, 1))
+    local d2 = scale(math.random(-1, 1))
+    local d3 = scale(math.random(-1, 1))
+    local d4 = scale(math.random(-1, 1))
+    ret = ocrTextExJ(ocr_handle, r[1] + d1, r[2] + d2, r[3] + d3, r[4] + d4, 3, 8, 150, 255) or {}
+    local res = {}
+    log(ret)
+    for i = 1, #ret, 1 do
+        if ret[i]["conf"] > 40 then
+            table.insert(res, {
+                text = ret[i]["text"],
+                l = r[1] + ret[i]["pos"]["l"],
+                r = r[1] + ret[i]["pos"]["r"],
+                t = r[2] + ret[i]["pos"]["t"],
+                b = r[2] + ret[i]["pos"]["b"],
+            })
+        end
+    end
+    log("ocroutput", res)
+    return res
+end
+
 ocro = function(r)
     local ret = ocrex(r)
+    if ret and #ret ~= 0 then return ret[1]["text"] end
+end
+
+ocro1 = function(r)
+    local ret = ocrex1(r)
     if ret and #ret ~= 0 then return ret[1]["text"] end
 end
 
