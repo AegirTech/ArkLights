@@ -837,6 +837,9 @@ show_debug_ui = function()
     ui.addTab("debug_tab", debug_layout_基建, "基建")
 
     newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "disable_add_friend", "好友访问不自动添加好友", false)
+
+    newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "disable_training_shift", "基建换班忽略训练室", false)
 
     newRow(debug_layout_基建)

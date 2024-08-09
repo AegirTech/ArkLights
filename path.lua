@@ -6054,11 +6054,39 @@ path.会客厅跳转好友 = function()
     -- if speedrun then return appear("主页", 10) end
 end
 
+path.添加好友 = function()
+    log(3001)
+    if not findOne("添加好友红点") then return end
+    log(3002)
+    if not wait(function()
+            local tx = find_color("添加好友确认", "792222", nil, 0.95)
+            log(tx)
+            if tx then return true end
+            tap("添加好友红点")
+        end, 5) then
+        return
+    end
+    log(3003)
+    if not wait(function()
+            local tx = find_color("添加好友确认", "792222", nil, 0.95)
+            log(tx)
+            if not tx then return true end
+            tap(tx)
+            ssleep(0.1)
+        end, 30) then
+        return
+    end
+    log(3004)
+end
+
 path.访问好友 = function()
     if communication_enough then return end
     log(2253)
     path.跳转("好友")
     log(2254)
+    if not disable_add_friend then
+        path.添加好友()
+    end
     if not wait(function()
             tap('好友列表')
             if findOne("好友列表") then return true end

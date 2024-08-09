@@ -4375,6 +4375,7 @@ find_color = function(v, color, dir, condifence)
     -- 3: 表示从左下向右上查找；
     -- 4：表示从右上向左下查找
     local condifence = condifence or default_findcolor_confidence
+    log("find_color", v, color, dir, condifence)
     local index, x, y = findColor(v[1], v[2], v[3], v[4], color, dir, condifence)
     -- log("find_color", v, index, x, y)
     if x > -1 and y > -1 then
