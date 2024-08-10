@@ -815,23 +815,23 @@ show_debug_ui = function()
 
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_beforemail",
-        "QQ通知显示邮件收取前情况", true)
+        "QQ通知显示邮件收取前情况", false)
 
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_afterenter",
-        "QQ通知显示基建进入后情况", true)
+        "QQ通知显示基建进入后情况", false)
 
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_beforeleaving",
-        "QQ通知显示基建退出前情况", true)
+        "QQ通知显示基建退出前情况", false)
 
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_beforemission",
-        "QQ通知显示任务收集前情况", true)
+        "QQ通知显示任务收集前情况", false)
 
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "collect_beforeleaving",
-        "基建离开前加一次基建收获", true)
+        "基建离开前加一次基建收获", false)
 
     local debug_layout_基建 = "debug_tab_base"
     ui.addTab("debug_tab", debug_layout_基建, "基建")
