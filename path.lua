@@ -9074,9 +9074,15 @@ path.宝石铭刻第9课教程 = function()
     log("宝石铭刻第" .. 当前课程序号 .. "课教程")
     if not wait(function()
             tap('宝石铭刻_开始上课')
+            if not findOne("宝石铭刻_开始上课") then return true end
+        end, 10, .2) then
+        return
+    end
+    appear('宝石铭刻_开始课程')
+    if not wait(function()
             tap('宝石铭刻_开始课程')
-            if findOne("宝石铭刻_钱不足底座") then return true end
-        end, 10) then
+            if not findOne("宝石铭刻_开始课程") then return true end
+        end, 10, .2) then
         return
     end
 
