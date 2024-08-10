@@ -46,7 +46,8 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
         }
         --log("icon1", icon1, v[1], v[2])
         local name = "干员名未识别"
-        if dev_mode or (not not_use_ocr and not mood_only and table.findv({ "制造站", "发电站", "宿舍" }, stationType)) then
+        if dev_mode or (not not_use_ocr and not mood_only and
+                table.findv({ "制造站", "发电站", "宿舍" }, stationType)) then
             name = correctCharName(ocro({
                 v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
             }))

@@ -3183,7 +3183,7 @@ ocr = function(r, max_height)
     if type(r) ~= 'table' then
         return {}
     end
-    log("ocrinput", r, max_height, handle)
+    log("ocrinput", r, max_height)
     local d1 = scale(math.random(-1, 1))
     local d2 = scale(math.random(-1, 1))
     local d3 = scale(math.random(-1, 1))

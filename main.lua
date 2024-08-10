@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "08.10 13:55"
+release_date = "08.10 22:35"
 update_announcement = '最近更新：自动添加好友，打码流程'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
