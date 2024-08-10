@@ -135,12 +135,10 @@ m.uploadImgToInquisition = function(img_path)
 end
 
 m.captcha = function()
-    if only_use_ttshitu then
+    if m.captchaToken == '' or m.captchaServer == '' then
         return false
     end
-    -- if m.captchaToken == '' or m.captchaServer == '' then
-    --   return false
-    -- end
+    log("使用云控打码")
     local text_box = findOne("B服安全验证目标字符")
     -- log("text_box_右坐标", text_box.bounds.r)
     local text_slice_box = findOne("B服安全验证目标字符切片")
@@ -191,9 +189,9 @@ m.captcha = function()
 end
 
 m.captcha_report = function()
-    -- if m.captchaToken == '' or m.captchaServer == '' then
-    --   return false
-    -- end
+    if m.captchaToken == '' or m.captchaServer == '' then
+        return false
+    end
     if not cloud_captcha_id then
         return
     end

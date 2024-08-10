@@ -454,11 +454,90 @@ end
 
 jfbym_report = function()
     if not unique_code then return end
-    local data = { unique_code = unique_code, token = jfbym_token }
+    local data = { uniqueCode = unique_code, token = jfbym_token }
     local ret, code = httpPost("http://api.jfbym.com/api/YmServer/refundApi",
         JsonEncode(data), 30,
         "Content-Type: application/json;charset=UTF-8")
     log(ret, code)
+    unique_code = nil
+end
+
+-- b服选点验证码打码
+-- 统一更改为 https://console.jfbym.com/
+trySolvePointSelectionCapture = function(rect)
+    if cloud.captcha() then return end
+    if not use_jfbym_bili then return end
+
+    if not rect then return end
+    local img = getWorkPath() .. "/capture.jpg"
+    snapShot(img, rect.l, rect.t, rect.r, rect.b)
+    local img_base64 = base64(img)
+    local ans = nil
+    if bili_captcha_mode == 0 then
+        -- 云码
+        if not jfbym_token or #jfbym_token < 5 then return end
+        local data = {
+            token = jfbym_token,
+            type = "88888",
+            image = img_base64,
+        }
+
+        local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
+            30, "Content-Type: application/json;charset=UTF-8")
+
+        local status, data = pcall(JsonDecode, res)
+        log("识别结果", data)
+        data = data or {}
+        if get(data, "code") ~= 10000 then
+            log("识别失败")
+            return
+        end
+        unique_code = get(data, "data", "unique_code") or ""
+
+        ans = get(data, "data", "data") or ""
+    elseif bili_captcha_mode == 1 then
+        -- 极验
+        if not captcha_username or not captcha_password then return end
+        local data = {
+            username = captcha_username,
+            password = captcha_password,
+            typeid = "27",
+            image = img_base64,
+        }
+        local res, code = httpPost("http://api.ttshitu.com/predict", JsonEncode(data),
+            30, "Content-Type: application/json;charset=UTF-8")
+        log("识别结果", res)
+        if code == 200 then
+            local status, data = pcall(JsonDecode, res)
+            data = data or {}
+            ttshitu_last_id = get(data, "data", "id") or ""
+            local success = get(data, "success") or false
+            if not success then return end
+            ans = get(data, "data", "result") or ""
+        end
+    else
+        return
+    end
+    if not ans then return end
+    for coord in string.gmatch(ans, "%d+,%d+") do
+        local x, y = string.match(coord, "(%d+),(%d+)")
+        x = x or 0
+        y = y or 0
+        local ans_p = { rect.l + x, rect.t + y }
+        tap(ans_p)
+        ssleep(0.2)
+    end
+    return true
+end
+
+ttshitu_report = function()
+    if not ttshitu_last_id then return end
+    local data = { id = ttshitu_last_id }
+    local ret, code = httpPost("http://api.ttshitu.com/reporterror.json",
+        JsonEncode(data), 30,
+        "Content-Type: application/json;charset=UTF-8")
+    log(ret, code)
+    ttshitu_last_id = nil
 end
 
 --使用部署的客户端免费打码官服滑块验证码

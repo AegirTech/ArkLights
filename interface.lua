@@ -646,32 +646,35 @@ show_debug_ui = function()
 
     -- newRow(layout)
     -- addButton(layout, nil, "解锁", make_jump_ui_command(layout, 'gesture_capture'))
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "验证码使用云码/图鉴 地址https://www.jfbym.com/")
+
+    newRow(debug_layout_验证码)
+    ui.addCheckBox(debug_layout_验证码, "use_jfbym", "使用云码API处理滑块验证码", false)
+
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "点选验证码处理")
+    ui.addSpinner(debug_layout_验证码, "bili_captcha_mode", { "云码", "极验" }, 1)
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "图鉴用户名")
     ui.addEditText(debug_layout_验证码, "captcha_username", "")
-
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "图鉴密码")
     ui.addEditText(debug_layout_验证码, "captcha_password", "")
-
-    newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "use_jfbym", "使用云码API处理滑块验证码", false)
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "云码Token")
     ui.addEditText(debug_layout_验证码, "jfbym_token", "")
     newRow(debug_layout_验证码)
     ui.addCheckBox(debug_layout_验证码, "use_free_server_captcha", "使用免费服务器解决官服滑块验证码", false)
-    newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "only_use_ttshitu", "不使用审判庭接码", true)
 
     newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "审判庭打码地址")
+    addTextView(debug_layout_验证码, "自定义打码地址")
     ui.addEditText(debug_layout_验证码, "cloud_captcha_server", "")
 
     newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "审判庭打码标识")
+    addTextView(debug_layout_验证码, "自定义打码标识")
     ui.addEditText(debug_layout_验证码, "cloud_captcha_token", "")
 
     local debug_layout_云控 = "debug_tab_yk"
@@ -742,7 +745,6 @@ show_debug_ui = function()
         ui.addEditText(debug_layout_账户, "max_drug_times_" .. i .. "day", default)
         addTextView(debug_layout_账户, "次")
     end
-
 
     newRow(debug_layout_账户)
     ui.addCheckBox(debug_layout_账户, "continuous_battle", "自动使用最大连战次数,会导致作战次数错乱",
