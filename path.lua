@@ -6006,26 +6006,19 @@ end
 path.添加好友 = function()
     log(3001)
     if not findOne("添加好友红点") then return end
+    tap("添加好友红点")
     log(3002)
     if not wait(function()
-            local tx = find_color("添加好友确认", "792222", nil, 0.95)
-            log(tx)
-            if tx then return true end
-            tap("添加好友红点")
-        end, 5) then
+            if findOne("添加好友确认") then
+                tap("添加好友确认")
+                disappear("正在提交反馈至神经", network_timeout)
+            end
+            ssleep(.1)
+            if not findOne("添加好友红点") then return true end
+        end, 10) then
         return
     end
     log(3003)
-    if not wait(function()
-            local tx = find_color("添加好友确认", "792222", nil, 0.95)
-            log(tx)
-            if not tx then return true end
-            tap(tx)
-            ssleep(0.1)
-        end, 30) then
-        return
-    end
-    log(3004)
 end
 
 path.访问好友 = function()
