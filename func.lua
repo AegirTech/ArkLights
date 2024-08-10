@@ -466,8 +466,6 @@ end
 -- 统一更改为 https://console.jfbym.com/
 trySolvePointSelectionCapture = function(rect)
     if cloud.captcha() then return end
-    if not use_jfbym_bili then return end
-
     if not rect then return end
     local img = getWorkPath() .. "/capture.jpg"
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
