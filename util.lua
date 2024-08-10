@@ -1122,7 +1122,7 @@ swipc = function()
     sleep(finger.duration + 50)
 end
 
--- swip for operator
+-- 基建翻页
 swipo = function(left, nodelay)
     local duration
     local finger
@@ -1139,7 +1139,7 @@ swipo = function(left, nodelay)
         local y = scale(533)
         local y2 = scale(900)
         local x2 = scale(1681)
-        local y3 = scale(900)
+        local y3 = scale(1005)
         local slids = 50
         local slidd = 200
         local taps = slids + slidd + 150
@@ -1147,7 +1147,9 @@ swipo = function(left, nodelay)
         local downd = taps + 100
         duration = downd
         finger = {
+            -- x,y是滑动起点,注意机器过卡的时候会产生点击的效果,所以x,y要避开响应点击的区域
             { point = { { x, y }, { x, y2 } },   start = 0,     duration = downd },
+            -- x2,y3是滑动起点,注意机器过卡的时候会产生点击的效果,所以x2,y3要避开响应点击的区域
             { point = { { x2, y }, { x2, y3 } }, start = slids, duration = slidd },
             { point = { { x2, y }, { x2, y } },  start = taps,  duration = tapd },
         }
