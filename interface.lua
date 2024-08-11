@@ -654,7 +654,7 @@ show_debug_ui = function()
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "点选验证码处理")
-    ui.addSpinner(debug_layout_验证码, "bili_captcha_mode", { "云码", "极验" }, 1)
+    ui.addSpinner(debug_layout_验证码, "bili_captcha_mode", { "云码", "图鉴" }, 1)
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "图鉴用户名")
@@ -833,7 +833,7 @@ show_debug_ui = function()
 
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "collect_beforeleaving",
-        "基建离开前加一次基建收获", false)
+        "基建离开前加一次基建收获", true)
 
     local debug_layout_基建 = "debug_tab_base"
     ui.addTab("debug_tab", debug_layout_基建, "基建")
