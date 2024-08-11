@@ -5807,11 +5807,15 @@ path.商店搬空 = function()
                     tap(商品)
                     ssleep(.5)
                     if find_color("商店购买页面单价范围", point["商店货币颜色"], 1, 0.9) then return true end -- 表示已经进入商店
-                end, 1.6) then
+                end, 5) then
             end
 
             -- 点击购买,只能点一次,点多了会点到右下角龙门币
             local tap_x = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
+            if not tap_x then
+                log("未找到购买按钮")
+                goto continue
+            end
             tap_x[1] = tap_x[1] + scale(50)
             tap_x[2] = tap_x[2] + scale(20)
             if not tap_x then
