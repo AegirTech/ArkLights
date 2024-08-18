@@ -841,11 +841,15 @@ end
     --等待时需要自动释放技能
     local sleep_and_do_strategy = function(delay)
         local start = os.time()
-        while os.time() - start < ((delay - 1) / 1000) do
+        local time = ((delay - 1) / 1000)
+        --print(start, time)
+        while os.time() - start < time do
             keepCapture()
             do_strategy()
             sleep(50)
         end
+        releaseCapture()
+        --print(os.time())
     end
 
     while true do
@@ -864,7 +868,10 @@ end
             print("部署指令", 部署指令)
             部署指令["kills"] = 部署指令["kills"] or 0
             部署指令["costs"] = 部署指令["costs"] or 0
-            if 部署指令["pre_delay"] then sleep_and_do_strategy(部署指令["pre_delay"]) end
+            if 部署指令["pre_delay"] then
+                print("前置延时")
+                sleep_and_do_strategy(部署指令["pre_delay"])
+            end
 
             if wave >= 部署指令["kills"] and cost >= 部署指令["costs"] then
                 if 干员列表 and (部署指令["type"] == "Deploy" or 部署指令["type"] == "deploy" or 部署指令["type"] == "部署") then
@@ -1047,19 +1054,19 @@ end
 
         if not (findOne("作战中") or findOne("暂停中") or findOne("作战中2")) then
             sleep(500)
-            if findOne("剧情中") or findOne("剧情中2") or findOne("剧情中3") or findOne("剧情中4") then
+            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4" }) then
                 tap("剧情中")
                 print("跳过无按钮剧情")
                 appear("作战中", 2)
                 加速()
-            elseif findOne("作战中") or findOne("暂停中") or findOne("作战中2") then
+            elseif findAny({ "作战中", "暂停中", "作战中2" }) then
             else
                 --snapShot("/mnt/sdcard/test"..os.time()..".png")
                 if appear("战斗中剧情对话", 3) then
                     wait(function()
                         tap("点cost")
                         ssleep(.3)
-                        if findOne("作战中") or findOne("暂停中") or findOne("作战中2") then return true end
+                        if findAny({ "作战中", "暂停中", "作战中2" }) then return true end
                     end, 30)
                 else
                     print("结束抄作业")
@@ -1572,8 +1579,18 @@ end
     if findOne("暂停中") then keyPress(4) end
 end
 
-加速 = function()
-    if findOne("一倍速") then tap("两倍速") end
+加速 = function(a)
+    if a then
+        if not wait(function()
+                if findOne("暂停中") then return true end
+                tap("剧情中")
+                ssleep(.1)
+            end, 20) then
+            return
+        end
+    else
+        if findOne("一倍速") then tap("两倍速") end
+    end
 end
 
 进子弹时间 = function()
