@@ -872,7 +872,12 @@ end
                 print("前置延时")
                 sleep_and_do_strategy(部署指令["pre_delay"])
             end
-
+            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4" }) then
+                tap("剧情中")
+                print("跳过无按钮剧情")
+                appear("作战中", 2)
+                加速()
+            end
             if wave >= 部署指令["kills"] and cost >= 部署指令["costs"] then
                 if 干员列表 and (部署指令["type"] == "Deploy" or 部署指令["type"] == "deploy" or 部署指令["type"] == "部署") then
                     local 需要cost = {}
