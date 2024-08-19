@@ -245,19 +245,19 @@ auto_prts = function(作业名, 需要编队, 是否自带)
     --text = string.sub(text, 1, -2) .. "}"
     --print(text)
 
-    print("读取群组成功")
+    log("读取群组成功")
 
     --print("无限放技能干员", 无限放技能干员)
     --print("技能指定次数干员", 技能指定次数干员)
 
     --print(地图)
-    print(作业["stage_name"])
+    log(作业["stage_name"])
     local 地图数据 = loadMap(作业["stage_name"])
     地图数据0 = 地图数据[1] --放技能坐标
     地图数据1 = 地图数据[2] --放置干员坐标
     地图类型 = 地图数据[3] --地图类型,主要用来区别杀敌数位置，1普通，2剿灭,3保全，4肉鸽，5悖论模拟
     训练地图 = 地图数据[4] --是否是教学关0否,1是
-    print("读取地图数据成功", "地图类型", 地图类型, "训练地图", 训练地图)
+    log("读取地图数据成功", "地图类型", 地图类型, "训练地图", 训练地图)
 
     if 需要编队 == true and 训练地图 == 0 then
         if 地图类型 == 5 then
@@ -352,7 +352,6 @@ auto_prts = function(作业名, 需要编队, 是否自带)
         end, 5) then
         return
     end
-
     sleep(3000)
 end
 
@@ -364,7 +363,7 @@ end
     local 未编入数量 = 0
 
     local 干员职业 = JsonDecode(readFile("character_type_list.json"))
-    print("读取干员职业成功")
+    log("读取干员职业成功")
     local printChar = function(t)
         for _, i in ipairs(t) do
             print("需要干员", i["name"], ",职业", 干员职业[i["name"]])
@@ -827,6 +826,7 @@ end
                     releaseCapture()
                     if not findOne("子弹时间", 0.85) then
                         if 技能指定次数干员[k] then 技能指定次数干员[k][2] = 技能指定次数干员[k][2] + 1 end
+                        点战斗()
                         sleep(150)
                     else
                         tap("点cost")
@@ -1158,12 +1158,17 @@ end
     -- print("待部署干员" .. 干员数 .. "名")
     if 干员数 > 0 then
         local 干员名字表 = {}
-        for _, 干员 in pairs(干员列表) do
+        for 序号, 干员 in pairs(干员列表) do
             tap({ 干员[3], 干员[4] })
             appear(生命值蓝, 0.3)
             local 干员名字 = 战斗识别干员()
             if 干员名字 then
                 干员[1] = 干员名字
+            end
+            if 干员数 >= 12 and 序号 == 4 or 序号 == 5 then
+                -- 因为人太多点开之后会偏移漏掉,点回去
+                tap({ 干员[3], 干员[4] })
+                disappear(生命值蓝, 0.3)
             end
             -- print("干员" .. 干员[1] .. ",cost" .. 干员[2])
             table.insert(干员名字表, 干员[1])
