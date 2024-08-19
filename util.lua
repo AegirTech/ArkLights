@@ -4031,7 +4031,9 @@ update_state_from_debugui = function()
     milesecond_after_click = str2int(tap_wait, milesecond_after_click)
     max_log_time = str2int(max_log_time, 15)
     max_log_count = str2int(max_log_count, 1000)
-    bili_captcha_mode = str2int(bili_captcha_mode, 1)
+    --bili_captcha_mode = str2int(bili_captcha_mode, 1)
+    use_local_captcha = (use_local_captcha == nil) and true or use_local_captcha
+    use_captcha = (use_captcha == nil) and true or use_captcha
 
     if not (always_enable_log or enable_log) then run = disable_log_wrapper(run) end
     QQ = (QQ or ''):commonmap():trim()
