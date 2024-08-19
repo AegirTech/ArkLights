@@ -372,20 +372,25 @@ getCaptchaBox = function()
     end
 end
 
-trySolveSlipCaptcha = function()
-    if not use_jfbym and not use_free_server_captcha then trySolveCapture() end
+trySolveSlipCaptcha = function(retry)
+    local retry = retry or 0
+    -- if not use_jfbym and not use_free_server_captcha then trySolveCapture() end
     if not findOne("captcha") then return end
-    if use_free_server_captcha then
-        trySolveCaptureFreeServer(getCaptchaBox())
-        if not disappear("captcha", 5) then trySolveCaptureFreeServer(getCaptchaBox()) end --免费模型，多尝试几次 准确率大概98%
+    if use_local_captcha then
+        solveCapture_new(getCaptchaBox())
     else
-        SolveSlipCaptcha(jfbym_token, getCaptchaBox())
-        if not disappear("captcha", 5) then
-            SolveSlipCaptcha(jfbym_token, getCaptchaBox())
-        end
+        trySolveCaptureFreeServer(getCaptchaBox()) -- 使用免费打码
+    end
+    if not disappear("captcha", 5) then
+        trySolveCaptureFreeServer(getCaptchaBox()) -- 第二次使用免费打码
     end
     if not appear("realgame", 5) then
         jfbym_report()
+        if retry < 4 then
+            tap("登录")
+            ssleep(0.2)
+            trySolveSlipCaptcha(retry + 1)
+        end
         local msg =
         "请在2分钟内手动滑动验证码，超时将暂时跳过该账号"
         toast(msg)
@@ -471,29 +476,29 @@ trySolvePointSelectionCapture = function(rect)
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local img_base64 = base64(img)
     local ans = nil
-    if bili_captcha_mode == 0 then
-        -- 云码
-        if not jfbym_token or #jfbym_token < 5 then return end
-        local data = {
-            token = jfbym_token,
-            type = "88888",
-            image = img_base64,
-        }
+    -- if bili_captcha_mode == 0 then
+    --     -- 云码
+    --     if not jfbym_token or #jfbym_token < 5 then return end
+    --     local data = {
+    --         token = jfbym_token,
+    --         type = "88888",
+    --         image = img_base64,
+    --     }
 
-        local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
-            30, "Content-Type: application/json;charset=UTF-8")
+    --     local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
+    --         30, "Content-Type: application/json;charset=UTF-8")
 
-        local status, data = pcall(JsonDecode, res)
-        log("识别结果", data)
-        data = data or {}
-        if get(data, "code") ~= 10000 then
-            log("识别失败")
-            return
-        end
-        unique_code = get(data, "data", "unique_code") or ""
+    --     local status, data = pcall(JsonDecode, res)
+    --     log("识别结果", data)
+    --     data = data or {}
+    --     if get(data, "code") ~= 10000 then
+    --         log("识别失败")
+    --         return
+    --     end
+    --     unique_code = get(data, "data", "unique_code") or ""
 
-        ans = get(data, "data", "data") or ""
-    elseif bili_captcha_mode == 1 then
+    --     ans = get(data, "data", "data") or ""
+    if use_captcha then
         -- 极验
         if not captcha_username or not captcha_password then return end
         local data = {
@@ -540,6 +545,9 @@ end
 
 --使用部署的客户端免费打码官服滑块验证码
 trySolveCaptureFreeServer = function(rect)
+    if not use_free_server_captcha then
+        return
+    end
     log("free solve")
     keepCapture()
     local node = findOne("captcha")
@@ -748,4 +756,110 @@ end
         tap('宝石铭刻_开始铭刻')
         if not findOne("宝石铭刻_开始铭刻") then return true end
     end, 10)
+end
+
+solveCapture_new = function(rect, is_retry)
+    local is_retry = is_retry or false
+    if not rect then return end
+    wait(function()
+        local b, g, r = colorToRGB(getPixelColor())
+        if cmpColor(scale(1083), scale(401), "FFFFFF", 1) == 0 then
+            return true
+        end
+    end, 5)
+    -- 等待验证码加载
+    ssleep(0.2)
+    keepCapture()
+    -- rect.l, rect.t, rect.r, rect.b
+    -- rect = {}
+    -- rect.l = 636
+    -- rect.t = 207
+    -- rect.r = 1287
+    -- rect.b = 605
+
+    -- 11,11,11 50
+    -- 理论上可以用getScreenPixel一次性获取全部的像素点，但是后面取有点麻烦。
+    local bb_socre, max_count, max_c = 150, 0, 50
+    local best_x = 0
+    for y = rect.t, rect.b do
+        for x = rect.l, rect.r do
+            local pixel = getPixelColor(x, y)
+            local b, g, r = colorToRGB(pixel)
+            local rx, gx, bx = math.abs(r - 11), math.abs(g - 11), math.abs(b - 11)
+
+            if rx < max_c and gx < max_c and bx < max_c and rx + gx + bx < max_c then
+                local socre, count = 0, 0
+                for y2 = y, y + scale(100) do
+                    pixel = getPixelColor(x, y2)
+                    b, g, r = colorToRGB(pixel)
+                    rx, gx, bx = math.abs(r - 11), math.abs(g - 11), math.abs(b - 11)
+
+                    if rx < max_c and gx < max_c and bx < max_c then
+                        socre = socre + rx + gx + bx
+                        count = count + 1
+                    end
+                end
+
+                for x2 = x, x + scale(100) do
+                    pixel = getPixelColor(x2, y)
+                    b, g, r = colorToRGB(pixel)
+                    rx, gx, bx = math.abs(r - 11), math.abs(g - 11), math.abs(b - 11)
+                    if rx < max_c and gx < max_c and bx < max_c then
+                        socre = socre + rx + gx + bx
+                        count = count + 1
+                    end
+                end
+                socre = socre / count
+                if math.abs(socre - bb_socre) < 150 and count > max_count then
+                    bb_socre, max_count = socre, count
+                    log(x, y, socre, count)
+                    best_x = x
+                end
+            end
+        end
+    end
+    log(3399, best_x, bb_socre, max_count)
+    log("滑块验证码位置", best_x)
+    releaseCapture()
+    if best_x == 0 and not is_retry then
+        log("重试")
+        solveCapture_new(rect, true)
+    end
+
+    -- exit()
+
+    -- log(table.slice(best, 1, 10))
+    -- exit()
+    -- log(w, h, best, best_score, best + point.captcha_area[1])
+
+    -- for i = 1, #maxgrad do log(i, maxgrad[i]) end
+    -- log(point.captcha_area)
+    --
+    local sx, sy = scale(702), scale(686)
+    --  修正偏移
+    distance = best_x - rect.l
+    log(sx, sy, distance)
+    -- 用于模拟滑动轨迹
+    gesture({
+        {
+            point = {
+                { sx,                                        sy }, { sx + distance, sy },
+                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance + scale(math.random(5, 20)), sy },
+                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance + scale(math.random(5, 20)), sy },
+                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance - scale(math.random(5, 20)), sy },
+                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+                { sx + distance - scale(math.random(5, 20)), sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+                { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+                { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+                { sx + distance, sy },
+            },
+            start = 0,
+            duration = 800,
+        },
+    })
+    ssleep(1.2) -- 等待验证码关闭或者重试
+    return true
 end
