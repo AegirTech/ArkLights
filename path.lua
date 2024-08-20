@@ -5614,7 +5614,7 @@ path.活动 = function(x)
         ssleep(.5)
     end
 
-
+    log(625)
     --[[end
     ssleep(2)
     swip(x)
@@ -5622,6 +5622,7 @@ path.活动 = function(x)
 
     -- appear("活动导航2")
     swip(x)
+    log(626)
     ssleep(.5)
     if x:includes({ "ST-", "TR-" }) then
         --教学关和剧情关只打一遍
@@ -5654,6 +5655,7 @@ path.活动 = function(x)
             back()
         end, 30)
     end
+    log(629)
     path.开始游戏(x)
 end
 

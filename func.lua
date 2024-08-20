@@ -837,7 +837,7 @@ solveCapture_new = function(rect, is_retry)
     --
     local sx, sy = scale(702), scale(686)
     --  修正偏移
-    distance = best_x - rect.l
+    local distance = best_x - rect.l
     log(sx, sy, distance)
     -- 用于模拟滑动轨迹
     gesture({
