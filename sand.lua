@@ -1053,7 +1053,6 @@ Tales_within_the_sand.六天奇遇循环 = function()
         end
         Tales_within_the_sand.生息演算奇遇("沙洲遗闻奇遇风啸峡谷")
         if 基地等级 > 1 then
-            Tales_within_the_sand.科技树升级()
             Tales_within_the_sand.局内商店(木头, 石头)
         end
         Tales_within_the_sand.重置地图位置()
@@ -1063,6 +1062,9 @@ Tales_within_the_sand.六天奇遇循环 = function()
         Tales_within_the_sand.下一天()
         if 基地等级 > 1 then Tales_within_the_sand.局内商店(木头, 石头) end
         Tales_within_the_sand.下一天()
+        if 基地等级 > 1 then
+            Tales_within_the_sand.科技树升级()
+        end
         Tales_within_the_sand.下一天()
     end
 end
@@ -1102,6 +1104,7 @@ Tales_within_the_sand.局内商店 = function(木头, 石头)
                 tap({ scale(630 + 327 * (i - 1)), scale(172 + 327 * (j - 1)) })
                 if not appear("沙洲遗闻局内商店确认支付", 2) then
                     tap("沙洲遗闻局内商店")
+                    ssleep(.5)
                     break
                 end
                 gesture({
