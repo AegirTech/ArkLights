@@ -1142,6 +1142,30 @@ Tales_within_the_sand.六天奇遇循环 = function()
         log("基地等级", 基地等级, "商店科技树等级", 商店科技树等级, "水", 水, "木头", 木头, "石头", 石头)
         if 基地等级 == 1 and findOne("沙洲遗闻基地可升级") then
             基地等级 = Tales_within_the_sand.基地升级(基地等级) or 1
+            -- 商店兑换
+            Tales_within_the_sand.重置地图位置()
+            appearTap("沙洲遗闻后舍存在任务", 5)
+            appearTap("生息演算会聚之地开始行动", 5)
+            appear("生息演算关卡左上角退出")
+            appearTap("沙洲遗闻后舍交换石头干员存在", 5)
+            appear("生息演算聊天日志")
+            wait(function()
+                if findOne("生息演算关卡左上角退出") then
+                    return true
+                end
+                tap("生息演算剧情点击点")
+            end, 25)
+            if not wait(function()
+                    if findOne("生息底栏烹饪按钮") then
+                        return true
+                    end
+                    tap("生息演算关卡左上角退出")
+                    disappear("生息演算关卡左上角退出", 3)
+                    tap("生息演算_确认按钮")
+                    appear("生息底栏烹饪按钮", 2)
+                end, 20) then
+            end
+            log("会聚之地兑换结束")
         elseif 基地等级 == 2 and findOne("沙洲遗闻基地可升级") then
             -- 搓个水稻,丢基地里
             基地等级 = Tales_within_the_sand.基地升级(基地等级) or 2
