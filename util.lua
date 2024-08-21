@@ -1463,7 +1463,7 @@ deploy2 = function(idx, total, x2, y2, d)
     deploy(x1, x2, y2, d)
 end
 
-deploy = function(x1, x2, y2, d)
+deploy = function(x1, x2, y2, d, nopause)
     local y1 = screen.height - scale(109)
     d = d or 2
     d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d]
@@ -1553,9 +1553,9 @@ deploy = function(x1, x2, y2, d)
     -- end
     gesture(finger)
     sleep(250)
-    back()
+    if not nopause then back() end
     sleep(dragd + delay + dird + delay - 250)
-    back()
+    if not nopause then back() end
     log("deploy", finger)
 end
 
