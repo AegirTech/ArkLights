@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "08.20 19:51"
+release_date = "08.21 15:36"
 update_announcement = '最近更新：新增滑动本地打码，移除云码'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -131,7 +131,7 @@ cloud.startHeartBeat()
 if debug_mode then
     log("debug_mode")
     ssleep(0.5)
-    Tales_within_the_sand.六天奇遇循环()
+    Tales_within_the_sand.开始演算2()
     exit()
 end
 

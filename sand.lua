@@ -100,7 +100,7 @@ Tales_within_the_sand.切换难度 = function(a)
     end
 end
 
-Tales_within_the_sand.重置地图位置 = function()
+Tales_within_the_sand.重置地图位置 = function(skip)
     log("重置地图位置")
     tap("生息演算左上角返回")
     ssleep(.1)
@@ -115,7 +115,7 @@ Tales_within_the_sand.重置地图位置 = function()
             ssleep(.1)
         end, 5) then
     end
-    if Tales_within_the_sand.检查代币数量() then
+    if not skip and Tales_within_the_sand.检查代币数量() then
         return true
     end
     if not findOne("生息演算主页进入") then
@@ -471,13 +471,16 @@ Tales_within_the_sand.生息演算奇遇 = function(关卡)
                 if findOne("沙洲遗闻奇遇标签") then
                     tap("沙洲遗闻奇遇标签")
                     ssleep(.2)
+                    tap("生息演算消磨时间")
                     log("奇遇缺少材料")
+                    ssleep(.1)
                     q = true
                     return true
                 end
             end, 3.5) then
         end
         if q then break end
+        q = false
         if not wait(function()
                 local p = findOne("沙洲遗闻对话确定")
                 if p then
@@ -488,29 +491,66 @@ Tales_within_the_sand.生息演算奇遇 = function(关卡)
                             if findOne("沙洲遗闻奇遇标签") then
                                 tap("沙洲遗闻奇遇标签")
                                 ssleep(.2)
+                                tap("生息演算消磨时间")
                                 log("完成奇遇")
+                                ssleep(.1)
                                 q = true
                                 return true
                             end
-                            if findOne("沙洲遗闻右边奇遇") then
+                            if findAny({ "沙洲遗闻右边奇遇", "生息底栏烹饪按钮", "生息演算奇遇开始行动" }) then
                                 return true
                             end
                             tap({ scale(1737), p[2] })
-                            ssleep(.1)
+                            ssleep(.2)
                         end, 5) then
                         return true
                     end
                 end
+                if q then return true end
             end, 5) then
         end
         if q then break end
     end
+    ssleep(.2)
+    if findOne("生息演算奇遇开始行动") then
+        tap("生息演算左上角返回")
+        ssleep(.2)
+        tap("生息演算右上角生息日")
+        ssleep(.2)
+        Tales_within_the_sand.下一天()
+        return
+    end
     if not wait(function()
+            if findOne("沙洲遗闻决断点已补充") then
+                log("荒季过天")
+                if not wait(function()
+                        tap("沙洲遗闻决断点已补充")
+                        ssleep(.1)
+                        if not findOne("沙洲遗闻决断点已补充") then return true end
+                    end, 5) then
+                    return true
+                end
+                return true
+            end
+            if findOne("沙洲遗闻开启今日荒季") then
+                log("荒季过天")
+                if not wait(function()
+                        tap("沙洲遗闻开启今日荒季")
+                        ssleep(.1)
+                        if not findOne("沙洲遗闻开启今日荒季") then return true end
+                    end, 5) then
+                    return true
+                end
+                return true
+            end
             if findOne("生息演算消磨时间") or findOne("生息演算消磨时间2") then tap("生息演算消磨时间") end
             if findOne("生息演算跳过当日确认") then tap("生息演算跳过当日确认") end
-            if findOne("沙洲遗闻奇遇标签") then tap("沙洲遗闻奇遇标签") end
             if findOne("生息演算进入下一天") then tap("生息演算进入下一天") end
-            if findOne("沙洲遗闻决断点已补充") then tap("沙洲遗闻决断点已补充") end
+
+            if findOne("沙洲遗闻奇遇标签") then
+                tap("沙洲遗闻奇遇标签")
+                ssleep(.2)
+            end
             if findOne("生息演算完成生存周期") then
                 ssleep(1)
                 local text = ocro("沙洲遗闻转化繁荣点数")
@@ -521,14 +561,21 @@ Tales_within_the_sand.生息演算奇遇 = function(关卡)
                 end
                 tap("沙洲遗闻开启今日")
             end
+            log(563)
             appearTap("沙洲遗闻开启今日", .1)
-            if findOne("沙洲遗闻开启今日") or findOne("沙洲遗闻决断点已补充") then
-                ssleep(.3)
-                tap("沙洲遗闻开启今日")
-                tap("沙洲遗闻决断点已补充")
+            if findOne("沙洲遗闻开启今日") then
+                log("荒季过天")
+                if not wait(function()
+                        tap("沙洲遗闻开启今日")
+                        ssleep(.1)
+                        if not findOne("沙洲遗闻开启今日") then return true end
+                    end, 5) then
+                    return true
+                end
                 return true
             end
             if findOne("沙洲遗闻基地产出") then
+                log("沙洲遗闻基地产出")
                 if not wait(function()
                         if findOne("生息底栏烹饪按钮") then return true end
                         tap("生息演算下一天_勾")
@@ -832,10 +879,29 @@ Tales_within_the_sand.下一天 = function()
             if findOne("沙洲遗闻奇遇标签") then tap("沙洲遗闻奇遇标签") end
             if findOne("生息演算进入下一天") then tap("生息演算进入下一天") end
             if findOne("生息演算完成生存周期") then tap("沙洲遗闻开启今日") end
-            if findOne("沙洲遗闻决断点已补充") then tap("沙洲遗闻决断点已补充") end
+            if findOne("沙洲遗闻决断点已补充") then
+                if not wait(function()
+                        tap("沙洲遗闻决断点已补充")
+                        ssleep(.1)
+                        if not findOne("沙洲遗闻决断点已补充") then return true end
+                    end, 5) then
+                    return true
+                end
+                return true
+            end
             appearTap("沙洲遗闻开启今日", .1)
             if 开启今日 and findOne("生息底栏烹饪按钮") then
                 return true
+            end
+            if findOne("沙洲遗闻开启今日荒季") then
+                --荒季过天
+                if not wait(function()
+                        tap("沙洲遗闻开启今日荒季")
+                        ssleep(.1)
+                        if not findOne("沙洲遗闻开启今日荒季") then return true end
+                    end, 5) then
+                    return true
+                end
             end
             if findOne("沙洲遗闻开启今日") or findOne("沙洲遗闻决断点已补充") then
                 开启今日 = true
@@ -992,7 +1058,7 @@ Tales_within_the_sand.连续跳过 = function()
 end
 
 -- ===========================================
---               宝宝模式相关
+--               休养模式相关
 -- ===========================================
 
 Tales_within_the_sand.开始演算2 = function()
@@ -1026,6 +1092,20 @@ Tales_within_the_sand.开始演算2 = function()
         Tales_within_the_sand.下一天()
         -- 后舍对话商人
         Tales_within_the_sand.下一天()
+        -- 第七天
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.下一天()
+        -- 第十天
+        Tales_within_the_sand.重置地图位置(true)
+        tap("沙洲遗闻林中寻宝3")
+        appear("生息演算开始行动", 2)
+        ssleep(.2)
+        Tales_within_the_sand.生息关卡进入("沙洲遗闻原始奔腾2")
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.生息关卡进入("沙洲遗闻树林之主")
+        Tales_within_the_sand.下一天()
         reachFourthDay = true
     end
     Tales_within_the_sand.六天奇遇循环()
@@ -1033,65 +1113,74 @@ end
 
 Tales_within_the_sand.六天奇遇循环 = function()
     log("奇遇循环")
-    local 基地等级 = 2
-
+    local 基地等级 = 1
+    local 商店科技树等级 = 0
     while true do
         Tales_within_the_sand.重置地图位置()
         local 水 = tonumber(ocro("沙洲遗闻水") or 0) or 0
         local 石头 = tonumber(ocro("沙洲遗闻石头") or 0) or 0
         local 木头 = 石头
-        if 基地等级 == 2 then
+        if 商店科技树等级 < 3 then
+            -- 没开石头,识别的是木材的数量
+            石头 = 0
+        end
+        if 基地等级 >= 2 then
             木头 = tonumber(ocro("沙洲遗闻木头") or 0) or 0
         end
-        log("水", 水, "木头", 木头, "石头", 石头)
+        log("基地等级", 基地等级, "商店科技树等级", 商店科技树等级, "水", 水, "木头", 木头, "石头", 石头)
         if 基地等级 == 1 and 水 >= 5 and 木头 >= 60 then
-            基地等级 = 基地等级 + Tales_within_the_sand.基地升级()
+            基地等级 = Tales_within_the_sand.基地升级(基地等级) or 1
         elseif 基地等级 == 2 and 水 >= 20 and 木头 >= 40 and 石头 >= 40 then
-            基地等级 = 基地等级 + Tales_within_the_sand.基地升级()
+            基地等级 = Tales_within_the_sand.基地升级(基地等级) or 2
         elseif 基地等级 == 3 and 木头 >= 198 then
             break
         end
         Tales_within_the_sand.生息演算奇遇("沙洲遗闻奇遇风啸峡谷")
-        if 基地等级 > 1 then
-            Tales_within_the_sand.局内商店(木头, 石头)
-        end
-        Tales_within_the_sand.重置地图位置()
+        tap("沙洲遗闻丢失的订单")
+        appear("生息演算开始行动", 2)
+        ssleep(.2)
+        Tales_within_the_sand.生息演算奇遇("沙洲遗闻奇遇风啸峡谷2")
+        if 商店科技树等级 >= 2 then Tales_within_the_sand.局内商店(基地等级, 木头, 石头) end
+        Tales_within_the_sand.重置地图位置(true)
         tap("沙洲遗闻林中寻宝3")
+        appear("生息演算开始行动", 2)
+        ssleep(.2)
         Tales_within_the_sand.生息演算奇遇("沙洲遗闻奇遇砾沙平原2")
         Tales_within_the_sand.生息演算奇遇("沙洲遗闻奇遇崎岖窄路")
         Tales_within_the_sand.下一天()
-        if 基地等级 > 1 then Tales_within_the_sand.局内商店(木头, 石头) end
+        if 商店科技树等级 >= 2 then Tales_within_the_sand.局内商店(基地等级, 木头, 石头) end
         Tales_within_the_sand.下一天()
-        if 基地等级 > 1 then
-            Tales_within_the_sand.科技树升级()
+        if 基地等级 > 1 and 商店科技树等级 <= 5 then
+            商店科技树等级 = Tales_within_the_sand.科技树升级(商店科技树等级)
         end
-        Tales_within_the_sand.下一天()
     end
 end
 
-Tales_within_the_sand.基地升级 = function()
+Tales_within_the_sand.基地升级 = function(基地等级)
+    local level = 基地等级 or 1
     tap("沙洲遗闻基地")
     appearTap("沙洲遗闻基地升级", 2)
     if appear("沙洲遗闻基地升级确认", 2) then
         tap("沙洲遗闻基地升级确认")
+        level = level + 1
         if not wait(function()
                 tap("沙洲遗闻基地升级完成")
-                if findOne("生息底栏烹饪按钮") then return true end
-                if findOne("生息演算左上角返回") then
-                    tap("生息演算左上角返回")
-                    ssleep(.1)
-                end
+                if findOne("沙洲遗闻科技树升级灰") then return true end
             end, 6) then
-            return 1
         end
-        if findOne("生息演算主页进入") then return tap("生息演算主页进入") end
-        return 1
+        if not wait(function()
+                tap("生息演算左上角返回")
+                ssleep(.2)
+                if findOne("生息底栏烹饪按钮") then return true end
+            end, 6) then
+        end
     end
-    return 0
+    return level
 end
 
-Tales_within_the_sand.局内商店 = function(木头, 石头)
+Tales_within_the_sand.局内商店 = function(基地等级, 木头, 石头)
     if not findOne("沙洲遗闻局内商店") then return end
+    log(基地等级, 木头, 石头)
     tap("沙洲遗闻局内商店")
     appear("沙洲遗闻局内商店页面", 2)
     for j = 1, 2 do
@@ -1100,7 +1189,7 @@ Tales_within_the_sand.局内商店 = function(木头, 石头)
                 scale(214 + 327 * (j - 1)) }
             local 商品名 = ocro("沙洲遗闻局内商品名范围")
             log(商品名)
-            if (商品名 == "木材" and 木头 < 198) or (商品名 == "石材" and 石头 < 40) then
+            if (商品名 == "石材" and 石头 < 40) or (基地等级 > 2 and 商品名 == "木材" and 木头 < 198) then
                 tap({ scale(630 + 327 * (i - 1)), scale(172 + 327 * (j - 1)) })
                 if not appear("沙洲遗闻局内商店确认支付", 2) then
                     tap("沙洲遗闻局内商店")
@@ -1134,29 +1223,43 @@ Tales_within_the_sand.局内商店 = function(木头, 石头)
     disappear("沙洲遗闻局内商店页面", 2)
 end
 
-Tales_within_the_sand.科技树升级 = function()
-    if not findOne("沙洲遗闻科技树") then return end
+Tales_within_the_sand.科技树升级 = function(商店科技树等级)
+    local level = 商店科技树等级 or 0
+    if not findOne("沙洲遗闻科技树") then return level end
     tap("沙洲遗闻科技树")
     appear("沙洲遗闻科技树页面", 2)
     ssleep(.2)
     if not findOne("沙洲遗闻商店科技树") then tap("沙洲遗闻商店科技树") end
     appear("沙洲遗闻商店科技树", 2)
     ssleep(1.5)
-    --local ret = findCircle(沙洲遗闻科技树升级范围[1], 沙洲遗闻科技树升级范围[2], 沙洲遗闻科技树升级范围[3],沙洲遗闻科技树升级范围[4], 1.6, 80, 230, 80, 40, 60)
-    for i = 1, 4 do
-        log(findOne("沙洲遗闻科技树升级列表" .. i))
-        if findOne("沙洲遗闻科技树升级列表" .. i) then
-            tap("沙洲遗闻科技树升级列表" .. i)
-            if appear("沙洲遗闻科技树升级确认", 2) then
-                tap("沙洲遗闻科技树升级确认")
-                ssleep(.2)
-            else
-                break
+    if 商店科技树等级 < 4 then
+        for i = 商店科技树等级 + 1, 4 do
+            if findOne("沙洲遗闻科技树升级列表" .. i) then
+                tap("沙洲遗闻科技树升级列表" .. i)
+                if appear("沙洲遗闻科技树升级确认", 2) then
+                    tap("沙洲遗闻科技树升级确认")
+                    level = i
+                    ssleep(.2)
+                else
+                    level = i - 1
+                    break
+                end
             end
         end
     end
-
+    if 商店科技树等级 == 4 then
+        swipo()
+        if findOne("沙洲遗闻科技树升级列表5") then
+            tap("沙洲遗闻科技树升级列表5")
+            if appear("沙洲遗闻科技树升级确认", 2) then
+                tap("沙洲遗闻科技树升级确认")
+                ssleep(.2)
+                level = 5
+            end
+        end
+    end
     --退出科技树
     tap("沙洲遗闻科技树")
     disappear("沙洲遗闻科技树页面", 2)
+    return math.max(level, 商店科技树等级)
 end
