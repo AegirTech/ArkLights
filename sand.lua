@@ -1099,7 +1099,6 @@ Tales_within_the_sand.开始演算2 = function()
         Tales_within_the_sand.下一天()
         Tales_within_the_sand.生息关卡进入("沙洲遗闻饮水为饵", true)
         Tales_within_the_sand.下一天()
-        -- 后舍对话商人
         Tales_within_the_sand.下一天()
         -- 第七天
         Tales_within_the_sand.下一天()
@@ -1144,6 +1143,7 @@ Tales_within_the_sand.六天奇遇循环 = function()
         if 基地等级 == 1 and findOne("沙洲遗闻基地可升级") then
             基地等级 = Tales_within_the_sand.基地升级(基地等级) or 1
         elseif 基地等级 == 2 and findOne("沙洲遗闻基地可升级") then
+            -- 搓个水稻,丢基地里
             基地等级 = Tales_within_the_sand.基地升级(基地等级) or 2
         elseif 基地等级 == 3 and findOne("沙洲遗闻基地可升级") then
             break
