@@ -1291,7 +1291,7 @@ auto = function(p, fallback, timeout, total_timeout, total_timeout_restart)
                 -- should be a hook, by defualt restartapp
 
                 auto_total_timeout_hook()
-                stop("auto超时" .. total_timeout .. 's', 'cur')
+                stop("当前任务" .. strOr(running, "") .. " auto超时" .. total_timeout .. 's', 'cur')
             else
                 return true
             end
