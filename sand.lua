@@ -464,8 +464,13 @@ Tales_within_the_sand.生息演算奇遇 = function(关卡)
         return
     end
     for i = 1, 2 do
+        log(i)
         local q = false
         if not wait(function()
+                if findAny({ "生息底栏烹饪按钮", "生息演算奇遇开始行动" }) then
+                    q = true
+                    return true
+                end
                 tap("沙洲遗闻奇遇确定")
                 ssleep(.2)
                 if findOne("沙洲遗闻奇遇标签") then
@@ -913,6 +918,10 @@ Tales_within_the_sand.下一天 = function()
                     return false
                 end
             end
+            if findOne("生息演算奇遇开始行动") then
+                tap("生息演算左上角返回")
+                ssleep(.1)
+            end
             if findOne("沙洲遗闻基地产出") then
                 if not wait(function()
                         if findOne("生息底栏烹饪按钮") then return true end
@@ -1233,16 +1242,13 @@ Tales_within_the_sand.科技树升级 = function(商店科技树等级)
     appear("沙洲遗闻商店科技树", 2)
     ssleep(1.5)
     if 商店科技树等级 < 4 then
-        for i = 商店科技树等级 + 1, 4 do
+        for i = 1, 4 do
             if findOne("沙洲遗闻科技树升级列表" .. i) then
                 tap("沙洲遗闻科技树升级列表" .. i)
                 if appear("沙洲遗闻科技树升级确认", 2) then
                     tap("沙洲遗闻科技树升级确认")
                     level = i
                     ssleep(.2)
-                else
-                    level = i - 1
-                    break
                 end
             end
         end
