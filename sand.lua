@@ -1123,6 +1123,7 @@ Tales_within_the_sand.六天奇遇循环 = function()
     log("奇遇循环")
     local 基地等级 = 1
     local 商店科技树等级 = 0
+    种植箱 = (种植箱 == nil) and false or 种植箱
     while true do
         Tales_within_the_sand.重置地图位置()
         local lv等级 = ocro("沙洲遗闻基地等级判断范围") or ""
@@ -1171,6 +1172,35 @@ Tales_within_the_sand.六天奇遇循环 = function()
             基地等级 = Tales_within_the_sand.基地升级(基地等级) or 2
         elseif 基地等级 == 3 and findOne("沙洲遗闻基地可升级") then
             break
+        end
+        if 水 > 10 and 木头 > 30 and not 种植箱 then
+            -- 种植箱
+            wait(function()
+                tap("沙洲遗闻组装台")
+                disappear("沙洲遗闻组装台", 1)
+                if not findOne("沙洲遗闻组装台") then
+                    return true
+                end
+            end, 5)
+
+            wait(function()
+                tap("沙洲遗闻组装台驻地设施")
+                if appearTap("沙洲遗闻组装台种植箱") then
+                    if appearTap("沙洲遗闻组装台开始组装") then
+                        return true
+                    end
+                end
+            end, 5)
+            back()
+            wait(function()
+                back()
+                ssleep(.5)
+                if appear("生息演算_全局_返回", 0.5) then
+                    return true
+                end
+            end, 5)
+            种植箱 = true
+            Tales_within_the_sand.重置地图位置()
         end
         Tales_within_the_sand.生息演算奇遇("沙洲遗闻奇遇风啸峡谷")
         tap("沙洲遗闻丢失的订单")
