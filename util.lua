@@ -807,7 +807,7 @@ end
 
 stop = function(msg, mode, nohome, complete)
     msg = msg or ''
-    msg = "stop " .. msg
+    msg = "stop " .. "当前任务" .. strOr(running, "") .. msg
     disable_log = false -- 强制开启日志
     local info = table.join(qqmessage, ' ') .. ' ' .. msg
     if complete then
@@ -1291,7 +1291,7 @@ auto = function(p, fallback, timeout, total_timeout, total_timeout_restart)
                 -- should be a hook, by defualt restartapp
 
                 auto_total_timeout_hook()
-                stop("当前任务" .. strOr(running, "") .. " auto超时" .. total_timeout .. 's', 'cur')
+                stop("auto超时" .. total_timeout .. 's', 'cur')
             else
                 return true
             end

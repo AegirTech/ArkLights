@@ -1126,6 +1126,10 @@ Tales_within_the_sand.六天奇遇循环 = function()
     local 商店科技树等级 = 0
     while true do
         Tales_within_the_sand.重置地图位置()
+        local lv等级 = ocro("沙洲遗闻基地等级判断范围") or ""
+        lv等级 = string.gsub(lv等级, "LV.", "")
+        lv等级 = tonumber(lv等级) or 1
+        基地等级 = lv等级
         local 水 = tonumber(ocro("沙洲遗闻水") or 0) or 0
         local 石头 = tonumber(ocro("沙洲遗闻石头") or 0) or 0
         local 木头 = 石头
@@ -1137,11 +1141,11 @@ Tales_within_the_sand.六天奇遇循环 = function()
             木头 = tonumber(ocro("沙洲遗闻木头") or 0) or 0
         end
         log("基地等级", 基地等级, "商店科技树等级", 商店科技树等级, "水", 水, "木头", 木头, "石头", 石头)
-        if 基地等级 == 1 and 水 >= 5 and 木头 >= 60 then
+        if 基地等级 == 1 and findOne("沙洲遗闻基地可升级") then
             基地等级 = Tales_within_the_sand.基地升级(基地等级) or 1
-        elseif 基地等级 == 2 and 水 >= 20 and 木头 >= 40 and 石头 >= 40 then
+        elseif 基地等级 == 2 and findOne("沙洲遗闻基地可升级") then
             基地等级 = Tales_within_the_sand.基地升级(基地等级) or 2
-        elseif 基地等级 == 3 and 木头 >= 198 then
+        elseif 基地等级 == 3 and findOne("沙洲遗闻基地可升级") then
             break
         end
         Tales_within_the_sand.生息演算奇遇("沙洲遗闻奇遇风啸峡谷")
