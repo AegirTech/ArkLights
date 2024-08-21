@@ -5781,7 +5781,7 @@ path.商店搬空 = function()
     end
     ssleep(1)
     if not findOne("商店主页") then return end
-    local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], scale(516), scale(242)
+    local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], scale(515), scale(240)
     回到商店主页()
     while true do
         local retry = 0
@@ -5801,25 +5801,25 @@ path.商店搬空 = function()
                     return
                 end
                 if not findOne("商店主页") then return end -- 防止跳到其他页面
-                local area = { 初始物品[1] + 物品横间距 * x, 初始物品[2] + 物品纵间距 * y, 初始物品[1] + 物品横间距 * (x + 1), 初始物品[2] +
-                物品纵间距 * (y + 1) }
-                local 商品 = find_color(area, point["商店货币颜色"], 0, 0.9)
-                if not 商品 then
-                    log("商品已售空")
-                    goto continue
-                end
+                -- local area = { 初始物品[1] + 物品横间距 * x, 初始物品[2] + 物品纵间距 * y, 初始物品[1] + scale(490), 初始物品[2] + scale(220) }
+                -- local 商品 = find_color(area, point["商店货币颜色"], 0, 0.9)
+                -- if not 商品 then
+                --     log("商品已售空")
+                --     goto continue
+                -- end
+
                 gt = gt + 1
-                if gt > 8 then
+                if gt > 20 then
                     log("强制翻页")
                     goto continue
                 end
 
                 -- 点击商品，进入购买页面判断
                 if not wait(function()
-                        tap(商品)
-                        ssleep(.5)
+                        tap({ 初始物品[1] + 物品横间距 * x + scale(245), 初始物品[2] + 物品纵间距 * y + scale(110) })
+                        ssleep(.2)
                         if find_color("商店购买页面单价范围", point["商店货币颜色"], 1, 0.9) then return true end -- 表示已经进入商店
-                    end, 5) then
+                    end, 1.5) then
                 end
 
                 -- 点击购买,只能点一次,点多了会点到右下角龙门币
@@ -5844,6 +5844,8 @@ path.商店搬空 = function()
                             ssleep(0.5)
                             if findOne("商店主页") then return true end
                         end, 5) then
+                        log("没钱")
+                        return
                     end
                 end
 
