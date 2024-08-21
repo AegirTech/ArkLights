@@ -131,8 +131,8 @@ cloud.startHeartBeat()
 if debug_mode then
     log("debug_mode")
     ssleep(0.5)
-    -- solveCapture_new(11)
-    -- exit()
+    Tales_within_the_sand.六天奇遇循环()
+    exit()
 end
 
 load(before_account_hook or '')()
