@@ -1119,6 +1119,38 @@ Tales_within_the_sand.开始演算2 = function()
     Tales_within_the_sand.六天奇遇循环()
 end
 
+Tales_within_the_sand.组装种植箱 = function()
+    wait(function()
+        tap("沙洲遗闻组装台")
+        disappear("沙洲遗闻组装台", 1)
+        if not findOne("沙洲遗闻组装台") then
+            return true
+        end
+    end, 5)
+
+    wait(function()
+        tap("沙洲遗闻组装台驻地设施")
+        if appearTap("沙洲遗闻组装台种植箱") then
+            if appearTap("沙洲遗闻组装台开始组装") then
+                return true
+            end
+        end
+    end, 5)
+    back()
+    wait(function()
+        back()
+        ssleep(.5)
+        if appear("生息演算_全局_返回", 0.5) then
+            return true
+        end
+    end, 5)
+    种植箱 = true
+    Tales_within_the_sand.重置地图位置()
+end
+
+Tales_within_the_sand.摆放种植箱 = function()
+end
+
 Tales_within_the_sand.六天奇遇循环 = function()
     log("奇遇循环")
     local 基地等级 = 1
@@ -1175,32 +1207,7 @@ Tales_within_the_sand.六天奇遇循环 = function()
         end
         if 水 > 10 and 木头 > 30 and not 种植箱 then
             -- 种植箱
-            wait(function()
-                tap("沙洲遗闻组装台")
-                disappear("沙洲遗闻组装台", 1)
-                if not findOne("沙洲遗闻组装台") then
-                    return true
-                end
-            end, 5)
-
-            wait(function()
-                tap("沙洲遗闻组装台驻地设施")
-                if appearTap("沙洲遗闻组装台种植箱") then
-                    if appearTap("沙洲遗闻组装台开始组装") then
-                        return true
-                    end
-                end
-            end, 5)
-            back()
-            wait(function()
-                back()
-                ssleep(.5)
-                if appear("生息演算_全局_返回", 0.5) then
-                    return true
-                end
-            end, 5)
-            种植箱 = true
-            Tales_within_the_sand.重置地图位置()
+            Tales_within_the_sand.组装种植箱()
         end
         Tales_within_the_sand.生息演算奇遇("沙洲遗闻奇遇风啸峡谷")
         tap("沙洲遗闻丢失的订单")
