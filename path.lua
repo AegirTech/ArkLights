@@ -862,8 +862,8 @@ path.fallback = {
     end,
     活动签到返回 = function()
         ssleep(0.5) -- 等待签到界面加载
-        for u = screen.width // 2 + scale(825 - 1920 // 2), screen.width // 2 + scale(1730 - 1920 // 2), scale(100) do
-            tap({ u, scale(500) })
+        for u = screen.width // 2 + scale(730 - 1920 // 2), screen.width // 2 + scale(1730 - 1920 // 2), scale(100) do
+            tap({ u, scale(560) })
             ssleep(0.1) --部分设备点太快没有响应
         end
         for v = screen.height // 2 + scale(180 - 1080 // 2), screen.height // 2 + scale(950 - 1080 // 2), scale(100) do
