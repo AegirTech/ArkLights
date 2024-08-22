@@ -1090,7 +1090,6 @@ show_extra_ui = function()
 
     newRow(layout)
     ui.addTabView(layout, "extra_tab")
-
     local rouge_layout_傀影 = "extra_tab_zl1"
     ui.addTab("extra_tab", rouge_layout_傀影, "傀影")
     newRow(rouge_layout_傀影)
@@ -1213,26 +1212,25 @@ show_extra_ui = function()
     addTextView(layout, "=================生息演算=================")
 
     newRow(layout)
-    addButton(layout, nil, "沙洲遗闻刷点数",
+    addButton(layout, nil, "沙洲遗闻刷点数启动",
         make_jump_ui_command(layout, nil,
             "extra_mode='生息沙洲遗闻';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    addButton(layout, nil, "沙洲遗闻-商店购买",
+    addButton(layout, nil, "沙洲遗闻自动商店购买",
         make_jump_ui_command(layout, nil,
             "extra_mode='生息沙洲遗闻商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addTextView(layout, "刷点数模式")
+    ui.addSpinner(layout, "sand_mode", { "标准:从4-7天开始(手动过1-3天)",
+        "标准:从0开始,4-7天循环",
+        "休养:从0升至三本198木",
+        "休养:手动开完奇遇后升至三本198木",
+        "休养:三本后荧光棒" }, 4)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "sand_no_delete", "模式1:不删1-3天存档从4-7天开始(手动过1-3天)", false)
-    newRow(layout)
-    addTextView(layout, "第1天打丰饶灌木林,跳过到第3天打敌袭,然后进第4天启动")
-    newRow(layout)
-    ui.addCheckBox(layout, "sand_skip_repeat", "模式2:重复刷3天回档(适用于100天+)", false)
-    newRow(layout)
-    ui.addCheckBox(layout, "sand_easy_mode", "模式3:休养模式(测试)", false)
-    ui.addCheckBox(layout, "sand_six_day_repeat", "模式4:休养模式无限循环", false)
     newRow(layout)
     addTextView(layout, "调试选项")
     ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
     ui.addCheckBox(layout, "sand_noincrease_stop", "代币不增加则停止", true)
+    newRow(layout)
     ui.addCheckBox(layout, "skip_make", "跳过合成", false)
 
     newRow(layout)

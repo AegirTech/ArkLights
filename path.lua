@@ -7809,14 +7809,15 @@ path.跳过剧情 = function()
 end
 
 path.生息沙洲遗闻 = function()
-    if sand_skip_repeat then
+    if sand_mode == 3 then
+        Tales_within_the_sand.六天奇遇循环()
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.下一天()
         Tales_within_the_sand.连续跳过()
         return
-    elseif sand_easy_mode then
-        Tales_within_the_sand.开始演算2()
-        return
-    elseif sand_six_day_repeat then
-        Tales_within_the_sand.六天奇遇循环()
+    elseif sand_mode == 4 then
+        Tales_within_the_sand.连续跳过()
         return
     end
     沙洲遗闻()
