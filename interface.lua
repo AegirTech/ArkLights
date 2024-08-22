@@ -1042,16 +1042,14 @@ show_extra_ui = function()
     -- ui.addCheckBox(layout, "sand_fire_unstop", "打满也不结束", false)
 
     newRow(layout)
-    addTextView(layout, "===========账户设置(同步)===========")
+    addTextView(layout, "=================账户设置(同步)=================")
 
     newRow(layout)
     ui.addCheckBox(layout, "extra_multi_account_enable", "启用多账号", false)
     ui.addEditText(layout, "extra_multi_account_choice", "")
 
     newRow(layout)
-    ui.addCheckBox(layout, "extra_single_account_login", "启用单账户登录", false)
-
-    newRow(layout)
+    ui.addCheckBox(layout, "extra_single_account_login", "启用单号登录", false)
     addTextView(layout, "账户")
     ui.addEditText(layout, "extra_single_account", "")
     addTextView(layout, "密码")
@@ -1069,11 +1067,10 @@ show_extra_ui = function()
     -- newRow(layout)
 
     newRow(layout)
-    addTextView(layout, "===========肉鸽相关===========")
+    addTextView(layout, "=================肉鸽相关=================")
 
     newRow(layout)
     addTextView(layout, "通用选项")
-    newRow(layout)
     addTextView(layout, [[选第]])
     ui.addEditText(layout, "zl_best_operator", [[-1]])
     addTextView(layout, [[个近卫 开]])
@@ -1213,7 +1210,7 @@ show_extra_ui = function()
     --               [[商品需求可填商品名称关键字，用空格隔开(如填“玩 金 骑士”)，则刷到其中任一商品就会停止并通知QQ]])
 
     newRow(layout)
-    addTextView(layout, "===========生息演算===========")
+    addTextView(layout, "=================生息演算=================")
 
     newRow(layout)
     addButton(layout, nil, "沙洲遗闻刷点数",
@@ -1224,18 +1221,22 @@ show_extra_ui = function()
             "extra_mode='生息沙洲遗闻商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     newRow(layout)
-    ui.addCheckBox(layout, "sand_no_delete", "不删1-3天存档从4-7天开始(手动过1-3天)", false)
+    ui.addCheckBox(layout, "sand_no_delete", "模式1:不删1-3天存档从4-7天开始(手动过1-3天)", false)
     newRow(layout)
     addTextView(layout, "第1天打丰饶灌木林,跳过到第3天打敌袭,然后进第4天启动")
     newRow(layout)
-    ui.addCheckBox(layout, "sand_skip_repeat", "重复刷3天回档", false)
+    ui.addCheckBox(layout, "sand_skip_repeat", "模式2:重复刷3天回档(适用于100天+)", false)
+    newRow(layout)
+    ui.addCheckBox(layout, "sand_easy_mode", "模式3:休养模式(测试)", false)
+    ui.addCheckBox(layout, "sand_six_day_repeat", "模式4:休养模式无限循环", false)
     newRow(layout)
     addTextView(layout, "调试选项")
     ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
     ui.addCheckBox(layout, "sand_noincrease_stop", "代币不增加则停止", true)
+    ui.addCheckBox(layout, "skip_make", "跳过合成", false)
 
     newRow(layout)
-    addTextView(layout, "===========隐秘战线===========")
+    addTextView(layout, "=================隐秘战线=================")
     newRow(layout)
     addButton(layout, nil, "隐秘战线——慈悲灯塔",
         make_jump_ui_command(layout, nil,
@@ -1247,7 +1248,7 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "hidden_front_award", "隐秘战线打完领取奖励", true)
 
     newRow(layout)
-    addTextView(layout, "===========连续公招===========")
+    addTextView(layout, "=================连续公招=================")
     newRow(layout)
     addButton(layout, layout .. "_recruit", "公开招募加急",
         make_jump_ui_command(layout, nil,
@@ -1259,53 +1260,60 @@ show_extra_ui = function()
     --             [[用于刷黄绿票，或刷出指定标签。使用加急券在第一个公招位反复执行“公开招募”任务，沿用脚本主页的“自动招募”设置。“自动招募”只勾“其他”时，刷出保底标签就停；只勾“其他”、“4”时，刷出保底小车、保底5星、资深就停；其余同理。如果想刷到指定标签就停，则“保留标签”填期望标签（例如填“削弱 快速复活”）。]])
 
     newRow(layout)
-    addTextView(layout, [[===========采购中心===========]])
-
-    newRow(layout)
-    addTextView(layout, ">>>>>>>>>>>绿票商店购买")
-    ui.addCheckBox(layout, "green_ticket_shop", "", true)
-
-    green_ticket_shop_good = { "寻访凭证", "合成玉", "龙门币", "家具零件", "招聘许可", "中级作战记录", "赤金", "2层寻访凭证", "2层招聘许可" }
-
-    local max_checkbox_one_row = 4
-    for k, v in pairs(green_ticket_shop_good) do
-        if k == 1 or k == 5 or k == 8 then
-            newRow(layout, "green_ticket_shop_row" .. k)
-        end
-        ui.addCheckBox(layout, "green_ticket_shop_" .. k, v, true)
-    end
-
-    newRow(layout)
-    addTextView(layout, ">>>>>>>>>>>黄票商店购买")
-    ui.addCheckBox(layout, "yellow_ticket_shop", "", false)
-
-    yellow_ticket_shop_good = { "寻访凭证", "中坚寻访凭证", "模组数据块" }
-
-    for k, v in pairs(yellow_ticket_shop_good) do
-        if k % max_checkbox_one_row == 1 then
-            newRow(layout, "yellow_ticket_shop_row" .. k)
-        end
-        ui.addCheckBox(layout, "yellow_ticket_shop_" .. k, v, false)
-    end
-
-    newRow(layout)
-    addTextView(layout, ">>>>>>>>>>>红票商店购买")
-    ui.addCheckBox(layout, "red_ticket_shop", "", false)
-
-    red_ticket_shop_good = { "模组数据块", "干员(请单独勾选,买所有干员)" }
-
-    for k, v in pairs(red_ticket_shop_good) do
-        if k % max_checkbox_one_row == 1 then
-            newRow(layout, "red_ticket_shop_row" .. k)
-        end
-        ui.addCheckBox(layout, "red_ticket_shop_" .. k, v, false)
-    end
+    addTextView(layout, "=================采购中心=================")
 
     newRow(layout)
     addButton(layout, nil, "执行采购中心商店购买",
         make_jump_ui_command(layout, nil,
             "extra_mode='采购中心商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
+    ui.addTabView(layout, "extra_tab_shop")
+
+    local shop_layout_green = "extra_tab_green"
+    ui.addTab("extra_tab_shop", shop_layout_green, "绿票商店")
+
+    newRow(shop_layout_green)
+    ui.addCheckBox(shop_layout_green, "green_ticket_shop", "购买绿票商店", true)
+
+    green_ticket_shop_good = { "寻访凭证", "合成玉", "龙门币", "家具零件", "招聘许可", "中级作战记录", "赤金", "2层寻访凭证", "2层招聘许可" }
+
+    local max_checkbox_one_row = 4
+    for k, v in pairs(green_ticket_shop_good) do
+        if k == 1 or k == 5 or k == 8 then
+            newRow(shop_layout_green, "green_ticket_shop_row" .. k)
+        end
+        ui.addCheckBox(shop_layout_green, "green_ticket_shop_" .. k, v, true)
+    end
+
+    local shop_layout_yellow = "extra_tab_yellow"
+    ui.addTab("extra_tab_shop", shop_layout_yellow, "黄票商店")
+
+    newRow(shop_layout_yellow)
+    ui.addCheckBox(shop_layout_yellow, "yellow_ticket_shop", "购买黄票商店", false)
+
+    yellow_ticket_shop_good = { "寻访凭证", "中坚寻访凭证", "模组数据块" }
+
+    for k, v in pairs(yellow_ticket_shop_good) do
+        if k % max_checkbox_one_row == 1 then
+            newRow(shop_layout_yellow, "yellow_ticket_shop_row" .. k)
+        end
+        ui.addCheckBox(shop_layout_yellow, "yellow_ticket_shop_" .. k, v, false)
+    end
+
+    local shop_layout_red = "extra_tab_red"
+    ui.addTab("extra_tab_shop", shop_layout_red, "红票商店")
+
+    newRow(layout)
+    ui.addCheckBox(shop_layout_red, "red_ticket_shop", "购买红票商店", false)
+
+    red_ticket_shop_good = { "模组数据块", "干员(请单独勾选,买所有干员)" }
+
+    for k, v in pairs(red_ticket_shop_good) do
+        if k % max_checkbox_one_row == 1 then
+            newRow(shop_layout_red, "red_ticket_shop_row" .. k)
+        end
+        ui.addCheckBox(shop_layout_red, "red_ticket_shop_" .. k, v, false)
+    end
 
     -- newRow(layout)
     -- addButton(layout, layout .. "_speedrun", "每日任务速通（待修）",

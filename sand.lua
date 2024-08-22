@@ -7,10 +7,6 @@ Tales_within_the_sand = {}
 
 沙洲遗闻 = function()
     log("沙洲遗闻开始")
-    if sand_skip_repeat then
-        Tales_within_the_sand.连续跳过()
-        return
-    end
     if findOne("主页长期探索_生息演算") then
         tap("主页长期探索_生息演算", 0.1)
     end
@@ -1222,7 +1218,7 @@ Tales_within_the_sand.六天奇遇循环 = function()
         elseif 基地等级 == 3 and 木头 >= 198 then
             break
         end
-        if 水 > 10 and 木头 > 30 and not 种植箱 then
+        if 水 > 10 and 木头 > 30 and not 种植箱 and not skip_make then
             -- 种植箱
             Tales_within_the_sand.组装种植箱()
             Tales_within_the_sand.基地摆放物品()
