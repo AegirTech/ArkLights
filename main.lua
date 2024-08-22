@@ -52,8 +52,8 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "08.22 02:19"
-update_announcement = '最近更新：新增滑动本地打码，移除云码'
+release_date = "08.22 18:03"
+update_announcement = '最近更新：夏活复刻活动导航。'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -131,8 +131,8 @@ cloud.startHeartBeat()
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug_mode")
     ssleep(0.5)
-    Tales_within_the_sand.开始演算2()
-    exit()
+    -- Tales_within_the_sand.开始演算2()
+    -- exit()
 end
 
 load(before_account_hook or '')()

@@ -5199,7 +5199,7 @@ path.活动 = function(x)
         end
     end
 
-    local car_check1 = function()
+    local car_check = function()
         if car_checked then return end
         car_checked = true
         car_check_times = car_check_times + 1
@@ -5268,7 +5268,7 @@ path.活动 = function(x)
         end
     end
 
-    local car_check = function()
+    local car_check1 = function()
         if car_checked then return end
         car_checked = true
         car_check_times = car_check_times + 1
@@ -5570,7 +5570,7 @@ path.活动 = function(x)
         返回循心初始页面()
     end
 
-    --car_check1() --有些大型活动会自带一些任务
+    car_check1() --有些大型活动会自带一些任务
     log("skip_guide", skip_guide)
     if not skip_guide then
         if not findOne("活动导航0") then return end
@@ -5760,10 +5760,6 @@ path.商店搬空 = function()
     if not wait(function()
             tap("活动商店导航")
             if findOne("商店主页") then return true end
-            local coll = find_color("商店右上角代币范围", point["商店主题色"], 1, 0.9)
-            if coll then
-                return true
-            end
         end, 5) then
     end
     ssleep(0.5)
@@ -5819,6 +5815,7 @@ path.商店搬空 = function()
                         tap({ 初始物品[1] + 物品横间距 * x + scale(245), 初始物品[2] + 物品纵间距 * y + scale(110) })
                         ssleep(.2)
                         if find_color("商店购买页面单价范围", point["商店货币颜色"], 1, 0.9) then return true end -- 表示已经进入商店
+                        -- 不找支付按钮因为支付按钮的区域和商品页面有重合
                     end, 1.5) then
                 end
 
