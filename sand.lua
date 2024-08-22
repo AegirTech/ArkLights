@@ -1143,7 +1143,7 @@ Tales_within_the_sand.组装种植箱 = function()
     wait(function()
         back()
         ssleep(.5)
-        if appear("生息演算_全局_返回", 0.5) then
+        if appear("生息底栏烹饪按钮", 0.5) then
             return true
         end
     end, 5)
@@ -1311,8 +1311,17 @@ Tales_within_the_sand.局内商店 = function(基地等级, 木头, 石头)
 
     --退出商店
     ssleep(.1)
-    tap("沙洲遗闻局内商店")
-    disappear("沙洲遗闻局内商店页面", 2)
+
+    wait(function()
+        back()
+        ssleep(.5)
+        if appear("生息底栏烹饪按钮", 1) then
+            return true
+        end
+    end, 5)
+
+    -- tap("沙洲遗闻局内商店")
+    -- disappear("沙洲遗闻局内商店页面", 2)
 end
 
 Tales_within_the_sand.科技树升级 = function(商店科技树等级)
