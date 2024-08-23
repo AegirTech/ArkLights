@@ -931,6 +931,20 @@ Tales_within_the_sand.下一天 = function(check_point)
                 end
                 tap("沙洲遗闻开启今日")
             end
+            if findOne("沙洲遗闻后勤教程") then
+                tap("沙洲遗闻后勤教程")
+                if not wait(function()
+                        if findOne("生息演算剧情下") then
+                            tap("生息演算剧情下")
+                            ssleep(.4)
+                            tap("生息演算左上角返回")
+                            ssleep(.2)
+                        end
+                        if findOne("沙洲遗闻开启今日") then return true end
+                    end, 3) then
+                    return true
+                end
+            end
             if findOne("沙洲遗闻决断点已补充") then
                 if not wait(function()
                         tap("沙洲遗闻决断点已补充")
@@ -1140,7 +1154,7 @@ Tales_within_the_sand.组装种植箱 = function()
             return true
         end
     end, 5)
-
+    ssleep(.1)
     wait(function()
         tap("沙洲遗闻组装台驻地设施")
         if appearTap("沙洲遗闻组装台种植箱") then
@@ -1319,8 +1333,7 @@ Tales_within_the_sand.六天奇遇循环 = function()
             基地等级 = Tales_within_the_sand.基地升级(基地等级) or 2
         elseif 基地等级 == 3 and 木头 >= 198 then
             break
-        end
-        if 基地等级 <= 2 and 水 > 10 and 木头 > 30 and not 种植箱 and not skip_make then
+        elseif 基地等级 <= 2 and 水 > 10 and 木头 > 30 and not 种植箱 and not skip_make then
             -- 种植箱
             Tales_within_the_sand.组装种植箱()
             Tales_within_the_sand.基地摆放物品()
@@ -1443,9 +1456,11 @@ Tales_within_the_sand.科技树升级 = function(商店科技树等级)
             end
         end
     end
+
     if findOne("沙洲遗闻科技树升级完成4") then
+        level = 4
         gesture({ { point = { { scale(1800), scale(533) }, { scale(200), scale(533) } }, duration = 300, } })
-        ssleep(.5)
+        ssleep(1) --等待回弹动画
         if findOne("沙洲遗闻科技树升级列表5") then
             tap("沙洲遗闻科技树升级列表5")
             if appear("沙洲遗闻科技树升级确认", 2) then
@@ -1453,6 +1468,8 @@ Tales_within_the_sand.科技树升级 = function(商店科技树等级)
                 ssleep(.2)
                 level = 5
             end
+        else
+            level = 5
         end
     end
     --退出科技树

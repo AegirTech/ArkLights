@@ -1231,7 +1231,7 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
     ui.addCheckBox(layout, "sand_noincrease_stop", "代币不增加则停止", true)
     newRow(layout)
-    ui.addCheckBox(layout, "skip_make", "跳过合成", false)
+    ui.addCheckBox(layout, "skip_make", "跳过合成种植箱", false)
 
     newRow(layout)
     addTextView(layout, "=================隐秘战线=================")
