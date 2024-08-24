@@ -67,8 +67,8 @@ Tales_within_the_sand.生息跳转 = function()
     -- Tales_within_the_sand.掉线状态判断()
     tap("面板作战")
     if not wait(function()
-            appearTap("主页长期探索", 0.1)
-            appearTap("主页长期探索_生息演算", 0.1)
+            appearTap("主页长期探索", 0.2)
+            appearTap("主页长期探索_生息演算", 0.2)
             if findOne("生息演算主页进入") then return true end
         end, 10) then
         log(55)
@@ -1127,12 +1127,8 @@ Tales_within_the_sand.连续跳过 = function()
             log("未找到主页，从头开始")
             Tales_within_the_sand.生息跳转()
         end
-        if not wait(function()
-                if not findOne("生息底栏烹饪按钮") then tap("生息演算主页进入") end
-                if findOne("生息底栏烹饪按钮") then return true end
-            end, 3) then
-            return
-        end
+        tap("生息演算主页进入")
+        appear("生息底栏烹饪按钮", 5)
     end
     while true do
         Tales_within_the_sand.下一天()
@@ -1140,6 +1136,37 @@ Tales_within_the_sand.连续跳过 = function()
         Tales_within_the_sand.组装荧光棒()
         Tales_within_the_sand.下一天(true)
         Tales_within_the_sand.回到三天前存档()
+    end
+end
+
+Tales_within_the_sand.循环下一天 = function()
+    ssleep(1)
+    log("沙洲遗闻")
+    if not findOne("生息底栏烹饪按钮") then
+        log("非游戏内")
+        if not findOne("生息演算主页进入") then
+            log("未找到主页，从头开始")
+            Tales_within_the_sand.生息跳转()
+        end
+        -- if not wait(function()
+        --         if not findOne("生息底栏烹饪按钮") then tap("生息演算主页进入") end
+        --         if findOne("生息底栏烹饪按钮") then return true end
+        --     end, 3) then
+        --     return
+        -- end
+    else
+        tap("生息演算左上角返回")
+        if findOne("生息底栏烹饪按钮") then
+            tap("生息演算_全局_返回")
+        end
+        appear("生息演算主页进入")
+    end
+    if findOne("生息演算主页进入") then
+        Tales_within_the_sand.切换难度(sand_mode)
+        tap("生息演算主页进入")
+    end
+    while true do
+        Tales_within_the_sand.下一天()
     end
 end
 
@@ -1281,7 +1308,6 @@ Tales_within_the_sand.组装荧光棒 = function()
         --     },
         -- })
         -- ssleep(11.5)
-        tap("沙洲遗闻组装台开始组装")
     end
     退出商店()
     -- Tales_within_the_sand.重置地图位置()

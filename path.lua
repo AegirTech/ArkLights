@@ -7819,6 +7819,9 @@ path.生息沙洲遗闻 = function()
     elseif sand_mode == 4 then
         Tales_within_the_sand.连续跳过()
         return
+    elseif sand_mode == 5 then
+        Tales_within_the_sand.循环下一天()
+        return
     end
     沙洲遗闻()
 end
