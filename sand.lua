@@ -1286,6 +1286,18 @@ Tales_within_the_sand.组装荧光棒 = function()
                 end
                 tap("生息演算荧光棒加号")
             end, 12)
+            -- 长按加号,大概1s+9
+            -- gesture({
+            --     {
+            --         point = {
+            --             { scale(1346), scale(788) },
+            --             { scale(1346), scale(788) },
+            --         },
+            --         start = 0,
+            --         duration = 11500,
+            --     },
+            -- })
+            -- ssleep(11.5)
             tap("沙洲遗闻组装台开始组装")
             disappear("沙洲遗闻组装台开始组装", 5)
             wait(function()
@@ -1296,18 +1308,6 @@ Tales_within_the_sand.组装荧光棒 = function()
                 ssleep(.5)
             end, 5)
         end
-        -- 长按加号,大概1s+9
-        -- gesture({
-        --     {
-        --         point = {
-        --             { scale(1346), scale(788) },
-        --             { scale(1346), scale(788) },
-        --         },
-        --         start = 0,
-        --         duration = 11500,
-        --     },
-        -- })
-        -- ssleep(11.5)
     end
     退出商店()
     -- Tales_within_the_sand.重置地图位置()
