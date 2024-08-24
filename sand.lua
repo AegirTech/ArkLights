@@ -1211,6 +1211,7 @@ Tales_within_the_sand.组装荧光棒 = function()
         gesture(finger)
         sleep(duration + delay)
     end
+    荧光棒位置 = 0
     local 选择荧光棒 = function()
         --滑到最上面
         swip_formula(true)
@@ -1220,6 +1221,7 @@ Tales_within_the_sand.组装荧光棒 = function()
                 local formula = ocro("沙洲遗闻配方名称列表" .. j)
                 log(formula)
                 if formula == "荧光棒" then
+                    荧光棒位置 = j
                     tap("沙洲遗闻配方名称列表" .. j)
                     return true
                 end
@@ -1228,7 +1230,15 @@ Tales_within_the_sand.组装荧光棒 = function()
             ssleep(.3)
         end
     end
-
+    local 退出商店 = function()
+        wait(function()
+            back()
+            ssleep(1)
+            if appear("生息底栏烹饪按钮", 1) then
+                return true
+            end
+        end, 5)
+    end
     wait(function()
         tap("沙洲遗闻组装台")
         disappear("沙洲遗闻组装台", 1)
@@ -1237,30 +1247,44 @@ Tales_within_the_sand.组装荧光棒 = function()
         end
     end, 5)
     if 选择荧光棒() then
-        appear("沙洲遗闻组装台开始组装", 2)
+        while true do
+            appear("沙洲遗闻组装台开始组装", 2)
+            if findOne("生息演算荧光棒加号不可点击") then
+                退出商店()
+                return
+            end
+            wait(function()
+                if findOne("生息演算荧光棒加号不可点击") then
+                    return true
+                end
+                tap("生息演算荧光棒加号")
+            end, 12)
+            tap("沙洲遗闻组装台开始组装")
+            disappear("沙洲遗闻组装台开始组装", 5)
+            wait(function()
+                if findOne("沙洲遗闻组装台开始组装") then
+                    return true
+                end
+                tap("沙洲遗闻配方名称列表" .. 荧光棒位置)
+                ssleep(.5)
+            end, 5)
+        end
         -- 长按加号,大概1s+9
-        gesture({
-            {
-                point = {
-                    { scale(1346), scale(788) },
-                    { scale(1346), scale(788) },
-                },
-                start = 0,
-                duration = 11500,
-            },
-        })
-        ssleep(11.5)
+        -- gesture({
+        --     {
+        --         point = {
+        --             { scale(1346), scale(788) },
+        --             { scale(1346), scale(788) },
+        --         },
+        --         start = 0,
+        --         duration = 11500,
+        --     },
+        -- })
+        -- ssleep(11.5)
         tap("沙洲遗闻组装台开始组装")
     end
-    back()
-    wait(function()
-        back()
-        ssleep(.5)
-        if appear("生息底栏烹饪按钮", 0.5) then
-            return true
-        end
-    end, 5)
-    Tales_within_the_sand.重置地图位置()
+    退出商店()
+    -- Tales_within_the_sand.重置地图位置()
 end
 
 Tales_within_the_sand.基地摆放物品 = function()
