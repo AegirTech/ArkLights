@@ -142,21 +142,17 @@ def avator2operator(src="ArknightsGameData/zh_CN/gamedata/excel/character_table.
 
 
 # https://github.com/yuanyan3060/ArknightsGameResource 使用此解包仓库
-def skillicon2operator(
-    char=os.path.join(
-        os.getcwd(),
-        "ArknightsGameResource",
-        "gamedata",
-        "excel",
-        "character_table.json",
-    ),
-    build=os.path.join(
-        os.getcwd(), "ArknightsGameResource", "gamedata", "excel", "building_data.json"
-    ),
-):
-    char = json.loads(open(char, encoding="utf-8").read())
-    build = json.loads(open(build, encoding="utf-8").read())
-
+def skillicon2operator():
+    char = None
+    build = None
+    resp = requests.get("https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json")
+    if resp.status_code == 200:
+        char = json.loads(resp.text)
+    resp = requests.get("https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/building_data.json")
+    if resp.status_code == 200:
+        build = json.loads(resp.text)
+    if not char or not build:
+        return "get data failed"
     char2name = {k: char[k]["name"] for k in char}
     buffid2name = {}
     for c, b in build["buffs"].items():
@@ -173,10 +169,7 @@ def skillicon2operator(
                 ans[buffname].append(operator + str(phase))
 
     file_name = os.path.join(
-        os.getcwd(),
-        "ArknightsGameResource",
-        "skill_new",
-        "skillicon2operator.json",
+        __file__, "..", "skillicon2operator.json",
     )
     # with open(file_name, "", encoding="utf-8") as f:
     #     f.write(json.dumps(ans, ensure_ascii=False))
@@ -186,13 +179,13 @@ def skillicon2operator(
 
 
 def recruit(
-    char=os.path.join(
-        os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"
-    ),
-    gacha=os.path.join(
-        os.getcwd(), "ArknightsGameResource/gamedata/excel/gacha_table.json"
-    ),
-    to="lua",
+        char=os.path.join(
+            os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"
+        ),
+        gacha=os.path.join(
+            os.getcwd(), "ArknightsGameResource/gamedata/excel/gacha_table.json"
+        ),
+        to="lua",
 ):
     char = json.loads(open(char, encoding="utf-8").read())
     gacha = json.loads(open(gacha, encoding="utf-8").read())
@@ -374,7 +367,7 @@ def screencap(stem):
 def get_level_info() -> list:
     response = requests.get(
         url="https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
-        "/excel/story_review_table.json"
+            "/excel/story_review_table.json"
     )
     if response.status_code != 200:
         return []
@@ -385,7 +378,7 @@ def get_level_info() -> list:
         latest_act = latest_remakeact
     response = requests.get(
         url="https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
-        "/excel/stage_table.json"
+            "/excel/stage_table.json"
     )
     if response.status_code != 200:
         return []
@@ -393,9 +386,9 @@ def get_level_info() -> list:
     ret_list = []
     for k, v in data.items():
         if (
-            (latest_act in k)
-            and (story_code := v["code"])
-            and (story_code not in ret_list)
+                (latest_act in k)
+                and (story_code := v["code"])
+                and (story_code not in ret_list)
         ):
             ret_list.append(story_code)
     # print(latest_act, ret_list)
@@ -522,8 +515,8 @@ def screencap_distance(path="screencap"):
 
 
 def process_transparent_pixels(
-    input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
-    output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill_new"),
+        input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
+        output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill_new"),
 ):
     # 用于处理技能图标背景 不知道为什么透明背景识别失败
     import os
@@ -532,6 +525,9 @@ def process_transparent_pixels(
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
+
+    center_x, center_y = 18, 18  # 或者 19, 19 根据需要调整
+    radius = 18.3
 
     for filename in os.listdir(input_folder):
         input_path = os.path.join(input_folder, filename)
@@ -542,8 +538,12 @@ def process_transparent_pixels(
             for i in range(image.width):
                 for j in range(image.height):
                     r, g, b, a = pixels[i, j]
-                    if a < 17:
-                        pixels[i, j] = (61, 61, 61, 255)
+                    # if a < 17:
+                    #     pixels[i, j] = (61, 61, 61, 255)
+                    # if ((i - 18.5) ^ 2 + (j - 18.5) ^ 2) < 17 ^ 2 then
+                    if not ((i - center_x) ** 2 + (j - center_y) ** 2 < radius ** 2):
+                        if a<30:
+                            pixels[i, j] = (61, 61, 61, 255)
             image.save(output_path)
         else:
             shutil.copy2(input_path, output_path)

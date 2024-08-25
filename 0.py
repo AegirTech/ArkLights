@@ -12,7 +12,6 @@ import requests
 
 # win环境下的快速开发脚本
 API = "http://ark.aegirtech.com:8080"
-# API = "http://43.139.36.242:1998"
 
 # 检查localConfig.py是否存在
 if not os.path.exists("localConfig.py"):
@@ -134,9 +133,9 @@ def save():
         for line in lines:
             if re.match('release_date = ".*"', line):
                 line = (
-                    'release_date = "'
-                    + str(datetime.datetime.now().strftime("%m.%d %H:%M"))
-                    + '"\n'
+                        'release_date = "'
+                        + str(datetime.datetime.now().strftime("%m.%d %H:%M"))
+                        + '"\n'
                 )
             ss += line
     with open("main.lua", "w", encoding="utf-8") as f:
@@ -156,7 +155,7 @@ def save():
         with open(lua_file, "r", encoding="utf-8") as f:
             file_name = os.path.basename(lua_file)
             with open(
-                os.path.join(path, "脚本", file_name), "w", encoding="GB18030"
+                    os.path.join(path, "脚本", file_name), "w", encoding="GB18030"
             ) as f1:
                 f1.write(f.read())
 
@@ -166,7 +165,7 @@ def save():
         # 把ui_file以utf-8的格式打开，然后以GB18030的格式写入到path+界面目录下
         with open(ui_file, "r", encoding="utf-8") as f:
             with open(
-                os.path.join(path, "界面", ui_file), "w", encoding="GB18030"
+                    os.path.join(path, "界面", ui_file), "w", encoding="GB18030"
             ) as f1:
                 f1.write(f.read())
 
@@ -225,20 +224,7 @@ def upload(md5, type, force):
     with open(upFile, "rb") as f:
         md5.update(f.read())
     md5Text = md5.hexdigest()
-    url = (
-        # "http://ark.aegirtech.com:8080/uploadHotUpdatePackage?token="
-        # "https://joy-player.com:9081/uploadHotUpdatePackage?token="
-        API
-        + "/uploadHotUpdatePackage?token="
-        + token
-        + "&md5="
-        + md5Text
-        + "&type="
-        + type
-        + "&force="
-        + force
-    )
-
+    url = API + "/uploadHotUpdatePackage?token=" + token + "&md5=" + md5Text + "&type=" + type + "&force=" + force
     fileName = ""
     if type == "RELEASE":
         fileName = "script.lr"
@@ -269,6 +255,22 @@ def statistician():
     print("活跃账号数量:  \t" + str(info["activeAccountCount"]))
 
 
+def update_version():
+    token = lc.token
+    if token == "":
+        print("token未配置，请配置token")
+        exit()
+    url = API + "/updateApkVer"
+    print("请输入最新的版本号（纯数字）")
+    ver = input("版本号: ")
+    params = {
+        "token": token,
+        "ver": ver,
+    }
+    response = requests.request("POST", url, params=params)
+    print(response.json().get("msg"))
+
+
 if __name__ == "__main__":
     try:
         arg = sys.argv[1]
@@ -286,6 +288,8 @@ if __name__ == "__main__":
             release("SKILL")
         elif arg == "s":
             statistician()
+        elif arg == "ver":
+            update_version()
 
     except Exception as e:
         print(e)
