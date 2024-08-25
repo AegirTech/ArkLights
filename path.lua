@@ -5288,8 +5288,7 @@ path.活动 = function(x)
             ssleep(1)
         end
 
-        tap("继续营业")
-
+        appearTap("继续营业", 3)
         if not disappear("营业奖励") then return end
 
         local first_time_see_home = time()
