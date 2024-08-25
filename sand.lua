@@ -1383,8 +1383,8 @@ Tales_within_the_sand.六天奇遇循环 = function()
             基地等级 = Tales_within_the_sand.基地升级(基地等级) or 2
         elseif 基地等级 == 3 and 木头 >= 198 then
             break
-        elseif 基地等级 <= 2 and 水 > 10 and 木头 > 30 and not 种植箱 and not skip_make then
-            -- 种植箱
+        elseif 基地等级 == 2 and 水 > 10 and 木头 > 30 and not 种植箱 and not skip_make then
+            -- 种植箱,没开商店前按钮不一样
             Tales_within_the_sand.组装种植箱()
             Tales_within_the_sand.基地摆放物品()
         end
