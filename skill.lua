@@ -55,6 +55,7 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
 
         local png = ''
         local png2 = ''
+        -- log("mood_only", mood_only)
         if not mood_only then
             png = 'empty1'
             png =
@@ -450,12 +451,13 @@ end
 -- operator: 列表，每个元素包含两个技能图标与心情
 -- tradingStationNum: 贸易站数量
 -- powerStationNum: 发电站数量
+-- dormitoryLevelSum: 宿舍等级之和
 -- totalStationLevel: 等级总量
 -- type: 制造物类别
 -- level: 制造站等级
 -- 返回效率最高的index
 manufacturingStationOperatorBest = function(operator, tradingStationNum,
-                                            powerStationNum, totalStationLevel,
+                                            powerStationNum, dormitoryLevelSum, totalStationLevel,
                                             goodType, level)
     -- 参考 https://prts.wiki/w/罗德岛基建/制造站
     local maxStorage, maxOperator
@@ -523,6 +525,11 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 if goodType == '贵金属' then
                     base = base + 0.3001
                     metallics = metallics + 1
+                end
+            elseif icon == 'bskill_man_spd&dorm1' then
+                -- 娜仁图亚
+                if goodType == '贵金属' then
+                    base = base + 0.01 * dormitoryLevelSum
                 end
             elseif icon == 'bskill_man_spd&trade' then
                 -- 清流，使用贸易站数量
@@ -822,6 +829,7 @@ for i = 1, h do
         end
     end
 end
+stationIconMask = stationIconCenterMask
 -- exit()
 
 findBuildingSkill = function(x1, y1, x2, y2, pngdata)
@@ -829,11 +837,19 @@ findBuildingSkill = function(x1, y1, x2, y2, pngdata)
     local w, h, color = getScreenPixel(x1, y1, x2, y2)
     local i, j, b, g, r
     local data = {}
+    local abs = math.abs
     for _, m in pairs(stationIconMask) do
         i, j = m[1], m[2]
         -- b, g, r = colorToRGB(color[(i - 1) * w + j])
+        -- 3d3d3d
         b, g, r = colorToRGB(color[scale((i - 1) / 720 * 1080) * w +
         scale(j / 720 * 1080)])
+        -- if abs(b - 61) < 2 and abs(r - 61) < 2 and abs(g - 61) < 2 then
+        --     -- 透明背景处理
+        --     table.extend(data, { 255, 255, 255 })
+        -- else
+        --     table.extend(data, { r, g, b })
+        -- end
         table.extend(data, { r, g, b })
 
         if nil then
@@ -853,7 +869,6 @@ findBuildingSkill = function(x1, y1, x2, y2, pngdata)
     local scoreBase = 0
     local pointScore = 0
     -- local flatPoint = 0
-    local abs = math.abs
 
     local flatScoreTable = {}
     local flatScore = 0
@@ -915,7 +930,7 @@ end
 
 initPngdata = function()
     if skillpng2operator then return end
-
+    log("初始化图标")
     -- 读取数据
     local f = io.open(getWorkPath() .. '/skill/skillicon2operator.json', 'r')
     skillpng2operator = f:read("*a")
@@ -1016,6 +1031,8 @@ initPngdata = function()
         toast("基建图标数据异常")
         ssleep(5)
     end
+    png_init = true
+    log("基建图标数据初始化完成")
 end
 
 -- 是否是贸易站，商品类别
@@ -1033,11 +1050,10 @@ chooseOperator = function(stationType, goodType, stationLevel,
     log("totalStationLevel", totalStationLevel)
     -- exit()
 
-    local start_time = time()
     initPngdata()
-    -- 至少等一秒
-    sleep(max(0, 1000 - (time() - start_time)))
-
+    wait(function()
+        return png_init
+    end, 5)
     -- exit()
     -- ==> 滑动获取所有技能
 
@@ -1075,6 +1091,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
         best, best_score = manufacturingStationOperatorBest(operator,
             tradingStationNum,
             virtralPowerStationNum,
+            dormitoryLevelSum,
             totalStationLevel,
             goodType, stationLevel)
         log("制造站选", best)
