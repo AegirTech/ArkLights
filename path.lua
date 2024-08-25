@@ -5283,15 +5283,15 @@ path.活动 = function(x)
         appear("营业奖励")
 
         if disappear("营业奖励", 1) then
-            tap("左上角返回")
+            tap("招募说明关闭")
             appear("营业奖励")
             ssleep(1)
         end
 
         if not wait(function()
                 tap("继续营业")
-                if disappear("继续营业", 1) then return true end
-            end, 5) then
+                if disappear("营业奖励", 1) then return true end
+            end, 6) then
             return
         end
 
