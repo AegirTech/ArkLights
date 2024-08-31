@@ -9185,3 +9185,7 @@ path.宝石铭刻第9课教程 = function()
     end
     log('宝石铭刻 end')
 end
+
+path.专注失调 = function()
+    auto_skill()
+end

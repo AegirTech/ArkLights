@@ -1440,6 +1440,15 @@ show_auto_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", false)
 
+
+
+    newRow(layout)
+    addTextView(layout, "--------------------辅助作战--------------------")
+    newRow(layout)
+    addButton(layout, nil, "辅助作战-专注失调",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='专注失调';extra_mode_multi=false;lock:remove(main_ui_lock)"))
+
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
 end

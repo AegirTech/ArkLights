@@ -55,19 +55,30 @@ loadHomework = function(levelName, isLocal)
     end
 end
 
+-- 辅助作战，手打时自动放技能
 auto_skill = function()
-    --自己手打的时候自动放技能
+    --特殊fix，部分蠢蛋技能需要限制使用次数
+    local skillMaxUseTimes = { 横扫架势 = 1, 我无 = 5, 雪境生存法则 = 1, 玲珑 = 1 }
+
+    --特殊fix，部分蠢蛋技能充值太快
+    local skillCd = { 异刃斩 = 5, RMA长钉 = 5, 辉煌裂片 = 5, 除恶 = 2, 我无 = 3, 自走车出击！ = 3, 解构与爆破 = 5 }
+
+    local skillUseTimes = {}
     local skillArray = {}
-    local skillUseOnce = { 横扫架势 = 0, }
     local skillFind
     local sameSkillInterval
     local blackList = { { -1, -1 } }
     local timeTick = os.time()
-    print(blackList)
+
     local skillRelease = function()
-        print("try skillRelease")
+        log("try skillRelease")
         wait(function()
-            tap("开技能")
+            local p = findOne("技能ready")
+            if p then
+                tap({ p[1] - 20, p[2] - 50 })
+            else
+                tap("开技能")
+            end
             if disappear("生命值蓝", 1) then
                 return true
             else
@@ -89,32 +100,28 @@ auto_skill = function()
 
 
     while true do
-        skillFind1 = findOne("技能亮", 0.93)
+        --skillFind1 = findOne("技能亮",0.93)
         skillFindAll = findOnes("技能亮", 0.93)
         --[===[        if skillFind then
-		log(skillFind)
-		log(skillFindAll)
-		end]===]
-
+			log(skillFind)
+			log(skillFindAll)
+        end]===]
 
         startBattle = findOne("开始行动")
         --startBattle = false
         if startBattle then
             blackList = { { -1, -1 } }
             skillArray = {}
-            log("重新开始战斗，清理")
+            skillUseTimes = {}
+            --log("重新开始战斗，清理")
         end
-
-
-
-        log(skillFindAll)
-
+        --log(skillFindAll)
         for i = 1, #skillFindAll do
             skillFind = { skillFindAll[i]["x"], skillFindAll[i]["y"] }
-            log(skillFind)
+            -- log(skillFind)
 
-            -- xy坐标 + 时间戳
-            local skillUse = { skillFind[1], skillFind[2], os.time() }
+            -- xy坐标 + 此次找到的时间戳 + 技能最低冷却间隔默认10s
+            local skillUse = { skillFind[1], skillFind[2], os.time(), 10 }
 
             -- 时间差
             local usedTimeGap = -1
@@ -125,66 +132,77 @@ auto_skill = function()
                 --计算坐标绝对值差
                 local dx = skillArray[i][1] - skillUse[1]
                 local dy = skillArray[i][2] - skillUse[2]
-                log("坐标差")
-                log(math.abs(dx) + math.abs(dy))
+                --log("坐标差")
+                --log(math.abs(dx) + math.abs(dy))
                 if math.abs(dx) + math.abs(dy) < 10 then
-                    log("搜索到历史使用记录")
+                    --log("搜索到历史使用记录")
                     findIndex = i
                     usedTimeGap = skillUse[3] - skillArray[i][3]
-                    log("使用时间差")
-                    log(usedTimeGap)
+                    skillUse[4] = skillArray[i][4]
+                    --log("使用时间差")
+                    --log(usedTimeGap)
                     goto searchResult
                 end
             end
 
             ::searchResult::
 
-
-            if usedTimeGap ~= -1 and usedTimeGap < 10 then
-                log("时间差过小跳过执行,忽略本次查找到的结果")
+            if isInBlackList(skillFind, blackList) then
+                --print("干员已被禁用")
                 goto continue
             end
 
-            if findIndex == 0 then
-                -- 存入使用记录
-                log("新增使用记录")
-                table.insert(skillArray, skillUse)
+            if usedTimeGap ~= -1 and usedTimeGap < skillUse[4] then
+                print("技能CD中，忽略本次查找到的结果")
+                goto continue
             end
 
-            if findIndex ~= 0 then
-                -- 存入使用记录
-                log("存入使用记录")
+            tap({ skillFind[1], skillFind[2] + scale(140) })
+            -- appear("技能ready", 5)
+            ssleep(0.1)
+            appear("生命值蓝", 5)
+            --ocr 干员技能名字
+            local skillName = ocr("技能名称范围")
+
+            --查不到技能就点就完事了
+            if skillName and #skillName > 0 then
+                --print (blackList,skillFind)
+                local skill = skillName[1]["text"]
+
+                -- 有特殊CD时间的，塞进去
+                if skillCd[skill] then
+                    skillUse[4] = skillCd[skill]
+                end
+
+                -- 记一次技能使用
+                if not skillUseTimes[skill] then
+                    skillUseTimes[skill] = 1
+                else
+                    skillUseTimes[skill] = skillUseTimes[skill] + 1
+                end
+
+                -- 判定此次使用后使用次数是否超限
+                if skillMaxUseTimes[skill]
+                    and skillUseTimes[skill] >= skillMaxUseTimes[skill] then
+                    --print("禁用技能")
+                    --print(skill)
+                    table.insert(blackList, skillFind)
+                end
+            end
+            --使用技能
+            skillRelease()
+
+            -- 存入使用记录
+            if findIndex == 0 then
+                --log("新增使用记录")
+                table.insert(skillArray, skillUse)
+            else
                 skillArray[findIndex] = skillUse
             end
 
-
-            if not isInBlackList(skillFind, blackList) then
-                tap({ skillFind[1], skillFind[2] + scale(140) })
-                -- appear("技能ready", 5)
-                ssleep(0.1)
-                appear("生命值蓝", 5)
-                --ocr 干员技能名字
-                local skillName = ocr("技能名称范围")
-                if skillName and #skillName > 0 then
-                    print(blackList, skillFind)
-                    if skillName[1]["text"] == "横扫架势" then
-                        table.insert(blackList, skillFind)
-                        if skillUseOnce["横扫架势"] == 0 then
-                            skillUseOnce["横扫架势"] = 1
-                            print(blackList)
-                        else
-                            tap("点cost")
-                            disappear("生命值蓝", 1)
-                            goto noSkillRelease
-                        end
-                    end
-                end
-                skillRelease()
-                ::noSkillRelease::
-            end
             ::continue::
         end
-        ssleep(0.2)
+        ssleep(0.3)
     end
     exit()
 end
