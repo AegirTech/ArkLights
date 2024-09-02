@@ -4564,9 +4564,9 @@ path.主线 = function(x)
         swip(x)
         --手动取点时取消注释
         --exit()
-        --教学关和剧情关只打一遍
-        if x:includes({ "TR-", "14-10", "14-13", "14-22", "14-23" }) or x == "14-1" then
-            log("剧情关教学关")
+        --教学关/剧情关和剿灭关只打一遍
+        if x:includes({ "TR-", "14-10", "14-13", "14-22", "14-23", "-MO-1" }) or x == "14-1" then
+            log("剧情关教学关剿灭关")
             if findOne("作战列表" .. x) then return true end
         end
         tap("作战列表" .. x)
