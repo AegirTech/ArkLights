@@ -5173,7 +5173,6 @@ path.活动 = function(x)
         end
         return true
     end
-    -- car_check()
 
     local car_check = function()
         if car_checked then return end
@@ -5628,13 +5627,12 @@ path.活动 = function(x)
     -- swip(x)
     local 迷宫饭导航 = function(x)
         local hdx = tonumber(x:sub(-1))
-        if hdx ~= 1 then
-            swipe("right")
-            hdx = hdx - 1
-            appear("迷宫饭_下一关", 5)
-            for i = 1, hdx do
-                tap("迷宫饭_下一关")
-            end
+        if hdx == nil or hdx < 1 then hdx = 1 end
+        swipe("right")
+        hdx = hdx - 1
+        appear("迷宫饭_下一关", 5)
+        for i = 1, hdx do
+            tap("迷宫饭_下一关")
         end
     end
     迷宫饭导航(x)
