@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "09.02 18:23"
+release_date = "09.02 20:43"
 update_announcement = '最近更新：迷宫饭活动导航。'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -63,6 +63,7 @@ ui_small_submit_width = -2
 ui_small_submit_height = -2
 network_timeout = 300
 matrixOcr = ocr
+copy_homework = false
 log_time = os.time()
 log_count = 0
 max_log_time = 15
@@ -111,7 +112,7 @@ setControlBar() -- 非唤起游戏，不会设置按钮
 --init_ocr() --tessocr初始化
 setEventCallback()
 hotUpdate()
-fetchMaps()
+--fetchMaps()
 check_root_mode()
 unpacking_library()
 enable_accessibility_service()

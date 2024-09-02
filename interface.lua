@@ -1439,7 +1439,10 @@ show_auto_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", false)
-
+    newRow(layout)
+    addButton(layout, nil, "更新地图包",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='更新地图包';extra_mode_multi=false;lock:remove(main_ui_lock)"))
 
 
     newRow(layout)
