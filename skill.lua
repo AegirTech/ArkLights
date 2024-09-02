@@ -197,6 +197,10 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                     base = base - 0.15
                     storage = storage + 6
                 end
+            elseif icon == 'bskill_man_marcille1' then
+                base = base + 0.2
+            elseif icon == 'bskill_man_marcille2' then
+                base = base + 0.3
             elseif icon == 'bskill_tra_spd_bd2' then --黑键2
                 base = base + 0.005 * dormitoryCapacity
                 if isCharExsit["迷迭香"] then
@@ -824,7 +828,7 @@ for i = 1, h do
             table.insert(stationIconMask, { i, j })
             -- log(613,i,j)
         end
-        if ((i - 18.5) ^ 2 + (j - 18.5) ^ 2) < 17 ^ 2 then
+        if ((i - 18) ^ 2 + (j - 18) ^ 2) < 18.3 ^ 2 then
             table.insert(stationIconCenterMask, { i, j })
         end
     end
