@@ -801,7 +801,7 @@ end
     波数依赖顺序 = 1
     print(部署命令数, 波数依赖命令数)
 
-    local cost, wave, wavetxt
+    local cost = 0, wave, wavetxt
     local cost依赖命令, wave依赖命令
     local 部署指令, 等待cost, 需要cost
     local wave依赖指令, wave部署, wave干员信息, 地图坐标
@@ -890,7 +890,7 @@ end
 
     while true do
         点战斗()
-        cost = tonumber(获得cost()) or cost
+        cost = tonumber(获得cost() or cost) or cost
 
         wavetxt = 获得敌人数(是否剿灭图)
         --print("当前波次", wavetxt)
