@@ -44,7 +44,7 @@ fetchLocalMaps = function()
     local extract_path = getWorkPath() .. '/maps'
     unZip(path, extract_path)
     log("本地更新地图成功")
-    return
+    exit()
 end
 
 --加载地图格子数据
