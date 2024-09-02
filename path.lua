@@ -5268,7 +5268,7 @@ path.活动 = function(x)
         end
     end
 
-    local car_check1 = function()
+    local car_check = function()
         if car_checked then return end
         car_checked = true
         car_check_times = car_check_times + 1
@@ -5573,7 +5573,7 @@ path.活动 = function(x)
         返回循心初始页面()
     end
 
-    car_check1() --有些大型活动会自带一些任务
+    -- car_check1() --有些大型活动会自带一些任务
     log("skip_guide", skip_guide)
     if not skip_guide then
         if not findOne("活动导航0") then return end
@@ -5624,7 +5624,21 @@ path.活动 = function(x)
     ssleep(.5)]]
 
     -- appear("活动导航2")
-    swip(x)
+
+    -- swip(x)
+    local 迷宫饭导航 = function(x)
+        local hdx = tonumber(x:sub(-1))
+        if hdx ~= 1 then
+            swipe("right")
+            hdx = hdx - 1
+            appear("迷宫饭_下一关", 5)
+            for i = 1, hdx do
+                tap("迷宫饭_下一关")
+            end
+        end
+    end
+    迷宫饭导航(x)
+
     log(626)
     ssleep(.5)
     if x:includes({ "ST-", "TR-" }) then
