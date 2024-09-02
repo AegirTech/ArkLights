@@ -9206,3 +9206,7 @@ end
 path.更新地图包 = function()
     fetchMaps()
 end
+
+path.本地更新地图包 = function()
+    fetchLocalMaps()
+end

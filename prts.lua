@@ -33,6 +33,20 @@ fetchMaps = function()
     end
 end
 
+fetchLocalMaps = function()
+    local path = "mnt/sdcard/Pictures/maps.zip"
+    if not fileExist(path) then
+        toast("本地地图包不存在,请检查后重试")
+        ssleep(2)
+        exit()
+    end
+    toast("开始更新地图包")
+    local extract_path = getWorkPath() .. '/maps'
+    unZip(path, extract_path)
+    log("本地更新地图成功")
+    return
+end
+
 --加载地图格子数据
 loadMap = function(关卡名)
     return JsonDecode(readFile(getWorkPath() .. '/maps/' .. 关卡名 .. ".json"))
