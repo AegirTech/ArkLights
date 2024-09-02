@@ -4565,8 +4565,8 @@ path.主线 = function(x)
         --手动取点时取消注释
         --exit()
         --教学关/剧情关和剿灭关只打一遍
-        if x:includes({ "TR-", "14-10", "14-13", "14-22", "14-23", "-MO-1" }) or x == "14-1" then
-            log("剧情关教学关剿灭关")
+        if x:includes({ "TR-", "14-10", "14-13", "14-22", "14-23", }) or x == "14-1" then
+            log("剧情关教学关")
             if findOne("作战列表" .. x) then return true end
         end
         tap("作战列表" .. x)
@@ -5629,6 +5629,7 @@ path.活动 = function(x)
         local hdx = tonumber(x:sub(-1))
         if hdx == nil or hdx < 1 then hdx = 1 end
         swipe("right")
+        ssleep(.3)
         hdx = hdx - 1
         appear("迷宫饭_下一关", 5)
         for i = 1, hdx do
@@ -5639,9 +5640,9 @@ path.活动 = function(x)
 
     log(626)
     ssleep(.5)
-    if x:includes({ "ST-", "TR-" }) then
-        --教学关和剧情关只打一遍
-        log("剧情关")
+    if x:includes({ "ST-", "TR-", "-MO-1" }) then
+        --剧情关/教学观/剿灭关只打一遍
+        log("剧情关/教学观/剿灭关")
         if findOne("作战列表" .. x) then return true end
     end
     tap("作战列表" .. x)
