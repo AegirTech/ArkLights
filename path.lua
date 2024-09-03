@@ -9202,11 +9202,3 @@ end
 path.专注失调 = function()
     auto_skill()
 end
-
-path.更新地图包 = function()
-    fetchMaps()
-end
-
-path.本地更新地图包 = function()
-    fetchLocalMaps()
-end

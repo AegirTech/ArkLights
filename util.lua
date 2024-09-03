@@ -2251,12 +2251,11 @@ clean_table = function(t, idx, bad)
 end
 
 download_from_alist = function(file_name, path)
-    if dev_mode then return end
     local path = path or getWorkPath()
     path = path .. '/' .. file_name
     local url = "https://arktoken.enlysure.com:21999/get_ark_file?name=" .. file_name .. "&verify=arklights"
     local ret, code = httpGet(url, 10)
-    -- log(ret, code)
+    log(ret, code)
     if code == 200 then
         local data = JsonDecode(ret)
         local download_url = get(data, 'url')
@@ -2264,10 +2263,13 @@ download_from_alist = function(file_name, path)
         local local_md5 = fileMD5(path)
         if local_md5 ~= file_md5 then
             log(file_name, path, download_url)
+            toast("正在下载" .. file_name .. ",请稍等")
             downloadFile(download_url, path)
             if fileMD5(path) == file_md5 then
                 return true
             end
+        else
+            return true
         end
     end
 end

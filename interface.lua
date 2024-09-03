@@ -1440,12 +1440,8 @@ show_auto_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", false)
     newRow(layout)
-    addButton(layout, nil, "更新地图包",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='更新地图包';extra_mode_multi=false;lock:remove(main_ui_lock)"))
-    addButton(layout, nil, "本地更新地图包",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='本地更新地图包';extra_mode_multi=false;lock:remove(main_ui_lock)"))
+    addButton(layout, "map_online", "联网更新地图包", "fetchMaps()")
+    addButton(layout, nil, "本地更新地图包", "fetchLocalMaps()")
     newRow(layout)
     addTextView(layout, "将map.zip放在/sdcard/Pictures下")
 

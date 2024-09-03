@@ -6,30 +6,15 @@ local 添加低信赖 = false
 fetchMaps = function()
     local path = getWorkPath() .. '/maps.zip'
     local extract_path = getWorkPath() .. '/maps'
-    --print(extract_path)
-    --[[if dev_mode then
-        -- 解压本地地图包
-        extractAssets("main.rc", getWorkPath(), "maps.zip")
+    toast("开始更新地图,大概耗时10s左右,请等待完成提示")
+    ui.setButton("map_online", "联网更新地图包(正在下载)")
+    if download_from_alist("maps.zip", getWorkPath()) then
         unZip(path, extract_path)
-        log("开发模式解压本地地图成功")
-        return
-    end]]
-    local url = "https://arktoken.enlysure.com:21999/get_ark_file?name=maps.zip&verify=arklights"
-    local ret, code = httpGet(url, 5)
-    -- log(ret, code)
-    toast("开始更新地图")
-    if code == 200 then
-        local data = JsonDecode(ret)
-        local download_url = get(data, 'url')
-        local file_md5 = get(data, 'md5')
-        local lr_md5 = fileMD5(path)
-        if lr_md5 ~= file_md5 then
-            log(file_md5, file_md5, download_url)
-            downloadFile(download_url, path)
-            unZip(path, extract_path)
-        end
+        toast("地图包更新成功")
+        ui.setButton("map_online", "联网更新地图包(下载完成)")
     else
         log("地图包版本获取失败,请稍后再试")
+        ui.setButton("map_online", "联网更新地图包(下载失败，请重试)")
     end
 end
 
