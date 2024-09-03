@@ -6045,7 +6045,12 @@ end
 path.添加好友 = function()
     log(3001)
     if not findOne("添加好友红点") then return end
-    tap("添加好友红点")
+    if not wait(function()
+            tap("添加好友红点")
+            if findOne("添加好友页面") then return true end
+        end, 2) then
+        return
+    end
     log(3002)
     if not wait(function()
             if findOne("添加好友确认") then
