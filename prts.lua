@@ -275,8 +275,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
     log(作业["stage_name"])
     local status, 地图数据 = pcall(loadMap, 作业["stage_name"])
     if not status then
-        toast("地图数据读取失败,请去测试功能内更新地图包")
-        return
+        stop("地图数据读取失败,请去测试功能内更新地图包", '', true, true)
     end
     地图数据0 = 地图数据[1] --放技能坐标
     地图数据1 = 地图数据[2] --放置干员坐标

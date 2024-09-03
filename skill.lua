@@ -48,9 +48,14 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
         local name = "干员名未识别"
         if dev_mode or (not not_use_ocr and not mood_only and
                 table.findv({ "制造站", "发电站", "宿舍" }, stationType)) then
-            name = correctCharName(ocro({
+            local status, charName = pcall(ocro, {
                 v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
-            }))
+            })
+            if status then
+                name = correctCharName(charName)
+            else
+                toast("OCR错误：请在测试功能内勾选不使用OCR")
+            end
         end
 
         local png = ''
