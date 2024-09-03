@@ -89,30 +89,6 @@ make_account_ui = function(layout, prefix)
     ui.addEditText(layout, prefix .. 'max_stone_times', "0")
     addTextView(layout, "次")
 
-    -- newRow(layout)
-    -- addTextView(layout, "换班模式")
-    -- ui.addRadioGroup(layout, prefix .. "prefer_speed", {"极速", "高产"}, 0,
-    --                  -2, -2, true)
-
-    -- ui.addRadioGroup(layout, prefix .. "shift_prefer_speed", {"极速", "高产"},
-    --                  1, -2, -2, true)
-    -- addTextView(layout, "心情阈值")
-    -- ui.addEditText(layout, prefix .. 'shift_min_mood', "12")
-
-    -- ui.setEnable(prefix .. "shift_prefer_speed", false)
-    -- ui.setEnable(prefix .. "shift_min_mood", false)
-
-    -- ui.addRadioGroup(layout, prefix .. "prefer_speed", {"极速", "高产"}, 0,
-    --                  -2, -2, true)
-
-    -- ui.addCheckBox(layout, prefix .. "dorm_shift", "宿", true)
-    -- ui.addCheckBox(layout, prefix .. "manu_shift", "制", false)
-    -- ui.addCheckBox(layout, prefix .. "trading_shift", "贸", false)
-    -- ui.addCheckBox(layout, prefix .. "meet_shift", "会", false)
-    -- ui.addCheckBox(layout, prefix .. "overview_shift", "总", true)
-
-    -- ui.setEnable(prefix .. "meet_shift", false)
-
     newRow(layout)
     addTextView(layout, "信用多买")
     ui.addEditText(layout, prefix .. "high_priority_goods", "聘 土 装置 技")
@@ -525,12 +501,6 @@ end
 make_jump_ui = function(layout)
     local max_checkbox_one_row = 3
     local readme_btn = randomString(32)
-    -- local jump_btn
-    -- if layout == 'multi_account' then
-    --   jump_btn = {nil, "单号", make_jump_ui_command(layout, 'main')}
-    -- else
-    -- jump_btn = {nil, "多号", make_jump_ui_command(layout, 'multi_account')}
-    -- end
 
     local buttons = {
         { nil, "多账户", make_jump_ui_command(layout, 'multi_account') },
@@ -865,6 +835,7 @@ show_debug_ui = function()
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "disable_dorm_shift", "基建换班禁用宿舍换班",
         false)
+
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "disable_control_shift",
         "基建换班禁用控制中枢换班", false)
