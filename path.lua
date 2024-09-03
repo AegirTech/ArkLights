@@ -4962,7 +4962,7 @@ is_jmfight_enough = function(x, outside)
     if ignore_jmfight_enough_check then return false end
 
     local auto_jm_rewards = function()
-        if appear("剿灭奖励未领完", .5) then
+        if appear("剿灭奖励未领完", 1) then
             log("自动领取当前剿灭奖励")
             tap("剿灭奖励未领完")
             ssleep(.3)
