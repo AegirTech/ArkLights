@@ -408,10 +408,15 @@ server=]] .. server
             end
         end
         hook = hook .. [[;fight_ui=]] .. string.format("%q", y)
-        hook = hook .. [[;now_job_ui2=]] .. str(#y > 0)
+        -- hook = hook .. [[;now_job_ui2=]] .. str(#y > 0)
     end
     -- log("65",64)
-
+    local fight_en = get(config, 'daily', 'fight_enable')
+    if fight_en then
+        hook = hook .. [[;now_job_ui2=]] .. str(fight_en)
+    else
+        hook = hook .. [[;now_job_ui2=true]]
+    end
     x = get(config, 'daily', 'sanity', 'drug')
     if x then hook = hook .. [[;max_drug_times=]] .. str2int(x) end
 
