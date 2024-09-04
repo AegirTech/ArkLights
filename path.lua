@@ -5628,11 +5628,9 @@ path.活动 = function(x)
     local 迷宫饭导航 = function(x)
         local hdx = tonumber(x:sub(-1))
         if hdx == nil or hdx < 1 then hdx = 1 end
-        appear({ "迷宫饭_下一关", "迷宫饭_上一关" }, 5)
-        -- swipe("right")
-        -- ssleep(.3)
         wait(function()
-            tap("迷宫饭_上一关")
+            swipe("right")
+            ssleep(.3)
             if findOne("迷宫饭_上一关不可点击") then return true end
         end, 5)
         hdx = hdx - 1
