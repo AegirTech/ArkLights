@@ -863,3 +863,60 @@ solveCapture_new = function(rect, is_retry)
     ssleep(1.2) -- 等待验证码关闭或者重试
     return true
 end
+
+detect_simulators = function()
+    local simulators_list = {
+        雷电模拟器 = "com.android.googleinstaller", -- 雷电判断一下自带的谷歌安装器
+        Genymotion = "com.genymotion.genymotion",
+        mumu = "com.mumu.launcher",
+        bluestacks = "com.bluestacks.appmart",
+        vmos = "com.vmos.pro.intent",
+        光速 = "com.thirdparty.superuser",
+        逍遥 = "com.microvirt.launcher",
+        夜神 = { "com.bignox.launcher", "com.bignox.app.noxservice" },
+        supersu = "eu.chainfire.supersu", -- 用来判断一些云手机
+        xposed = "de.robv.android.xposed.installer",
+    }
+    local ret = exec('su root sh -c "pm list packages"')
+    if type(ret) == "string" and #ret > 2 then
+        ret = string.split(ret, "\n")
+        local apps = {}
+        for _, v in ipairs(ret) do
+            local app = v:match("package:(.-)$")
+            if app then
+                table.insert(apps, app)
+            end
+        end
+        all_apps = apps
+    end
+
+    local 设备 = ""
+    for k, v in pairs(simulators_list) do
+        if type(v) == "table" then
+            for _, vv in ipairs(v) do
+                if isAppInstalled(vv) then
+                    设备 = k
+                    break
+                end
+            end
+            if 设备 ~= "" then break end
+        else
+            if isAppInstalled(v) then
+                设备 = k
+                break
+            end
+        end
+    end
+    if 设备 == "" then
+        设备 = "真机"
+    elseif 设备 == "xposed" then
+        设备 = "xp/云手机/未识别模拟器"
+    elseif 设备 == "supersu" then
+        设备 = "su/云手机/未识别模拟器"
+    end
+    print("环境检测：" .. 设备)
+    console.println(1, "环境检测：" .. 设备)
+    if 设备 == "mumu" then
+        console.println(3, "如果出现任何问题，请更换雷电模拟器，不推荐使用Mumu。")
+    end
+end
