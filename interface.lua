@@ -600,6 +600,7 @@ show_debug_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "enable_log", "启用日志", true)
     ui.addCheckBox(layout, "write_log", "保存日志到本地", false)
+    addButton(layout, "upload_log_server", "上传日志至开发者", "upload_log()")
 
     newRow(layout)
     addTextView(layout, "最大日志时长(分钟)")
@@ -988,6 +989,7 @@ show_debug_ui = function()
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
+    ui.setButton("upload_log_server", "上传日志至开发者")
 end
 
 show_extra_ui = function()
@@ -1425,6 +1427,7 @@ show_auto_ui = function()
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
+    ui.setButton("map_online", "联网更新地图包")
 end
 
 auto_login_init = function()

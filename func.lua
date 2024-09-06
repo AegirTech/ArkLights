@@ -920,3 +920,15 @@ detect_simulators = function()
         console.println(3, "如果出现任何问题，请更换雷电模拟器，不推荐使用Mumu。")
     end
 end
+
+upload_log = function()
+    local url = "https://arktoken.enlysure.com:21999/upload_log?verify=arklights"
+    local log_path = log_path .. "log_backup.txt"
+    local ret = uploadFile(url, log_path)
+    -- log(ret)
+    if type(ret) == "string" and #ret == 6 then
+        console.println(3, "上传日志成功，日志编号：" .. ret)
+        ui.setButton("upload_log_server", "上传日志成功，编号" .. ret .. " 请截图或复制给开发者")
+        return true
+    end
+end
