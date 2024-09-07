@@ -499,28 +499,6 @@ make_afterjob_ui = function(layout)
 end
 
 make_jump_ui = function(layout)
-    local max_checkbox_one_row = 3
-    local readme_btn = randomString(32)
-
-    local buttons = {
-        { nil, "多账户", make_jump_ui_command(layout, 'multi_account') },
-        { nil, "测试功能", make_jump_ui_command(layout, "auto") },
-        { nil, "肉鸽/其他", make_jump_ui_command(layout, "extra") },
-        { nil, "退出", make_jump_ui_command(layout, nil, "saveConfig('Not_Restart','true');peaceExit()") }, {
-        readme_btn, "必读", make_jump_ui_command(layout, nil,
-        "saveConfig('readme_already_read','1');jump_readme()"),
-    }, { nil, "高级设置", make_jump_ui_command(layout, "debug") },
-    }
-
-    for k, v in pairs(buttons) do
-        if k % max_checkbox_one_row == 1 then newRow(layout) end
-        addButton(layout, v[1], v[2], v[3])
-    end
-
-    if #loadConfig("readme_already_read", '') == 0 then
-        ui.setBackground(readme_btn, ui_submit_color)
-    end
-
     newRow(layout)
     addButton(layout, nil, "启动", make_jump_ui_command(layout, nil,
             "crontab_enable=false;lock:remove(main_ui_lock)"),
@@ -531,6 +509,25 @@ make_jump_ui = function(layout)
     addButton(layout, nil, "启动并定时",
         make_jump_ui_command(layout, nil, "lock:remove(main_ui_lock)"),
         ui_small_submit_width, ui_small_submit_height, ui_submit_color)
+    local max_checkbox_one_row = 3
+    local readme_btn = randomString(32)
+
+    local buttons = {
+        { nil, "多账户", make_jump_ui_command(layout, 'multi_account') },
+        { nil, "测试功能", make_jump_ui_command(layout, "auto") },
+        { nil, "肉鸽/生息", make_jump_ui_command(layout, "extra") },
+        { nil, "保全(不可用)", make_jump_ui_command(layout, "auto") },
+        { "quit_script", "退出", make_jump_ui_command(layout, nil, "saveConfig('Not_Restart','true');peaceExit()") },
+        { nil, "高级设置", make_jump_ui_command(layout, "debug") },
+        { "join_qq", "加入QQ群", make_jump_ui_command(layout, nil, "jump_qq_qun()") },
+        { "join_channel", "QQ频道", make_jump_ui_command(layout, nil, "jump_qq_channel()") },
+        { "readme_btn", "使用文档", make_jump_ui_command(layout, nil, "saveConfig('readme_already_read','1');jump_readme()") },
+    }
+
+    for k, v in pairs(buttons) do
+        if k % max_checkbox_one_row == 1 then newRow(layout) end
+        addButton(layout, v[1], v[2], v[3])
+    end
 end
 
 make_ui_title = function(layout, name)
@@ -584,6 +581,14 @@ show_main_ui = function()
         ui.setEnable("end_closeapp", false)
     end
     ui.show(layout, false)
+
+    local tcolor = "#ff4169E1"
+    if #loadConfig("readme_already_read", '') == 0 then
+        ui.setBackground("readme_btn", tcolor)
+    end
+    ui.setBackground("join_qq", tcolor)
+    ui.setBackground("join_channel", tcolor)
+    ui.setBackground("quit_script", ui_submit_color)
 end
 
 show_debug_ui = function()
@@ -1538,6 +1543,28 @@ jump_readme = function()
         uri = "https://arkdoc.enlysure.com",
     }
     runIntent(intent)
+    while true do ssleep(1) end
+    peaceExit()
+end
+
+jump_qq_qun = function()
+    local intent = {
+        action = "android.intent.action.VIEW",
+        uri = "https://qm.qq.com/q/sA0WcIoIV2",
+    }
+    runIntent(intent)
+    toast("或手动加入QQ群629618641")
+    while true do ssleep(1) end
+    peaceExit()
+end
+
+jump_qq_channel = function()
+    local intent = {
+        action = "android.intent.action.VIEW",
+        uri = "https://pd.qq.com/s/f2npvrgjb",
+    }
+    runIntent(intent)
+    toast("频道号h800n9f23g或搜索【明日方舟速通】")
     while true do ssleep(1) end
     peaceExit()
 end
