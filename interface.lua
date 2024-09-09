@@ -588,8 +588,8 @@ show_main_ui = function()
     end
     ui.setBackground("join_qq", tcolor)
     ui.setBackground("join_channel", tcolor)
-    ui.setBackground("quit_script", "#ff4a494d")
-    ui.setBackground("start_and_clock", "#ffeb1c09")
+    ui.setBackground("quit_script", "#ffeb1c09")
+    ui.setBackground("start_and_clock", "#ff37a652")
 end
 
 show_debug_ui = function()

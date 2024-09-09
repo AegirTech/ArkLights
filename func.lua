@@ -933,5 +933,3 @@ upload_log = function()
         return true
     end
 end
-end
-end
