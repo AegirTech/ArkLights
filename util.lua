@@ -2179,6 +2179,7 @@ notifytg = function(imgurl, info, chatid, bottoken, tgapi, sync)
     chatid = chatid or ''
     bottoken = bottoken or ''
     tgapi = tgapi or 'https://api.telegram.org/'
+    if type(tgapi) ~= 'string' or (type(tgapi) == 'string' and #tgapi == 0) then tgapi = 'https://api.telegram.org/' end
     if string.find(tgapi, "http") == nil then tgapi = 'https://' .. tgapi end
 
     if #chatid == 0 and #bottoken == 0 then return end
