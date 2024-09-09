@@ -947,13 +947,13 @@ scale_image = function(img_path, mode)
         return
     end
     local w, h, png_data = getImage(img_path)
-    -- local w, h, png_data = getScreenPixel(777, 175, 1002, 326)
+    -- local w, h, png_data = getScreenPixel(44, 172, 324, 421)
     local image_data = {}
     local b, g, r
     for i = 0, h - 1 do
         image_data[i] = {}
         for j = 0, w - 1 do
-            b, g, r = colorToRGB(png_data[i * w + j])
+            b, g, r = colorToRGB(png_data[(h - 1 - i) * w + j]) -- 弱智懒人，图片读取是倒着的
             image_data[i][j] = { r, g, b }
         end
     end
@@ -963,7 +963,7 @@ scale_image = function(img_path, mode)
     local new_image_data = {}
 
     for i = 0, new_h - 1 do
-        new_image_data[i] = {} -- 确保新行被初始化
+        new_image_data[i] = {}
         for j = 0, new_w - 1 do
             local x = math.floor(j / size)
             local y = math.floor(i / size)
@@ -974,6 +974,8 @@ scale_image = function(img_path, mode)
             new_image_data[i][j] = image_data[y][x]
         end
     end
-    -- writeFile('/sdcard/pictures/imgori.txt', JsonEncode(image_data), false)
-    -- writeFile('/sdcard/pictures/img.txt', JsonEncode(new_image_data), false)
+    writeFile('/sdcard/pictures/imgori.txt', JsonEncode(image_data), false)
+    writeFile('/sdcard/pictures/img.txt', JsonEncode(new_image_data), false)
+    return new_image_data
+end
 end

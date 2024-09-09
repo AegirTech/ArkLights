@@ -516,8 +516,8 @@ make_jump_ui = function(layout)
         { nil, "多账户", make_jump_ui_command(layout, 'multi_account') },
         { nil, "测试功能", make_jump_ui_command(layout, "auto") },
         { nil, "肉鸽/生息", make_jump_ui_command(layout, "extra") },
-        { nil, "保全(不可用)", make_jump_ui_command(layout, "auto") },
         { "quit_script", "退出", make_jump_ui_command(layout, nil, "saveConfig('Not_Restart','true');peaceExit()") },
+        { nil, "保全(不可用)", make_jump_ui_command(layout, "auto") },
         { nil, "高级设置", make_jump_ui_command(layout, "debug") },
         { "join_qq", "加入QQ群", make_jump_ui_command(layout, nil, "jump_qq_qun()") },
         { "join_channel", "QQ频道", make_jump_ui_command(layout, nil, "jump_qq_channel()") },
@@ -588,7 +588,7 @@ show_main_ui = function()
     end
     ui.setBackground("join_qq", tcolor)
     ui.setBackground("join_channel", tcolor)
-    ui.setBackground("quit_script", ui_submit_color)
+    ui.setBackground("quit_script", "#ffeb1c09")
 end
 
 show_debug_ui = function()
