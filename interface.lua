@@ -506,7 +506,7 @@ make_jump_ui = function(layout)
     addButton(layout, nil, "定时", make_jump_ui_command(layout, nil,
             "crontab_enable_only=true;lock:remove(main_ui_lock)"),
         ui_small_submit_width)
-    addButton(layout, nil, "启动并定时",
+    addButton(layout, "start_and_clock", "启动并定时",
         make_jump_ui_command(layout, nil, "lock:remove(main_ui_lock)"),
         ui_small_submit_width, ui_small_submit_height, ui_submit_color)
     local max_checkbox_one_row = 3
@@ -588,7 +588,8 @@ show_main_ui = function()
     end
     ui.setBackground("join_qq", tcolor)
     ui.setBackground("join_channel", tcolor)
-    ui.setBackground("quit_script", "#ffeb1c09")
+    ui.setBackground("quit_script", "#ff4a494d")
+    ui.setBackground("start_and_clock", "#ffeb1c09")
 end
 
 show_debug_ui = function()

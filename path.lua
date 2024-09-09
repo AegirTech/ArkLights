@@ -1193,6 +1193,7 @@ end
 path.账户数据保存 = function()
     if new_change_account_plan and _G.快速切号功能状态 == false then
         log("未查询到保存的登录数据或数据已经失效")
+        account_data[username] = {}
         if appid == "com.hypergryph.arknights" then
             local user_token = official_get_last_login()
             if user_token then
@@ -1204,7 +1205,7 @@ path.账户数据保存 = function()
         elseif appid == "com.hypergryph.arknights.bilibili" then
             local userid = bilibili_get_lastlogin_uid()
             if userid then
-                log("b服登录保存userid")
+                log("b服登录保存userid", userid)
                 account_data[username]["bili"] = true
                 account_data[username]["userid"] = userid
             end
