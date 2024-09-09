@@ -5641,8 +5641,9 @@ path.活动 = function(x)
             ssleep(.1)
         end
     end
-    迷宫饭导航(x)
-
+    if not utf8.left(x, 5) == "HD-EX" then
+        迷宫饭导航(x)
+    end
     log(626)
     ssleep(.5)
     if x:includes({ "ST-", "TR-", "-MO-1" }) then

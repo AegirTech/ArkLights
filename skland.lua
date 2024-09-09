@@ -70,8 +70,8 @@ skland_get_cred_by_token = function(code)
     }
     local ret = curl_post(url, Headers, JsonEncode(data), 5, nil)
     local status, ret = pcall(JsonDecode, ret)
+    log(ret)
     if status then
-        log(ret)
         local code = get(ret, 'data', 'cred')
         Skland_sign_token = get(ret, 'data', 'token')
         log(Skland_sign_token)
