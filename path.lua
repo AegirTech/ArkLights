@@ -8410,10 +8410,11 @@ path.隐秘战线 = function()
 end
 
 path.森空岛签到 = function()
-    if _G["username"] ~= nil and _G["password"] ~= nil then
-        if isPhoneNumber(_G["username"]) and server == 0 then
-            skland_daily_checkin(_G["username"], _G["password"])
+    if username ~= nil and password ~= nil then
+        if isPhoneNumber(username) then
+            skland_daily_checkin(username, password)
         else
+            log("不符合签到条件跳过")
             table.insert(qqmessage, "不符合签到条件跳过")
         end
         return true

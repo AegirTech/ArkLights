@@ -922,6 +922,7 @@ detect_simulators = function()
 end
 
 upload_log = function()
+    ui.setButton("upload_log_server", "上传日志中，请稍后")
     local url = "https://arktoken.enlysure.com:21999/upload_log?verify=arklights"
     local log_path = log_path .. "log_backup.txt"
     local ret = uploadFile(url, log_path)
@@ -932,50 +933,5 @@ upload_log = function()
         return true
     end
 end
-
--- 图像处理
-scale_image = function(img_path, mode)
-    local size
-    if not mode or mode == 'min' then
-        size = minscale
-    elseif mode == 'max' then
-        rsize = maxscale
-    elseif type(mode) == 'number' then
-        size = mode
-    end
-    if not fileExist(img_path) then
-        return
-    end
-    local w, h, png_data = getImage(img_path)
-    -- local w, h, png_data = getScreenPixel(44, 172, 324, 421)
-    local image_data = {}
-    local b, g, r
-    for i = 0, h - 1 do
-        image_data[i] = {}
-        for j = 0, w - 1 do
-            b, g, r = colorToRGB(png_data[(h - 1 - i) * w + j]) -- 弱智懒人，图片读取是倒着的
-            image_data[i][j] = { r, g, b }
-        end
-    end
-
-    local new_w = math.floor(w * size)
-    local new_h = math.floor(h * size)
-    local new_image_data = {}
-
-    for i = 0, new_h - 1 do
-        new_image_data[i] = {}
-        for j = 0, new_w - 1 do
-            local x = math.floor(j / size)
-            local y = math.floor(i / size)
-
-            x = math.min(x, w - 1)
-            y = math.min(y, h - 1)
-
-            new_image_data[i][j] = image_data[y][x]
-        end
-    end
-    writeFile('/sdcard/pictures/imgori.txt', JsonEncode(image_data), false)
-    writeFile('/sdcard/pictures/img.txt', JsonEncode(new_image_data), false)
-    return new_image_data
 end
 end
