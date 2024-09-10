@@ -5641,7 +5641,7 @@ path.活动 = function(x)
             ssleep(.1)
         end
     end
-    if not utf8.left(x, 5) == "HD-EX" then
+    if not (utf8.left(x, 5) == "HD-EX") then
         迷宫饭导航(x)
     end
     log(626)
