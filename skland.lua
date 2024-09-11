@@ -156,7 +156,7 @@ skland.get_bind_info = function()
 end
 
 skland.account_check = function()
-    local result = skland.request("GET", "/user/me")
+    local result = skland.request("GET", "/game/player/binding")
     local status, result = pcall(JsonDecode, result)
     if status then
         -- local code = get(result, "code")

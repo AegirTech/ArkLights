@@ -866,7 +866,7 @@ end
 
 detect_simulators = function()
     local simulators_list = {
-        雷电模拟器 = "com.android.googleinstaller", -- 雷电判断一下自带的谷歌安装器
+        雷电模拟器 = "com.android.googleinstaller", -- 雷电判断一下自带的谷歌安装器com.android.googleinstaller 雷电游戏中心com.android.flysilkworm
         Genymotion = "com.genymotion.genymotion",
         mumu = "com.mumu.launcher",
         bluestacks = "com.bluestacks.appmart",

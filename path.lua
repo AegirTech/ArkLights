@@ -5786,7 +5786,6 @@ path.商店搬空 = function()
     end
     ssleep(0.5)
     disappear("正在提交反馈至神经", network_timeout)
-
     -- 防止各种掉帧等导致卡在领取等页面
     local 回到商店主页 = function()
         if not wait(function()
@@ -5797,10 +5796,10 @@ path.商店搬空 = function()
             return
         end
     end
-    ssleep(1)
-    if not findOne("商店主页") then return end
-    local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], scale(515), scale(240)
     回到商店主页()
+    ssleep(1)
+    local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], scale(515), scale(240)
+    if not findOne("商店主页") then return end
     while true do
         local retry = 0
         if os.time() - t > 3 * 60 then -- 任务总时长3分钟
@@ -5847,8 +5846,8 @@ path.商店搬空 = function()
                     log("未找到购买按钮")
                     goto continue
                 end
-                tap_x[1] = tap_x[1] + scale(50)
-                tap_x[2] = tap_x[2] + scale(20)
+                tap_x[1] = tap_x[1] + scale(10)
+                tap_x[2] = tap_x[2] + scale(10)
                 if not tap_x then
                     log("未找到购买按钮")
                     goto continue
@@ -5879,10 +5878,16 @@ path.商店搬空 = function()
                     end, 2) then
                 end
 
-                if find_color("商店购买页面单价范围", point["商店货币颜色"], 1, 0.9) then
+                if not wait(function()
+                        if not find_color("商店购买页面单价范围", point["商店货币颜色"], 1, 0.9) then
+                            return true
+                        else
+                            tap(tap_x)
+                        end
+                    end, 5) then
                     -- 还在购买页面
                     log("购买失败，大抵是没钱了吧~")
-                    retry = retry + 1
+                    return
                 end
                 disappear("正在提交反馈至神经", network_timeout)
 
