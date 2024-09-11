@@ -797,6 +797,7 @@ end
     local 需要, 找到
     local 已部署干员 = {}
     local 操作后, 部署后
+    local 延迟消失技能 = { "爆裂黎明", "黄昏", }
 
     if findOne("剧情中3") then
         tap("剧情中")
@@ -821,17 +822,10 @@ end
                 地图坐标 = 地图数据0[v[2] + 1][v[1] + 1]
                 print("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                 local intX, intY = findMultiColor(scale(地图坐标[1] - 10), scale(地图坐标[2] - 180), scale(地图坐标[1] + 10),
-                    scale(地图坐标[2] - 80), "EBA22F-101010",
-                    scale(-21) ..
-                    "|" ..
-                    scale(-21) ..
-                    "|F6A516-101010|" ..
-                    scale(5) ..
-                    "|" ..
-                    scale(-10) ..
-                    "|280500-101010|" ..
-                    scale(21) .. "|" .. scale(-21) .. "|E4932E-101010|" .. scale(-6) .. "|" ..
-                    scale(-8) .. "|2E1501-101010", 0, 0.87)
+                    scale(地图坐标[2] - 80), "EBA22F-101010", scale(-21) .. "|" .. scale(-21) ..
+                    "|F6A516-101010|" .. scale(5) .. "|" .. scale(-10) .. "|280500-101010|" .. scale(21) .. "|"
+                    .. scale(-21) .. "|E4932E-101010|" .. scale(-6) .. "|" .. scale(-8) .. "|2E1501-101010",
+                    0, 0.87)
                 if intX > -1 then
                     print("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                     tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
@@ -841,17 +835,19 @@ end
                     sleep(300)
                     keepCapture()
                     local p = findOne("技能ready")
+                    local skill_name = ocro("技能名称范围")
                     if p then
                         tap({ p[1] - 20, p[2] - 50 })
                     else
                         tap("开技能")
                     end
-                    sleep(500)
+                    sleep(300)
                     releaseCapture()
                     if not findOne("子弹时间", 0.85) then
                         if 技能指定次数干员[k] then 技能指定次数干员[k][2] = 技能指定次数干员[k][2] + 1 end
                         点战斗()
                         sleep(150)
+                        if skill_name ~= nil and table.includes(延迟消失技能, skill_name) then sleep(400) end
                     else
                         tap("点cost")
                         --sleep(50)
