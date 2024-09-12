@@ -5813,17 +5813,11 @@ path.商店搬空 = function()
                 local tap_x
                 ::startshop::
                 回到商店主页()
-                if retry > 3 then
+                if retry > 5 then
                     log("重试次数过多")
                     return
                 end
                 if not findOne("商店主页") then return end -- 防止跳到其他页面
-                -- local area = { 初始物品[1] + 物品横间距 * x, 初始物品[2] + 物品纵间距 * y, 初始物品[1] + scale(490), 初始物品[2] + scale(220) }
-                -- local 商品 = find_color(area, point["商店货币颜色"], 0, 0.9)
-                -- if not 商品 then
-                --     log("商品已售空")
-                --     goto continue
-                -- end
 
                 gt = gt + 1
                 if gt > 20 then
@@ -5837,7 +5831,7 @@ path.商店搬空 = function()
                         ssleep(.2)
                         if find_color("商店购买页面单价范围", point["商店货币颜色"], 1, 0.9) then return true end -- 表示已经进入商店
                         -- 不找支付按钮因为支付按钮的区域和商品页面有重合
-                    end, 1.5) then
+                    end, 1) then
                 end
 
                 -- 点击购买,只能点一次,点多了会点到右下角龙门币
@@ -5846,17 +5840,16 @@ path.商店搬空 = function()
                     log("未找到购买按钮")
                     goto continue
                 end
-                tap_x[1] = tap_x[1] + scale(10)
-                tap_x[2] = tap_x[2] + scale(10)
+                log("tapx", tap_x)
                 if not tap_x then
                     log("未找到购买按钮")
                     goto continue
                 else
+                    tap_x[1] = tap_x[1] + scale(10)
+                    tap_x[2] = tap_x[2] + scale(10)
                     ssleep(0.2)
                     tap("商店最多")
                     ssleep(0.2)
-                    tap(tap_x)
-                    ssleep(0.4)
                     if not wait(function()
                             tap(tap_x)
                             ssleep(0.5)
@@ -5882,12 +5875,13 @@ path.商店搬空 = function()
                         if not find_color("商店购买页面单价范围", point["商店货币颜色"], 1, 0.9) then
                             return true
                         else
+                            tap_x = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
                             tap(tap_x)
                         end
                     end, 5) then
                     -- 还在购买页面
                     log("购买失败，大抵是没钱了吧~")
-                    return
+                    retry = retry + 1
                 end
                 disappear("正在提交反馈至神经", network_timeout)
 
@@ -5898,7 +5892,7 @@ path.商店搬空 = function()
             end
         end
         回到商店主页()
-        ssleep(0.8)
+        appear("商店主页", 3)
         if not findOne("商店主页") then return end -- 防止跳到其他页面
         local sx = { screen.width * 0.8, screen.height * 0.5 }
         local oricol = getColor(sx[1], sx[2])
