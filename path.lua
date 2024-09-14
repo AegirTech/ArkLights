@@ -5847,10 +5847,9 @@ path.商店搬空 = function()
                 else
                     tap_x[1] = tap_x[1] + scale(10)
                     tap_x[2] = tap_x[2] + scale(10)
-                    ssleep(0.2)
-                    tap("商店最多")
-                    ssleep(0.2)
                     if not wait(function()
+                            tap("商店最多")
+                            ssleep(0.2)
                             tap(tap_x)
                             ssleep(0.5)
                             if findOne("商店主页") then return true end

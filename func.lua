@@ -519,7 +519,29 @@ trySolvePointSelectionCapture = function(rect)
             ans = get(data, "data", "result") or ""
         end
     else
-        return
+        if use_jfbym_dx then
+            -- 云码
+            if not jfbym_token or #jfbym_token < 5 then return end
+            local data = {
+                token = jfbym_token,
+                type = "88888",
+                image = img_base64,
+            }
+
+            local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
+                30, "Content-Type: application/json;charset=UTF-8")
+
+            local status, data = pcall(JsonDecode, res)
+            log("识别结果", data)
+            data = data or {}
+            if get(data, "code") ~= 10000 then
+                log("识别失败")
+                return
+            end
+            unique_code = get(data, "data", "unique_code") or ""
+
+            ans = get(data, "data", "data") or ""
+        end
     end
     if not ans then return end
     for coord in string.gmatch(ans, "%d+,%d+") do
