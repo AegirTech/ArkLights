@@ -5,6 +5,7 @@ import requests
 import json
 
 url = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/character_table.json"
+url2 = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/uniequip_table.json"
 
 
 def filter_fields(json_obj, fields):
@@ -53,6 +54,11 @@ def save_to_json(file_path, data):
 response = requests.get(url)
 if response.status_code == 200:
     character_table_dict = json.loads(response.text)
+    """# 本地
+with open('./character_table.json', 'r', encoding='utf-8') as f:
+    character_table_dict = json.load(f)
+    """
+
     # 干员职业类别,自动战斗用
     character_type_list = {}
     for character_name in character_table_dict.keys():
@@ -86,14 +92,37 @@ if response.status_code == 200:
 else:
     print("无法获取JSON数据")
 
-"""
-#本地下载后
-with open('./character_table.json', 'r', encoding='utf-8') as f:
-    character_table_dict = json.load(f)
-character_type_list = {}
-for character_name in character_table_dict.keys():
-    character_type_list[character_table_dict[character_name]['name']]=character_table_dict[character_name]['profession']
-# print(new_character_table_dict)
-with open('./character_type_list.json', 'w', encoding='utf-8') as f:
-    json.dump(character_type_list, f, ensure_ascii=False)
-"""
+response2 = requests.get(url2)
+if response2.status_code == 200:
+    character_equipment_dict = json.loads(response2.text)
+    """# 本地
+with open("./res/char_type/uniequip_table.json", "r", encoding="utf-8") as f:
+    character_equipment_dict = json.load(f)
+    """
+    # 干员模组,自动战斗用
+    character_equip_list = {}
+    for character_id in character_equipment_dict["charEquip"].keys():
+        # 该干员持有的所有模组
+        char_equip_group = character_equipment_dict["charEquip"][character_id]
+        # 第一个模组通常为name+证章,去掉"证章"得到name
+        char_name = character_equipment_dict["equipDict"][char_equip_group[0]][
+            "uniEquipName"
+        ][:-2]
+        character_equip_list[char_name] = [0] * (len(char_equip_group))
+        # print(char_name, "有", len(char_equip_group), "个模组")
+        for i in range(len(char_equip_group)):
+            equip_id = char_equip_group[i]
+            equip_name = character_equipment_dict["equipDict"][equip_id]["uniEquipName"]
+            if "证章" in equip_name:
+                continue
+            equip_mission_2 = character_equipment_dict["equipDict"][equip_id][
+                "missionList"
+            ][1]
+            stage_id = character_equipment_dict["missionList"][equip_mission_2][
+                "paramList"
+            ][1]
+            character_equip_list[char_name][i] = stage_id
+
+    save_to_json("./res/char_type/equip_table.json", character_equip_list)
+else:
+    print("无法获取模组JSON数据")

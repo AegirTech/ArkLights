@@ -133,9 +133,9 @@ def save():
         for line in lines:
             if re.match('release_date = ".*"', line):
                 line = (
-                        'release_date = "'
-                        + str(datetime.datetime.now().strftime("%m.%d %H:%M"))
-                        + '"\n'
+                    'release_date = "'
+                    + str(datetime.datetime.now().strftime("%m.%d %H:%M"))
+                    + '"\n'
                 )
             ss += line
     with open("main.lua", "w", encoding="utf-8") as f:
@@ -155,7 +155,7 @@ def save():
         with open(lua_file, "r", encoding="utf-8") as f:
             file_name = os.path.basename(lua_file)
             with open(
-                    os.path.join(path, "脚本", file_name), "w", encoding="GB18030"
+                os.path.join(path, "脚本", file_name), "w", encoding="GB18030"
             ) as f1:
                 f1.write(f.read())
 
@@ -165,7 +165,7 @@ def save():
         # 把ui_file以utf-8的格式打开，然后以GB18030的格式写入到path+界面目录下
         with open(ui_file, "r", encoding="utf-8") as f:
             with open(
-                    os.path.join(path, "界面", ui_file), "w", encoding="GB18030"
+                os.path.join(path, "界面", ui_file), "w", encoding="GB18030"
             ) as f1:
                 f1.write(f.read())
 
@@ -190,7 +190,7 @@ def release(type):
             """
 1.请验证文件大小,在1.5m左右或以内
 2.请运行res/char_type/parse_character_table.py,
-  并将生成的char_table.json和character_type_list.json放在懒人脚本资源/main.rc里面"""
+  并将生成的char_table.json,character_type_list.json和equip_table.json放在懒人脚本资源/main.rc里面"""
         )
         newLrMD5 = input("请输入md5值: ")
         # 输出pkgPath的文件的md5
@@ -224,7 +224,17 @@ def upload(md5, type, force):
     with open(upFile, "rb") as f:
         md5.update(f.read())
     md5Text = md5.hexdigest()
-    url = API + "/uploadHotUpdatePackage?token=" + token + "&md5=" + md5Text + "&type=" + type + "&force=" + force
+    url = (
+        API
+        + "/uploadHotUpdatePackage?token="
+        + token
+        + "&md5="
+        + md5Text
+        + "&type="
+        + type
+        + "&force="
+        + force
+    )
     fileName = ""
     if type == "RELEASE":
         fileName = "script.lr"
