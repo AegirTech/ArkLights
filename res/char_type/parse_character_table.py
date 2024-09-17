@@ -121,7 +121,7 @@ with open("./res/char_type/uniequip_table.json", "r", encoding="utf-8") as f:
             stage_id = character_equipment_dict["missionList"][equip_mission_2][
                 "paramList"
             ][1]
-            character_equip_list[char_name][i] = stage_id
+            character_equip_list[char_name][i] = equip_name
 
     save_to_json("./res/char_type/equip_table.json", character_equip_list)
 else:
