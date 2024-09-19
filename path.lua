@@ -5622,28 +5622,25 @@ path.活动 = function(x)
     ssleep(2)
     swip(x)
     ssleep(.5)]]
-
-    -- appear("活动导航2")
-
-    -- swip(x)
-    local 迷宫饭导航 = function(x)
-        local hdx = tonumber(x:sub(-1))
-        if hdx == nil or hdx < 1 then hdx = 1 end
-        wait(function()
-            swipe("right")
-            ssleep(.3)
-            if findOne("迷宫饭_上一关不可点击") then return true end
-        end, 5)
-        hdx = hdx - 1
-        appear("迷宫饭_下一关", 2)
-        for i = 1, hdx do
-            tap("迷宫饭_下一关")
-            ssleep(.1)
-        end
-    end
-    if not (utf8.left(x, 5) == "HD-EX") then
-        迷宫饭导航(x)
-    end
+    -- local 迷宫饭导航 = function(x)
+    --     local hdx = tonumber(x:sub(-1))
+    --     if hdx == nil or hdx < 1 then hdx = 1 end
+    --     wait(function()
+    --         swipe("right")
+    --         ssleep(.3)
+    --         if findOne("迷宫饭_上一关不可点击") then return true end
+    --     end, 5)
+    --     hdx = hdx - 1
+    --     appear("迷宫饭_下一关", 2)
+    --     for i = 1, hdx do
+    --         tap("迷宫饭_下一关")
+    --         ssleep(.1)
+    --     end
+    -- end
+    -- if not (utf8.left(x, 5) == "HD-EX") then
+    --     迷宫饭导航(x)
+    -- end
+    swip(x)
     log(626)
     ssleep(.5)
     if x:includes({ "ST-", "TR-", "-MO-1" }) then

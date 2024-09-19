@@ -156,20 +156,21 @@ skland.get_bind_info = function()
 end
 
 skland.account_check = function()
-    local result = skland.request("GET", "/game/player/binding")
-    local status, result = pcall(JsonDecode, result)
-    if status then
-        -- local code = get(result, "code")
-        local msg = get(result, "message")
-        if string.find(msg, "用户未登录") then
-            return false
-        else
-            return true
-        end
-    else
-        log("json解析失败")
-        return false
-    end
+    -- local result = skland.request("GET", "/game/player/binding")
+    -- local status, result = pcall(JsonDecode, result)
+    -- if status then
+    --     -- local code = get(result, "code")
+    --     local msg = get(result, "message")
+    --     if string.find(msg, "用户未登录") then
+    --         return false
+    --     else
+    --         return true
+    --     end
+    -- else
+    --     log("json解析失败")
+    --     return false
+    -- end
+    return true
 end
 
 -- 森空岛签到接口 成功返回0，重复签到返回1，其他各种失败原因返回2
