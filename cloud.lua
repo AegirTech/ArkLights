@@ -135,7 +135,7 @@ m.uploadImgToInquisition = function(img_path)
 end
 
 m.captcha = function()
-    if m.captchaToken == '' or m.captchaServer == '' then
+    if m.captchaServer == '' then
         return false
     end
     log("使用云控打码")
