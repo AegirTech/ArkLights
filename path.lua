@@ -8117,6 +8117,68 @@ path.悖论模拟 = function()
     end
 end
 
+path.自动升级潜能 = function()
+    path.跳转("干员")
+    appear("干员界面", 3)
+    ssleep(.1)
+    local 红点干员数量 = tonumber(ocro("干员界面红点范围") or 0)
+    log("红点干员数量", 红点干员数量)
+    tap("干员界面红点") --筛选干员
+    disappear("干员界面红点", 1)
+
+    if not wait(function()
+            if findOne("干员档案") then return true end
+            tap("第一个干员")
+            ssleep(.3)
+        end, 2) then
+        return
+    end
+    ssleep(.5)
+
+    auto_upgrade_potentiality = function()
+        if appear("干员潜能升级红点", 1) then
+            if not wait(function()
+                    if findOne("干员潜能界面") then return true end
+                    tap("干员潜能升级红点")
+                    ssleep(.3)
+                end, 2) then
+                return
+            end
+            if not wait(function()
+                    if findOne("干员潜能升级确定") then tap("干员潜能升级确定") end
+                    if findOne("干员档案") then return true end
+                    tap("干员潜能界面")
+                    ssleep(.3)
+                end, 10) then
+                if not wait(function()
+                        if findOne("干员潜能升级确定") then tap("干员潜能升级取消") end
+                        if findOne("干员档案") then return true end
+                        tap("返回")
+                        ssleep(.5)
+                    end, 5) then
+                    return
+                end
+                return
+            end
+        else
+            return
+        end
+    end
+
+
+    for i = 1, 红点干员数量 do
+        auto_upgrade_potentiality()
+        gesture({
+            {
+                point = { { scale(1103), scale(870) }, { scale(817), scale(870) } },
+                start = 0,
+                duration = 300,
+            },
+        })
+        ssleep(1)
+    end
+end
+
 path.隐秘战线 = function()
     local a1 = { 20, 20, 20 }
     local a2 = { 60, 55, 45 }

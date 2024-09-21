@@ -1393,16 +1393,20 @@ show_auto_ui = function()
     addTextView(layout, "B服请求Token")
     ui.addEditText(layout, "a60_token_bili", "")
 
-    newRow(layout)
-    ui.addCheckBox(layout, "raise_fight_plan", "作战计划(未完成)", true)
+
     --ui.addCheckBox(layout, "raise_material", "材料合成（未完成）", false)
 
     newRow(layout)
     ui.addCheckBox(layout, "not_use_ocr", "基建不使用ocr（低配置或基建崩溃建议打开）", false)
-
+    --[[
     newRow(layout)
-    addButton(layout, nil, "仓库识别(未完成)", "raise_storage_dentify")
-
+    ui.addCheckBox(layout, "raise_fight_plan", "作战计划(未完成)", true)
+    newRow(layout)
+    addButton(layout, nil, "仓库识别(未完成)", "raise_storage_dentify")]]
+    newRow(layout)
+    addButton(layout, nil, "自动升级潜能红点(测试)",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='自动升级潜能';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     newRow(layout)
     addTextView(layout, "--------------------悖论模拟相关--------------------")
 
