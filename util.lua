@@ -2310,6 +2310,9 @@ unpacking_library = function()
             end
             _G.curlpath = "/data/local/tmp/curl"
         end
+    else
+        _G.sqlite3path = "sqlite3"
+        _G.curlpath = "curl"
     end
 end
 

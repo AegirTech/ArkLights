@@ -5117,8 +5117,8 @@ path.活动 = function(x)
     log("活动", x, skip_guide)
 
     if not skip_guide then
-        path.跳转("首页")
-        tap("面板活动")
+        -- path.跳转("首页")
+        path.活动页面寻找(2)
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]

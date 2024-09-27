@@ -404,7 +404,6 @@ trySolveSlipCaptcha = function(retry)
     end
 end
 
--- 滑块验证码使用 https://console.jfbym.com/
 SolveSlipCaptcha = function(token, rect)
     if not rect then return end
     if not token then return end
@@ -468,7 +467,6 @@ jfbym_report = function()
 end
 
 -- b服选点验证码打码
--- 统一更改为 https://console.jfbym.com/
 trySolvePointSelectionCapture = function(rect)
     if cloud.captcha() then return end
     if not rect then return end
@@ -499,7 +497,7 @@ trySolvePointSelectionCapture = function(rect)
 
     --     ans = get(data, "data", "data") or ""
     if use_captcha then
-        -- 极验
+        -- 图鉴
         if not captcha_username or not captcha_password then return end
         local data = {
             username = captcha_username,
