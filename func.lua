@@ -322,12 +322,22 @@ curl_post = function(url, headers, postData, timeout, arguments)
         end
     end
     if postData then
-        curlCommand = string.format("%s -d '%s'", curlCommand, postData)
+        if type(postData) == "table" then
+            for k, v in pairs(postData) do
+                local data = string.format("%s=%s", k, v)
+                curlCommand = string.format("%s -d '%s'", curlCommand, data)
+            end
+        elseif type(postData) == "string" then
+            curlCommand = string.format("%s -d '%s'", curlCommand, postData)
+        end
     end
     timeout = timeout or 5
     curlCommand = string.format("%s -m %s", curlCommand, timeout)
     if arguments then
         curlCommand = string.format("%s %s", curlCommand, arguments)
+    end
+    if string.find(curlCommand, " -F ") then
+        curlCommand = string.gsub(curlCommand, " %-d ", " -F ")
     end
     log(curlCommand)
     return exec2(curlCommand)
@@ -952,4 +962,30 @@ upload_log = function()
         ui.setButton("upload_log_server", "上传日志成功，编号" .. ret .. " 请截图或复制给开发者")
         return true
     end
+end
+
+
+copy_file_s = function(src, dest)
+    local src_file = io.open(src, "rb")
+    if not src_file then
+        log("无法打开源文件: " .. src)
+        return
+    end
+
+    local dest_file = io.open(dest, "wb")
+    if not dest_file then
+        src_file:close()
+        log("无法打开目标文件: " .. dest)
+        return
+    end
+
+    local block_size = 1024 -- 每次读取的块大小
+    while true do
+        local block = src_file:read(block_size)
+        if not block then break end
+        dest_file:write(block)
+    end
+
+    src_file:close()
+    dest_file:close()
 end

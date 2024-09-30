@@ -1995,7 +1995,7 @@ captureqqimagedeliver = function(log_level, log_title, log_detail, important)
     notifypp(img_url, info, pushplus_token, pushplus_channel)
 
     -- tg
-    notifytg(img_url, info, telegram_chatid, telegram_token, telegram_api, sync)
+    notifytg(img, info, sync)
 
     -- 企业微信推送
     local imgmd5 = fileMD5(getWorkPath() .. "/tmp.jpg")
@@ -2173,20 +2173,21 @@ notifypp = function(img, info, to, channel, sync)
     if sync then wait(function() return not lock:exist(id) end, 30) end
 end
 
-notifytg = function(imgurl, info, chatid, bottoken, tgapi, sync)
-    imgurl = imgurl or ''
+notifytg = function(img_path, info, sync)
+    log("notifytg")
+    img_path = img_path or ''
     info = info or ''
-    chatid = chatid or ''
-    bottoken = bottoken or ''
-    tgapi = tgapi or 'https://api.telegram.org/'
+    chatid = telegram_chatid or ''
+    bottoken = telegram_token or ''
+    tgapi = telegram_api or 'https://api.telegram.org/'
     if type(tgapi) ~= 'string' or (type(tgapi) == 'string' and #tgapi == 0) then tgapi = 'https://api.telegram.org/' end
     if string.find(tgapi, "http") == nil then tgapi = 'https://' .. tgapi end
 
     if #chatid == 0 and #bottoken == 0 then return end
 
     local id = lock:add()
-    if #imgurl == 0 then -- 图片url为空 不发图
-        local tgurl = tgapi .. '/bot' .. bottoken .. '/sendMessage'
+    if #img_path == 0 and (not telegram_api_curl) then -- 图片url为空 不发图
+        local tgurl = tgapi .. 'bot' .. bottoken .. '/sendMessage'
         local param = "chat_id=" .. chatid .. "&text=" .. encodeUrl(info)
         asynHttpPost(function(code)
             log("notifytg", code)
@@ -2194,13 +2195,14 @@ notifytg = function(imgurl, info, chatid, bottoken, tgapi, sync)
         end, tgurl, param)
         log("notifytg", tgurl, param)
     else
-        local tgurl = tgapi .. '/bot' .. bottoken .. '/sendPhoto'
-        local param = "chat_id=" .. chatid .. "&photo=" .. encodeUrl(imgurl) ..
-            "&caption=" .. encodeUrl(info)
-        asynHttpPost(function(code)
-            log("notifytg", code)
-            lock:remove(id)
-        end, tgurl, param)
+        copy_file_s(img_path, '/sdcard/Pictures/image.png')
+        local tgurl = tgapi .. 'bot' .. bottoken .. '/sendPhoto'
+
+        local param = {
+            chat_id = chatid,
+            caption = info,
+        }
+        curl_post(tgurl, nil, param, 10, '-F "photo=@/sdcard/Pictures/image.png"')
         log("notifytg", tgurl, param)
     end
     if sync then wait(function() return not lock:exist(id) end, 30) end
@@ -2279,41 +2281,42 @@ download_from_alist = function(file_name, path)
 end
 
 unpacking_library = function()
-    if root_mode then
-        if use_system_library then
-            _G.sqlite3path = "sqlite3"
-            _G.curlpath = "curl"
-        else
-            -- mkdir(getWorkPath() .. "/assets")
-            -- extractAssets("sqlite.rc", getWorkPath() .. "/assets")
-            -- _G.curlpath = "curl"
-
-            --sqlite3
-            mkdir(getWorkPath() .. "/assets")
-            local ret = download_from_alist("sqlite3", getWorkPath() .. "/assets")
-            if ret then
-                exec(string.format([[su root sh -c "cp '%s/assets/sqlite3' '/data/local/tmp/sqlite3'"]], getWorkPath()))
-                setFilePremission("/data/local/tmp/sqlite3", 777)
-            end
-            _G.sqlite3path = "/data/local/tmp/sqlite3"
-
-            local curl_file = "curl_" .. get_cpu_arch()
-            curl_file = curl_file:map({
-                ["\n"] = "",
-                [" "] = "",
-                ["　"] = "",
-            })
-            local ret = download_from_alist(curl_file, getWorkPath() .. "/assets")
-            if ret then
-                exec(string.format([[su root sh -c "cp '%s/assets/%s' '/data/local/tmp/curl'"]], getWorkPath(), curl_file))
-                setFilePremission("/data/local/tmp/curl", 777)
-            end
-            _G.curlpath = "/data/local/tmp/curl"
-        end
-    else
+    if use_system_library then
         _G.sqlite3path = "sqlite3"
         _G.curlpath = "curl"
+    else
+        --sqlite3
+        if not fileExist("/sdcard/Pictures/sqlite3") then
+            local ret = download_from_alist("sqlite3", "/sdcard/Pictures")
+            if ret then
+                sqlite3path = "/sdcard/Pictures/sqlite3"
+            else
+                sqlite3path = "sqlite3"
+            end
+        else
+            sqlite3path = "/sdcard/Pictures/sqlite3"
+        end
+
+
+        local curl_file = "curl_" .. get_cpu_arch()
+        curl_file = curl_file:map({
+            ["\n"] = "",
+            [" "] = "",
+            ["　"] = "",
+        })
+
+        if not fileExist("/sdcard/Pictures/" .. curl_file) then
+            ret = download_from_alist(curl_file, "/sdcard/Pictures")
+            if ret then
+                curlpath = "/sdcard/Pictures/" .. curl_file
+            else
+                curlpath = "curl"
+            end
+        else
+            curlpath = "/sdcard/Pictures/" .. curl_file
+        end
     end
+    log("sqlite3path", sqlite3path, "curlpath", curlpath)
 end
 
 check_remote_config_update = function()

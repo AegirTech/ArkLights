@@ -755,8 +755,11 @@ show_debug_ui = function()
 
     newRow(debug_layout_通知)
     addTextView(debug_layout_通知, "pushplus通知渠道(channel)")
-
     ui.addEditText(debug_layout_通知, "pushplus_channel", "")
+
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "telegram_api_curl",
+        "使用curl推送通知", true)
 
     newRow(debug_layout_通知)
     addTextView(debug_layout_通知, "Telegram推送api(可不填)")
