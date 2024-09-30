@@ -1995,7 +1995,7 @@ captureqqimagedeliver = function(log_level, log_title, log_detail, important)
     notifypp(img_url, info, pushplus_token, pushplus_channel)
 
     -- tg
-    notifytg(img, info, sync)
+    notifytg(getWorkPath() .. "/tmp.jpg", info, sync)
 
     -- 企业微信推送
     local imgmd5 = fileMD5(getWorkPath() .. "/tmp.jpg")
@@ -2202,8 +2202,9 @@ notifytg = function(img_path, info, sync)
             chat_id = chatid,
             caption = info,
         }
-        curl_post(tgurl, nil, param, 10, '-F "photo=@/sdcard/Pictures/image.png"')
+        local retd = curl_post(tgurl, nil, param, 10, '-F "photo=@/sdcard/Pictures/image.png"')
         log("notifytg", tgurl, param)
+        log("notifytg", retd)
     end
     if sync then wait(function() return not lock:exist(id) end, 30) end
 end
