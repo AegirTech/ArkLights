@@ -179,16 +179,18 @@ def skillicon2operator():
 
 
 def recruit(
-        char=os.path.join(
-            os.getcwd(), "ArknightsGameResource/gamedata/excel/character_table.json"
-        ),
-        gacha=os.path.join(
-            os.getcwd(), "ArknightsGameResource/gamedata/excel/gacha_table.json"
-        ),
         to="lua",
 ):
-    char = json.loads(open(char, encoding="utf-8").read())
-    gacha = json.loads(open(gacha, encoding="utf-8").read())
+    char = None
+    gacha = None
+    resp = requests.get("https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json")
+    if resp.status_code == 200:
+        char = json.loads(resp.text)
+    resp = requests.get("https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/gacha_table.json")
+    if resp.status_code == 200:
+        gacha = json.loads(resp.text)
+    if not char or not gacha:
+        return "get data failed"
     tag = [x["tagName"] for x in gacha["gachaTags"] if x["tagId"] < 100]
 
     recruit_char = gacha["recruitDetail"]
@@ -201,10 +203,10 @@ def recruit(
     char = {k: v for k, v in char.items() if v["name"] in recruit_char}
 
     # 排除6星干员，没有高级资深一定不出6星，没有资深可能出5星
-    char = {k: v for k, v in char.items() if v["rarity"] + 1 < 6}
+    char = {k: v for k, v in char.items() if int(v["rarity"][-1]) < 6}
 
     # 排除12星干员，拉满9小时最低3星
-    char = {k: v for k, v in char.items() if v["rarity"] + 1 >= 3}
+    char = {k: v for k, v in char.items() if int(v["rarity"][-1]) >= 3}
 
     profession2tag = defaultdict(
         lambda: "???",
@@ -249,7 +251,7 @@ def recruit(
         for k, v in char.items()
     }
 
-    char2star = {v["name"]: v["rarity"] + 1 for k, v in char.items()}
+    char2star = {v["name"]: int(v["rarity"][-1]) for k, v in char.items()}
     tag2char = defaultdict(set)
     for c, t in char2tag.items():
         for t in t:
@@ -516,7 +518,7 @@ def screencap_distance(path="screencap"):
 
 def process_transparent_pixels(
         input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
-        output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill_new"),
+        output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/new"),
 ):
     # 用于处理技能图标背景 不知道为什么透明背景识别失败
     import os
@@ -528,7 +530,6 @@ def process_transparent_pixels(
 
     center_x, center_y = 18, 18  # 或者 19, 19 根据需要调整
     radius = 18.3
-
     for filename in os.listdir(input_folder):
         input_path = os.path.join(input_folder, filename)
         output_path = os.path.join(output_folder, filename)
@@ -542,11 +543,21 @@ def process_transparent_pixels(
                     #     pixels[i, j] = (61, 61, 61, 255)
                     # if ((i - 18.5) ^ 2 + (j - 18.5) ^ 2) < 17 ^ 2 then
                     if not ((i - center_x) ** 2 + (j - center_y) ** 2 < radius ** 2):
-                        if a<30:
+                        if a < 30:
                             pixels[i, j] = (61, 61, 61, 255)
             image.save(output_path)
         else:
             shutil.copy2(input_path, output_path)
+
+
+def char2vue():
+    char = None
+    resp = requests.get("https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json")
+    if resp.status_code == 200:
+        char = json.loads(resp.text)
+    for k, v in char.items():
+        if k.startswith("char_") and ("预备干员" not in v["name"]):
+            print("{ value: '" + v["name"] + "', label: '" + v["name"] + "' },")
 
 
 if __name__ == "__main__":
