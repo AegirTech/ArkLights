@@ -300,12 +300,12 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
 
         -- 拉狗徳狗
         local texas = all['bskill_tra_texas1'] or all['bskill_tra_texas2']
-        if all['bskill_tra_Lappland1'] then
+        if all['bskill_tra_lappland1'] then
             if texas then
                 storage = storage + 2
                 base = base + 0.65
             end
-        elseif all['bskill_tra_Lappland2'] then
+        elseif all['bskill_tra_lappland2'] then
             if texas then
                 storage = storage + 4
                 base = base + 0.65
@@ -1211,8 +1211,8 @@ meetingStationOperatorBest = function(operator)
             -- 禁用尤里卡
         elseif o[1] == "bskill_meet_spd&cost" or o[2] == "bskill_meet_spd&cost" then -- 见行者
             table.insert(best, 1, o)
-        elseif o[1] == "bskill_meet_spdNotOwned2" or o[2] ==
-            "bskill_meet_spdNotOwned2" then
+        elseif o[1] == "bskill_meet_spdnotowned2" or o[2] ==
+            "bskill_meet_spdnotowned2" then
             -- 晓歌有人评测过吗
             table.insert(best, o)
         elseif o[1] == "bskill_meet_exchange" or o[2] == "bskill_meet_exchange" then -- 跃跃
