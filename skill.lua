@@ -202,10 +202,6 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                     base = base - 0.15
                     storage = storage + 6
                 end
-            elseif icon == 'bskill_man_marcille1' then
-                base = base + 0.2
-            elseif icon == 'bskill_man_marcille2' then
-                base = base + 0.3
             elseif icon == 'bskill_tra_spd_bd2' then --黑键2
                 base = base + 0.005 * dormitoryCapacity
                 if isCharExsit["迷迭香"] then
@@ -647,6 +643,10 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
             elseif icon == 'bskill_man_spd_add2' then
                 -- 8小时平均收益 ((0.15+0.23)/2*5+0.25*3)/8
                 base = base + 0.2125
+            elseif icon == 'bskill_man_marcille1' then --玛露西尔1
+                base = base + 0.2
+            elseif icon == 'bskill_man_marcille2' then --玛露西尔2
+                base = base + 0.3
             elseif icon == "bskill_man_spd_add3" then
                 base = base + 0.1 -- 10小时平均收益 8h收益为0.073
             elseif icon == 'bskill_man_spd1' then
