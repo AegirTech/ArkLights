@@ -2211,20 +2211,22 @@ end
 
 -- 企业微信推送
 notify_wechat = function(webhookurl, info, img, md5)
+    log("notify_wechat")
     webhookurl = webhookurl or ''
     info = info or ''
     if #webhookurl == 0 then return end
     log(webhookurl)
-    if string.find(webhookurl, "#") ~= nil then
+    if string.find(webhookurl, "#") then
         local result = {}
-        local pattern = string.format("([^%s]+)", "#")
-        webhookurl:gsub(pattern, function(item) table.insert(result, item) end)
+        for item in string.gmatch(webhookurl, "[^#]+") do
+            table.insert(result, item)
+        end
         if #result > 0 then
             local i = math.random(1, #result)
             webhookurl = result[i]
         end
     end
-    print(webhookurl)
+    log(webhookurl)
     if string.find(webhookurl, "weixin.qq.com") == nil then
         webhookurl = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=' ..
             webhookurl
@@ -2233,16 +2235,16 @@ notify_wechat = function(webhookurl, info, img, md5)
     local body = { msgtype = "text", text = { content = info } }
     local res, code = httpPost(webhookurl, JsonEncode(body), 15,
         "Content-Type: application/json;charset=UTF-8")
-    if code ~= 200 then print("Wechat text failed" .. code .. res) end
+    if code ~= 200 then log("Wechat text failed", code, res) end
     -- 推送图片 因为markdown格式限制4kb 使用文件上传获取media麻烦，故图片文字分开发送
     if img ~= nil then
         local body = { msgtype = "image", image = { base64 = img, md5 = md5 } }
         local res, code = httpPost(webhookurl, JsonEncode(body), 15,
             "Content-Type: application/json;charset=UTF-8")
         if code == 200 then
-            print("Wechat notify successfully")
+            log("Wechat notify successfully")
         else
-            print("Wechat picture failed" .. code .. res)
+            log("Wechat picture failed", code, res)
         end
     end
 end
@@ -2464,6 +2466,9 @@ uploadStatistician = function(is_download)
         tostring(is_download)
     local res, code = httpGet(url, 30)
     local status, data = pcall(JsonDecode, res)
+    if not status then
+        return
+    end
     if data.data.uuid ~= uuid then
         saveConfig("uuid", data.data.uuid)
         log("uuid已更新 " .. data.data.uuid)
