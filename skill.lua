@@ -235,6 +235,11 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 base = base + 0.25
             elseif icon == "bskill_tra_par&per2" then
                 base = base + 0.30
+            elseif icon == "trade_ord_spd&par1" then -- 维娜·维多利亚 道格拉斯帮加成不考虑
+                base = base + 0.30
+            elseif icon == "trade_ord_spd&par2" then
+                base = base + 0.30
+                -- 道格拉斯帮加成0.1
             elseif icon == "bskill_tra_spd&limit_down1" then -- 锏
                 base = base + 0.20
                 storage = storage - 2
