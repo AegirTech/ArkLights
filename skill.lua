@@ -715,7 +715,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 if goodType == '源石' then base = base + 0.35 end
             elseif icon == 'bskill_man_originium1' then
                 if goodType == '源石' then base = base + 0.3001 end
-            elseif icon == 'bskill_man_constrLv' then
+            elseif icon == 'bskill_man_constrlv' then
                 robot = min(64, robot + totalStationLevel)
             elseif icon == 'empty' then
                 log('empty')
@@ -923,7 +923,7 @@ findBuildingSkill = function(x1, y1, x2, y2, pngdata)
         -- if k == 'bskill_tra_spd&wt1' then log(663, score, tmp) end
         --
         -- if k == 'bskill_tra_texas1' then log(662, score, tmp) end
-        -- if k == 'bskill_tra_Lappland2' then log(663, score, tmp) end
+        -- if k == 'bskill_tra_lappland2' then log(663, score, tmp) end
         -- if k == 'bskill_meet_spd3' then log(663, score, tmp) end
         -- if k == 'bskill_meet_spd2' then log(662, score, tmp) end
         -- if k == 'bskill_man_spd2' then log(663, score, tmp) end
@@ -1212,7 +1212,7 @@ meetingStationOperatorBest = function(operator)
     local best_score = -1
     local remain = {}
     for _, o in pairs(operator) do
-        if table.includes({ o[1], o[2] }, 'bskill_meet_spdOwned1') then
+        if table.includes({ o[1], o[2] }, 'bskill_meet_spdowned1') then
             -- 禁用尤里卡
         elseif o[1] == "bskill_meet_spd&cost" or o[2] == "bskill_meet_spd&cost" then -- 见行者
             table.insert(best, 1, o)
@@ -1591,7 +1591,7 @@ dormitoryOperatorBest = function(operator, goodType, virtralPowerStationNum)
                 s = s + 0.1
             elseif icon == "bskill_hire_spd3" then
                 s = s + 0.35
-            elseif icon == "bskill_dorm_powToRecAll2" then
+            elseif icon == "bskill_dorm_powtorecall2" then
                 s = s + 0.15 + virtralPowerStationNum * 0.05
             end
         end
@@ -1660,7 +1660,7 @@ powerStationOperatorBest = function(operator)
                 if table.findv({ "Lancet-2" }, o[6]) and isCharExsit["正义骑士号"] and not isCharExsit["承曦格雷伊"] then
                     s = s + 0.101
                 end
-            elseif icon == "bskill_pow_spd_P1" then --PhonoR-0
+            elseif icon == "bskill_pow_spd_p1" then --PhonoR-0
                 if isCharExsit["承曦格雷伊"] then
                     s = s - 1
                 end
@@ -1740,7 +1740,7 @@ trainingOperatorBest = function(operator, charType, targetLevel)
                 s = s + 0.45
             elseif icon == "bskill_train_all" then
                 s = s + 0.25
-            elseif icon == "bskill_train_reduceTime" then
+            elseif icon == "bskill_train_reducetime" then
                 s = s + 0.7
             elseif icon == "bskill_train_fighter" and charType == "WARRIOR" then
                 s = s + 0.3
@@ -1941,7 +1941,7 @@ workshopOperatorBest = function(operator, id, level)
                 s = s + 0.9
             elseif icon == "bskill_ws_bonus2" and level == 4 then
                 s = s + 0.9
-            elseif icon == "bskill_ws_alloyBlock" and id == "31024" then                 --号角
+            elseif icon == "bskill_ws_alloyblock" and id == "31024" then                 --号角
                 s = s + 1
             elseif icon == "bskill_ws_orirock" and (id == "30014" or id == "30013") then --泥岩
                 s = s + 0.9

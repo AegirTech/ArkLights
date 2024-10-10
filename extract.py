@@ -157,13 +157,18 @@ def skillicon2operator():
     buffid2name = {}
     for c, b in build["buffs"].items():
         buffid2name[b["buffId"]] = b["skillIcon"]
-
+    
+    def contains_uppercase(s):
+        return any(char.isupper() for char in s)
+    
     ans = defaultdict(list)
     for c, b in build["chars"].items():
         for b1 in b["buffChar"]:
             for b2 in b1["buffData"]:
                 buffid = b2["buffId"]
                 buffname = buffid2name[buffid]
+                if contains_uppercase(buffname):
+                    buffname =buffname.lower()
                 operator = char2name[c]
                 phase = (b2["cond"]["phase"])[-1]
                 ans[buffname].append(operator + str(phase))
@@ -515,7 +520,7 @@ def screencap_distance(path="screencap"):
             )
         # print(f'["HD-{x}"] = ' + "{ swip_right_max, -" + str(p) + "},")
 
-
+        
 def process_transparent_pixels(
         input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
         output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/new"),
@@ -532,7 +537,7 @@ def process_transparent_pixels(
     radius = 18.3
     for filename in os.listdir(input_folder):
         input_path = os.path.join(input_folder, filename)
-        output_path = os.path.join(output_folder, filename)
+        output_path = os.path.join(output_folder, filename.lower())
         if filename.endswith(".png"):
             image = Image.open(input_path).convert("RGBA")
             pixels = image.load()
