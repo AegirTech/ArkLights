@@ -51,7 +51,45 @@ def save_to_json(file_path, data):
         print(f"无法写入文件: {file_path}. 错误: {e}")
 
 
+def convert_to_lua_table(data, indent=0):
+    lua_table = "{\n"
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if key == 'L-44"留声机"' or value == "TRAP":
+                continue
+            if isinstance(value, (dict, list)):
+                # 递归调用函数处理嵌套的字典或列表
+                lua_table += (
+                    "    " * indent
+                    + f'["{key}"] = {convert_to_lua_table(value, indent + 1)},\n'
+                )
+            elif isinstance(value, str):
+                # 字符串需要用引号包围
+                lua_table += "    " * indent + f'["{key}"] = "{value}",\n'
+            else:
+                # 其他类型的值直接转换
+                lua_table += "    " * indent + f'["{key}"] = "{value}",\n'
+    elif isinstance(data, list):
+        for item in data:
+            if isinstance(item, (dict, list)):
+                # 递归调用函数处理列表中的字典或列表
+                lua_table += (
+                    "    " * indent + f"{convert_to_lua_table(item, indent + 1)},\n"
+                )
+            elif isinstance(item, str):
+                # 字符串需要用引号包围
+                lua_table += "    " * indent + f'"{item}",\n'
+            else:
+                # 其他类型的值直接转换
+                lua_table += "    " * indent + f"{item},\n"
+    lua_table = lua_table.rstrip(",\n") + "\n" + "    " * (indent - 1) + "}"
+    return lua_table
+
+
 response = requests.get(url)
+character_type_list = {}
+char_table = {}
+character_equip_list = {}
 if response.status_code == 200:
     character_table_dict = json.loads(response.text)
     """# 本地
@@ -60,7 +98,7 @@ with open('./character_table.json', 'r', encoding='utf-8') as f:
     """
 
     # 干员职业类别,自动战斗用
-    character_type_list = {}
+
     for character_name in character_table_dict.keys():
         character_data = character_table_dict[character_name]
         if (
@@ -70,8 +108,6 @@ with open('./character_table.json', 'r', encoding='utf-8') as f:
             continue
         character_type_list[character_data["name"]] = character_data["profession"]
 
-    # 干员精英化及专精数据,自动养成用
-    char_table = {}
     for character_id in character_table_dict.keys():
         character_data = character_table_dict[character_id]
         if (
@@ -99,8 +135,7 @@ if response2.status_code == 200:
 with open("./res/char_type/uniequip_table.json", "r", encoding="utf-8") as f:
     character_equipment_dict = json.load(f)
     """
-    # 干员模组,自动战斗用
-    character_equip_list = {}
+
     for character_id in character_equipment_dict["charEquip"].keys():
         # 该干员持有的所有模组
         char_equip_group = character_equipment_dict["charEquip"][character_id]
@@ -126,3 +161,22 @@ with open("./res/char_type/uniequip_table.json", "r", encoding="utf-8") as f:
     save_to_json("./res/char_type/equip_table.json", character_equip_list)
 else:
     print("无法获取模组JSON数据")
+
+
+"""
+# 将几个表格转换成lua文件方便更新，转换后过大，放弃
+lua_variables = {
+    "character_type_list": character_type_list,
+    "char_table": char_table,
+    "character_equip_list": character_equip_list,
+}
+
+# 将转换后的Lua表保存到文件
+file_path = "chartag.lua"
+with open(file_path, "w", encoding="utf-8") as file:
+    for var_name, data in lua_variables.items():
+        lua_table = convert_to_lua_table(data)
+        file.write(f"{var_name} = {lua_table}\n\n")
+
+print(f"Lua variables have been saved to {file_path}")
+"""
