@@ -5117,8 +5117,8 @@ path.活动 = function(x)
     log("活动", x, skip_guide)
 
     if not skip_guide then
-        -- path.跳转("首页")
-        path.活动页面寻找(1)
+        path.跳转("首页")
+        tap("面板活动")
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -5126,7 +5126,7 @@ path.活动 = function(x)
             point["活动导航0"] = point["活动导航S"]
         end
         if not wait(function()
-                if findOne("活动导航0") then return true end
+                if findOne("活动导航2") then return true end
                 if findOne("跳过剧情") then path.跳过剧情() end
             end, 10) then
             return
@@ -5576,7 +5576,7 @@ path.活动 = function(x)
     -- car_check1() --有些大型活动会自带一些任务
     log("skip_guide", skip_guide)
     if not skip_guide then
-        if not findOne("活动导航0") then return end
+        if not findOne("活动导航2") then return end
         log("已进入活动页面,根据" .. x .. "选择入口")
         if utf8.left(x, 5) == "HD-EX" then --提取x的前面五个，如果是"HD-EX"，则进入活动的ex界面
             if not wait(function()
@@ -5604,7 +5604,7 @@ path.活动 = function(x)
             if not wait(function()
                     tap("活动导航0")
                     ssleep(.5)
-                    if disappear("活动导航0", 1) then
+                    if disappear("活动导航2", 1) then
                         ssleep(.5)
                         return true
                     end
