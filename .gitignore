@@ -17,3 +17,5 @@ dist/
 .temp/
 .cache/
 localConfig.py
+oper.ps1
+oper.bat
