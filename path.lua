@@ -7740,6 +7740,7 @@ path.肉鸽任务 = function()
     log("肉鸽任务开始")
     if zl_ky then
         log("傀影")
+        zl_level_enough = false
         傀影肉鸽完成 = false
         zl_skip_coin = zl_skip_coin_ky
         zl_only_coin = zl_only_coin_ky
@@ -7758,6 +7759,7 @@ path.肉鸽任务 = function()
     if zl_mizuki then
         log("水月任务开始")
         水月肉鸽完成 = false
+        zl_level_enough = false
         zl_skip_coin = zl_skip_coin_mizuki
         zl_only_coin = zl_only_coin_mizuki
         zl_need_goods = zl_need_goods_mizuki
@@ -7792,6 +7794,7 @@ path.肉鸽任务 = function()
     if zl_skz then
         log("萨卡兹")
         萨卡兹肉鸽完成 = false
+        zl_level_enough = false
         zl_skip_coin = zl_skip_coin_skz
         zl_only_coin = zl_only_coin_skz
         zl_need_goods = zl_need_goods_skz
