@@ -865,13 +865,13 @@ findBuildingSkill = function(x1, y1, x2, y2, pngdata)
         --     table.extend(data, { r, g, b })
         -- end
         table.extend(data, { r, g, b })
-
+        --[[
         if nil then
             r = string.format('%X', r):padStart(2, '0')
             g = string.format('%X', g):padStart(2, '0')
             b = string.format('%X', b):padStart(2, '0')
             s = s .. i .. '|' .. j .. '|' .. r .. g .. b .. ','
-        end
+        end]]
     end
     -- log(s)
     -- exit()
@@ -886,7 +886,8 @@ findBuildingSkill = function(x1, y1, x2, y2, pngdata)
 
     local flatScoreTable = {}
     local flatScore = 0
-    for i = 1, #stationIconMask - 36 do
+    local length = #stationIconMask - 36
+    for i = 1, length do
         flatScore = abs(data[i * 3 - 2] - data[(i + 1) * 3 - 2]) +
             abs(data[i * 3 - 1] - data[(i + 1) * 3 - 1]) +
             abs(data[i * 3] - data[(i + 1) * 3]) +
@@ -916,8 +917,8 @@ findBuildingSkill = function(x1, y1, x2, y2, pngdata)
         end
         score = score / scoreBase
 
-        --if k == 'bskill_man_spd_bd2' then log(662, score, tmp) end    --森蚺
-        --if k == 'bskill_man_spd&power2' then log(663, score, tmp) end --森蚺
+        --if k == 'bskill_tra_spd_bd2' then log(662, score, tmp) end
+        --if k == 'bskill_tra_spd_bd1' then log(663, score, tmp) end
         --if k == 'bskill_man_spd&power1' then log(663, score, tmp) end --异客
         -- if k == 'bskill_tra_spd_variable22' then log(662, score, tmp) end
         -- if k == 'bskill_tra_spd&wt1' then log(663, score, tmp) end

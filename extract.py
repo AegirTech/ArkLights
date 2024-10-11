@@ -145,10 +145,14 @@ def avator2operator(src="ArknightsGameData/zh_CN/gamedata/excel/character_table.
 def skillicon2operator():
     char = None
     build = None
-    resp = requests.get("https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json")
+    resp = requests.get(
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json"
+    )
     if resp.status_code == 200:
         char = json.loads(resp.text)
-    resp = requests.get("https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/building_data.json")
+    resp = requests.get(
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/building_data.json"
+    )
     if resp.status_code == 200:
         build = json.loads(resp.text)
     if not char or not build:
@@ -157,10 +161,10 @@ def skillicon2operator():
     buffid2name = {}
     for c, b in build["buffs"].items():
         buffid2name[b["buffId"]] = b["skillIcon"]
-    
+
     def contains_uppercase(s):
         return any(char.isupper() for char in s)
-    
+
     ans = defaultdict(list)
     for c, b in build["chars"].items():
         for b1 in b["buffChar"]:
@@ -168,13 +172,15 @@ def skillicon2operator():
                 buffid = b2["buffId"]
                 buffname = buffid2name[buffid]
                 if contains_uppercase(buffname):
-                    buffname =buffname.lower()
+                    buffname = buffname.lower()
                 operator = char2name[c]
                 phase = (b2["cond"]["phase"])[-1]
                 ans[buffname].append(operator + str(phase))
 
     file_name = os.path.join(
-        __file__, "..", "skillicon2operator.json",
+        __file__,
+        "..",
+        "skillicon2operator.json",
     )
     # with open(file_name, "", encoding="utf-8") as f:
     #     f.write(json.dumps(ans, ensure_ascii=False))
@@ -184,14 +190,18 @@ def skillicon2operator():
 
 
 def recruit(
-        to="lua",
+    to="lua",
 ):
     char = None
     gacha = None
-    resp = requests.get("https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json")
+    resp = requests.get(
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json"
+    )
     if resp.status_code == 200:
         char = json.loads(resp.text)
-    resp = requests.get("https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/gacha_table.json")
+    resp = requests.get(
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/gacha_table.json"
+    )
     if resp.status_code == 200:
         gacha = json.loads(resp.text)
     if not char or not gacha:
@@ -374,7 +384,7 @@ def screencap(stem):
 def get_level_info() -> list:
     response = requests.get(
         url="https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
-            "/excel/story_review_table.json"
+        "/excel/story_review_table.json"
     )
     if response.status_code != 200:
         return []
@@ -385,7 +395,7 @@ def get_level_info() -> list:
         latest_act = latest_remakeact
     response = requests.get(
         url="https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
-            "/excel/stage_table.json"
+        "/excel/stage_table.json"
     )
     if response.status_code != 200:
         return []
@@ -393,9 +403,9 @@ def get_level_info() -> list:
     ret_list = []
     for k, v in data.items():
         if (
-                (latest_act in k)
-                and (story_code := v["code"])
-                and (story_code not in ret_list)
+            (latest_act in k)
+            and (story_code := v["code"])
+            and (story_code not in ret_list)
         ):
             ret_list.append(story_code)
     # print(latest_act, ret_list)
@@ -520,10 +530,10 @@ def screencap_distance(path="screencap"):
             )
         # print(f'["HD-{x}"] = ' + "{ swip_right_max, -" + str(p) + "},")
 
-        
+
 def process_transparent_pixels(
-        input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
-        output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/new"),
+    input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
+    output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/new"),
 ):
     # 用于处理技能图标背景 不知道为什么透明背景识别失败
     import os
@@ -536,6 +546,8 @@ def process_transparent_pixels(
     center_x, center_y = 18, 18  # 或者 19, 19 根据需要调整
     radius = 18.3
     for filename in os.listdir(input_folder):
+        if "style" in filename:
+            continue
         input_path = os.path.join(input_folder, filename)
         output_path = os.path.join(output_folder, filename.lower())
         if filename.endswith(".png"):
@@ -544,12 +556,12 @@ def process_transparent_pixels(
             for i in range(image.width):
                 for j in range(image.height):
                     r, g, b, a = pixels[i, j]
-                    # if a < 17:
-                    #     pixels[i, j] = (61, 61, 61, 255)
-                    # if ((i - 18.5) ^ 2 + (j - 18.5) ^ 2) < 17 ^ 2 then
-                    if not ((i - center_x) ** 2 + (j - center_y) ** 2 < radius ** 2):
-                        if a < 30:
-                            pixels[i, j] = (61, 61, 61, 255)
+                    # 距离中心大于radius，或者透明度小于等于70%，刷成固定颜色
+                    if (
+                        not ((i - center_x) ** 2 + (j - center_y) ** 2 < radius**2)
+                        or a <= 204
+                    ):
+                        pixels[i, j] = (61, 61, 61, 255)
             image.save(output_path)
         else:
             shutil.copy2(input_path, output_path)
@@ -557,7 +569,9 @@ def process_transparent_pixels(
 
 def char2vue():
     char = None
-    resp = requests.get("https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json")
+    resp = requests.get(
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json"
+    )
     if resp.status_code == 200:
         char = json.loads(resp.text)
     for k, v in char.items():

@@ -2429,6 +2429,7 @@ end
 
 updateSkill = function(update_info)
     if dev_mode then
+        log("开发模式解压skill.zip")
         extractAssets("main.rc", getWorkPath(), "skill.zip")
         unZip(skill_path, skill_extract_path)
         return
