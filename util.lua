@@ -34,8 +34,6 @@ disable_log_wrapper = function(func, enable)
 end
 enable_log_wrapper = function(func) return disable_log_wrapper(func, true) end
 
--- _restartScript = restartScript
-
 -- 无障碍函数替换
 if not openPermissionSetting then
     openPermissionSetting =

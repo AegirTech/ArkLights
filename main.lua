@@ -141,6 +141,8 @@ cloud.startHeartBeat()
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug_mode")
     ssleep(0.5)
+    -- print(point["活动导航0"])
+    -- exit()
 end
 
 load(before_account_hook or '')()

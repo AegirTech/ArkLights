@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-import io
 import itertools
 import json
 import os
 import re
 import subprocess
-import tempfile
 from collections import defaultdict
 from pathlib import Path
 
@@ -52,7 +50,7 @@ def unpack(source_folder="arknights", destination_folder="arknights_extract"):
 
 def decrypt(src):
     from Crypto.Cipher import AES
-    from Crypto.Util.Padding import pad, unpad
+    from Crypto.Util.Padding import unpad
 
     # pip install pycryptodome
     # base on https://github.com/InfiniteTsukuyomi/PyAutoGame
@@ -162,17 +160,13 @@ def skillicon2operator():
     for c, b in build["buffs"].items():
         buffid2name[b["buffId"]] = b["skillIcon"]
 
-    def contains_uppercase(s):
-        return any(char.isupper() for char in s)
-
     ans = defaultdict(list)
     for c, b in build["chars"].items():
         for b1 in b["buffChar"]:
             for b2 in b1["buffData"]:
                 buffid = b2["buffId"]
                 buffname = buffid2name[buffid]
-                if contains_uppercase(buffname):
-                    buffname = buffname.lower()
+                buffname = buffname.lower()
                 operator = char2name[c]
                 phase = (b2["cond"]["phase"])[-1]
                 ans[buffname].append(operator + str(phase))
@@ -412,7 +406,7 @@ def get_level_info() -> list:
     return ret_list
 
 
-def screencap_distance(path="screencap"):
+def screencap_distance2(path="screencap"):
     screencap = Path(path)
     import torch
 
@@ -529,6 +523,72 @@ def screencap_distance(path="screencap"):
                 + "},"
             )
         # print(f'["HD-{x}"] = ' + "{ swip_right_max, -" + str(p) + "},")
+
+
+def screencap_distance(path="screencap"):
+    screencap = Path(path)
+    import torch
+
+    torch.backends.cudnn.enabled = False
+    import easyocr
+
+    reader = easyocr.Reader(["en", "ch_sim"])
+    point = defaultdict(int)
+    distance = defaultdict(int)
+    shift_right = -120
+    # 滑动到最右边时 hd-1的x坐标相距屏幕中心的距离
+    distance[1] = 0
+    for x in sorted(screencap.glob("*.png")):
+        x = reader.readtext(str(x))
+        print("x", x)
+        visible_point = defaultdict(int)
+        for loc, text, confidence in x:
+            text = text.replace(" G", "-6")
+            text = text.replace("CI -2", "CW-2")
+            text = text.replace("-G", "-6")
+            text = text.replace("-g", "-9")
+            text = text.replace("IIW", "IW")
+            text = text.replace("IB", "WB")
+            text = text.replace("I", "1")
+            text = text.replace("l", "1")
+            text = text.replace("- ", "-")
+            text = text.replace(" ", "-")
+            text = text.replace("B12", "BI-2")
+            text = text.replace(" ", "")
+            text = text.replace("1C", "IC")
+            text = text.replace("EX", "")
+            text = text.replace("--", "-")
+            m = re.search("^.?.-(\d+)$", text)
+            print("m", m)
+            if not m:
+                continue
+            print("m", m)
+            m = int(m.group(1))
+            visible_point[m] = loc[0][0]
+            if point[m]:
+                continue
+            point[m] = loc[0]
+        for m in sorted(visible_point):
+            if m in distance:
+                continue
+            distance[m] = visible_point[m] - visible_point[m - 1] + distance[m - 1]
+            print("m-1,distance[m-1]", m - 1, distance, visible_point)
+        # print("visible_point", visible_point)
+    # print("point", point)
+    # print("distance", distance)
+
+    for x in sorted(point):
+        p = point[x]
+        p = [x * 1080 // 720 for x in p]
+        p[0] = 960 + shift_right * 1080 // 720
+        print(f'["HD-{x}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
+
+    # 距离膨胀系数，部分活动需要微调
+    distanceExpansionCoefficient = 1.14
+    for x in sorted(distance):
+        p = distance[x] - shift_right
+        p = int(p * distanceExpansionCoefficient)
+        print(f'["HD-{x}"] = ' + "{ swip_right_max, -" + str(p) + "},")
 
 
 def process_transparent_pixels(
