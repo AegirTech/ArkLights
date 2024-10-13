@@ -7869,7 +7869,6 @@ end
     ["匿影藏形"] = 24368,
     ["队伍前列"] = 21432,
     ["告别软弱"] = 24632,
-    ["“亲身经历”"] = 24465,
     ["别来拆家"] = 31694,
     ["迅捷之羽"] = 21245,
     ["目标在这儿呢！"] = 21441,
@@ -7888,11 +7887,11 @@ end
     --["书写悲痛"] = 23278,
     ["渗骨毒液"] = 32931,
     ["午后时光"] = 21280,
-    ["火力网"] = 24762,
+    --["火力网"] = 22727,
     ["狙击高地"] = 28977,
     ["箭指远方"] = 21442,
     ["模拟场景1122K"] = 21249,
-    ["去往高处"] = 21956,
+    --["去往高处"] = 21956,
     ["防空炮手"] = 23250,
     ["拉特兰风格"] = 22676,
     ["无人机筛选"] = 22736,
@@ -7923,7 +7922,7 @@ end
     ["群星闪烁相映"] = 24842,
     ["光影谜面"] = 30624,
     ["勇往直前"] = 32940,
-    ["钥与匙的守护者"] = 22471,
+    --["钥与匙的守护者"] = 22521,
     ["声威在前"] = 23892,
     ["焮天铄地"] = 22866,
     ["机械援助"] = 24386,
@@ -7959,7 +7958,7 @@ end
     ["最佳拍档"] = 31489,
     ["爆炸美学"] = 29863,
     ["处世之道"] = 21663,
-    ["“亲身经历”"] = 24465,
+    --["“亲身经历”"] = 24465,不支持
     --["俯瞰风雪"] = 30709,
     --["心态平和"] = 21246,
     ["幼小的恐惧"] = 23669,
@@ -8024,13 +8023,13 @@ end
     ["“友情出演”"] = 32534,
     ["同舟共济"] = 32532,
     ["风中之羽"] = 29768,
-    ["一夫当关"] = 29063,
+    --["一夫当关"] = 29063,
     --["安全框架"] = 31270,
     ["搭把手"] = 21895,
     ["月夜魔王之剑"] = 24304,
     ["泡普卡"] = 24421,
     ["不动如山"] = 30434,
-    ["出鞘"] = 30807,
+    ["出鞘"] = 42459,
     ["睥睨"] = 21248,
     ["纯粹的强大"] = 22430,
     ["伤痛坚守"] = 21247,
@@ -8050,6 +8049,18 @@ end
     ["来路无归"] = 24376,
     ["危机现场"] = 24374,
     ["据守险地"] = 22763,
+    ["锲而不舍"] = 37442, --灰喉
+    ["头阵冲锋"] = 36707, --推进之王
+    ["闪耀时刻"] = 41238, --澄闪
+    ["独刃"] = 36697, --阿斯卡纶
+    ["倒影"] = 36660, --归溟幽灵鲨
+    ["钢铁酋长"] = 41331, --森蚺
+    ["只此一人"] = 39756, --泥岩
+    ["爆炸美学"] = 29863, --梅尔
+    ["学者的实力"] = 41749, --纯烬艾雅法拉
+    ["坚如磐石"] = 36713, --闪灵
+    ["紧急救护"] = 21282, --蜜莓
+    ["携盾机动"] = 41296, --涤火杰西卡
 }
 
 path.悖论模拟 = function()
@@ -8077,47 +8088,107 @@ path.悖论模拟 = function()
             悖论模拟作业 = JsonDecode(bl_text)
         end
     end
-    for i = 1, 8 do
-        local bl = true
-        while bl do
-            if findOne("干员悖论模拟列表" .. i) then
-                tap("干员悖论模拟列表" .. i)
-            else
-                break
-            end
-            if appear("悖论模拟界面", 5) then
-                ssleep(.1)
-                local ret = ocrex("悖论模拟关卡名范围")
-                if ret then
-                    stage_name = ret[1]["text"]
-                    log("关卡ocr结果:", stage_name)
+    local 跳转干员页面 = function()
+        local y = findAny({ "主页" })
+        ssleep(.2)
+        tap("主页")
+        if not y or disappear(y, .5) then
+            ssleep(.2)
+            -- 一直按直到出现新状态
+            tap("主页列表干员")
+            tap("主页列表干员")
+
+            wait(function()
+                if not findAny({ "返回", "返回2" }) or
+                    findAny({ "主页", "返回确认", "返回确认2" }) then
+                    return true
                 end
-                if 悖论模拟作业[stage_name] then
-                    log(悖论模拟作业[stage_name])
-                    auto_prts(悖论模拟作业[stage_name], true)
-                    if not wait(function()
-                            if findOne("悖论模拟行动结束") then
-                                tap("悖论模拟行动结束")
-                            end
-                            tap("悖论模拟失败")
-                            if findOne("悖论模拟界面2") then
-                                path.跳转("干员")
-                            end
-                            if findOne("干员界面") then return true end
-                        end, 15) then
-                        return
+                tap("主页列表干员")
+            end, .5)
+            ssleep(.5)
+            return true
+        end
+    end
+    local ocr校正 = function(t)
+        local 替换 = {
+            ["势"] = "芬",
+        }
+        if t == nil or #t == 0 then return "" end
+        for i = 1, #t do
+            local 原文本 = (t[i]["text"])
+            --print(原文本)
+            if 替换[原文本] then
+                t[i]["text"] = 替换[原文本]
+            end
+            -- 去除开头的书名号
+            t[i]["text"] = t[i]["text"]:gsub("^《", "")
+
+            --开头和结尾的半角引号替换成全角
+            t[i]["text"] = t[i]["text"]:gsub("^\"(.-)\"$", "“%1”")
+            if string.match(t[i]["text"], "^“") then
+                -- 如果字符串以双引号开头
+                local rest = string.sub(t[i]["text"], 2) -- 获取去掉开头双引号的剩余部分
+                if not string.match(rest, "”$") then
+                    -- 如果剩余部分不以双引号结尾
+                    t[i]["text"] = t[i]["text"] .. "”" -- 在结尾补全双引号
+                end
+            end
+            --print(t[i]["text"])
+        end
+
+        return t
+    end
+
+    while true do
+        -- 取前12个位置
+        for i = 1, 12 do
+            local bl = true
+            while bl do
+                if appear("干员悖论模拟列表" .. i, 1) then
+                    tap("干员悖论模拟列表" .. i)
+                else
+                    toast("第" .. i .. "位置无悖论,跳过")
+                    return true
+                end
+                if appear("悖论模拟界面", 7) then
+                    ssleep(.2)
+                    local ret = ocr校正(ocrex("悖论模拟关卡名范围"))
+                    if ret then
+                        stage_name = ret[1]["text"]
+                        log("关卡ocr结果:", stage_name)
+                    end
+                    if 悖论模拟作业[stage_name] then
+                        log(悖论模拟作业[stage_name])
+                        auto_prts(悖论模拟作业[stage_name], true)
+                        if not wait(function()
+                                tap("悖论模拟失败")
+                                if findOne("悖论模拟界面2") then
+                                    log("悖论模拟成功")
+                                    跳转干员页面()
+                                    return true
+                                end
+                                if findOne("悖论模拟界面") then
+                                    log("悖论模拟失败")
+                                    bl = false
+                                    return true
+                                end
+                            end, 15) then
+                            return
+                        end
+                    else
+                        toast("第" .. i .. "位置未找到可用作业")
+                        break
                     end
                 else
-                    log("未找到可用作业")
+                    log("未进入悖论模拟界面")
                     break
                 end
-            else
-                log("未进入悖论模拟界面")
-                break
             end
+            log("返回干员页")
+            跳转干员页面()
         end
-        log("返回干员页")
-        path.跳转("干员")
+        log("下一页干员")
+        swip_char() --滑动6个干员位置
     end
 end
 

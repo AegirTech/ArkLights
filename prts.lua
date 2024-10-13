@@ -48,11 +48,18 @@ loadHomework = function(levelName, isLocal)
         local maaCode = levelName or ''
         print("读取MAA作业站作业", maaCode, "并自动点赞")
         local url = 'https://prts.maa.plus/copilot/get/' .. maaCode
-        local ret, code = httpGet(url, 8)
-        local data = JsonDecode(ret)
+        ::重试::
+        local ret, code = httpGet(url)
+        log(ret)
+        local status, data = pcall(JsonDecode, ret)
+        if not status then
+            toast("未解析到作业,15s后重试")
+            ssleep(15)
+            goto 重试
+        end
         local x = get(data, 'data', 'content')
         local levelInfo = JsonDecode(x)
-        httpPost('https://prts.maa.plus/copilot/rating/', JsonEncode({ rating = "Like", id = maaCode, }))
+        httpPost('https://prts.maa.plus/copilot/rating/', JsonEncode({ rating = "like", id = maaCode, }))
         --log(levelInfo)
         return levelInfo
     end
