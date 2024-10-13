@@ -8098,10 +8098,11 @@ path.悖论模拟 = function()
                     if not wait(function()
                             if findOne("悖论模拟行动结束") then
                                 tap("悖论模拟行动结束")
-                                appear("悖论模拟界面2", 5)
-                                path.跳转("干员")
                             end
                             tap("悖论模拟失败")
+                            if findOne("悖论模拟界面2") then
+                                path.跳转("干员")
+                            end
                             if findOne("干员界面") then return true end
                         end, 15) then
                         return

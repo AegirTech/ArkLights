@@ -285,19 +285,29 @@ auto_prts = function(作业名, 需要编队, 是否自带)
 
     if 需要编队 == true and 训练地图 == 0 then
         if 地图类型 == 5 then
-            appearTap("开始模拟", 2)
-            if not wait(function()
-                    if findOne("悖论模拟选择技能") then return true end
-                end, 5) then
-                return
+            tap("悖论模拟界面")
+            local 悖论模拟选技能 = function()
+                if not wait(function()
+                        if findOne("悖论模拟选择技能") then return true end
+                    end, 3) then
+                    log("低星干员无技能,跳过选择技能")
+                    return
+                end
+                if 作业["opers"][1]["skill"] == 1 then
+                    tap("悖论模拟技能1")
+                    sleep(400)
+                    tap("悖论模拟技能1")
+                elseif 作业["opers"][1]["skill"] == 2 then
+                    tap("悖论模拟技能2")
+                    sleep(400)
+                    tap("悖论模拟技能2")
+                elseif 作业["opers"][1]["skill"] == 3 then
+                    tap("悖论模拟技能3")
+                    sleep(400)
+                    tap("悖论模拟技能3")
+                end
             end
-            if 作业["opers"][1]["skill"] == 1 then
-                tap("悖论模拟技能1")
-            elseif 作业["opers"][1]["skill"] == 2 then
-                tap("悖论模拟技能2")
-            elseif 作业["opers"][1]["skill"] == 3 then
-                tap("悖论模拟技能3")
-            end
+            悖论模拟选技能()
         else
             if 自动编队(作业["opers"], 群组) == false then return false end
         end
@@ -326,7 +336,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
             sleep(500)
         until false
     end
-    if not wait(function()
+    if 地图类型 ~= 5 and not wait(function()
             local p = findAny({ "开始行动红按钮", "开始行动突袭", "开始行动演习", "开始行动肉鸽", "开始行动悖论模拟", "开始行动磨难" })
             print(p)
             if p then
