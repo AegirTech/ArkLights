@@ -1,3 +1,10 @@
+---滑动以获得基建干员信息
+---@param operators table 干员
+---@param pngdata table 该组干员属于那种建筑
+---@param pngdata table 该组干员属于那种建筑
+---@param pageid number 最大翻页次数
+---@param mood_only boolean 仅识别心情
+---@param stationType string 建筑类型
 discover = still_wrapper(function(operators, pngdata, pageid, mood_only, stationType)
     -- 异步滑动
     -- local delay = swipo(false, true)
@@ -992,6 +999,7 @@ initPngdata = function()
         办公室 = officePngdata,
         发电站 = powerPngdata,
         宿舍 = dormitoryPngdata,
+        肥鸭 = dormitoryPngdata,
         训练室 = trainingPngdata,
         加工站 = workshopPngdata,
     }
@@ -1073,6 +1081,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
     -- ==> 滑动获取所有技能
 
     local maxSwipTimes = 10
+    if stationType == "肥鸭" then maxSwipTimes = 1 end
     local operator = {}
     for i = 1, maxSwipTimes do
         -- if discover(operator,
@@ -1159,6 +1168,13 @@ chooseOperator = function(stationType, goodType, stationLevel,
     elseif stationType == "宿舍" then
         best, best_score = dormitoryOperatorBest(operator, goodType, virtralPowerStationNum)
         log("宿舍选", best)
+    elseif stationType == "肥鸭" then
+        best, best_score = dormitoryOperatorFiammetta(operator)
+        if best_score < 1 then
+            return
+        else
+            log("宿舍选肥鸭")
+        end
     elseif stationType == "训练室" then
         --goodType表示被训练干员的职业,stationLevel表示被训练干员的专精等级
         best, best_score = trainingOperatorBest(operator, goodType, stationLevel)
@@ -1198,6 +1214,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
         sleep(50)
     end
     swipo(true, true)
+    return true
     -- exit()
 end
 
@@ -1633,6 +1650,29 @@ dormitoryOperatorBest = function(operator, goodType, virtralPowerStationNum)
     end
     best = { all, single }
     log(best)
+    return best, best_score
+end
+
+--挑选菲亚梅塔
+dormitoryOperatorFiammetta = function(operator)
+    -- 过滤心情小于阈值的干员
+    local minAllowedMood = 24 --肥鸭技能只在满心情有效
+    log(1648, operator)
+    operator = table.filter(operator,
+        function(x) return x ~= {} or x[3] >= minAllowedMood end)
+    local best = {}
+    local best_score = -1
+
+    for _, o in pairs(operator) do
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, 'bskill_dorm_exchangeap')
+                or table.includes({ o[1], o[2] }, "bskill_dorm_reborn") then
+                table.insert(best, o)
+                best_score = 1
+                return best, best_score
+            end
+        end
+    end
     return best, best_score
 end
 

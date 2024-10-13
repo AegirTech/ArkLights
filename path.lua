@@ -1832,6 +1832,7 @@ end
 path.宿舍换班 = function()
     if disable_dorm_shift then return end
     local f
+    local fiammetta_used = false
     f = function(i)
         path.跳转("基建")
 
@@ -1844,40 +1845,58 @@ path.宿舍换班 = function()
             return
         end
 
-        if not appear({ "进驻信息", "进驻信息选中" }, 5) then
-            log("621")
-            return
+        local 进入宿舍并清空干员 = function()
+            if not appear({ "进驻信息", "进驻信息选中" }, 5) then
+                log("621")
+                return
+            end
+            if not wait(function()
+                    if findOne("筛选") then return true end
+                    if findOne("进驻信息选中") then
+                        wait(function()
+                            if findOne("筛选") then return true end
+                            tap("进驻第一人")
+                        end, 1)
+                    elseif findOne("进驻信息") then
+                        tap("进驻信息")
+                        ssleep(.2)
+                        wait(function()
+                            if findOne("筛选") then return true end
+                            tap("进驻第一人")
+                        end, 1)
+                    end
+                end, 5) then
+                return
+            end
+
+            tap("清空选择")
+            if not wait(function()
+                    if findOne("干员未选中") and findOne("第一干员未选中") then
+                        return true
+                    end
+                    tap("清空选择")
+                end, 5) then
+                return
+            end
         end
-        if not wait(function()
-                if findOne("筛选") then return true end
-                if findOne("进驻信息选中") then
-                    wait(function()
-                        if findOne("筛选") then return true end
-                        tap("进驻第一人")
-                    end, 1)
-                elseif findOne("进驻信息") then
-                    tap("进驻信息")
-                    ssleep(.2)
-                    wait(function()
-                        if findOne("筛选") then return true end
-                        tap("进驻第一人")
-                    end, 1)
-                end
-            end, 5) then
-            return
+        local 确认干员选择 = function()
+            if not wait(function(reset_wait_start_time)
+                    if findAny({ "隐藏", "进驻信息", "进驻信息选中" }) then
+                        return true
+                    end
+                    if findOne("正在提交反馈至神经") then
+                        reset_wait_start_time()
+                    end
+                    tap("确认蓝")
+                end, 5) then
+                return
+            end
         end
 
-        tap("清空选择")
-        if not wait(function()
-                if findOne("干员未选中") and findOne("第一干员未选中") then
-                    return true
-                end
-                tap("清空选择")
-            end, 5) then
-            return
-        end
+        进入宿舍并清空干员()
 
         local operator
+
         if shift_prefer_speed then
             -- 选后5个
             operator = map(function(x) return "干员选择列表" .. x end,
@@ -1886,11 +1905,53 @@ path.宿舍换班 = function()
             -- 根据心情阈值选择
             operator = {}
             discover(operator, {}, 1, true)
-            log(818, operator, shift_min_mood)
             operator = table.filter(operator, function(x)
                 return math.abs(x[3]) < shift_min_mood + 1
             end)
-            -- log(819,operator)
+            log(819, operator, shift_min_mood)
+            if i < 3 and not not_use_ocr and fiammetta_used == false then
+                local char_after_fiammetta
+                if table.any(operator,
+                        function(x)
+                            if table.includes({ "但书", "巫恋", "龙舌兰" }, x[6]) then
+                                char_after_fiammetta = x[4]
+                                return true
+                            end
+                        end) then
+                    tap(char_after_fiammetta)
+                    ssleep(.2)
+                    if not findOne("基建心情降序") then tap("基建心情降序") end
+                    ssleep(.2)
+                    tap("干员选择列表1")
+                    ssleep(.2)
+                    if chooseOperator("肥鸭") then
+                        ssleep(.4)
+                        tap("干员选择列表1")
+                        ssleep(.2)
+                        if findOne("基建心情降序") then tap("基建心情降序") end
+                        ssleep(.2)
+                        tap("干员选择列表2")
+                        tap("干员选择列表1")
+                        ssleep(.2)
+                        tap("干员选择列表2")
+                        tap("干员选择列表1")
+                        确认干员选择()
+                        ssleep(.2)
+                        fiammetta_used = true
+                        进入宿舍并清空干员()
+                        operator = {}
+                        discover(operator, {}, 1, true)
+                        log(818, operator, shift_min_mood)
+                        operator = table.filter(operator, function(x)
+                            return math.abs(x[3]) < shift_min_mood + 1
+                        end)
+                    else
+                        if findOne("基建心情降序") then tap("基建心情降序") end
+                        ssleep(.2)
+                    end
+                end
+            end
+
             operator = map(function(x) return x[4] end, operator)
             operator = table.slice(operator, 1, 5)
 
@@ -1899,7 +1960,7 @@ path.宿舍换班 = function()
             --     return "干员选择列表" .. x
             --   end, range(1, 5))), 1, 5)
 
-            log(820, operator)
+            --log(820, operator)
         end
 
         if #operator > 0 and not wait(function()
@@ -1996,17 +2057,7 @@ path.宿舍换班 = function()
             end
         end
 
-        if not wait(function(reset_wait_start_time)
-                if findAny({ "隐藏", "进驻信息", "进驻信息选中" }) then
-                    return true
-                end
-                if findOne("正在提交反馈至神经") then
-                    reset_wait_start_time()
-                end
-                tap("确认蓝")
-            end, 5) then
-            return
-        end
+        确认干员选择()
     end
     for i = 1, 4 do f(i) end
 end
@@ -2581,11 +2632,11 @@ path.总览换班 = function()
         log("times", times)
         if times >= 7 and (isCharExsit["迷迭香"] or isCharExsit["鸿雪"]) then
             ssleep(.2)
-            tap("基建心情排序")
+            tap("基建技能排序")
             ssleep(.2)
             chooseOperator(stationType)
             ssleep(.2)
-            tap("基建心情排序")
+            tap("基建技能排序")
         end
         if not wait(function()
                 if findOne("筛选取消") then return true end
