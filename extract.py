@@ -616,7 +616,7 @@ def process_transparent_pixels(
             for i in range(image.width):
                 for j in range(image.height):
                     r, g, b, a = pixels[i, j]
-                    # 距离中心大于radius，或者透明度小于等于70%，刷成固定颜色
+                    # 距离中心大于radius，或者透明度小于等于70%*255，刷成固定颜色#3D3D3D
                     if (
                         not ((i - center_x) ** 2 + (j - center_y) ** 2 < radius**2)
                         or a <= 204
