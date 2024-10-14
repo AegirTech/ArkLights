@@ -616,8 +616,10 @@ def process_transparent_pixels(
             for i in range(image.width):
                 for j in range(image.height):
                     r, g, b, a = pixels[i, j]
-                    # 距离中心大于radius，或者透明度小于等于70%*255，刷成固定颜色#3D3D3D
-                    if (
+
+                    if "bskill_man_spd&power" in filename:
+                        print("自动化系列技能有点问题,请用原来点点生成的覆盖")
+                    elif (  # 距离中心大于radius，或者透明度小于等于70%*255，刷成固定颜色#3D3D3D
                         not ((i - center_x) ** 2 + (j - center_y) ** 2 < radius**2)
                         or a <= 204
                     ):
