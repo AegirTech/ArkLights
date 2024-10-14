@@ -1909,8 +1909,7 @@ path.宿舍换班 = function()
                 return math.abs(x[3]) < shift_min_mood + 1
             end)
             log(819, operator, shift_min_mood)
-            -- 第一个宿舍因为收取材料会遮挡ocr，跳过
-            if i > 1 and i < 4 and not not_use_ocr and fiammetta_used == false then
+            if i < 4 and not not_use_ocr and fiammetta_used == false then
                 local char_after_fiammetta
                 if table.any(operator,
                         function(x)

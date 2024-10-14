@@ -595,7 +595,7 @@ def process_transparent_pixels(
     input_folder=os.path.join(os.getcwd(), "ArknightsGameResource/skill"),
     output_folder=os.path.join(os.getcwd(), "ArknightsGameResource/new"),
 ):
-    # 用于处理技能图标背景 不知道为什么透明背景识别失败
+    # 用于处理技能图标背景
     import os
     import shutil
     from PIL import Image
@@ -613,17 +613,19 @@ def process_transparent_pixels(
         if filename.endswith(".png"):
             image = Image.open(input_path).convert("RGBA")
             pixels = image.load()
-            for i in range(image.width):
-                for j in range(image.height):
+            # 给图片叠加一个#3d3d3d的背景图层
+            background_r, background_g, background_b = 61, 61, 61  # 背景色#3d3d3d
+            # 遍历每个像素点
+            for i in range(image.size[0]):
+                for j in range(image.size[1]):
                     r, g, b, a = pixels[i, j]
-
-                    if "bskill_man_spd&power" in filename:
-                        print("自动化系列技能有点问题,请用原来点点生成的覆盖")
-                    elif (  # 距离中心大于radius，或者透明度小于等于70%*255，刷成固定颜色#3D3D3D
-                        not ((i - center_x) ** 2 + (j - center_y) ** 2 < radius**2)
-                        or a <= 204
-                    ):
-                        pixels[i, j] = (61, 61, 61, 255)
+                    # 如果像素是透明的或半透明的，则用背景色替换
+                    if a < 255:
+                        # 计算混合颜色
+                        new_r = (a * r + (255 - a) * background_r) // 255
+                        new_g = (a * g + (255 - a) * background_g) // 255
+                        new_b = (a * b + (255 - a) * background_b) // 255
+                        pixels[i, j] = (new_r, new_g, new_b, 255)  # 设置为不透明
             image.save(output_path)
         else:
             shutil.copy2(input_path, output_path)
