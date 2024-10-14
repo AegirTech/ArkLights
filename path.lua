@@ -1904,12 +1904,13 @@ path.宿舍换班 = function()
         else
             -- 根据心情阈值选择
             operator = {}
-            discover(operator, {}, 1, true)
+            discoverWithOcr(operator, {}, 1, true)
             operator = table.filter(operator, function(x)
                 return math.abs(x[3]) < shift_min_mood + 1
             end)
             log(819, operator, shift_min_mood)
-            if i < 3 and not not_use_ocr and fiammetta_used == false then
+            -- 第一个宿舍因为收取材料会遮挡ocr，跳过
+            if i > 1 and i < 4 and not not_use_ocr and fiammetta_used == false then
                 local char_after_fiammetta
                 if table.any(operator,
                         function(x)
@@ -1920,19 +1921,22 @@ path.宿舍换班 = function()
                         end) then
                     tap(char_after_fiammetta)
                     ssleep(.2)
-                    if not findOne("基建心情降序") then tap("基建心情降序") end
+                    if not findOne("基建心情降序", .85) then tap("基建心情降序") end
                     ssleep(.2)
+                    -- 取消选择需要被换心情的干员,防止识别错误
                     tap("干员选择列表1")
                     ssleep(.2)
                     if chooseOperator("肥鸭") then
                         ssleep(.4)
-                        tap("干员选择列表1")
+                        tap("干员选择列表1") -- 这时候是肥鸭,干员,需要把他们换个顺序
                         ssleep(.2)
-                        if findOne("基建心情降序") then tap("基建心情降序") end
+                        if findOne("基建心情降序", .85) then tap("基建心情降序") end
                         ssleep(.2)
+                        -- 取消选择
                         tap("干员选择列表2")
                         tap("干员选择列表1")
                         ssleep(.2)
+                        -- 重置顺序为干员,肥鸭
                         tap("干员选择列表2")
                         tap("干员选择列表1")
                         确认干员选择()
@@ -1946,7 +1950,8 @@ path.宿舍换班 = function()
                             return math.abs(x[3]) < shift_min_mood + 1
                         end)
                     else
-                        if findOne("基建心情降序") then tap("基建心情降序") end
+                        log("未找到满心情菲亚梅塔")
+                        if findOne("基建心情降序", .85) then tap("基建心情降序") end
                         ssleep(.2)
                     end
                 end

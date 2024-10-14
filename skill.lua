@@ -149,6 +149,80 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
     -- exit()
 end)
 
+-- 宿舍专用识别,不识别技能,只识别心情和干员名,有可能给深海队和推王组用
+discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, stationType)
+    local prewhite = 0
+    local y = scale(383)
+    local corner = {}
+    for x = scale(600), scale(1590) do
+        if cmpColor(x, y, 'FFFFFF', default_findcolor_confidence) == 1 then
+            prewhite = prewhite + 1
+        elseif prewhite > scale(5) and
+            cmpColor(x, y, '898989', default_findcolor_confidence) == 1 then
+            prewhite = 0
+            table.insert(corner, x)
+        end
+    end
+    log(113, #corner)
+
+    local card = {}
+    if #corner == 0 then
+        log("基建换班找不到卡片")
+        return
+    end
+    local prex = -math.huge
+    for _, x in pairs(corner) do
+        if x - prex > scale(207) then
+            prex = x
+            table.insert(card, { x, scale(379) })
+            table.insert(card, { x, scale(801) })
+        end
+    end
+
+    -- card = table.slice(card, 4, 4)
+    log(114, card)
+    local empty1_num = 0
+    for idx, v in pairs(card) do
+        -- 技能判断
+        local icon1 = {
+            v[1] + scale(7), v[2] + scale(18), v[1] + scale(60), v[2] + scale(70),
+        }
+        local name = "干员名未识别"
+        if dev_mode or (not not_use_ocr) then
+            log(188)
+            local status, charName = pcall(ocro, {
+                v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
+            })
+            if status then
+                name = correctCharName(charName)
+            else
+                toast("OCR错误：请在测试功能内勾选不使用OCR")
+            end
+        end
+
+        local png = ''
+        local png2 = ''
+
+        -- 心情判断
+        local mood = 0
+        -- log(v[1])
+        local mood1 = { v[1] + scale(49), v[2] + scale(93) }
+        -- log(mood1)
+        for i = 24, 1, -1 do
+            local moodi = { mood1[1] + scale((i - 1) * 5.3478), mood1[2] }
+            if cmpColor(moodi[1], moodi[2], 'FFFFFF', 0.4) == 1 then
+                mood = i
+                break
+            end
+        end
+        log(129, idx, operator, mood, name)
+
+        table.insert(operators, { png, png2, mood, icon1, pageid, name })
+    end
+    log(217, operators)
+end)
+
+
 -- 贸易站干员选择
 -- operator: 列表，每个元素包含两个技能图标
 -- dormitoryCapacity: 宿舍可容纳人数
