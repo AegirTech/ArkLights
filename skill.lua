@@ -1084,6 +1084,8 @@ initPngdata = function()
             pngdata = manufacturingPngdata
         elseif v:startsWith("bskill_tra_") then
             pngdata = tradingPngdata
+        elseif v:startsWith("trade_") then
+            pngdata = tradingPngdata
         elseif v:startsWith("bskill_meet") then
             pngdata = meetingPngdata
         elseif v:startsWith("bskill_ctrl") then
