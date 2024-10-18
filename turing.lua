@@ -1,5 +1,5 @@
 -- 添加已有项的插件文件“TURING.luae”到懒人精灵工程“插件”中
-turing_plugin_status, TURING = pcall(require("TURING"))
+TURING = require("TURING")
 
 杀敌数字库 = function(h)
     local 识别库 = {}

@@ -51,7 +51,7 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "10.19 01:36"
+release_date = "10.19 01:46"
 update_announcement = '最近更新：推王活动ex关导航。'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -138,8 +138,8 @@ update_state_from_debugui()
 check_crontab_on_start()
 cloud.startHeartBeat()
 
-if not turing_plugin_status then
-    --自动战斗本地字库ocr,本体更新前暂时用pcall，不要闪退
+if use_local_dictionary then
+    --自动战斗本地字库ocr
     require("turing")
 end
 
