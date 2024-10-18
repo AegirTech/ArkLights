@@ -1391,17 +1391,23 @@ end
 end
 
 获得敌人数 = function(a)
-    local ret = ocrex("敌人数范围" .. a)
-    if ret ~= {} and #ret ~= 0 then
-        return ret[1].text
+    local ret
+    if use_local_dictionary then
+        ret = TURING.图灵识别({ { 屏幕范围 = point["敌人数范围" .. a] }, { { 二值化 = { "41-166" } } }, { 范围投影 = { 1, 1 } }, { 六十四进制字库数组 = { 杀敌数字库(screen.height) } }, { 0 } })
+    else
+        ret = ocro("敌人数范围" .. a)
     end
+    return ret
 end
 
 获得cost = function()
-    local ret = ocrex("cost范围")
-    if ret ~= {} and #ret ~= 0 then
-        return ret[1].text
+    local ret
+    if use_local_dictionary then
+        ret = TURING.图灵识别({ { 屏幕范围 = point["cost范围"] }, { { 二值化 = { "0-100" } } }, { 范围投影 = { 2, 1 } }, { 六十四进制字库数组 = { cost字库(screen.height) } }, { 0 } })
+    else
+        ret = ocro("cost范围")
     end
+    return ret
 end
 
 战斗识别干员 = function()
