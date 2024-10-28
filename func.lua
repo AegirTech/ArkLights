@@ -478,7 +478,7 @@ end
 
 -- b服选点验证码打码
 trySolvePointSelectionCapture = function(rect)
-    if cloud.captcha() then return end
+    if cloud.captcha() then return true end
     if not rect then return end
     local img = getWorkPath() .. "/capture.jpg"
     snapShot(img, rect.l, rect.t, rect.r, rect.b)

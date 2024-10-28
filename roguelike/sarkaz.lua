@@ -81,7 +81,9 @@ sarkaz.不期而遇处理 = function()
         return zl_event_solve(2, "萨卡兹_战略帮助")
     elseif string.finds(str, { "萨米", "维", "女士" }) then
         return zl_event_solve(1, "萨卡兹_战略帮助")
-    elseif string.finds(str, { '相', '黑' }) then
+    elseif string.finds(str, { '相' }) then
+        return zl_event_solve(4, "萨卡兹_战略帮助")
+    elseif string.finds(str, { '黑' }) then
         return zl_event_solve(5, "萨卡兹_战略帮助")
     end
 

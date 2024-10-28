@@ -530,11 +530,11 @@ path.bilibili_login = {
         ssleep(.5)
         log("b服打码")
         if trySolvePointSelectionCapture(box) then
+            ssleep(0.3)
             if not findTap("B服安全验证提交") then
                 findTap("B服安全验证提交320DPI")
                 tapIfCheckedColor({ 823, 605, "539FFE" }, { 823, 605, "539FFE" })
             end
-
             if appear({ "B服安全验证失败", "B服安全验证失败320DPI" }) then
                 cloud.captcha_report()
                 jfbym_report()
@@ -547,6 +547,7 @@ path.bilibili_login = {
                 if not findAny({
                         "B服安全验证提交", "B服安全验证提交320DPI",
                     }) then
+                    log("B服安全验证提交失败2")
                     return true
                 end
                 ssleep(2)
