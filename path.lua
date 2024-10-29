@@ -9402,3 +9402,41 @@ end
 path.专注失调 = function()
     auto_skill()
 end
+
+path.森空岛小活动 = function(xtime)
+    appid = "com.hypergryph.skland"
+    disable_game_up_check = true
+    appear("游戏进行判断", 15)
+    local all_p = {}
+    wait(function()
+        if find_color("游戏范围判断", point["游戏上部分红"], 1, 0.9) then
+            return true
+        end
+        ssleep(0.2)
+    end, 10)
+    ssleep(1.5)
+    local count_p = function(col, xp1)
+        for i = 1, 5 do
+            for j = 1, 5 do
+                local tx, ty = xp1.x + (j - 1) * scale(67), xp1.y + (i - 1) * scale(67)
+                if cmpColor(tx, ty, col, 0.9) == 1 then
+                    table.insert(all_p, tostring(i) .. tostring(j))
+                end
+            end
+        end
+    end
+    count_p(point["游戏上部分红"], { x = scale(263), y = scale(339) })
+    count_p(point["游戏下部分蓝"], { x = scale(256), y = scale(764) })
+    all_p = table.remove_duplicate(all_p)
+    log("数量", all_p)
+    local 总数 = tostring(#all_p)
+    for char in 总数:gmatch(".") do
+        tap("选择" .. char)
+    end
+    appear("游戏结算画面", 20)
+    disappear("游戏结算画面", 20)
+    xtime = xtime or 1
+    toast("森空岛小活动" .. xtime .. "分")
+    appear("游戏进行判断", 20)
+    path.森空岛小活动(xtime)
+end
