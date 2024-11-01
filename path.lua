@@ -1853,9 +1853,14 @@ path.宿舍换班 = function()
             end
             if not wait(function()
                     if findOne("筛选") then return true end
+                    --[[if not findOne("基建心情升序") then
+                        tap("基建心情升序")
+                        ssleep(.2)
+                    end]]
                     if findOne("进驻信息选中") then
                         wait(function()
                             if findOne("筛选") then return true end
+                            log(1859)
                             tap("进驻第一人")
                         end, 1)
                     elseif findOne("进驻信息") then
@@ -1863,6 +1868,7 @@ path.宿舍换班 = function()
                         ssleep(.2)
                         wait(function()
                             if findOne("筛选") then return true end
+                            log(1867)
                             tap("进驻第一人")
                         end, 1)
                     end
@@ -1895,7 +1901,6 @@ path.宿舍换班 = function()
         end
 
         进入宿舍并清空干员()
-
         local operator
 
         if shift_prefer_speed then
@@ -2494,19 +2499,23 @@ path.贸易换班 = function()
     return path.制造换班(true)
 end
 
+-- 5.5周年后ui大改,暂时舍弃工作区兜底换班
 path.总览换班 = function()
     if disable_overview_shift then return end
     local f
     path.跳转("基建")
     if not wait(function()
-            if findOne("撤下干员") then return true end
+            if findOne("基建总览工作区") then return true end
             tap("进驻总览")
+            ssleep(.2)
         end, 10) then
         return
     end
 
+
     path.控制中枢换班()
     path.会客厅换班()
+
 
     local swipd = function()
         local flipd = 150
@@ -2529,7 +2538,31 @@ path.总览换班 = function()
         -- 不用的话，大分辨率还是有可能出现错过加号
         sleep(100)
     end
-
+    if not wait(function()
+            if findOne("基建总览非工作区") then return true end
+            tap("基建总览非工作区")
+            ssleep(.2)
+        end, 10) then
+        return
+    end
+    --[[local stationType = "宿舍"
+    if (isCharExsit["迷迭香"] or isCharExsit["鸿雪"]) then
+        ssleep(.2)
+        tap("基建技能排序")
+        ssleep(.2)
+        chooseOperator(stationType)
+        ssleep(.2)
+        tap("基建技能排序")
+    end]]
+    if not wait(function()
+            if findOne("基建干员休整灰") and findOne("基建总览非工作区") then return true end
+            tap("基建干员休整")
+            ssleep(.2)
+            disappear("正在释放神经递质", 5)
+        end, 10) then
+        return
+    end
+    --[[
     local first_look = false
     if disable_control_shift and disable_meeting_shift then first_look = true end
     local visitedy = {}
@@ -2543,7 +2576,7 @@ path.总览换班 = function()
         log(800, p)
         first_look = false
         -- 至少做两次"入驻干员"检测，慢机只靠timeout不够可能，强制加一次
-        if not appear("入驻干员", timeout) and findOne("撤下干员") and
+        if not appear("入驻干员", timeout) and findOne("基建总览非工作区") and
             not findOne("入驻干员") then
             log("无入驻干员")
             return
@@ -2552,7 +2585,7 @@ path.总览换班 = function()
         local last_time_see_plus = time()
         if not wait(function()
                 if findOne("确认蓝") then return true end
-                if findOne("撤下干员") then
+                if findOne("基建总览非工作区") then
                     p = findOne("入驻干员")
                     if p then
                         tap(p)
@@ -2577,7 +2610,7 @@ path.总览换班 = function()
             -- 多次进入同一高度，直接翻页
             if (visitedy[height] or 0) >= 4 then
                 if not wait(function(reset_wait_start_time)
-                        if findOne("撤下干员") then return true end
+                        if findAny({ "基建总览非工作区", "基建总览工作区" }) then return true end
                         if findOne("正在提交反馈至神经") then
                             reset_wait_start_time()
                         end
@@ -2619,7 +2652,7 @@ path.总览换班 = function()
                 tapAll(map(function(j) return "干员选择列表" .. j end,
                     range(2 * limit, limit + 1, -1)))
                 if not wait(function(reset_wait_start_time)
-                        if findOne("撤下干员") then return true end
+                        if findAny({ "基建总览非工作区", "基建总览工作区" }) then return true end
                         if findOne("正在提交反馈至神经") then
                             reset_wait_start_time()
                         end
@@ -2633,9 +2666,10 @@ path.总览换班 = function()
             visitedy[height] = (visitedy[height] or 0) + 1
             log(865, height, p, visitedy)
         end
+
         local stationType = "宿舍"
         log("times", times)
-        if times >= 7 and (isCharExsit["迷迭香"] or isCharExsit["鸿雪"]) then
+        if times >= 2 and (isCharExsit["迷迭香"] or isCharExsit["鸿雪"]) then
             ssleep(.2)
             tap("基建技能排序")
             ssleep(.2)
@@ -2721,7 +2755,7 @@ path.总览换班 = function()
         end
 
         if not wait(function(reset_wait_start_time)
-                if findOne("撤下干员") then return true end
+                if findAny({ "基建总览非工作区", "基建总览工作区" }) then return true end
                 if findOne("正在提交反馈至神经") then
                     reset_wait_start_time()
                 end
@@ -2732,15 +2766,14 @@ path.总览换班 = function()
 
         return true
     end
-
     local bottom
     local reach_bottom = false
     for i = 1, 60 do
         if i ~= 1 then
-            swipd()
+
             -- TODO wait bottom for stable
             if not appear(bottom, 1) then
-                if not findOne('撤下干员') then
+                if not findOne('基建总览工作区') then
                     stop('总览换班滑动异常', 'cur')
                 end
                 reach_bottom = true
@@ -2753,7 +2786,7 @@ path.总览换班 = function()
         -- sample bottom after first detect
         if not bottom then bottom = sample("进驻总览底部") end
     end
-    if not findOne("撤下干员") then return end
+    if not findOne("基建总览非工作区") then return end]]
 end
 
 path.基建换班 = function()
@@ -2773,8 +2806,9 @@ path.基建换班 = function()
     path.办公室换班()
     path.跳转("基建")
     if not wait(function()
-            if findOne("撤下干员") then return true end
+            if findOne("基建总览工作区") then return true end
             tap("进驻总览")
+            ssleep(.2)
         end, 10) then
         return
     end
@@ -3050,15 +3084,9 @@ path.会客厅换班 = function(stationType, a)
 
     stationType = stationType or "会客厅"
     log(2946, stationType)
-    -- 进总览
-    -- path.跳转("基建")
-    -- if not wait(function()
-    --   if findOne("撤下干员") then return true end
-    --   tap("进驻总览")
-    -- end, 10) then return end
 
     -- 检查是否缺人，不缺不换
-    if not a and not appear("入驻干员" .. stationType, .5) and findOne("撤下干员") and
+    if not a and not appear("入驻干员" .. stationType, .5) and findOne("基建总览工作区") and
         not findOne("入驻干员" .. stationType) then
         log("无入驻干员")
         return

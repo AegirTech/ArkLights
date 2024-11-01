@@ -51,8 +51,8 @@ default_auto_timeout_second = 300
 -- 设成1000//30时，真机同时开着B服与官服时会出现点着点着脚本就停（从基建开始做邮件）
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.01 17:08"
-release_date = "11.01 17:08"
+release_date = "11.01 19:53"
+release_date = "11.01 19:53"
 update_announcement = '最近更新：测试功能森空岛小游戏。'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -143,11 +143,8 @@ if use_local_dictionary then
     --自动战斗本地字库ocr
     require("turing")
 end
-
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug_mode")
-    path.森空岛小活动()
-    exit()
 end
 
 load(before_account_hook or '')()
