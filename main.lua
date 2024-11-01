@@ -52,7 +52,6 @@ default_auto_timeout_second = 300
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
 release_date = "11.01 19:53"
-release_date = "11.01 19:53"
 update_announcement = '最近更新：测试功能森空岛小游戏。'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
