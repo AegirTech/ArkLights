@@ -4255,6 +4255,21 @@ XinPian = {
     ["RMA70-12"] = { "9-19", "7-10", "R8-9", "2-10" }
 }
 
+
+通用ocr导航 = function(关卡名)
+    -- 只能导航已经三星的蓝色六边形关卡
+    -- 00B3FD
+    for ot = 0, 6 do
+        log("导航下一页")
+        local state = sample("干员第一个")
+        swipu(0 - (screen.width / 2))
+        if findOne(state) then
+            log("滑动到底")
+            return
+        end
+    end
+end
+
 path.开始游戏 = function(x, disable_ptrs_check)
     -- 记录石头数量
     save_run_state()
@@ -9404,6 +9419,7 @@ path.专注失调 = function()
 end
 
 path.森空岛小活动 = function(xtime)
+    xtime = xtime or 0
     appid = "com.hypergryph.skland"
     disable_game_up_check = true
     appear("游戏进行判断", 15)
@@ -9435,7 +9451,7 @@ path.森空岛小活动 = function(xtime)
     end
     appear("游戏结算画面", 20)
     disappear("游戏结算画面", 20)
-    xtime = xtime or 1
+    xtime = xtime + 1
     toast("森空岛小活动" .. xtime .. "分")
     appear("游戏进行判断", 20)
     path.森空岛小活动(xtime)
