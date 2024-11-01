@@ -9556,3 +9556,216 @@ path.森空岛小活动 = function(xtime)
     appear("游戏进行判断", 20)
     path.森空岛小活动(xtime)
 end
+
+tablesEqual = function(t1, t2)
+    if t1 == t2 then return true end
+    if type(t1) ~= "table" or type(t2) ~= "table" then return false end
+
+    for k, v in pairs(t1) do
+        if not tablesEqual(v, t2[k]) then
+            return false
+        end
+    end
+
+    for k in pairs(t2) do
+        if t1[k] == nil then
+            return false
+        end
+    end
+
+    return true
+end
+
+combinations = function(tbl, k)
+    local result = {}
+
+    local function combine(current, start)
+        if #current == k then
+            table.insert(result, { table.unpack(current) })
+            return
+        end
+
+        for i = start, #tbl do
+            table.insert(current, tbl[i])
+            combine(current, i + 1)
+            table.remove(current)
+        end
+    end
+
+    combine({}, 1)
+    return result
+end
+
+equalKey2 = function(a, b)
+    if type(a) ~= 'table' or type(b) ~= 'table' then return end
+
+    if #a ~= #b then return end
+    if #a == 0 and #table.keys(a) ~= #table.keys(b) then return end
+
+    for k, _ in pairs(a) do if b[k] == nil then return end end
+
+    local count = {}
+
+    for _, value in ipairs(a) do
+        count[value] = (count[value] or 0) + 1
+    end
+
+    for _, value in ipairs(b) do
+        if not count[value] then
+            return false
+        end
+        count[value] = count[value] - 1
+    end
+
+    for _, v in pairs(count) do
+        if v ~= 0 then
+            return false
+        end
+    end
+
+    return true
+end
+
+
+path.烟花委员会 = function()
+    log("烟花活动")
+    local rotate90 = function(x, y)
+        return { y, 7 - x + 1 }
+    end
+
+    local rotate180 = function(x, y)
+        return { 7 - x + 1, 7 - y + 1 }
+    end
+
+    local rotate270 = function(x, y)
+        return { 7 - y + 1, x }
+    end
+
+    local trans_p = function(sam_p)
+        local cur_card = {}
+        cur_card[1] = shallowCopy(sam_p)
+        cur_card[2] = {}
+        cur_card[3] = {}
+        cur_card[4] = {}
+        for k, v in pairs(sam_p) do
+            -- log(v)
+            table.insert(cur_card[2], rotate90(v[1], v[2]))
+            table.insert(cur_card[3], rotate180(v[1], v[2]))
+            table.insert(cur_card[4], rotate270(v[1], v[2]))
+        end
+        for i = 1, 4 do
+            table.sort(cur_card[i], function(a, b)
+                if a[1] == b[1] then
+                    return a[2] < b[2]
+                else
+                    return a[1] < b[1]
+                end
+            end)
+        end
+        if tablesEqual(cur_card[1], cur_card[3]) then
+            log(cur_card)
+            cur_card[3] = {}
+            cur_card[4] = {}
+            table.remove(cur_card, 3)
+            table.remove(cur_card, 4)
+        end
+        return cur_card
+    end
+    all_p = {}
+    local count_p = function(col, xp1, sc, t_data)
+        for i = 1, 7 do     -- 行
+            for j = 1, 7 do -- 列
+                if math.abs(4 - i) <= j and j <= 7 - math.abs(4 - i) then
+                    local tx, ty = tonumber(xp1.x + (j - 1) * scale(sc) - 0.8 * (i - 1)),
+                        tonumber(xp1.y + (i - 1) * scale(sc) + 0.8 * j)
+                    -- log(i, j)
+                    -- log(tx, ty)
+                    -- log(getPixelColor(tx, ty))
+                    if cmpColor(tx, ty, col, 0.9) == 1 then
+                        -- log("find")
+                        table.insert(t_data, { i, j })
+                    end
+                end
+            end
+        end
+        return t_data
+    end
+    -- 这是需要填满的格子
+    all_p = count_p("AAAAA9", { x = scale(504), y = scale(130) }, 95, all_p)
+    table.insert(all_p, { 4, 4 })
+    log("all_p", all_p)
+
+    -- 计算可填充的卡片
+    local card_1, card_2, card_3, card_4 = {}, {}, {}, {}
+    card_1 = count_p("B2B2B2", { x = scale(1480), y = scale(86) }, 22, card_1)
+    card_2 = count_p("B2B2B2", { x = scale(1713), y = scale(84) }, 22, card_2)
+    card_3 = count_p("B2B2B2", { x = scale(1472), y = scale(275) }, 22, card_3)
+    card_4 = count_p("B2B2B2", { x = scale(1703), y = scale(280) }, 22, card_4)
+    log("card_1", card_1)
+    log("card_2", card_2)
+    log("card_3", card_3)
+    log("card_4", card_4)
+    card_1 = trans_p(card_1)
+    card_2 = trans_p(card_2)
+    card_3 = trans_p(card_3)
+    card_4 = trans_p(card_4)
+    -- 转换后的
+    log("card_1", card_1)
+    log("card_2", card_2)
+    log("card_3", card_3)
+    log("card_4", card_4)
+    -- log(card_1[1])
+    local max_card = 6
+    local all_card = {}
+    local get_match_card = function()
+        -- 传入card 1-4 遍历全部组合，然后判断这6个的组合能否填满all_p
+        for k, v in pairs(card_1) do
+            table.insert(all_card, { 1, k, v })
+        end
+        for k, v in pairs(card_2) do
+            table.insert(all_card, { 2, k, v })
+        end
+        for k, v in pairs(card_3) do
+            table.insert(all_card, { 3, k, v })
+        end
+        for k, v in pairs(card_4) do
+            table.insert(all_card, { 4, k, v })
+        end
+    end
+    get_match_card()
+    log("all_card", all_card)
+
+    local check_p = function(cd)
+        -- log("cd", cd)
+        local td = {}
+        for k, v in pairs(cd) do
+            for k2, v2 in pairs(v[3]) do
+                table.insert(td, "p" .. v2[1] .. v2[2])
+            end
+        end
+        td = table.remove_duplicate(td)
+        -- log("t", td)
+        local all_p2 = {}
+        for k, v in pairs(all_p) do
+            table.insert(all_p2, "p" .. v[1] .. v[2])
+        end
+        -- log("p", all_p2)
+        if equalKey2(td, all_p2) then
+            log("可填满")
+            return true
+        end
+    end
+    log("开始遍历")
+    for _, c in pairs(table.combination(range(1, #all_card), 6)) do
+        nx = table.index(all_card, c)
+        if check_p(nx) then
+            log(nx)
+            for k, v in pairs(nx) do
+                log("点击第" .. v[1] .. "套卡片的第" .. v[2] .. "张")
+            end
+            break
+        end
+    end
+    log("结束遍历")
+    exit()
+end
