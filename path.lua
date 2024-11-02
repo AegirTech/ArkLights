@@ -9630,6 +9630,7 @@ path.烟花委员会 = function()
         appear("烟花关卡内部进入判断", 5)
     else
         tap("生息演算_全局_返回")
+        return
     end
 
     -- 基础函数
