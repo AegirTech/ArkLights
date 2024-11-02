@@ -9612,14 +9612,14 @@ end
 path.烟花委员会 = function()
     log("烟花活动")
     -- 导航
-    if 烟花任务 then
+    if car_checked then
         return
     end
     appear("烟花委员会进入", 3)
     if not (findOne("活动导航0") or findOne("烟花委员会进入")) then
         return
     end
-    烟花任务 = true
+    car_checked = true
     tap("烟花委员会进入")
     appear("烟花委员会首页", 5)
     ssleep(1)
