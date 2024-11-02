@@ -9609,18 +9609,35 @@ equalKey2 = function(a, b)
     return true
 end
 
-
 path.烟花委员会 = function()
     log("烟花活动")
     -- 导航
+    if 烟花任务 then
+        return
+    end
     appear("烟花委员会进入", 3)
     if not (findOne("活动导航0") or findOne("烟花委员会进入")) then
         return
     end
-
+    烟花任务 = true
     tap("烟花委员会进入")
     appear("烟花委员会首页", 5)
     ssleep(1)
+    if appear("烟花_剧情判断", 0.5) then
+        wait(function()
+            for w = 150, screen.width - 50, 50 do
+                if findOne("烟花关卡内部进入判断") then return true end
+                if findAny(known) then return true end
+                for h = 50, screen.height - 50, 50 do
+                    tap({ w, h })
+                    back()
+                end
+            end
+            ssleep(1)
+        end, 15)
+        tap("生息演算_全局_返回")
+        ssleep(1)
+    end
     -- 寻找没打的关卡（不知道需不需要滑动
     local d_p = find_color("烟花_关卡寻找范围", "DF554E", 0, 0.95)
     if d_p then
