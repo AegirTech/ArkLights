@@ -5748,6 +5748,7 @@ path.活动 = function(x)
     end
 
     -- car_check1() --有些大型活动会自带一些任务
+    path.烟花委员会()
     log("skip_guide", skip_guide)
     if not skip_guide then
         if not findOne("活动导航0") then return end
@@ -9558,4 +9559,262 @@ path.森空岛小活动 = function(xtime)
     toast("森空岛小活动" .. xtime .. "分")
     appear("游戏进行判断", 20)
     path.森空岛小活动(xtime)
+end
+
+-- 原先的table.equal不知道为什么有误，重写的
+tablesEqual = function(t1, t2)
+    if t1 == t2 then return true end
+    if type(t1) ~= "table" or type(t2) ~= "table" then return false end
+
+    for k, v in pairs(t1) do
+        if not tablesEqual(v, t2[k]) then
+            return false
+        end
+    end
+
+    for k in pairs(t2) do
+        if t1[k] == nil then
+            return false
+        end
+    end
+
+    return true
+end
+
+-- 原先的table.equalkey不知道为什么有误，重写的
+equalKey2 = function(a, b)
+    if type(a) ~= 'table' or type(b) ~= 'table' then return end
+
+    if #a ~= #b then return end
+    if #a == 0 and #table.keys(a) ~= #table.keys(b) then return end
+
+    for k, _ in pairs(a) do if b[k] == nil then return end end
+
+    local count = {}
+
+    for _, value in ipairs(a) do
+        count[value] = (count[value] or 0) + 1
+    end
+
+    for _, value in ipairs(b) do
+        if not count[value] then
+            return false
+        end
+        count[value] = count[value] - 1
+    end
+
+    for _, v in pairs(count) do
+        if v ~= 0 then
+            return false
+        end
+    end
+
+    return true
+end
+
+path.烟花委员会 = function()
+    log("烟花活动")
+    -- 导航
+    if car_checked then
+        return
+    end
+    appear("烟花委员会进入", 3)
+    if not (findOne("活动导航0") or findOne("烟花委员会进入")) then
+        return
+    end
+    car_checked = true
+    tap("烟花委员会进入")
+    appear("烟花委员会首页", 5)
+    ssleep(1)
+    if appear("烟花_剧情判断", 0.5) then
+        wait(function()
+            for w = 150, screen.width - 50, 50 do
+                if findOne("烟花关卡内部进入判断") then return true end
+                if findAny(known) then return true end
+                for h = 50, screen.height - 50, 50 do
+                    tap({ w, h })
+                    back()
+                end
+            end
+            ssleep(1)
+        end, 15)
+        tap("生息演算_全局_返回")
+        ssleep(1)
+    end
+    -- 寻找没打的关卡（不知道需不需要滑动
+    local d_p = find_color("烟花_关卡寻找范围", "DF554E", 0, 0.95)
+    if d_p then
+        log(d_p)
+        tap(d_p)
+        disappear("烟花委员会首页", 5)
+        appear("烟花关卡内部进入判断", 5)
+    else
+        tap("生息演算_全局_返回")
+        return
+    end
+
+    -- 基础函数
+    local rotate90 = function(x, y)
+        return { y, 7 - x + 1 }
+    end
+
+    local rotate180 = function(x, y)
+        return { 7 - x + 1, 7 - y + 1 }
+    end
+
+    local rotate270 = function(x, y)
+        return { 7 - y + 1, x }
+    end
+
+    local trans_p = function(sam_p)
+        local cur_card = {}
+        cur_card[1] = shallowCopy(sam_p)
+        cur_card[2] = {}
+        cur_card[3] = {}
+        cur_card[4] = {}
+        for k, v in pairs(sam_p) do
+            -- log(v)
+            table.insert(cur_card[2], rotate90(v[1], v[2]))
+            table.insert(cur_card[3], rotate180(v[1], v[2]))
+            table.insert(cur_card[4], rotate270(v[1], v[2]))
+        end
+        for i = 1, 4 do
+            table.sort(cur_card[i], function(a, b)
+                if a[1] == b[1] then
+                    return a[2] < b[2]
+                else
+                    return a[1] < b[1]
+                end
+            end)
+        end
+        if tablesEqual(cur_card[1], cur_card[3]) then
+            log(cur_card)
+            cur_card[3] = {}
+            cur_card[4] = {}
+        end
+        return cur_card
+    end
+    all_p = {}
+    local count_p = function(col, xp1, sc, t_data)
+        for i = 1, 7 do     -- 行
+            for j = 1, 7 do -- 列
+                if math.abs(4 - i) <= j and j <= 7 - math.abs(4 - i) then
+                    local tx, ty = tonumber(xp1.x + (j - 1) * scale(sc) - 0.8 * (i - 1)),
+                        tonumber(xp1.y + (i - 1) * scale(sc) + 0.8 * j)
+                    -- log(i, j)
+                    -- log(tx, ty)
+                    -- log(getPixelColor(tx, ty))
+                    if cmpColor(tx, ty, col, 0.9) == 1 then
+                        -- log("find")
+                        table.insert(t_data, { i, j })
+                    end
+                end
+            end
+        end
+        return t_data
+    end
+    -- 这是需要填满的格子
+    all_p = count_p("AAAAA9", { x = scale(504), y = scale(130) }, 95, all_p)
+    table.insert(all_p, { 4, 4 })
+    log("all_p", all_p)
+
+    -- 计算可填充的卡片
+    -- 未来会不会有更多的不清楚
+    local card_1, card_2, card_3, card_4 = {}, {}, {}, {}
+    card_1 = trans_p(count_p("B2B2B2", { x = scale(1480), y = scale(86) }, 22, card_1))
+    card_2 = trans_p(count_p("B2B2B2", { x = scale(1713), y = scale(84) }, 22, card_2))
+    card_3 = trans_p(count_p("B2B2B2", { x = scale(1472), y = scale(275) }, 22, card_3))
+    card_4 = trans_p(count_p("B2B2B2", { x = scale(1703), y = scale(280) }, 22, card_4))
+    -- 转换后的
+    log("card_1", card_1)
+    log("card_2", card_2)
+    log("card_3", card_3)
+    log("card_4", card_4)
+    -- log(card_1[1])
+    local max_card = 6
+    local all_card = {}
+    local get_match_card = function()
+        -- 传入card 1-4 遍历全部组合，然后判断这6个的组合能否填满all_p
+        for k, v in pairs(card_1) do
+            table.insert(all_card, { 1, k, v })
+        end
+        for k, v in pairs(card_2) do
+            table.insert(all_card, { 2, k, v })
+        end
+        for k, v in pairs(card_3) do
+            table.insert(all_card, { 3, k, v })
+        end
+        for k, v in pairs(card_4) do
+            table.insert(all_card, { 4, k, v })
+        end
+    end
+    get_match_card()
+    log("all_card", all_card)
+
+    local check_p = function(cd)
+        -- log("cd", cd)
+        local td = {}
+        for k, v in pairs(cd) do
+            for k2, v2 in pairs(v[3]) do
+                table.insert(td, "p" .. v2[1] .. v2[2])
+            end
+        end
+        td = table.remove_duplicate(td)
+        -- log("t", td)
+        local all_p2 = {}
+        for k, v in pairs(all_p) do
+            table.insert(all_p2, "p" .. v[1] .. v[2])
+        end
+        -- log("p", all_p2)
+        if equalKey2(td, all_p2) then
+            log("可填满")
+            return true
+        end
+    end
+    log("开始遍历")
+    local c_number = 4
+    local tmp_cn = find_color("卡片数量判断范围", "E6E6E6", 0, 0.9)
+    if tmp_cn then
+        log(tmp_cn, math.floor((tmp_cn[1] / scale(160))))
+        c_number = math.floor((tmp_cn[1] / scale(160))) - 1
+        log("待选择卡片数量", c_number)
+    end
+    -- 遍历运算
+    local last_choose = 0
+    for _, c in pairs(table.combination(range(1, #all_card), c_number)) do
+        nx = table.index(all_card, c)
+        if check_p(nx) then
+            log(nx)
+            for k, v in pairs(nx) do
+                log("点击第" .. v[1] .. "套卡片的第" .. v[2] .. "张")
+                local 待点击卡片组 = { scale(1546), scale(148) }
+                if v[1] % 2 == 0 then
+                    log(v[1], v[1] % 2)
+                    待点击卡片组[1] = 待点击卡片组[1] + scale(230)
+                end
+                待点击卡片组[2] = 待点击卡片组[2] + scale(210) * math.floor((v[1] - 1) / 2)
+                tap(待点击卡片组)
+                if last_choose == v[1] then
+                    tap("烟花_卡片" .. v[2])
+                else
+                    appear("烟花_卡片选择弹出", 2)
+                    ssleep(0.6)
+                    tap("烟花_卡片" .. v[2])
+                end
+                last_choose = v[1]
+                ssleep(0.8)
+            end
+            break
+        end
+    end
+    log("结束遍历")
+    appearTap("烟花_方案确认", 5)
+    ssleep(1)
+    wait(function()
+        tap("生息演算_全局_返回")
+        ssleep(1)
+        if findOne("活动导航0") then return true end
+    end, 10)
+    return
+    -- path.跳转("首页")
 end

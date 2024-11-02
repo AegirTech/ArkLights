@@ -2390,9 +2390,10 @@ check_hot_update = function()
     -- 检查是否需要更新
     update_source = (custom_update_source and #custom_update_source > 1) and custom_update_source or update_source
     update_source = update_source:trim()
+    local apk_v = dev_mode and 1000000 or getApkVerInt()
     local res, code = httpGet(
         update_source .. "/checkUpdate?lr_md5=" .. tostring(file_md5) ..
-        "&skill_md5=" .. tostring(skill_md5) .. "&apk_ver=" .. tostring(getApkVerInt()), 30)
+        "&skill_md5=" .. tostring(skill_md5) .. "&apk_ver=" .. tostring(apk_v), 30)
     if code == -1 then
         toast("无法连接到热更新服务器")
         ssleep(3)
@@ -2426,7 +2427,7 @@ updateLr = function(update_info)
 end
 
 updateSkill = function(update_info)
-    if dev_mode then
+    if dev_maps then
         log("开发模式解压skill.zip")
         extractAssets("main.rc", getWorkPath(), "skill.zip")
         unZip(skill_path, skill_extract_path)
@@ -2475,10 +2476,6 @@ uploadStatistician = function(is_download)
 end
 
 hotUpdate = function()
-    if disable_hotupdate or dev_mode then
-        log("热更新已禁用")
-        return
-    end
     local update_info = check_hot_update()
     if not update_info then return false end
     if get(update_info, "isOldApk") then
@@ -2493,12 +2490,18 @@ hotUpdate = function()
         uploadStatistician(false)
         return true
     end
+    if disable_hotupdate or dev_mode then
+        log("热更新已禁用")
+        updateSkill(update_info)
+        return true
+    end
     updateLr(update_info)
     updateSkill(update_info)
     uploadStatistician(true)
 
     sleep(1000)
     log("更新完成")
+
     return restartScript()
 end
 
@@ -2867,7 +2870,9 @@ parse_fight_config = function(fight_ui)
             for _ = 1, 99 do table.insert(expand_fight, '长期委托3') end
         elseif table.includes({ 'HD' }, v) then
             for i = hd_max_stage, hd_max_stage - 2, -1 do
-                for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
+                if not table.contains(hd_exclude, { i }) then
+                    for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
+                end
             end
             for _ = 1, 99 do table.insert(expand_fight, "HD-1") end
         elseif table.includes({ 'HD1' }, v) then
@@ -3010,6 +3015,7 @@ update_state_from_ui = function()
     -- 活动开放时间段
     hd_nickname = "PV"
     hd_max_stage = 10
+    hd_exclude = { 10 }
     hd_open_time_end = parse_time("202411220400")
     hd2_open_time_end = parse_time("202407160400") -- 故事集开放时间段
     hd_mod = "SS"
