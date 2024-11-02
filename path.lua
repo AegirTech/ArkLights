@@ -5745,6 +5745,7 @@ path.活动 = function(x)
     end
 
     -- car_check1() --有些大型活动会自带一些任务
+    path.烟花委员会()
     log("skip_guide", skip_guide)
     if not skip_guide then
         if not findOne("活动导航0") then return end
@@ -9557,6 +9558,7 @@ path.森空岛小活动 = function(xtime)
     path.森空岛小活动(xtime)
 end
 
+-- 原先的table.equal不知道为什么有误，重写的
 tablesEqual = function(t1, t2)
     if t1 == t2 then return true end
     if type(t1) ~= "table" or type(t2) ~= "table" then return false end
@@ -9576,26 +9578,7 @@ tablesEqual = function(t1, t2)
     return true
 end
 
-combinations = function(tbl, k)
-    local result = {}
-
-    local function combine(current, start)
-        if #current == k then
-            table.insert(result, { table.unpack(current) })
-            return
-        end
-
-        for i = start, #tbl do
-            table.insert(current, tbl[i])
-            combine(current, i + 1)
-            table.remove(current)
-        end
-    end
-
-    combine({}, 1)
-    return result
-end
-
+-- 原先的table.equalkey不知道为什么有误，重写的
 equalKey2 = function(a, b)
     if type(a) ~= 'table' or type(b) ~= 'table' then return end
 
@@ -9629,6 +9612,27 @@ end
 
 path.烟花委员会 = function()
     log("烟花活动")
+    -- 导航
+    appear("烟花委员会进入", 3)
+    if not (findOne("活动导航0") or findOne("烟花委员会进入")) then
+        return
+    end
+
+    tap("烟花委员会进入")
+    appear("烟花委员会首页", 5)
+    ssleep(1)
+    -- 寻找没打的关卡（不知道需不需要滑动
+    local d_p = find_color("烟花_关卡寻找范围", "DF554E", 0, 0.95)
+    if d_p then
+        log(d_p)
+        tap(d_p)
+        disappear("烟花委员会首页", 5)
+        appear("烟花关卡内部进入判断", 5)
+    else
+        tap("生息演算_全局_返回")
+    end
+
+    -- 基础函数
     local rotate90 = function(x, y)
         return { y, 7 - x + 1 }
     end
@@ -9666,8 +9670,6 @@ path.烟花委员会 = function()
             log(cur_card)
             cur_card[3] = {}
             cur_card[4] = {}
-            table.remove(cur_card, 3)
-            table.remove(cur_card, 4)
         end
         return cur_card
     end
@@ -9696,19 +9698,12 @@ path.烟花委员会 = function()
     log("all_p", all_p)
 
     -- 计算可填充的卡片
+    -- 未来会不会有更多的不清楚
     local card_1, card_2, card_3, card_4 = {}, {}, {}, {}
-    card_1 = count_p("B2B2B2", { x = scale(1480), y = scale(86) }, 22, card_1)
-    card_2 = count_p("B2B2B2", { x = scale(1713), y = scale(84) }, 22, card_2)
-    card_3 = count_p("B2B2B2", { x = scale(1472), y = scale(275) }, 22, card_3)
-    card_4 = count_p("B2B2B2", { x = scale(1703), y = scale(280) }, 22, card_4)
-    log("card_1", card_1)
-    log("card_2", card_2)
-    log("card_3", card_3)
-    log("card_4", card_4)
-    card_1 = trans_p(card_1)
-    card_2 = trans_p(card_2)
-    card_3 = trans_p(card_3)
-    card_4 = trans_p(card_4)
+    card_1 = trans_p(count_p("B2B2B2", { x = scale(1480), y = scale(86) }, 22, card_1))
+    card_2 = trans_p(count_p("B2B2B2", { x = scale(1713), y = scale(84) }, 22, card_2))
+    card_3 = trans_p(count_p("B2B2B2", { x = scale(1472), y = scale(275) }, 22, card_3))
+    card_4 = trans_p(count_p("B2B2B2", { x = scale(1703), y = scale(280) }, 22, card_4))
     -- 转换后的
     log("card_1", card_1)
     log("card_2", card_2)
@@ -9756,16 +9751,48 @@ path.烟花委员会 = function()
         end
     end
     log("开始遍历")
-    for _, c in pairs(table.combination(range(1, #all_card), 6)) do
+    local c_number = 4
+    local tmp_cn = find_color("卡片数量判断范围", "E6E6E6", 0, 0.9)
+    if tmp_cn then
+        log(tmp_cn, math.floor((tmp_cn[1] / scale(160))))
+        c_number = math.floor((tmp_cn[1] / scale(160))) - 1
+        log("待选择卡片数量", c_number)
+    end
+    -- 遍历运算
+    local last_choose = 0
+    for _, c in pairs(table.combination(range(1, #all_card), c_number)) do
         nx = table.index(all_card, c)
         if check_p(nx) then
             log(nx)
             for k, v in pairs(nx) do
                 log("点击第" .. v[1] .. "套卡片的第" .. v[2] .. "张")
+                local 待点击卡片组 = { scale(1546), scale(148) }
+                if v[1] % 2 == 0 then
+                    log(v[1], v[1] % 2)
+                    待点击卡片组[1] = 待点击卡片组[1] + scale(230)
+                end
+                待点击卡片组[2] = 待点击卡片组[2] + scale(210) * math.floor((v[1] - 1) / 2)
+                tap(待点击卡片组)
+                if last_choose == v[1] then
+                    tap("烟花_卡片" .. v[2])
+                else
+                    appear("烟花_卡片选择弹出", 2)
+                    ssleep(0.6)
+                    tap("烟花_卡片" .. v[2])
+                end
+                last_choose = v[1]
+                ssleep(0.8)
             end
             break
         end
     end
     log("结束遍历")
-    exit()
+    appearTap("烟花_方案确认", 5)
+    wait(function()
+        tap("生息演算_全局_返回")
+        ssleep(1)
+        if findOne("活动导航0") then return true end
+    end, 10)
+    return
+    -- path.跳转("首页")
 end
