@@ -1300,15 +1300,18 @@ path.基建收获 = function()
 
     wait(function()
         log(132)
-        if findAny({ "小蓝圈", "进驻总览" }) then return true end
+        if findAny({ "小蓝圈", "基建收获干员休整", "进驻总览" }) then return true end
         log(133)
         tap("点击全部收取2")
+        ssleep(.2)
     end, 10)
-    log(findAny({ "小蓝圈", "进驻总览" }))
+    log(findAny({ "小蓝圈", "基建收获干员休整", "进驻总览" }))
     log(134)
 
     if false and findOne("小蓝圈") and findOne("训练室") then
         tap("点击全部收取2")
+        ssleep(.2)
+        log(135)
         zoom()
         if not wait(function()
                 tap("训练室")
