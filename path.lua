@@ -9806,6 +9806,7 @@ path.烟花委员会 = function()
     end
     log("结束遍历")
     appearTap("烟花_方案确认", 5)
+    ssleep(1)
     wait(function()
         tap("生息演算_全局_返回")
         ssleep(1)
