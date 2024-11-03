@@ -9720,32 +9720,29 @@ path.烟花委员会 = function()
 
     -- 计算可填充的卡片
     -- 未来会不会有更多的不清楚
-    local card_1, card_2, card_3, card_4 = {}, {}, {}, {}
-    card_1 = trans_p(count_p("B2B2B2", { x = scale(1480), y = scale(86) }, 22, card_1))
-    card_2 = trans_p(count_p("B2B2B2", { x = scale(1713), y = scale(84) }, 22, card_2))
-    card_3 = trans_p(count_p("B2B2B2", { x = scale(1472), y = scale(275) }, 22, card_3))
-    card_4 = trans_p(count_p("B2B2B2", { x = scale(1703), y = scale(280) }, 22, card_4))
-    -- 转换后的
-    log("card_1", card_1)
-    log("card_2", card_2)
-    log("card_3", card_3)
-    log("card_4", card_4)
-    -- log(card_1[1])
-    local max_card = 6
+    local positions = {
+        { x = scale(1480), y = scale(86) },  --1,1
+        { x = scale(1713), y = scale(84) },  --1,2
+        { x = scale(1472), y = scale(275) }, --2,1
+        { x = scale(1703), y = scale(280) }, --2,2
+        { x = scale(1460), y = scale(468) }, -- 3,1
+
+    }
+
+    local max_card_group = #positions
+    local cards = {}
+    for i = 1, max_card_group do
+        cards[i] = trans_p(count_p("B2B2B2", positions[i], 22, {}))
+        log("card_" .. i, cards[i])
+    end
+
     local all_card = {}
+
     local get_match_card = function()
-        -- 传入card 1-4 遍历全部组合，然后判断这6个的组合能否填满all_p
-        for k, v in pairs(card_1) do
-            table.insert(all_card, { 1, k, v })
-        end
-        for k, v in pairs(card_2) do
-            table.insert(all_card, { 2, k, v })
-        end
-        for k, v in pairs(card_3) do
-            table.insert(all_card, { 3, k, v })
-        end
-        for k, v in pairs(card_4) do
-            table.insert(all_card, { 4, k, v })
+        for i, card in ipairs(cards) do
+            for k, v in pairs(card) do
+                table.insert(all_card, { i, k, v })
+            end
         end
     end
     get_match_card()
@@ -9793,10 +9790,10 @@ path.烟花委员会 = function()
                     待点击卡片组[1] = 待点击卡片组[1] + scale(230)
                 end
                 待点击卡片组[2] = 待点击卡片组[2] + scale(210) * math.floor((v[1] - 1) / 2)
-                tap(待点击卡片组)
                 if last_choose == v[1] then
                     tap("烟花_卡片" .. v[2])
                 else
+                    tap(待点击卡片组)
                     appear("烟花_卡片选择弹出", 2)
                     ssleep(0.6)
                     tap("烟花_卡片" .. v[2])
