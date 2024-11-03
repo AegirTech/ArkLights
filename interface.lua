@@ -1401,6 +1401,8 @@ show_auto_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "not_use_ocr", "基建不使用ocr（低配置或基建崩溃建议打开）", false)
+    newRow(layout)
+    ui.addTextView(layout, "勾选后无法使用红松林、多萝西等标准化组合，无法自动使用菲亚梅塔")
     --[[
     newRow(layout)
     ui.addCheckBox(layout, "raise_fight_plan", "作战计划(未完成)", true)
