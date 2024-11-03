@@ -299,6 +299,12 @@ m.sanReport = function()
         san[index] = word
         index = index + 1
     end
+    if #san < 2 then
+        san[1] = 0
+        san[2] = 100
+    else
+        san[2] = tonumber(san[2]) > 45 and (tonumber(san[2]) - 45) or 100
+    end
     local res, code = httpPost(m.server .. "/sanReport?san=" .. san[1] ..
         "&maxSan=" .. san[2] .. "&deviceToken=" ..
         m.deviceToken, '', 30,
