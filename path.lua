@@ -3004,20 +3004,14 @@ path.办公室换班 = function(stationType)
         end, 10) then
         return
     end
-
-    -- 清空选择
-    local start_time = time()
-    tap("干员选择列表1")
+    ssleep(.1)
+    -- 如果第一个干员被选中,取消选择
     if not wait(function()
             if findOne("干员未选中") and findOne("第一干员未选中") then
                 return true
             end
-            if time() - start_time > 1000 then
-                tap("干员选择列表1")
-                ssleep(.3)
-                start_time = time()
-            end
-            ssleep(.8)
+            tap("干员选择列表1")
+            ssleep(.5)
         end, 5) then
         log(1037)
         return
