@@ -2517,6 +2517,7 @@ path.总览换班 = function()
 
 
     path.控制中枢换班()
+    log(1034)
     path.会客厅换班()
 
 
@@ -2544,11 +2545,11 @@ path.总览换班 = function()
     if not wait(function()
             if findOne("基建总览非工作区") then return true end
             tap("基建总览非工作区")
-            ssleep(.2)
+            ssleep(.5)
         end, 10) then
         return
     end
-
+    log(1035)
     if not wait(function()
             if findOne("基建干员休整灰") and findOne("基建总览非工作区") then return true end
             tap("基建干员休整")
@@ -3016,7 +3017,7 @@ path.办公室换班 = function(stationType)
                 ssleep(.3)
                 start_time = time()
             end
-            -- tap("清空选择")
+            ssleep(.8)
         end, 5) then
         log(1037)
         return
