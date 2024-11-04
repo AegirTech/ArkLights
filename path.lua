@@ -9720,7 +9720,8 @@ path.烟花委员会 = function()
         { x = scale(1713), y = scale(84) },  --1,2
         { x = scale(1472), y = scale(275) }, --2,1
         { x = scale(1703), y = scale(280) }, --2,2
-        { x = scale(1460), y = scale(468) }, -- 3,1
+        { x = scale(1459), y = scale(470) }, -- 3,1
+        { x = scale(1694), y = scale(472) }  -- 3,2
 
     }
 
