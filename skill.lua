@@ -2138,6 +2138,8 @@ correctCharName = function(t)
         t = "纯烬艾雅法拉"
     elseif 原文本:find("默") and 原文本:find("德克萨斯") then
         t = "缄默德克萨斯"
+    elseif 原文本:find("荒芜") and 原文本:find("拉普") then
+        t = "荒芜拉普兰德"
     end
     return t
 end
