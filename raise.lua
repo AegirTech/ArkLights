@@ -120,12 +120,12 @@ activity_materials_stage = {
 
 -- 初始化数据及玩家信息
 raise.init = function()
-    log(raise_plan_text)
+    --log(raise_plan_text)
     -- 读取培养计划
     local status
     status, raise_plan = pcall(JsonDecode, raise_plan_text)
 
-    log("培养计划", raise_plan)
+    --log("培养计划", raise_plan)
     if not status then
         log("传入培养计划格式错误")
         return
@@ -140,6 +140,8 @@ raise.init = function()
     end
     -- 正在进行技能专精
     mastering = false
+    -- 无人机不够用来加速完成芯片
+    not_enough_drone = false
     if not character_name2id then
         character_name2id = {}
         for k, v in pairs(character_table) do
@@ -155,13 +157,14 @@ raise.init = function()
             item_name2id[name] = tostring(k)
         end
     end
-    log(item_name2id)
+    --log(item_name2id)
+    --[[
     if not player_info_init(raise.get_player_info()) then
         log("玩家信息初始化错误")
         return
     end
     --log("干员数据", player_character_info)
-    log("仓库数据", player_inventory_info)
+    log("仓库数据", player_inventory_info)]]
     return true
 end
 
@@ -1133,10 +1136,10 @@ end
 
 
 -- 精英化操作一次
-raise.elite_one_phase = function(materials_need)
+raise.elite_one_phase = function(material_need)
     --计算后需要的材料
-    local material_need = {}
-    if materials_need then material_need = raise.calculate_materials_need(materials_need) end
+    --local material_need = {}
+    --if materials_need then material_need = raise.calculate_materials_need(materials_need) end
     appear("干员档案", 2)
 
     if not wait(function()
@@ -1155,9 +1158,9 @@ raise.elite_one_phase = function(materials_need)
 
             for k, v in pairs(material_need) do
                 if #k == 4 and k:sub(4, 4) == "3" then
-                    -- 已有芯片,不采用ocr识别仓库后不需要再识别验证数字
-                    -- local n = tonumber(ocro("干员精英化芯片数字") or 0)
-                    -- v = v - n
+                    -- 识别已经拥有的芯片数量
+                    local n = tonumber(ocro("干员精英化芯片数字") or 0)
+                    v = v - n
                     if not wait(function()
                             tap("干员精英化芯片白")
                             if findOne("制造站设施列表1") then return true end
@@ -1180,8 +1183,16 @@ raise.elite_one_phase = function(materials_need)
 
                     tap("芯片制造" .. k)
                     appear("芯片站", 3)
-                    local numb_32001 = player_inventory_info["32001"] or 0
-                    if numb_32001 < v then
+                    --使用森空岛接口数据
+                    --local numb_32001 = player_inventory_info["32001"] or 0
+                    --[[先点击v下加号看看
+                    for i = 1, v - 1 do
+                        tap("制造站加")
+                        ssleep(.2)
+                    end]]
+                    local numb_32001 = tonumber(ocro("胶水数量识别范围") or 0)
+                    local numb_32001_2 = tonumber(ocro("胶水库存识别范围") or 0)
+                    if numb_32001 + numb_32001_2 < v then
                         raise.buy_32001(v - numb_32001)
                     end
                     if not appear("制造站设施列表1", 2) then
@@ -1266,6 +1277,7 @@ raise.elite_one_phase = function(materials_need)
                 log(material_need)
             end
             ]]
+            --[[
             log("缺少材料，尝试合成")
             --滚动到最下面
             for i = 1, 3 do
@@ -1316,7 +1328,7 @@ raise.elite_one_phase = function(materials_need)
                 disappear("干员精英化材料白1", 1)
             else
                 return false
-            end
+            end]]
         end
         if findOne("干员精英化缺少材料") then return false end
     end
@@ -1340,11 +1352,11 @@ end
 raise.elite_char = function(id, start_phase, target_phase)
     local name = char_id2name(id)
     log(name)
-    if not char_choose(name) then
+    --[[if not char_choose(name) then
         log("未找到干员", name, ",跳过")
         path.跳转("首页")
         return ture
-    end
+    end]]
     for i = 1, target_phase - start_phase do
         if not raise.upgrade_char() then return end
         --计算材料是否够
@@ -1358,17 +1370,16 @@ raise.elite_char = function(id, start_phase, target_phase)
 end
 
 -- 技能升级
-raise.upgrade_skill = function(id, target_level)
+raise.upgrade_skill = function(id, target_level, level)
     --暂时写成默认到7级
     local name = char_id2name(id)
-    local level = raise.get_char_skill(id, 1)
     local start_level = level[1]
     log(level, start_level)
-    if not char_choose(name) then
+    --[[if not char_choose(name) then
         log("未找到干员", name, ",跳过")
         path.跳转("首页")
         return ture
-    end
+    end]]
     if not wait(function()
             tap("进入技能升级页面")
             if not findOne("干员档案") then return true end
@@ -1400,15 +1411,15 @@ raise.upgrade_skill = function(id, target_level)
 end
 
 -- 技能专精
-raise.master_skill = function(id, skill_numb, start_level)
+raise.master_skill = function(id, skill_numb, start_level, level)
     local name = char_id2name(id)
-    local level = raise.get_char_skill(id, skill_numb)
+    --local level = raise.get_char_skill(id, skill_numb)
     if level[1] < 7 then return false end
-    if not char_choose(name) then
+    --[[if not char_choose(name) then
         log("未找到干员", name, ",跳过")
         path.跳转("首页")
         return ture
-    end
+    end]]
     if not wait(function()
             tap("进入技能升级页面")
             if not findOne("干员档案") then return true end
@@ -1425,12 +1436,12 @@ raise.master_skill = function(id, skill_numb, start_level)
         log("无法升级技能")
         return false
     end
-
+    --[[
     --计算start_level+1的材料需求
     local material_need = raise.char_skill_master_material(id, skill_numb, start_level + 1)
     log("需要材料", material_need)
-    local materials_need = raise.calculate_materials_need(material_need)
-    log("缺少材料", materials_need)
+    --local materials_need = raise.calculate_materials_need(material_need)
+    --log("缺少材料", materials_need)
 
     local m_need = {}
     local fight_plan, synthesis_plan
@@ -1444,7 +1455,7 @@ raise.master_skill = function(id, skill_numb, start_level)
         fight_plan, synthesis_plan = raise.get_fight_plan(m_need)
         log("合成计划:", synthesis_plan)
     end
-
+    ]]
     --用prts自动编队逻辑选择要的干员和技能
     if not raise.choose_char_be_trained({
             {
@@ -1465,25 +1476,12 @@ raise.master_skill = function(id, skill_numb, start_level)
     appear("专精技能确认", 5)
     -- 森空岛接口有延迟,这里用判断有没有红点来决定要不要合材料
     if findOne("干员技能专精红") then
+        --[[
         log("进行材料合成")
         tap("干员专精材料1")
         ssleep(.3)
         appear("干员专精材料白1", 2)
         log("缺少材料，尝试合成")
-        --滚动到最下面
-        for i = 1, 3 do
-            gesture({
-                {
-                    point = { { scale(1456), scale(913) },
-                        { scale(1456), scale(0) },
-                    },
-                    start = 0,
-                    duration = 500,
-                },
-            })
-            ssleep(.5)
-        end
-        ssleep(.3)
         appear("干员专精材料白1", 2)
         if not wait(function()
                 if findOne("加工站") then return true end
@@ -1509,7 +1507,7 @@ raise.master_skill = function(id, skill_numb, start_level)
             disappear("干员专精材料白1", 1)
         else
             return false
-        end
+        end]]
     end
     if findOne("干员技能专精红") then return false end
     if not wait(function()
@@ -2088,15 +2086,39 @@ raise.test_all = function()
     --raise.test2()
     ssleep(500)
 end
+-- 图色识别精英化等级
+raise.recognize_elite_level = function(id)
+    for i = 1, 3 do
+        if findOne("干员档案精英化等级列表" .. i) then
+            return i - 1
+        end
+    end
+end
+-- 图色识别技能等级
+raise.recognize_char_skill = function(id, skill_numb)
+    local common_level = 1
+    if findOne("干员档案通用技能等级七") then
+        common_level = 7
+    end
+    local master_level = 0
+    for i = 3, 1, -1 do
+        if findOne("干员档案" .. skill_numb .. "技能专精列表" .. i) then
+            master_level = i
+            break
+        end
+    end
+    return { common_level, master_level }
+end
 
 raise.auto_raise = function()
     if not raise.init() then return end
     -- player_inventory_info = raise.inventory_identify()
     log("培养计划:", raise_plan)
     if raise_plan == nil or type(raise_plan) ~= "table" or raise_plan == {} then return end
-
+    char_do_not_have = {}
     for i = 1, #raise_plan do
         log(raise_plan[i])
+        local name = raise_plan[i]["name"]
         local id
         if raise_plan[i]["id"] then
             id = raise_plan[i]["id"]
@@ -2106,6 +2128,44 @@ raise.auto_raise = function()
             log("培养计划格式错误:未指定干员")
             return true
         end
+        if not char_do_not_have[name] and ((i > 1 and findOne("干员档案") and name == raise_plan[i - 1]["name"]) or char_choose(name)) then
+            local elite = raise.recognize_elite_level(id)
+            if raise_plan[i]["elite"] and not not_enough_drone then
+                toast("精英化干员")
+                local elite = raise.recognize_elite_level(id)
+                log("精英化等级", elite)
+                if elite >= raise_plan[i]["elite"] then
+                    log(name, "已达到精英等级")
+                else
+                    if not raise.elite_char(id, elite, raise_plan[i]["elite"]) then
+                        not_enough_drone = true
+                    end
+                end
+            elseif raise_plan[i]["skills"] and elite >= 1 then
+                toast("升级技能")
+                local skill_level = raise.recognize_char_skill(id, 1)
+                log(skill_level)
+                if skill_level[1] >= (raise_plan[i]["skills"] or 7) then
+                    log("技能已达到指定等级")
+                else
+                    raise.upgrade_skill(id, skill_numb, skill_level)
+                end
+            elseif raise_plan[i]["skill_master"] and elite >= 2 and not mastering then
+                toast("专精技能")
+                local skill_numb = raise_plan[i]["skill"] --几技能
+                local skill_level = raise.recognize_char_skill(id, skill_numb)
+                log("通用技能等级:", skill_level[1], ";" .. skill_numb .. "技能专精等级:", skill_level[2])
+                if skill_level[2] >= raise_plan[i]["skill_master"] then
+                    log(skill_numb, "技能已达到专精等级")
+                else
+                    raise.master_skill(id, skill_numb, skill_level[2], skill_level)
+                end
+            end
+        else
+            char_do_not_have[name] = true
+            toast("未拥有或者未找到干员:" .. name)
+        end
+        --[[
         if player_character_info[id] then
             log("拥有干员", id)
             if raise_plan[i]["elite"] then
@@ -2125,7 +2185,7 @@ raise.auto_raise = function()
                 if skill_level[2] >= raise_plan[i]["skill_master"] then
                     log(skill_numb, "技能已达到专精等级")
                 else
-                    return raise.master_skill(id, skill_numb, skill_level[2])
+                    return raise.master_skill(id, skill_numb, skill_level[2],skill_level)
                 end
             elseif raise_plan[i]["skills"] then
                 log("升级技能")
@@ -2133,9 +2193,9 @@ raise.auto_raise = function()
                 if skill_level[1] >= (raise_plan[i]["skills"] or 7) then
                     log("技能已达到指定等级")
                 else
-                    return raise.upgrade_skill(id, skill_numb, raise_plan[i]["elite"])
+                    return raise.upgrade_skill(id, skill_numb, skill_level)
                 end
             end
-        end
+        end]]
     end
 end

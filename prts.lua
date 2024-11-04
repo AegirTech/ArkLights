@@ -1697,6 +1697,8 @@ end
             t[i]["text"] = "纯烬艾雅法拉"
         elseif 原文本:find("默") and 原文本:find("德克萨斯") then
             t[i]["text"] = "缄默德克萨斯"
+        elseif 原文本:find("荒芜") and 原文本:find("拉普") then
+            t[i]["text"] = "荒芜拉普兰德"
         end
         -- 去除开头的书名号
         t[i]["text"] = t[i]["text"]:gsub("^《", "")
