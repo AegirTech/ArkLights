@@ -2211,6 +2211,7 @@ raise.材料合成 = function()
         for _, v in pairs(待合成数量) do
             local t_number = string.match(v.text, "%d+")
             if t_number then
+                log("合成数量", t_number)
                 return tonumber(t_number)
             end
         end
@@ -2218,6 +2219,7 @@ raise.材料合成 = function()
 
     local 是否为低级材料 = false
     local 待合成数量 = 获取材料数量()
+    if 待合成数量 == nil then return end
     if findOne("加工站返回上级材料") then
         是否为低级材料 = true
     end
@@ -2229,9 +2231,6 @@ raise.材料合成 = function()
             -- 选人失败也无所谓
         end
     end
-
-    log("合成", 待合成数量)
-    if 待合成数量 == nil then return end
     local rx = { "加工站可加工1", "加工站可加工2", "加工站可加工3" }
     for _, d_rx in ipairs(rx) do
         if findOne(d_rx) then
@@ -2266,18 +2265,17 @@ raise.材料合成 = function()
 
     appear("加工站进入判断", 5)
 
-    if 是否为低级材料 then
-        ssleep(2) -- 点太快会不跳转，左上角可能也需要进行采样判断
-        appear("加工站返回上级材料", 5)
-        tap("加工站返回上级材料")
-        ssleep(0.5)
-        return -- 低级材料合成完即可退出
-    end
-
     if not findOne("加工站材料已满足") then
         log("不满足")
         raise.材料合成()
     else
+        if 是否为低级材料 then
+            ssleep(2) -- 点太快会不跳转，左上角可能也需要进行采样判断
+            appear("加工站返回上级材料", 5)
+            tap("加工站返回上级材料")
+            ssleep(0.5)
+            return -- 低级材料合成完即可退出
+        end
         log("fine")
         return true
     end
