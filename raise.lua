@@ -1185,6 +1185,11 @@ raise.elite_one_phase = function(material_need)
                     appear("芯片站", 3)
                     --使用森空岛接口数据
                     --local numb_32001 = player_inventory_info["32001"] or 0
+                    --[[先点击v下加号看看
+                    for i = 1, v - 1 do
+                        tap("制造站加")
+                        ssleep(.2)
+                    end]]
                     local numb_32001 = tonumber(ocro("胶水数量识别范围") or 0)
                     if numb_32001 < v then
                         raise.buy_32001(v - numb_32001)
@@ -2122,7 +2127,7 @@ raise.auto_raise = function()
             log("培养计划格式错误:未指定干员")
             return true
         end
-        if not char_do_not_have[name] and char_choose(name) then
+        if not char_do_not_have[name] and ((i > 1 and findOne("干员档案") and name == raise_plan[i - 1]["name"]) or char_choose(name)) then
             local elite = raise.recognize_elite_level(id)
             if raise_plan[i]["elite"] and not not_enough_drone then
                 toast("精英化干员")
