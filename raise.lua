@@ -1193,7 +1193,7 @@ raise.elite_one_phase = function(material_need)
                     local numb_32001 = tonumber(ocro("胶水数量识别范围") or 0)
                     local numb_32001_2 = tonumber(ocro("胶水库存识别范围") or 0)
                     if numb_32001 + numb_32001_2 < v then
-                        raise.buy_32001(v - numb_32001)
+                        raise.buy_32001(v - numb_32001 - numb_32001_2)
                     end
                     if not appear("制造站设施列表1", 2) then
                         return
