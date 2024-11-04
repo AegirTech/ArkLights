@@ -3004,14 +3004,17 @@ path.办公室换班 = function(stationType)
         end, 10) then
         return
     end
-    ssleep(.1)
+    ssleep(.5)
     -- 如果第一个干员被选中,取消选择
     if not wait(function()
-            if findOne("干员未选中") and findOne("第一干员未选中") then
+            -- if findOne("干员未选中") and findOne("第一干员未选中") then
+            --     return true
+            -- end
+            if not find_color("干员1选中判断范围", "0098DC", 0, 0.9) then
                 return true
             end
             tap("干员选择列表1")
-            ssleep(.5)
+            ssleep(0.8)
         end, 5) then
         log(1037)
         return
