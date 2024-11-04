@@ -3199,6 +3199,7 @@ path.会客厅换班 = function(stationType, a)
     end
 end
 
+---@param only any 不从基建跳转仅仅加速
 path.制造加速 = function(only)
     if not only then
         path.跳转("基建")
@@ -3247,14 +3248,15 @@ path.制造加速 = function(only)
         if not findOne("无人机加速加") then return true end
         tap("无人机加速最大")
     end)
-
     if not wait(function()
             if findOne("制造站加速") then return true end
             tap("无人机加速确定")
         end, 5) then
         return
     end
-
+    if only then
+        disappear("正在提交反馈至神经", network_timeout)
+    end
     tap("制造站收取")
 end
 

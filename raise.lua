@@ -1191,7 +1191,8 @@ raise.elite_one_phase = function(material_need)
                         ssleep(.2)
                     end]]
                     local numb_32001 = tonumber(ocro("胶水数量识别范围") or 0)
-                    if numb_32001 < v then
+                    local numb_32001_2 = tonumber(ocro("胶水库存识别范围") or 0)
+                    if numb_32001 + numb_32001_2 < v then
                         raise.buy_32001(v - numb_32001)
                     end
                     if not appear("制造站设施列表1", 2) then
@@ -2131,6 +2132,7 @@ raise.auto_raise = function()
             local elite = raise.recognize_elite_level(id)
             if raise_plan[i]["elite"] and not not_enough_drone then
                 toast("精英化干员")
+                local elite = raise.recognize_elite_level(id)
                 log("精英化等级", elite)
                 if elite >= raise_plan[i]["elite"] then
                     log(name, "已达到精英等级")
@@ -2150,8 +2152,7 @@ raise.auto_raise = function()
                 end
             elseif raise_plan[i]["skill_master"] and elite >= 2 and not mastering then
                 toast("专精技能")
-                --几技能
-                local skill_numb = raise_plan[i]["skill"]
+                local skill_numb = raise_plan[i]["skill"] --几技能
                 local skill_level = raise.recognize_char_skill(id, skill_numb)
                 log("通用技能等级:", skill_level[1], ";" .. skill_numb .. "技能专精等级:", skill_level[2])
                 if skill_level[2] >= raise_plan[i]["skill_master"] then
@@ -2162,7 +2163,7 @@ raise.auto_raise = function()
             end
         else
             char_do_not_have[name] = true
-            log("未拥有或者未找到干员", name)
+            toast("未拥有或者未找到干员:" .. name)
         end
         --[[
         if player_character_info[id] then
@@ -2184,7 +2185,7 @@ raise.auto_raise = function()
                 if skill_level[2] >= raise_plan[i]["skill_master"] then
                     log(skill_numb, "技能已达到专精等级")
                 else
-                    return raise.master_skill(id, skill_numb, skill_level[2])
+                    return raise.master_skill(id, skill_numb, skill_level[2],skill_level)
                 end
             elseif raise_plan[i]["skills"] then
                 log("升级技能")
@@ -2192,7 +2193,7 @@ raise.auto_raise = function()
                 if skill_level[1] >= (raise_plan[i]["skills"] or 7) then
                     log("技能已达到指定等级")
                 else
-                    return raise.upgrade_skill(id, skill_numb, raise_plan[i]["elite"])
+                    return raise.upgrade_skill(id, skill_numb, skill_level)
                 end
             end
         end]]
