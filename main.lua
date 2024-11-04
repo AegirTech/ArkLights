@@ -145,11 +145,6 @@ if use_local_dictionary then
 end
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug_mode")
-    path.办公室换班()
-    -- path.烟花委员会()
-    -- path.基建信息获取()
-    -- path.总览换班()
-    exit()
 end
 
 load(before_account_hook or '')()
