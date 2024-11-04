@@ -2199,3 +2199,86 @@ raise.auto_raise = function()
         end]]
     end
 end
+
+-- 材料合成，支持递归合成，从加工站页面开始
+raise.材料合成 = function()
+    if not findOne("加工站进入判断") then
+        log("未进入加工站")
+        return
+    end
+    local 获取材料数量 = function()
+        local 待合成数量 = ocr("加工数量识别范围")
+        for _, v in pairs(待合成数量) do
+            local t_number = string.match(v.text, "%d+")
+            if t_number then
+                return tonumber(t_number)
+            end
+        end
+    end
+
+    local 是否为低级材料 = false
+    local 待合成数量 = 获取材料数量()
+    if findOne("加工站返回上级材料") then
+        是否为低级材料 = true
+    end
+
+    if findOne("加工站干员心情不足") then
+        -- 更换干员 以后再写
+        if not path.加工站选人("加工站", nil, nil) then
+            log("选人失败")
+            -- 选人失败也无所谓
+        end
+    end
+
+    log("合成", 待合成数量)
+    if 待合成数量 == nil then return end
+    local rx = { "加工站可加工1", "加工站可加工2", "加工站可加工3" }
+    for _, d_rx in ipairs(rx) do
+        if findOne(d_rx) then
+            合成材料采样 = sample("加工站中央物品")
+            tap(d_rx)
+            last_click_time = os.time()
+            wait(function() -- 需要等待跳转
+                if not findOne(合成材料采样) then return true end
+                if os.time() - last_click_time > 3 then
+                    tap(d_rx)
+                    last_click_time = os.time()
+                end
+            end, 10)
+
+            ssleep(1)
+            raise.材料合成() -- 3个加工都得单独合成一遍
+        end
+    end
+    ssleep(0.5)
+    for i = 2, 待合成数量 do
+        tap("材料加工加一按钮")
+        ssleep(.1)
+    end
+
+    log(1001)
+    tap("加工站开始加工按钮")
+    if appear("加工站材料顶部获得物资", 15) then
+        ssleep(0.5)
+        tap("加工站材料顶部获得物资")
+        disappear("加工站材料顶部获得物资", 5)
+    end
+
+    appear("加工站进入判断", 5)
+
+    if 是否为低级材料 then
+        ssleep(2) -- 点太快会不跳转，左上角可能也需要进行采样判断
+        appear("加工站返回上级材料", 5)
+        tap("加工站返回上级材料")
+        ssleep(0.5)
+        return -- 低级材料合成完即可退出
+    end
+
+    if not findOne("加工站材料已满足") then
+        log("不满足")
+        raise.材料合成()
+    else
+        log("fine")
+        return true
+    end
+end
