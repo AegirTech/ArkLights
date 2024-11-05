@@ -1873,7 +1873,7 @@ swip_char = function(left)
         local y2 = scale(700)
         local x2 = scale(1720) --滑动6个干员距离
         local x3 = scale(1720)
-        local y3 = scale(590)
+        local y3 = scale(591)
         local slids = 50
         local slidd = 200
         local taps = slids + slidd + 150
@@ -2062,6 +2062,13 @@ raise.材料合成 = function()
             raise.材料合成() -- 3个加工都得单独合成一遍
         end
     end
+
+    if not appear("加工站", 2) then return end
+    for i = 2, 待合成数量 do
+        tap("加工站加")
+        ssleep(.1)
+    end
+    ssleep(.1)
     if findOne("加工站干员心情不足") or findOne("加工站无人") then
         local id = material_name2id(ocro("加工材料识别范围"))
         local level = 高级材料2低级材料[id]["level"] or 3
@@ -2071,11 +2078,6 @@ raise.材料合成 = function()
         end
     end
     if not appear("加工站", 2) then return end
-    for i = 2, 待合成数量 do
-        tap("加工站加")
-        ssleep(.1)
-    end
-    ssleep(.1)
     tap("开始加工")
     --[[if appear("加工站材料顶部获得物资", 15) then
         ssleep(0.5)
