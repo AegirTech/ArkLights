@@ -1980,7 +1980,7 @@ end
 -- 图色识别技能等级
 raise.recognize_char_skill = function(id, skill_numb)
     local common_level = 1
-    if findOne("干员档案通用技能等级七") then
+    if findOne("干员档案通用技能等级七", .85) then
         common_level = 7
     end
     local master_level = 0
