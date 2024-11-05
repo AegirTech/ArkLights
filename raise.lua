@@ -1195,6 +1195,10 @@ raise.elite_one_phase = function(material_need)
                     if numb_32001 + numb_32001_2 < v then
                         raise.buy_32001(v - numb_32001 - numb_32001_2)
                     end
+                    if findOne("制造站选芯片类") then
+                        tap("芯片制造" .. k)
+                        appear("芯片站", 3)
+                    end
                     if not appear("制造站设施列表1", 2) then
                         return
                     end
@@ -1238,99 +1242,14 @@ raise.elite_one_phase = function(material_need)
         end
         local p1 = findOne("干员精英化材料1红")
         local p2 = findOne("干员精英化材料2红")
-        --[[采用森空岛接口之后不需要再ocr二次验证
+
+        if p1 then
+            raise.jump_to_workshop("精英化", 1)
+        end
         if p2 then
-            local text = ocro("干员精英化材料2红范围")
-            log("材料2进度", text)
-            local number = tonumber(string.match(text, "%d+")) or 0
-            tap("干员精英化材料2")
-            ssleep(.3)
-            appear("干员精英化材料白2", 2)
-            local m2 = ocro("干员精英化材料白2名称")
-            log(m2, ocro("干员精英化材料白2数字"), material_name2id(m2))
-            if m2 and materials_need[material_name2id(m2)] then
-                material_need[material_name2id(m2)] = materials_need[material_name2id(m2)] - number +
-                    (player_inventory_info[material_name2id(m2)] or 0)
-            end
-            log(material_need)
-            tap("干员精英化材料2")
-            ssleep(.3)
+            raise.jump_to_workshop("精英化", 2)
         end
-        ]]
-
-
-        if p1 or p2 then
-            --[[采用森空岛接口之后不需要再ocr二次验证
-            local text = ocro("干员精英化材料1红范围")
-            log("材料1进度", text)
-            local number = tonumber(string.match(text, "%d+")) or 0]]
-            tap("干员精英化材料1")
-            ssleep(.3)
-            appear("干员精英化材料白1", 2)
-            --[[if p1 then
-                local m1 = ocro("干员精英化材料白1名称")
-                log(m1, ocro("干员精英化材料白1数字"), materials_need[material_name2id(m1)])
-                if m1 and materials_need[material_name2id(m1)] then
-                    material_need[material_name2id(m1)] = materials_need[material_name2id(m1)] - number +
-                        (player_inventory_info[material_name2id(m1)] or 0)
-                end
-                log(material_need)
-            end
-            ]]
-            --[[
-            log("缺少材料，尝试合成")
-            --滚动到最下面
-            for i = 1, 3 do
-                gesture({
-                    {
-                        point = { { scale(1456), scale(913) },
-                            { scale(1456), scale(0) },
-                        },
-                        start = 0,
-                        duration = 500,
-                    },
-                })
-                ssleep(.5)
-            end
-            ssleep(.3)
-            appear("干员精英化材料白1", 2)
-            local m_need = {}
-            for k, v in pairs(materials_need) do
-                if #k == 5 then --去除芯片
-                    m_need[k] = v
-                end
-            end
-            log("缺少非芯片材料:", m_need)
-            local fight_plan, synthesis_plan = raise.get_fight_plan(m_need)
-            log("精英化合成计划", synthesis_plan)
-            if not wait(function()
-                    if findOne("加工站") then return true end
-                    tap("干员精英化材料白1跳转")
-                end, 5) then
-                return
-            end
-            appear("加工站", 3)
-
-            --由低到高合成
-            for i = 1, 4 do
-                if synthesis_plan[tostring(i)] then
-                    --合成
-                    for k, v in pairs(synthesis_plan[tostring(i)]) do
-                        if not raise.material_synthesis(k, v) then return false end
-                    end
-                end
-            end
-            appear("加工站", 2)
-            ssleep(.2)
-            tap("返回")
-            if appear("干员精英化材料白1", 3) then
-                tap("干员精英化材料1")
-                disappear("干员精英化材料白1", 1)
-            else
-                return false
-            end]]
-        end
-        if findOne("干员精英化缺少材料") then return false end
+        if appear("干员精英化缺少材料", 1) then return false end
     end
     if not wait(function()
             tap("干员精英化页面")
@@ -1476,40 +1395,16 @@ raise.master_skill = function(id, skill_numb, start_level, level)
     appear("专精技能确认", 5)
     -- 森空岛接口有延迟,这里用判断有没有红点来决定要不要合材料
     if findOne("干员技能专精红") then
-        --[[
-        log("进行材料合成")
-        tap("干员专精材料1")
-        ssleep(.3)
-        appear("干员专精材料白1", 2)
-        log("缺少材料，尝试合成")
-        appear("干员专精材料白1", 2)
-        if not wait(function()
-                if findOne("加工站") then return true end
-                tap("干员专精材料白1跳转")
-            end, 5) then
-            return
+        local p1 = findOne("干员专精材料1红")
+        local p2 = findOne("干员专精材料2红")
+        if p1 then
+            raise.jump_to_workshop("专精", 1)
         end
-        appear("加工站", 3)
-        --由低到高合成
-        for i = 1, 4 do
-            if synthesis_plan[tostring(i)] then
-                --合成
-                for k, v in pairs(synthesis_plan[tostring(i)]) do
-                    if not raise.material_synthesis(k, v) then return false end
-                end
-            end
+        if p2 then
+            raise.jump_to_workshop("专精", 2)
         end
-        appear("加工站", 2)
-        ssleep(.2)
-        tap("返回")
-        if appear("干员专精材料白1", 3) then
-            tap("干员专精材料1")
-            disappear("干员专精材料白1", 1)
-        else
-            return false
-        end]]
     end
-    if findOne("干员技能专精红") then return false end
+    if appear("干员技能专精红", 1) then return false end
     if not wait(function()
             tap("专精技能确认")
             ssleep(.2)
@@ -2074,18 +1969,6 @@ raise.inventory_identify = function(materials)
     return t
 end
 
-
-raise.test_all = function()
-    -- ssleep(1.5)
-    -- t = raise.find_material({ 923, 306, 1102, 465 })
-    -- log(t)
-    -- raise.test()
-    -- raise.inventory_identify({ "糖聚块", "异铁块", "酮阵列", "近卫芯片" })
-    raise.test3()
-    -- raise.inventory_identify_xinpian({ 131, 304, 284, 461 })
-    --raise.test2()
-    ssleep(500)
-end
 -- 图色识别精英化等级
 raise.recognize_elite_level = function(id)
     for i = 1, 3 do
@@ -2108,6 +1991,119 @@ raise.recognize_char_skill = function(id, skill_numb)
         end
     end
     return { common_level, master_level }
+end
+
+-- 跳转到加工站并合成
+---@param actionType string 精英化/专精/模组
+---@param sequence number 第几个材料
+raise.jump_to_workshop = function(actionType, sequence)
+    tap("干员" .. actionType .. "材料" .. sequence)
+    ssleep(.3)
+    appear("干员" .. actionType .. "材料白" .. sequence, 2)
+    log("缺少材料，尝试合成")
+    if not wait(function()
+            if findOne("加工站") then return true end
+            tap("干员" .. actionType .. "材料白" .. sequence .. "跳转")
+        end, 5) then
+        return
+    end
+    appear("加工站", 3)
+    raise.材料合成()
+    appear("加工站", 2)
+    ssleep(.2)
+    tap("返回")
+    if appear("干员" .. actionType .. "材料白" .. sequence, 3) then
+        tap("干员" .. actionType .. "材料" .. sequence)
+        disappear("干员" .. actionType .. "材料白" .. sequence, 1)
+        ssleep(.8)
+        return true
+    else
+        ssleep(.8)
+        return false
+    end
+end
+
+-- 5.5周年后图色材料合成，支持递归合成，从加工站页面开始
+raise.材料合成 = function()
+    if not findOne("加工站") then
+        log("未进入加工站")
+        return
+    end
+    local 获取材料数量 = function()
+        local 待合成数量 = ocro("加工数量识别范围")
+        local t_number = string.match(待合成数量, "%d+")
+        if t_number then
+            log("合成数量", t_number)
+            return tonumber(t_number)
+        end
+    end
+
+    local 是否为低级材料 = false
+    local 待合成数量 = 获取材料数量()
+    if 待合成数量 == nil then return end
+    if findOne("加工站返回上级材料") then
+        是否为低级材料 = true
+    end
+
+    for i = 1, 3 do
+        if findOne("加工站可加工列表" .. i) then
+            合成材料采样 = sample("加工站中央物品")
+            tap("加工站可加工列表" .. i)
+            last_click_time = os.time()
+            wait(function() -- 需要等待跳转
+                if not findOne(合成材料采样) then return true end
+                if os.time() - last_click_time > 3 then
+                    tap("加工站可加工列表" .. i)
+                    last_click_time = os.time()
+                end
+            end, 10)
+
+            ssleep(1)
+            raise.材料合成() -- 3个加工都得单独合成一遍
+        end
+    end
+    if findOne("加工站干员心情不足") or findOne("加工站无人") then
+        local id = material_name2id(ocro("加工材料识别范围"))
+        local level = 高级材料2低级材料[id]["level"] or 3
+        if not path.加工站选人("加工站", id, level) then
+            log("选人失败")
+            -- 选人失败也无所谓
+        end
+    end
+    if not appear("加工站", 2) then return end
+    for i = 2, 待合成数量 do
+        tap("加工站加")
+        ssleep(.1)
+    end
+    ssleep(.1)
+    tap("开始加工")
+    --[[if appear("加工站材料顶部获得物资", 15) then
+        ssleep(0.5)
+        tap("加工站材料顶部获得物资")
+        disappear("加工站材料顶部获得物资", 5)
+    end]]
+
+    if appear("获得物资", 10) then
+        ssleep(.2)
+        tap("获得物资")
+    end
+    appear("加工站", 3)
+    ssleep(.3)
+    appear("加工站", 3)
+    if not findOne("加工站材料已满足") then
+        log("不满足")
+        raise.材料合成()
+    else
+        if 是否为低级材料 then
+            ssleep(2) -- 点太快会不跳转，左上角可能也需要进行采样判断
+            appear("加工站返回上级材料", 5)
+            tap("加工站返回上级材料")
+            ssleep(0.5)
+            return -- 低级材料合成完即可退出
+        end
+        log("fine")
+        return true
+    end
 end
 
 raise.auto_raise = function()
@@ -2197,86 +2193,5 @@ raise.auto_raise = function()
                 end
             end
         end]]
-    end
-end
-
--- 材料合成，支持递归合成，从加工站页面开始
-raise.材料合成 = function()
-    if not findOne("加工站进入判断") then
-        log("未进入加工站")
-        return
-    end
-    local 获取材料数量 = function()
-        local 待合成数量 = ocr("加工数量识别范围")
-        for _, v in pairs(待合成数量) do
-            local t_number = string.match(v.text, "%d+")
-            if t_number then
-                log("合成数量", t_number)
-                return tonumber(t_number)
-            end
-        end
-    end
-
-    local 是否为低级材料 = false
-    local 待合成数量 = 获取材料数量()
-    if 待合成数量 == nil then return end
-    if findOne("加工站返回上级材料") then
-        是否为低级材料 = true
-    end
-
-    if findOne("加工站干员心情不足") then
-        -- 更换干员 以后再写
-        if not path.加工站选人("加工站", nil, nil) then
-            log("选人失败")
-            -- 选人失败也无所谓
-        end
-    end
-    local rx = { "加工站可加工1", "加工站可加工2", "加工站可加工3" }
-    for _, d_rx in ipairs(rx) do
-        if findOne(d_rx) then
-            合成材料采样 = sample("加工站中央物品")
-            tap(d_rx)
-            last_click_time = os.time()
-            wait(function() -- 需要等待跳转
-                if not findOne(合成材料采样) then return true end
-                if os.time() - last_click_time > 3 then
-                    tap(d_rx)
-                    last_click_time = os.time()
-                end
-            end, 10)
-
-            ssleep(1)
-            raise.材料合成() -- 3个加工都得单独合成一遍
-        end
-    end
-    ssleep(0.5)
-    for i = 2, 待合成数量 do
-        tap("材料加工加一按钮")
-        ssleep(.1)
-    end
-
-    log(1001)
-    tap("加工站开始加工按钮")
-    if appear("加工站材料顶部获得物资", 15) then
-        ssleep(0.5)
-        tap("加工站材料顶部获得物资")
-        disappear("加工站材料顶部获得物资", 5)
-    end
-
-    appear("加工站进入判断", 5)
-
-    if not findOne("加工站材料已满足") then
-        log("不满足")
-        raise.材料合成()
-    else
-        if 是否为低级材料 then
-            ssleep(2) -- 点太快会不跳转，左上角可能也需要进行采样判断
-            appear("加工站返回上级材料", 5)
-            tap("加工站返回上级材料")
-            ssleep(0.5)
-            return -- 低级材料合成完即可退出
-        end
-        log("fine")
-        return true
     end
 end
