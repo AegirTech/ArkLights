@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.05 22:15"
+release_date = "11.05 23:14"
 update_announcement = '最近更新：5.5周年自动培养。'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -143,11 +143,8 @@ if use_local_dictionary then
     --自动战斗本地字库ocr
     require("turing")
 end
-debug_mode = true
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug_mode")
-    ssleep(1)
-    --print(findOne("加工站无人"))
 end
 
 load(before_account_hook or '')()
