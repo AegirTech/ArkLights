@@ -59,8 +59,10 @@ loadHomework = function(levelName, isLocal)
         end
         local x = get(data, 'data', 'content')
         local levelInfo = JsonDecode(x)
-        httpPost('https://prts.maa.plus/copilot/rating/', JsonEncode({ rating = "LIKE", id = tostring(maaCode), }))
-        --log(levelInfo)
+        local ret, code = httpPost('https://prts.maa.plus/copilot/rating',
+            JsonEncode({ rating = "Like", id = tonumber(maaCode), }), 30,
+            "Content-Type: application/json")
+        log(ret)
         return levelInfo
     end
 end
