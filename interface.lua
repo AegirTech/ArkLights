@@ -874,6 +874,10 @@ show_debug_ui = function()
     ui.addTab("debug_tab", debug_layout_其他, "其他")
 
     newRow(debug_layout_其他)
+    ui.addCheckBox(debug_layout_其他, "disable_paddleocr",
+        "完全禁用飞浆OCR", false)
+
+    newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "disable_free_draw",
         "限时活动禁用赠送寻访(每日单抽)", false)
 

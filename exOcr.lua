@@ -44,6 +44,9 @@ if Err ~= nil then
 end
 
 ocrex = function(r)
+    if disable_paddleocr then
+        return ocr(r)
+    end
     if type(r) == "string" then r = point[r] end
     --log("ocrinput", r)
     local BitMap = LuaEngine.snapShot(r[1], r[2], r[3], r[4])
