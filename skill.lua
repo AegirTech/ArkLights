@@ -2089,9 +2089,8 @@ ygStaitonColor = {
 }
 
 is_training = function()
-    local ret = find_color({ scale(46), scale(642), scale(172), scale(1026) }, "72001F", 0, 1)
-    ret = ret and true or false
-    return ret
+    local ret = find_color("训练室干员检测范围", "72001F", 0, 0.95)
+    return ret and true or false
 end
 
 correctCharName = function(t)
