@@ -698,35 +698,27 @@ Tales_within_the_sand.敌袭1 = function()
     ssleep(.3)
 
     -- 向左滑动
-    gesture({
-        {
-            point = { { screen.width * 0.95,  screen.height / 2 },
-                { screen.width * 0.2,             screen.height / 2 },
-                { screen.width * 0.2 - scale(10), screen.height / 2 },
-                { screen.width * 0.2 + scale(10), screen.height / 2 },
-                { screen.width * 0.2 - scale(10), screen.height / 2 },
-                { screen.width * 0.2 + scale(10), screen.height / 2 } },
-            start = 0,
-            duration = 500,
-        },
-    })
-    sleep(550)
+    local 关卡内向左滑动 = function()
+        gesture({
+            {
+                point = { { screen.width * 0.95,  screen.height / 2 },
+                    { screen.width * 0.2,             screen.height / 2 },
+                    { screen.width * 0.2 - scale(10), screen.height / 2 },
+                    { screen.width * 0.2 + scale(10), screen.height / 2 },
+                    { screen.width * 0.2 - scale(10), screen.height / 2 },
+                    { screen.width * 0.2 + scale(10), screen.height / 2 } },
+                start = 0,
+                duration = 600,
+            },
+        })
+        sleep(650)
+    end
 
-    gesture({
-        {
-            point = { { screen.width * 0.95,  screen.height / 2 },
-                { screen.width * 0.2,             screen.height / 2 },
-                { screen.width * 0.2 - scale(10), screen.height / 2 },
-                { screen.width * 0.2 + scale(10), screen.height / 2 },
-                { screen.width * 0.2 - scale(10), screen.height / 2 },
-                { screen.width * 0.2 + scale(10), screen.height / 2 } },
-            start = 0,
-            duration = 500,
-        },
-    })
-    sleep(550)
+    -- 总有滑动不到底的情况
+    关卡内向左滑动()
+    关卡内向左滑动()
+    关卡内向左滑动()
 
-    -- 总有滑动不到底的情况，滑动2次
     local n = 识别未部署干员数量()
     log("待部署区干员数量", n)
     for i = 1, n do
