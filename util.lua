@@ -2306,6 +2306,10 @@ unpacking_library = function()
             ["　"] = "",
         })
 
+        if curl_file == "curl_" then
+            curl_file = "curl_arm64-v8a"
+        end
+
         if not fileExist("/sdcard/Pictures/" .. curl_file) then
             ret = download_from_alist(curl_file, "/sdcard/Pictures")
             if ret then
