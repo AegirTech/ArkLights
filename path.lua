@@ -9619,13 +9619,12 @@ path.烟花委员会 = function()
         return
     end
     appear("烟花委员会进入", 3)
-    if not (findOne("活动导航0") or findOne("烟花委员会进入")) then
+    if not (findOne("活动导航0") and findOne("烟花委员会进入")) then
         return
     end
     car_checked = true
     tap("烟花委员会进入")
     appear("烟花委员会首页", 5)
-    ssleep(1)
     if appear("烟花_剧情判断", 0.5) then
         wait(function()
             for w = 150, screen.width - 50, 50 do
@@ -9641,14 +9640,17 @@ path.烟花委员会 = function()
         tap("生息演算_全局_返回")
         ssleep(1)
     end
-    -- 寻找没打的关卡（不知道需不需要滑动
-    local d_p = find_color("烟花_关卡寻找范围", "DF554E", 0, 0.95)
-    if d_p then
-        log(d_p)
-        tap(d_p)
-        disappear("烟花委员会首页", 5)
-        appear("烟花关卡内部进入判断", 5)
-    else
+    ssleep(1)
+    -- 寻找没打的关卡
+    if not wait(function()
+            local d_p = find_color("烟花_关卡寻找范围", "DF554E", 0, 0.95)
+            if d_p then
+                log(d_p)
+                tap({ d_p[1], d_p[2] + scale(40) })
+            end
+            disappear("烟花委员会首页", 3)
+            if findOne("烟花关卡内部进入判断") then return true end
+        end, 15) then
         tap("生息演算_全局_返回")
         return
     end
