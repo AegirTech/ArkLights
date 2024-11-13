@@ -9717,7 +9717,7 @@ path.烟花委员会 = function()
     end
     -- 这是需要填满的格子
     all_p = count_p("AAAAA9", { x = scale(504), y = scale(130) }, 95, all_p)
-    table.insert(all_p, { 4, 4 })
+    -- table.insert(all_p, { 4, 4 })
     log("all_p", all_p)
 
     -- 计算可填充的卡片
@@ -9752,7 +9752,6 @@ path.烟花委员会 = function()
     log("all_card", all_card)
 
     local check_p = function(cd)
-        -- log("cd", cd)
         local td = {}
         for k, v in pairs(cd) do
             for k2, v2 in pairs(v[3]) do
@@ -9760,11 +9759,13 @@ path.烟花委员会 = function()
             end
         end
         td = table.remove_duplicate(td)
-        -- log("t", td)
+        table.removev(td, "p44") -- 4,4不用考虑
         local all_p2 = {}
         for k, v in pairs(all_p) do
             table.insert(all_p2, "p" .. v[1] .. v[2])
         end
+        -- log("cd", cd)
+        -- log("t", td)
         -- log("p", all_p2)
         if equalKey2(td, all_p2) then
             log("可填满")
@@ -9775,8 +9776,8 @@ path.烟花委员会 = function()
     local c_number = 4
     local tmp_cn = find_color("卡片数量判断范围", "E6E6E6", 0, 0.9)
     if tmp_cn then
-        log(tmp_cn, math.floor((tmp_cn[1] / scale(160))))
-        c_number = math.floor((tmp_cn[1] / scale(160))) - 1
+        log(tmp_cn, math.floor((tmp_cn[1] / scale(160) + 0.5)))
+        c_number = math.floor((tmp_cn[1] / scale(160) + 0.5)) - 1
         log("待选择卡片数量", c_number)
     end
     -- 遍历运算
@@ -9784,7 +9785,6 @@ path.烟花委员会 = function()
     for _, c in pairs(table.combination(range(1, #all_card), c_number)) do
         nx = table.index(all_card, c)
         if check_p(nx) then
-            log(nx)
             for k, v in pairs(nx) do
                 log("点击第" .. v[1] .. "套卡片的第" .. v[2] .. "张")
                 local 待点击卡片组 = { scale(1546), scale(148) }
