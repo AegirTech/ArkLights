@@ -616,13 +616,14 @@ show_debug_ui = function()
     ui.addEditText(layout, "max_log_count", "1000")
 
     newRow(layout)
+    addButton(layout, nil, "解锁", make_jump_ui_command(layout, 'gesture_capture'))
+
+    newRow(layout)
     ui.addTabView(layout, "debug_tab")
 
     local debug_layout_验证码 = "debug_tab_yzm"
     ui.addTab("debug_tab", debug_layout_验证码, "验证码")
 
-    -- newRow(layout)
-    -- addButton(layout, nil, "解锁", make_jump_ui_command(layout, 'gesture_capture'))
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "-->滑块验证码(2个至少勾选一个!)")
 
