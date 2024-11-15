@@ -334,10 +334,11 @@ path.base = {
         if repeat_fight_mode then return path.开始游戏('') end
 
         -- current fight success
+        log(cur_fight, fight_tick, fight)
         pre_fight = cur_fight
         fight_failed_times[cur_fight] = -3
-
         -- if same fight or same page fight
+        log(90)
         local next_fight_tick = fight_tick % #fight + 1
         local next_fight = fight[next_fight_tick]
         log(cur_fight, next_fight)
@@ -5292,7 +5293,8 @@ path.活动 = function(x)
 
     if not skip_guide then
         path.跳转("首页")
-        tap("面板活动")
+        -- tap("面板活动")
+        path.活动页面寻找(2)
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -5924,7 +5926,7 @@ path.商店搬空 = function()
     end
     log("商店清空任务")
 
-    if not path.活动页面寻找(1) then return end
+    if not path.活动页面寻找(2) then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
