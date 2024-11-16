@@ -8371,9 +8371,9 @@ end
 
 path.自动模组 = function()
     if not raise.init() then return end
-    raise.auto_module("银灰")
     raise.auto_module("黍")
     raise.auto_module("棘刺")
+    raise.auto_module("银灰")
 end
 
 path.自动合成材料 = function()
@@ -9833,4 +9833,282 @@ path.烟花委员会 = function()
     end, 10)
     return
     -- path.跳转("首页")
+end
+
+path.卫戍协议 = function()
+    raise.init()
+    path.跳转("首页")
+    ssleep(.2)
+    tap("面板活动")
+    disappear("主页", 2)
+    if not wait(function()
+            if findOne("卫戍协议首页") then return true end
+            if findOne("跳过剧情") then path.跳过剧情() end
+        end, 6) then
+        return
+    end
+    --if findOne("卫戍协议首页") and findOne("卫戍协议每日已完成") then return true end
+
+    if not findOne("卫戍协议首页") then return false end
+    if findOne("卫戍协议原型难度") then
+
+    else
+        tap("卫戍协议原型难度")
+        disappear("卫戍协议首页", 3)
+        appear("返回", 2)
+        ssleep(.2)
+        if not wait(function()
+                tap("卫戍协议选择原型难度")
+                ssleep(.2)
+                if findOne("卫戍协议首页") then return true end
+            end, 3) then
+            tap("返回")
+            return
+        end
+        appear("卫戍协议首页", 2)
+    end
+
+    log(98)
+    if findOne("卫戍协议结束模拟") then
+        tap("卫戍协议结束模拟")
+        appearTap("卫戍协议结束模拟确认", 2)
+        ssleep(1)
+        appearTap("卫戍协议结算", 2)
+        ssleep(1)
+        appear("卫戍协议首页", 2)
+    end
+    if findOne("卫戍协议入门难度") then
+        log("跳过教程")
+        --进图后强退app,到主页放弃上一把
+    end
+    if not wait(function()
+            tap("卫戍协议开始模拟")
+            ssleep(.2)
+            if findOne("卫戍协议选择分队") then return true end
+        end, 5) then
+        return
+    end
+    if not wait(function()
+            tap("卫戍协议选择分队")
+            ssleep(.2)
+            if findOne("卫戍协议开始模拟") then
+                tap("卫戍协议开始模拟")
+                return true
+            end
+        end, 5) then
+        return
+    end
+    appear("卫戍协议开始战斗", 40)
+end
+
+卫戍协议干员黑名单 = {
+    "芬",
+    "芙蓉",
+    "玫兰莎",
+    "米格鲁",
+    "慕斯",
+    "孑",
+    "调香师",
+    "极境",
+    "星源",
+    "赫默",
+    "砾",
+    "耶拉",
+    "幽灵鲨",
+    "耀骑士临光",
+    "Sharp",
+    "银灰",
+    "归溟幽灵鲨",
+}
+
+path.卫戍协议回合 = function()
+    local 当前回合 = tonumber(ocro("卫戍协议回合数范围") or 1)
+    local 当前本 = tonumber(utf8.right(ocro("卫戍协议本范围"), 1) or 1)
+    log(ocro("卫戍协议本范围"))
+    local 可放置干员 = tonumber(ocro("卫戍协议剩余干员范围") or 1)
+    toast(当前回合 .. "回合," .. 当前本 .. "本")
+
+    --[[if 当前本 < 6 then
+        tap("驳船操作员")
+        ssleep(.2)
+        if appear("可以升本", 2) then
+            ssleep(.2)
+            tap("可以升本")
+            ssleep(.5)
+            当前本 = 当前本 + 1
+        else
+            tap("点cost")
+            ssleep(.8)
+        end
+    end
+    local 购买干员 = function()
+        log("购买干员")
+        for level = 当前本, 当前本 - 1, -1 do
+            if level == 0 then break end
+            local arr = point["卫戍协议干员等级" .. level .. "列表"]
+            log(level, #arr)
+            for i = 1, #arr do
+                local p = findOne(arr[i])
+                if p then
+                    tap({ p[1] + scale(37), p[2] + scale(80) })
+                    ssleep(.2)
+                    if appear("卫戍协议干员可购买列表" .. i, 2) then
+                        local 干员 = correctCharName(ocro("卫戍协议干员ocr范围"))
+                        local 职业 = 干员职业[干员]
+                        toast(干员 .. 职业)
+                        if not table.findv(卫戍协议干员黑名单, 干员) then
+                            tap("卫戍协议干员可购买列表" .. i, 2)
+                            ssleep(.2)
+                        end
+                    else
+                        tap("点cost")
+                        ssleep(.8)
+                        return
+                    end
+                end
+            end
+        end
+    end]]
+    local deploy = function(x1, x2, y2, d, nopause)
+        local y1 = screen.height - scale(132)
+        d = d or 2
+        d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d]
+        d = { d[1] * 500, d[2] * 500 }
+        local dragd = 800
+        local dird = 200
+        local delay = 150 -- 有人卡这儿？
+        local x3 = x2 - scale(5)
+        local x4 = x2 + scale(5)
+        local y3 = y2 - scale(5)
+        local y4 = y2 + scale(5)
+        local finger = {
+            {
+                point = {
+                    { x1, y1 }, { x1, y1 }, { x1, y1 }, { x1, y1 }, { x1, y1 }, { x1, y1 }, { x1, y1 },
+                    { x1, y1 - 60 }, { (x1 + x2) / 3 * 2, (y1 + y2) / 3 * 2, }, --{x2, y2-40},
+                    { x2, y2 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x2, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x2, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x2, y2 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y2 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
+                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
+                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
+                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
+                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y2 },
+                },
+                duration = dragd,
+            }, {
+            point = { { x2, y2 }, { clamp(x2 + d[1]), clamp(y2 + d[2]) } },
+            duration = dird,
+            start = dragd + delay,
+        },
+        }
+        -- if 1 or zl_enable_tap_before_drag then
+        --   tap({x1, y1})
+        --   ssleep(.5)
+        -- end
+        gesture(finger)
+        sleep(250)
+        sleep(dragd + delay + dird + delay - 250)
+        log("deploy", finger)
+    end
+    local 部署干员 = function()
+        raise.init()
+        for i = 1, 10 do
+            local p = findOne("卫戍协议手牌干员列表" .. i)
+            log(p)
+            local 干员, 职业
+            if p then
+                tap({ p[1] + scale(37), p[2] + scale(80) })
+                ssleep(.2)
+                干员 = correctCharName(ocro("卫戍协议干员ocr范围"))
+                职业 = 干员职业[干员]
+                toast(干员 .. 职业)
+                tap("点cost")
+                appear("卫戍协议手牌干员列表" .. i, 2)
+                ssleep(.2)
+                while findOne("卫戍协议手牌干员列表" .. i) do
+                    if table.includes({ "WARRIOR", "TANK", "SPECIAL", }, 职业) then
+                        for j = 1, 5 do
+                            if not 格子[j] then
+                                deploy(p[1] + scale(52), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
+                                格子[j] = 1
+                                if not findOne("卫戍协议手牌干员列表" .. i) then break end
+                            end
+                        end
+                    elseif 职业 == "MEDCINE" then
+                        for j = 11, 15 do
+                            if not 格子[j] then
+                                deploy(p[1] + scale(52), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 1, true)
+                                格子[j] = 1
+                                if not findOne("卫戍协议手牌干员列表" .. i) then break end
+                            end
+                        end
+                    elseif table.includes({ "SNIPER", "CASTER", "SUPPORT", }, 职业) then
+                        for j = 6, 6 do
+                            if not 格子[j] then
+                                log(j)
+                                deploy(p[1] + scale(52), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
+                                格子[j] = 1
+                                if not findOne("卫戍协议手牌干员列表" .. i) then break end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    --购买干员()
+    部署干员()
 end
