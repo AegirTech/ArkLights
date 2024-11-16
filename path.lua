@@ -8369,6 +8369,19 @@ path.悖论模拟 = function()
     end
 end
 
+path.自动模组 = function()
+    if not raise.init() then return end
+    raise.auto_module("银灰")
+    raise.auto_module("黍")
+    raise.auto_module("棘刺")
+end
+
+path.自动合成材料 = function()
+    if not raise.init() then return end
+    raise.材料合成()
+    exit()
+end
+
 path.自动升级潜能 = function()
     path.跳转("干员")
     appear("干员界面", 3)
