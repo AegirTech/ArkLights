@@ -2076,6 +2076,14 @@ raise.材料合成 = function()
             log("选人失败")
             -- 选人失败也无所谓
         end
+        for i = 2, 待合成数量 do
+            tap("加工站加")
+            ssleep(.1)
+            if findOne("加工站干员心情不足") then
+                tap("加工站减")
+                break
+            end
+        end
     end
     if not appear("加工站", 2) then return end
     tap("开始加工")

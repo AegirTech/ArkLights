@@ -8379,6 +8379,7 @@ end
 path.自动合成材料 = function()
     if not raise.init() then return end
     raise.材料合成()
+    tap("返回")
     exit()
 end
 
