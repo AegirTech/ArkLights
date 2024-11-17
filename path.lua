@@ -9931,6 +9931,8 @@ end
     "赫默",
     "砾",
     "耶拉",
+    "灰毫",
+    "羽毛笔",
     "幽灵鲨",
     "耀骑士临光",
     "Sharp",
@@ -10073,7 +10075,7 @@ path.卫戍协议回合 = function()
                 while findOne("卫戍协议手牌干员列表" .. i, 0.8) and n <= 5 do
                     if table.includes({ "WARRIOR", "TANK", "SPECIAL", }, 职业) then
                         n = n + 1
-                        for j = 1, 7 do
+                        for j = 1, 10 do
                             if not 格子[j] then
                                 deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
                                 格子[j] = 1
@@ -10143,7 +10145,11 @@ path.卫戍协议回合 = function()
             end
             if p == "卫戍协议开始战斗" or p == "卫戍协议结算" then
                 ssleep(3)
-                if findOne("卫戍协议开始战斗") or findOne("卫戍协议结算") then
+                if findOne("卫戍协议开始战斗") then
+                    return true
+                elseif findOne("卫戍协议结算") then
+                    tap("卫戍协议选择奖励1")
+                    appear("卫戍协议首页", 2)
                     return true
                 end
             end
