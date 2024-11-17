@@ -170,6 +170,7 @@ m.captcha = function()
         if data.code == 0 then
             cloud_captcha_id = data.data.captcha_id or nil
             log("云控打码数量", #data.data.points)
+            toast("B服云控打码数量" .. #data.data.points)
             log("云控打码坐标", data.data.points)
             for _, coord in pairs(data.data.points) do
                 x = coord[1] or 0
@@ -177,6 +178,7 @@ m.captcha = function()
                 tap({ image_pos[1] + x, image_pos[2] + y })
                 ssleep(0.3)
             end
+            ssleep(0.3)
             return true
         else
             log("云控打码", data.message)
