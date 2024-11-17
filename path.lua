@@ -9976,23 +9976,25 @@ path.卫戍协议回合 = function()
         end
     end
     local deploy = function(x1, x2, y2, d, nopause)
-        local y1 = screen.height - scale(132)
+        local y1 = screen.height - scale(132)                 -- 干员位置 x1
         d = d or 2
-        d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d]
+        d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d] --方向
         d = { d[1] * 500, d[2] * 500 }
-        local dragd = 1200
+        local dragd = 400
         local dird = 200
-        local delay = 150 -- 有人卡这儿？
-        local x3 = x2 - scale(5)
-        local x4 = x2 + scale(5)
-        local y3 = y2 - scale(5)
-        local y4 = y2 + scale(5)
+        local delay = 150         -- 有人卡这儿？
+        local x3 = x2 - scale(20) --待部署位置
+        local x4 = x2 + scale(20)
+        local y3 = y2 - scale(30) --待部署位置
+        local y4 = y2 + scale(30)
         local finger = {
             {
                 point = {
-                    { x1, y1 }, { x2, y2 }
+                    { x1, y1 }, { x1, y1 }, { x1, y1 }, { x1, y1 }, { x1, y1 },
+                    { x1, y1 + 100 }, { x1, y1 + 100 }, { x1, y1 + 100 },
+                    { x1 + 100, y1 + 100 }, { x1, y1 + 100 }, { x1, y1 },
+                    { x2,       y4 }, { x2, y2 }, { x3, y2 }, { x4, y2 }, { x2, y2 },
                 },
-                start = 50,
                 duration = dragd,
             }, {
             point = { { x2, y2 }, { clamp(x2 + d[1]), clamp(y2 + d[2]) } },
