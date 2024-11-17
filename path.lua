@@ -9837,7 +9837,8 @@ path.烟花委员会 = function()
 end
 
 path.卫戍协议 = function()
-    raise.init()
+    干员职业 = JsonDecode(readFile("character_type_list.json"))
+    格子 = {}
     path.跳转("首页")
     ssleep(.2)
     tap("面板活动")
@@ -9900,6 +9901,10 @@ path.卫戍协议 = function()
         return
     end
     appear("卫戍协议开始战斗", 40)
+    while findOne("卫戍协议开始战斗") do
+        ssleep(2)
+        path.卫戍协议回合()
+    end
 end
 
 卫戍协议干员黑名单 = {
@@ -9929,7 +9934,7 @@ path.卫戍协议回合 = function()
     local 可放置干员 = tonumber(ocro("卫戍协议剩余干员范围") or 1)
     toast(当前回合 .. "回合," .. 当前本 .. "本")
 
-    --[[if 当前本 < 6 then
+    if 当前本 < 6 then
         tap("驳船操作员")
         ssleep(.2)
         if appear("可以升本", 2) then
@@ -9969,13 +9974,13 @@ path.卫戍协议回合 = function()
                 end
             end
         end
-    end]]
+    end
     local deploy = function(x1, x2, y2, d, nopause)
         local y1 = screen.height - scale(132)
         d = d or 2
         d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d]
         d = { d[1] * 500, d[2] * 500 }
-        local dragd = 800
+        local dragd = 1200
         local dird = 200
         local delay = 150 -- 有人卡这儿？
         local x3 = x2 - scale(5)
@@ -9985,74 +9990,14 @@ path.卫戍协议回合 = function()
         local finger = {
             {
                 point = {
-                    { x1, y1 }, { x1, y1 }, { x1, y1 }, { x1, y1 }, { x1, y1 }, { x1, y1 }, { x1, y1 },
-                    { x1, y1 - 60 }, { (x1 + x2) / 3 * 2, (y1 + y2) / 3 * 2, }, --{x2, y2-40},
-                    { x2, y2 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x2, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x2, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x2, y2 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y2 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 },
-                    { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 },
-                    { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 },
-                    { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 },
-                    { x3, y2 }, { x4, y2 }, { x2, y3 }, { x2, y4 }, { x3, y2 }, { x4, y2 }, { x2, y2 },
+                    { x1, y1 }, { x2, y2 }
                 },
+                start = 50,
                 duration = dragd,
             }, {
             point = { { x2, y2 }, { clamp(x2 + d[1]), clamp(y2 + d[2]) } },
             duration = dird,
-            start = dragd + delay,
+            start = dragd + delay + 50,
         },
         }
         -- if 1 or zl_enable_tap_before_drag then
@@ -10060,9 +10005,9 @@ path.卫戍协议回合 = function()
         --   ssleep(.5)
         -- end
         gesture(finger)
-        sleep(250)
-        sleep(dragd + delay + dird + delay - 250)
+        sleep(dragd + delay + dird + delay)
         log("deploy", finger)
+        sleep(200)
     end
     local 部署干员 = function()
         raise.init()
@@ -10099,7 +10044,6 @@ path.卫戍协议回合 = function()
                     elseif table.includes({ "SNIPER", "CASTER", "SUPPORT", }, 职业) then
                         for j = 6, 6 do
                             if not 格子[j] then
-                                log(j)
                                 deploy(p[1] + scale(52), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
                                 格子[j] = 1
                                 if not findOne("卫戍协议手牌干员列表" .. i) then break end
@@ -10110,6 +10054,17 @@ path.卫戍协议回合 = function()
             end
         end
     end
-    --购买干员()
+    购买干员()
     部署干员()
+    tap("卫戍协议开始战斗")
+    local 战斗结束 = { "卫戍协议开始战斗", "卫戍协议选择奖励", "卫戍协议地方信息", "卫戍协议结算" }
+    if not wait(function()
+            local p = findAny(战斗结束)
+            if p then
+                log(p)
+                return true
+            end
+        end, 150) then
+        return
+    end
 end
