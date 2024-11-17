@@ -1193,8 +1193,9 @@ path.限时活动 = function(retry)
 end
 
 path.账户数据保存 = function()
-    if new_change_account_plan and _G.快速切号功能状态 == false then
-        log("未查询到保存的登录数据或数据已经失效")
+    if new_change_account_plan and 快速切号功能状态 == false then
+        log("未查询到保存的登录数据或数据已经失效", username)
+        log(account_data)
         account_data[username] = {}
         if appid == "com.hypergryph.arknights" then
             local user_token = official_get_last_login()

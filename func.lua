@@ -204,6 +204,7 @@ end
 
 -- 返回官服所有账户的登录数据
 official_get_user_cache = function()
+    log("获取官服用户缓存")
     exec2(string.format(
         [[su root sh -c "cp '/data/user/0/com.hypergryph.arknights/shared_prefs/HypergryphSdkPreferences.xml' '%s'"]],
         getWorkPath() .. "/HypergryphSdkPreferences.xml"))
@@ -217,6 +218,7 @@ end
 
 -- 返回最后登录的账户，string
 official_get_last_login = function()
+    log("获取官服最后登录账户")
     local data = official_get_user_cache()
     data = data:gsub('&quot;', '"')
     data = JsonDecode(data)
