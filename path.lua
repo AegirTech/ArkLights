@@ -9958,7 +9958,9 @@ path.卫戍协议回合 = function()
             当前本 = 当前本 + 1
         else
             tap("点cost")
-            ssleep(.8)
+            ssleep(.4)
+            tap("点cost")
+            ssleep(.4)
         end
     end
     local 购买干员 = function()
@@ -9984,11 +9986,15 @@ path.卫戍协议回合 = function()
                                 ssleep(.5)
                             else
                                 tap("点cost")
-                                ssleep(1)
+                                ssleep(.4)
+                                tap("点cost")
+                                ssleep(.6)
                             end
                         else
                             tap("点cost")
-                            ssleep(.8)
+                            ssleep(.4)
+                            tap("点cost")
+                            ssleep(.4)
                             return
                         end
                     end
@@ -10003,7 +10009,9 @@ path.卫戍协议回合 = function()
                     ssleep(1)
                 else
                     tap("点cost")
-                    ssleep(.8)
+                    ssleep(.4)
+                    tap("点cost")
+                    ssleep(.4)
                 end
             end
         end
@@ -10054,9 +10062,11 @@ path.卫戍协议回合 = function()
             if p then
                 tap({ p[1] + scale(37), p[2] + scale(80) })
                 ssleep(.2)
-                干员 = correctCharName(ocro("卫戍协议干员ocr范围"))
+                干员 = correctCharName(ocro("卫戍协议干员ocr范围")) or "物品"
                 职业 = 干员职业[干员] or "OTHER"
                 toast(干员 .. 职业)
+                tap("点cost")
+                ssleep(.4)
                 tap("点cost")
                 appear("卫戍协议手牌干员列表" .. i, 2)
                 ssleep(.8)
