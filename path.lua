@@ -9850,7 +9850,22 @@ path.卫戍协议 = function()
         return
     end
     --if findOne("卫戍协议首页") and findOne("卫戍协议每日已完成") then return true end
-
+    log(98)
+    ssleep(.2)
+    if findOne("卫戍协议结束模拟") then
+        tap("卫戍协议结束模拟")
+        appearTap("卫戍协议结束模拟确认", 2)
+        ssleep(1)
+        if not wait(function()
+                if findOne("卫戍协议首页") then
+                    return true
+                end
+                tap("卫戍协议选择奖励1")
+                ssleep(.2)
+            end, 10) then
+            return
+        end
+    end
     if not findOne("卫戍协议首页") then return false end
     if findOne("卫戍协议原型难度") then
 
@@ -9870,30 +9885,27 @@ path.卫戍协议 = function()
         appear("卫戍协议首页", 2)
     end
 
-    log(98)
-    if findOne("卫戍协议结束模拟") then
-        tap("卫戍协议结束模拟")
-        appearTap("卫戍协议结束模拟确认", 2)
-        ssleep(1)
-        appearTap("卫戍协议结算", 2)
-        ssleep(1)
-        appear("卫戍协议首页", 2)
-    end
     if findOne("卫戍协议入门难度") then
         log("跳过教程")
         --进图后强退app,到主页放弃上一把
     end
+
+
     if not wait(function()
             tap("卫戍协议开始模拟")
-            ssleep(.2)
+            ssleep(1.5)
             if findOne("卫戍协议选择分队") then return true end
         end, 5) then
         return
     end
+    ssleep(.5)
     if not wait(function()
             tap("卫戍协议选择分队")
-            ssleep(.2)
+            ssleep(.5)
             if findOne("卫戍协议开始模拟") then
+                ssleep(.1)
+                tap("卫戍协议开始模拟")
+                ssleep(.1)
                 tap("卫戍协议开始模拟")
                 return true
             end
@@ -9928,11 +9940,13 @@ end
 }
 
 path.卫戍协议回合 = function()
-    local 当前回合 = tonumber(ocro("卫戍协议回合数范围") or 1)
+    --local 当前回合 = tonumber(ocro("卫戍协议回合数范围") or 1) or 1
     local 当前本 = tonumber(utf8.right(ocro("卫戍协议本范围"), 1) or 1)
     log(ocro("卫戍协议本范围"))
-    local 可放置干员 = tonumber(ocro("卫戍协议剩余干员范围") or 1)
-    toast(当前回合 .. "回合," .. 当前本 .. "本")
+    local 可放置干员 = function()
+        return tonumber(ocro("卫戍协议剩余干员范围") or 1)
+    end
+    --toast(当前回合 .. "回合," .. 当前本 .. "本")
 
     if 当前本 < 6 then
         tap("驳船操作员")
@@ -9940,7 +9954,7 @@ path.卫戍协议回合 = function()
         if appear("可以升本", 2) then
             ssleep(.2)
             tap("可以升本")
-            ssleep(.5)
+            ssleep(1.5)
             当前本 = 当前本 + 1
         else
             tap("点cost")
@@ -9949,38 +9963,57 @@ path.卫戍协议回合 = function()
     end
     local 购买干员 = function()
         log("购买干员")
-        for level = 当前本, 当前本 - 1, -1 do
-            if level == 0 then break end
-            local arr = point["卫戍协议干员等级" .. level .. "列表"]
-            log(level, #arr)
-            for i = 1, #arr do
-                local p = findOne(arr[i])
-                if p then
-                    tap({ p[1] + scale(37), p[2] + scale(80) })
-                    ssleep(.2)
-                    if appear("卫戍协议干员可购买列表" .. i, 2) then
-                        local 干员 = correctCharName(ocro("卫戍协议干员ocr范围"))
-                        local 职业 = 干员职业[干员]
-                        toast(干员 .. 职业)
-                        if not table.findv(卫戍协议干员黑名单, 干员) then
-                            tap("卫戍协议干员可购买列表" .. i, 2)
-                            ssleep(.2)
+        while not findOne("卫戍协议金币花完") do
+            for level = 当前本, 当前本 - 1, -1 do
+                if level == 0 then break end
+                local arr = point["卫戍协议干员等级" .. level .. "列表"]
+                log(level, #arr)
+                for i = 1, #arr do
+                    if findOne("卫戍协议金币花完") then return end
+                    local p = findOne("卫戍协议干员等级" .. level .. "列表" .. i, 0.8)
+                    if p then
+                        log(i)
+                        tap({ p[1] + scale(37), p[2] + scale(80) })
+                        ssleep(.2)
+                        if appear("卫戍协议干员可购买列表" .. i, 2) then
+                            local 干员 = correctCharName(ocro("卫戍协议干员ocr范围"))
+                            local 职业 = 干员职业[干员]
+                            toast(干员 .. 职业)
+                            if not table.findv(卫戍协议干员黑名单, 干员) then
+                                tap("卫戍协议干员可购买列表" .. i, 2)
+                                ssleep(.5)
+                            else
+                                tap("点cost")
+                                ssleep(1)
+                            end
+                        else
+                            tap("点cost")
+                            ssleep(.8)
+                            return
                         end
-                    else
-                        tap("点cost")
-                        ssleep(.8)
-                        return
                     end
+                end
+            end
+            if not findOne("卫戍协议金币花完") then
+                tap("补给调配器")
+                ssleep(.2)
+                if appear("可以刷新", 2) then
+                    ssleep(.2)
+                    tap("可以刷新")
+                    ssleep(1)
+                else
+                    tap("点cost")
+                    ssleep(.8)
                 end
             end
         end
     end
-    local deploy = function(x1, x2, y2, d, nopause)
+    local deploy = function(x1, x2, y2, d)
         local y1 = screen.height - scale(132)                 -- 干员位置 x1
-        d = d or 2
+        d = d or 2                                            --1上2右
         d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d] --方向
         d = { d[1] * 500, d[2] * 500 }
-        local dragd = 400
+        local dragd = 1200
         local dird = 200
         local delay = 150         -- 有人卡这儿？
         local x3 = x2 - scale(20) --待部署位置
@@ -9995,6 +10028,7 @@ path.卫戍协议回合 = function()
                     { x1 + 100, y1 + 100 }, { x1, y1 + 100 }, { x1, y1 },
                     { x2,       y4 }, { x2, y2 }, { x3, y2 }, { x4, y2 }, { x2, y2 },
                 },
+                start = 50,
                 duration = dragd,
             }, {
             point = { { x2, y2 }, { clamp(x2 + d[1]), clamp(y2 + d[2]) } },
@@ -10012,43 +10046,56 @@ path.卫戍协议回合 = function()
         sleep(200)
     end
     local 部署干员 = function()
-        raise.init()
+        if 可放置干员 == 0 then return end
         for i = 1, 10 do
-            local p = findOne("卫戍协议手牌干员列表" .. i)
+            local p = findOne("卫戍协议手牌干员列表" .. i, 0.8)
             log(p)
             local 干员, 职业
             if p then
                 tap({ p[1] + scale(37), p[2] + scale(80) })
                 ssleep(.2)
                 干员 = correctCharName(ocro("卫戍协议干员ocr范围"))
-                职业 = 干员职业[干员]
+                职业 = 干员职业[干员] or "OTHER"
                 toast(干员 .. 职业)
                 tap("点cost")
                 appear("卫戍协议手牌干员列表" .. i, 2)
-                ssleep(.2)
-                while findOne("卫戍协议手牌干员列表" .. i) do
+                ssleep(.8)
+                local n = 0
+                while findOne("卫戍协议手牌干员列表" .. i, 0.8) and n <= 5 do
                     if table.includes({ "WARRIOR", "TANK", "SPECIAL", }, 职业) then
-                        for j = 1, 5 do
+                        n = n + 1
+                        for j = 1, 7 do
                             if not 格子[j] then
-                                deploy(p[1] + scale(52), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
+                                deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
                                 格子[j] = 1
                                 if not findOne("卫戍协议手牌干员列表" .. i) then break end
                             end
                         end
                     elseif 职业 == "MEDCINE" then
+                        n = n + 1
                         for j = 11, 15 do
                             if not 格子[j] then
-                                deploy(p[1] + scale(52), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 1, true)
+                                deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 1, true)
                                 格子[j] = 1
-                                if not findOne("卫戍协议手牌干员列表" .. i) then break end
+                                if not findOne("卫戍协议手牌干员列表" .. i) or 可放置干员 == 0 then break end
                             end
                         end
                     elseif table.includes({ "SNIPER", "CASTER", "SUPPORT", }, 职业) then
-                        for j = 6, 6 do
+                        n = n + 1
+                        for j = 6, 15 do
                             if not 格子[j] then
-                                deploy(p[1] + scale(52), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
+                                deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
                                 格子[j] = 1
-                                if not findOne("卫戍协议手牌干员列表" .. i) then break end
+                                if not findOne("卫戍协议手牌干员列表" .. i) or 可放置干员 == 0 then break end
+                            end
+                        end
+                    elseif 职业 == "OTHER" then
+                        n = n + 6
+                        for j = 15, 1, -1 do
+                            if 格子[j] then
+                                deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
+
+                                if not findOne("卫戍协议手牌干员列表" .. i) or 可放置干员 == 0 or n > 5 then break end
                             end
                         end
                     end
@@ -10059,13 +10106,36 @@ path.卫戍协议回合 = function()
     购买干员()
     部署干员()
     tap("卫戍协议开始战斗")
-    local 战斗结束 = { "卫戍协议开始战斗", "卫戍协议选择奖励", "卫戍协议地方信息", "卫戍协议结算" }
+    if appear("金币清零", 2) then
+        tap("金币清零勾")
+        tap("金币清零")
+    end
+    ssleep(15)
+    local 战斗结束 = { "卫戍协议选择奖励", "卫戍协议敌方信息", "卫戍协议结算", "卫戍协议开始战斗" }
     if not wait(function()
             local p = findAny(战斗结束)
-            if p then
-                log(p)
-                return true
+            log(p)
+            if p == "卫戍协议选择奖励" then
+                ssleep(.5)
+                tap("卫戍协议选择奖励1")
+                ssleep(.5)
+                tap("卫戍协议选择奖励1确认")
+                ssleep(.5)
+                tap("卫戍协议选择奖励1")
+                ssleep(.5)
             end
+            if p == "卫戍协议敌方信息" then
+                ssleep(.5)
+                tap("卫戍协议选择奖励1")
+                ssleep(.5)
+            end
+            if p == "卫戍协议开始战斗" or p == "卫戍协议结算" then
+                ssleep(3)
+                if findOne("卫戍协议开始战斗") or findOne("卫戍协议结算") then
+                    return true
+                end
+            end
+            ssleep(3)
         end, 150) then
         return
     end
