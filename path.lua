@@ -9839,6 +9839,7 @@ end
 path.卫戍协议 = function()
     干员职业 = JsonDecode(readFile("character_type_list.json"))
     格子 = {}
+    已购买 = { 0, 0, 0, 0, 0, 0 }
     path.跳转("首页")
     ssleep(.2)
     tap("面板活动")
@@ -9920,28 +9921,65 @@ path.卫戍协议 = function()
 end
 
 卫戍协议干员黑名单 = {
+    "泡普卡",
     "芬",
     "芙蓉",
     "玫兰莎",
     "米格鲁",
+    "月见夜",
     "慕斯",
+    "角峰",
+    "波登可",
+    "流星",
     "孑",
     "极境",
+    "初雪",
+    "极境",
+    "安哲拉",
     "星源",
     "赫默",
     "砾",
     "耶拉",
+    "Pith",
+    "狮蝎",
+    "Misery",
     "灰毫",
+    "郁金香",
     "羽毛笔",
     "幽灵鲨",
+    "塞雷娅",
+    "灵知",
     "耀骑士临光",
     "Sharp",
+    "Stormeye",
+    "歌蕾蒂娅",
     "银灰",
+    "星熊",
+    "乌尔比安",
     "归溟幽灵鲨",
 }
 
 path.卫戍协议回合 = function()
-    --local 当前回合 = tonumber(ocro("卫戍协议回合数范围") or 1) or 1
+    local 当前回合 = tonumber(ocro("卫戍协议回合数范围") or 1) or 1
+    if 当前回合 >= 14 then
+        tap("卫戍协议战斗返回")
+        appear("卫戍协议首页", 20)
+        ssleep(.2)
+        if findOne("卫戍协议结束模拟") then
+            tap("卫戍协议结束模拟")
+            appearTap("卫戍协议结束模拟确认", 2)
+            ssleep(1)
+            if not wait(function()
+                    if findOne("卫戍协议首页") then
+                        return true
+                    end
+                    tap("卫戍协议选择奖励1")
+                    ssleep(.2)
+                end, 10) then
+            end
+        end
+        return
+    end
     local 当前本 = tonumber(utf8.right(ocro("卫戍协议本范围"), 1) or 1)
     log(ocro("卫戍协议本范围"))
     local 可放置干员 = function()
@@ -9961,48 +9999,59 @@ path.卫戍协议回合 = function()
             tap("点cost")
             ssleep(.4)
             tap("点cost")
-            ssleep(.4)
+            ssleep(.2)
+            tap("点cost")
+            ssleep(.2)
         end
     end
     local 购买干员 = function()
         log("购买干员")
+        local n = 0
         while not findOne("卫戍协议金币花完") do
             for level = 当前本, 当前本 - 1, -1 do
-                if level == 0 then break end
+                if level == 0 then return true end
                 local arr = point["卫戍协议干员等级" .. level .. "列表"]
                 log(level, #arr)
                 for i = 1, #arr do
-                    if findOne("卫戍协议金币花完") then return end
+                    if findOne("卫戍协议金币花完") then return true end
+                    if level <= 4 and 已购买[level] >= 2 then break end
                     local p = findOne("卫戍协议干员等级" .. level .. "列表" .. i, 0.8)
                     if p then
                         log(i)
                         tap({ p[1] + scale(37), p[2] + scale(80) })
                         ssleep(.2)
                         if appear("卫戍协议干员可购买列表" .. i, 2) then
-                            local 干员 = correctCharName(ocro("卫戍协议干员ocr范围"))
-                            local 职业 = 干员职业[干员]
+                            local 干员 = correctCharName(ocro("卫戍协议干员ocr范围")) or "未识别"
+                            local 职业 = 干员职业[干员] or "OTHER"
                             toast(干员 .. 职业)
                             if not table.findv(卫戍协议干员黑名单, 干员) then
                                 tap("卫戍协议干员可购买列表" .. i, 2)
                                 ssleep(.5)
+                                已购买[level] = 已购买[level] + 1
                             else
                                 tap("点cost")
                                 ssleep(.4)
                                 tap("点cost")
-                                ssleep(.6)
+                                ssleep(.3)
+                                tap("点cost")
+                                ssleep(.3)
                             end
                         else
                             tap("点cost")
                             ssleep(.4)
                             tap("点cost")
-                            ssleep(.4)
-                            return
+                            ssleep(.2)
+                            tap("点cost")
+                            ssleep(.2)
+                            return true
                         end
                     end
                 end
             end
             if not findOne("卫戍协议金币花完") then
+                ssleep(.2)
                 tap("补给调配器")
+                n = n + 1
                 ssleep(.2)
                 if appear("可以刷新", 2) then
                     ssleep(.2)
@@ -10012,14 +10061,18 @@ path.卫戍协议回合 = function()
                     tap("点cost")
                     ssleep(.4)
                     tap("点cost")
+                    ssleep(.2)
+                    tap("点cost")
                     ssleep(.4)
                 end
+                if n > 10 then return true end
             end
         end
+        return true
     end
     local deploy = function(x1, x2, y2, d)
         local y1 = screen.height - scale(132)                 -- 干员位置 x1
-        d = d or 2                                            --1上2右
+        if y2 > 700 then d = 1 end                            --1上2右
         d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d] --方向
         d = { d[1] * 500, d[2] * 500 }
         local dragd = 1200
@@ -10069,31 +10122,35 @@ path.卫戍协议回合 = function()
                 tap("点cost")
                 ssleep(.4)
                 tap("点cost")
+                ssleep(.2)
+                tap("点cost")
                 appear("卫戍协议手牌干员列表" .. i, 2)
                 ssleep(.8)
                 local n = 0
+                if 当前回合 == 10 then 格子[3] = nil end
+                if 当前回合 == 13 then 格子 = {} end
                 while findOne("卫戍协议手牌干员列表" .. i, 0.8) and n <= 5 do
-                    if table.includes({ "WARRIOR", "TANK", "SPECIAL", }, 职业) then
+                    if 职业 == "TANK" then
                         n = n + 1
-                        for j = 1, 10 do
-                            if not 格子[j] then
-                                deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
-                                格子[j] = 1
-                                if not findOne("卫戍协议手牌干员列表" .. i) then break end
-                            end
-                        end
-                    elseif 职业 == "MEDIC" then
-                        n = n + 1
-                        for j = 11, 15 do
+                        for j = 1, 2 do
                             if not 格子[j] then
                                 deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
                                 格子[j] = 1
                                 if not findOne("卫戍协议手牌干员列表" .. i) or 可放置干员 == 0 then break end
                             end
                         end
-                    elseif table.includes({ "SNIPER", "CASTER", "SUPPORT", }, 职业) then
+                    elseif 职业 == "MEDIC" then
                         n = n + 1
-                        for j = 6, 15 do
+                        for j = 16, 19 do
+                            if not 格子[j] then
+                                deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
+                                格子[j] = 1
+                                if not findOne("卫戍协议手牌干员列表" .. i) or 可放置干员 == 0 then break end
+                            end
+                        end
+                    elseif table.includes({ "SNIPER", "CASTER", "SUPPORT", "WARRIOR", "SPECIAL", }, 职业) then
+                        n = n + 1
+                        for j = 3, 15 do
                             if not 格子[j] then
                                 deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
                                 格子[j] = 1
@@ -10101,12 +10158,12 @@ path.卫戍协议回合 = function()
                             end
                         end
                     elseif 职业 == "OTHER" then
-                        n = n + 6
-                        for j = 15, 1, -1 do
+                        n = n + 5
+                        for j = 19, 1, -1 do
                             if 格子[j] then
                                 deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
-
-                                if not findOne("卫戍协议手牌干员列表" .. i) or 可放置干员 == 0 or n > 5 then break end
+                                ssleep(.2)
+                                if not findOne("卫戍协议手牌干员列表" .. i) or 可放置干员 == 0 or n > 25 then break end
                             end
                         end
                     end
@@ -10115,6 +10172,9 @@ path.卫戍协议回合 = function()
         end
         return true
     end
+    wait(function()
+        if 购买干员() then return true end
+    end, 40)
     购买干员()
     wait(function()
         if 部署干员() then return true end
