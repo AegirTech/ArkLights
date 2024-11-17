@@ -9926,7 +9926,6 @@ end
     "米格鲁",
     "慕斯",
     "孑",
-    "调香师",
     "极境",
     "星源",
     "赫默",
@@ -10081,11 +10080,11 @@ path.卫戍协议回合 = function()
                                 if not findOne("卫戍协议手牌干员列表" .. i) then break end
                             end
                         end
-                    elseif 职业 == "MEDCINE" then
+                    elseif 职业 == "MEDIC" then
                         n = n + 1
                         for j = 11, 15 do
                             if not 格子[j] then
-                                deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 1, true)
+                                deploy(p[1] + scale(37), point["卫戍协议格子列表" .. j][1], point["卫戍协议格子列表" .. j][2], 2, true)
                                 格子[j] = 1
                                 if not findOne("卫戍协议手牌干员列表" .. i) or 可放置干员 == 0 then break end
                             end
@@ -10114,6 +10113,7 @@ path.卫戍协议回合 = function()
         end
     end
     购买干员()
+    wait(部署干员(), 40)
     部署干员()
     tap("卫戍协议开始战斗")
     if appear("金币清零", 2) then
