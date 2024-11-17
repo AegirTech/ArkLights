@@ -9849,7 +9849,7 @@ path.卫戍协议 = function()
         end, 6) then
         return
     end
-    --if findOne("卫戍协议首页") and findOne("卫戍协议每日已完成") then return true end
+    if findOne("卫戍协议首页") and findOne("卫戍协议每日已完成") then return true end
     log(98)
     ssleep(.2)
     if findOne("卫戍协议结束模拟") then
@@ -10053,7 +10053,7 @@ path.卫戍协议回合 = function()
         sleep(200)
     end
     local 部署干员 = function()
-        if 可放置干员 == 0 then return end
+        if 可放置干员 == 0 then return true end
         for i = 1, 10 do
             local p = findOne("卫戍协议手牌干员列表" .. i, 0.8)
             log(p)
@@ -10111,10 +10111,12 @@ path.卫戍协议回合 = function()
                 end
             end
         end
+        return true
     end
     购买干员()
-    wait(部署干员(), 40)
-    部署干员()
+    wait(function()
+        if 部署干员() then return true end
+    end, 40)
     tap("卫戍协议开始战斗")
     if appear("金币清零", 2) then
         tap("金币清零勾")

@@ -1434,7 +1434,10 @@ show_auto_ui = function()
     addButton(layout, nil, "自动合成材料",
         make_jump_ui_command(layout, nil,
             "extra_mode='自动合成材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
-
+    newRow(layout)
+    addButton(layout, nil, "卫戍协议每日",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     newRow(layout)
     addTextView(layout, "--------------------自动作战相关--------------------")
 
