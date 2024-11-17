@@ -1431,11 +1431,9 @@ show_auto_ui = function()
     addButton(layout, nil, "测试按钮",
         make_jump_ui_command(layout, nil,
             "extra_mode='自动模组';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    ui.loadProfile(getUIConfigPath(layout))
     addButton(layout, nil, "自动合成材料",
         make_jump_ui_command(layout, nil,
             "extra_mode='自动合成材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
-    newRow(layout)
     newRow(layout)
     addTextView(layout, "--------------------自动作战相关--------------------")
 
@@ -1457,6 +1455,7 @@ show_auto_ui = function()
             "extra_mode='专注失调';extra_mode_multi=false;lock:remove(main_ui_lock)"))
     newRow(layout)
 
+    ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
     ui.setButton("map_online", "联网更新地图包")
 end
