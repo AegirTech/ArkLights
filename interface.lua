@@ -1352,6 +1352,7 @@ end
 
 show_auto_ui = function()
     local layout = "auto"
+    saveConfig('last_layout', layout)
     ui.newLayout(layout, ui_page_width, -2)
     ui.setTitleText(layout, "测试功能")
 
