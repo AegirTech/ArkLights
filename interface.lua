@@ -1364,7 +1364,7 @@ show_auto_ui = function()
 
     newRow(layout)
     addButton(layout, nil, "返回",
-        make_jump_ui_command(layout, loadConfig("last_layout", "main")),
+        make_jump_ui_command(layout, "main"),
         nil, nil)
 
     newRow(layout)
