@@ -9961,7 +9961,7 @@ end
 
 path.卫戍协议回合 = function()
     local 当前回合 = tonumber(ocro("卫戍协议回合数范围") or 1) or 1
-    if 当前回合 >= 14 then
+    if 当前回合 >= 13 then
         tap("卫戍协议战斗返回")
         appear("卫戍协议首页", 20)
         ssleep(.2)
@@ -9978,14 +9978,14 @@ path.卫戍协议回合 = function()
                 end, 10) then
             end
         end
-        return
+        return true
     end
     local 当前本 = tonumber(utf8.right(ocro("卫戍协议本范围"), 1) or 1)
     log(ocro("卫戍协议本范围"))
     local 可放置干员 = function()
-        return tonumber(ocro("卫戍协议剩余干员范围") or 1)
+        return tonumber(string.match(ocro("卫戍协议剩余干员范围"), "%d+") or 1)
     end
-    --toast(当前回合 .. "回合," .. 当前本 .. "本")
+    toast(当前回合 .. "回合," .. 当前本 .. "本")
 
     if 当前本 < 6 then
         tap("驳船操作员")
@@ -10006,6 +10006,7 @@ path.卫戍协议回合 = function()
     end
     local 购买干员 = function()
         log("购买干员")
+        if 可放置干员 == 0 then return true end
         local n = 0
         while not findOne("卫戍协议金币花完") do
             for level = 当前本, 当前本 - 1, -1 do
@@ -10128,7 +10129,6 @@ path.卫戍协议回合 = function()
                 ssleep(.8)
                 local n = 0
                 if 当前回合 == 10 then 格子[3] = nil end
-                if 当前回合 == 13 then 格子 = {} end
                 while findOne("卫戍协议手牌干员列表" .. i, 0.8) and n <= 5 do
                     if 职业 == "TANK" then
                         n = n + 1
