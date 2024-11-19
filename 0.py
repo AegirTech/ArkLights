@@ -1,14 +1,15 @@
+import datetime
+import hashlib
 import os
 import re
 import sys
-import datetime
 from time import sleep
-import hashlib
-import win32gui
-import win32con
+
+import requests
 import win32api
 import win32com.client
-import requests
+import win32con
+import win32gui
 
 # win环境下的快速开发脚本
 API = "http://ark.aegirtech.com:8080"
@@ -281,6 +282,36 @@ def update_version():
     print(response.json().get("msg"))
 
 
+def point_check():
+    point_start = False
+    center_start = False
+    all_point = []
+    all_center = []
+    with open("point.lua", "r", encoding="utf-8") as f:
+        lines = f.readlines()
+        for line in lines:
+            if point_start or center_start:
+                # 不是很好的判断方式，但是管用
+                if " = " in line and str.startswith(line, "    ") and (not str.startswith(line, "        ")) and (not str.startswith(line, "    --")):
+                    pp = line.split(" = ")[0].strip()
+                    if point_start:
+                        all_point.append(pp)
+                    elif center_start:
+                        all_center.append(pp)
+            if "point = {" in line:
+                point_start = True
+                center_start = False
+            if "center = {" in line:
+                point_start = False
+                center_start = True
+            if "distance = {" in line:
+                break
+    print("获取完成")
+    for p in all_point:
+        if p not in all_center:
+            print(p, "缺少center")
+
+
 if __name__ == "__main__":
     try:
         arg = sys.argv[1]
@@ -300,6 +331,8 @@ if __name__ == "__main__":
             statistician()
         elif arg == "ver":
             update_version()
+        elif arg == "check":
+            point_check()
 
     except Exception as e:
         print(e)
