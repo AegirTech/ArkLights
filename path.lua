@@ -9846,9 +9846,40 @@ path.烟花委员会 = function()
     -- path.跳转("首页")
 end
 
-path.卫戍协议 = function()
+-- 横排奖励,要求取入口/页面/领取三个点
+path.活动奖励 = function(活动)
+    if appear(活动 .. "奖励入口", 1) then
+        tap(活动 .. "奖励入口")
+    else
+        return
+    end
+    appear(活动 .. "奖励页面", 3)
+    if not wait(function()
+            tap(活动 .. "奖励全部领取")
+            if findOne("获得物资") then
+                tap("获得物资")
+                disappear("获得物资", 1.5)
+                return true
+            end
+            ssleep(.1)
+        end, 10) then
+    end
+    appear(活动 .. "奖励页面", 3)
+    ssleep(.1)
+    tap("返回")
+    appear(活动 .. "首页", 2)
+end
+
+path.重复卫戍协议 = function()
+    while path.卫戍协议(true) ~= 50 do
+
+    end
+end
+
+path.卫戍协议 = function(不判断每日)
     干员职业 = JsonDecode(readFile("character_type_list.json"))
     格子 = {}
+    --每个等级购买的棋子数量
     已购买 = { 0, 0, 0, 0, 0, 0 }
 
     if findAny({ '卫戍协议购买界面冻结标识' }) then --对局内启动的话
@@ -9866,10 +9897,14 @@ path.卫戍协议 = function()
         end, 6) then
         return
     end
-    if agreement_repeat_run == false and findOne("卫戍协议首页") and findOne("卫戍协议每日已完成") then return true end
-    log(98)
+    if not 不判断每日 and findOne("卫戍协议首页") and findOne("卫戍协议每日已完成") then return true end
     ssleep(.2)
-
+    local 等级 = function()
+        local ret = tonumber(string.match(ocro("卫戍协议等级"), "%d+") or 1)
+        toast("卫戍协议等级:" .. ret)
+        return ret
+    end
+    if 等级() == 50 then return 50 end
     if findOne("卫戍协议结束模拟") then
         tap("卫戍协议结束模拟")
         appearTap("卫戍协议结束模拟确认", 2)
@@ -9884,18 +9919,28 @@ path.卫戍协议 = function()
             return
         end
     end
-    if agreement_reward_get and findOne("卫戍协议关键目标红点") then
-        tap("卫戍协议关键目标红点")
-        ssleep(.2)
-        if not wait(function()
-                tap("卫戍协议关键目标一键领取")
-                tap(scale(1770), scale(28))
-                if findOne('卫戍协议关键目标已经领取') then return end
-            end, 6, .1) then
-            return
+    if not findOne("卫戍协议首页") then return false end
+    local 领任务 = function()
+        if findOne("卫戍协议关键目标红点") then
+            tap("卫戍协议关键目标红点")
+            appear("卫戍协议关键目标页面", 3)
+            if not wait(function()
+                    tap("卫戍协议关键目标一键领取")
+                    if findOne("获得物资") then
+                        tap("获得物资")
+                        disappear("获得物资", 1.5)
+                        return true
+                    end
+                    ssleep(.1)
+                end, 3) then
+            end
+            appear("卫戍协议关键目标页面", 3)
+            ssleep(.1)
+            tap("返回")
+            appear("卫戍协议首页", 2)
         end
-        return
     end
+    领任务()
     if not findOne("卫戍协议首页") then return false end
     if findOne("卫戍协议原型难度") then
 
@@ -9944,18 +9989,19 @@ path.卫戍协议 = function()
     end
     appear("卫戍协议开始战斗", 40)
     while findOne("卫戍协议开始战斗") do
-        ssleep(2)
+        ssleep(1.5)
         path.卫戍协议回合()
     end
+    领任务()
+    path.活动奖励("卫戍协议")
+    return 等级()
 end
 
 卫戍协议干员黑名单 = {
-    "泡普卡",
     "芬",
     "芙蓉",
     "玫兰莎",
     "米格鲁",
-    "月见夜",
     "慕斯",
     "角峰",
     "波登可",
