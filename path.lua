@@ -9915,7 +9915,7 @@ path.卫戍协议 = function(不判断每日)
                 end
                 tap("卫戍协议选择奖励1")
                 ssleep(.2)
-            end, 10) then
+            end, 20) then
             return
         end
     end
