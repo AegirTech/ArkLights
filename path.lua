@@ -9839,6 +9839,15 @@ path.烟花委员会 = function()
 end
 
 path.卫戍协议 = function()
+    if not path.卫戍协议导航() then return end
+    while findOne("卫戍协议开始战斗") do
+        ssleep(2)
+        path.卫戍协议回合()
+    end
+    return path.卫戍协议()
+end
+
+path.卫戍协议导航 = function()
     干员职业 = JsonDecode(readFile("character_type_list.json"))
     格子 = {}
     已购买 = { 0, 0, 0, 0, 0, 0 }
@@ -9882,7 +9891,7 @@ path.卫戍协议 = function()
                 end
                 tap("卫戍协议选择奖励1")
                 ssleep(.2)
-            end, 10) then
+            end, 30) then
             return
         end
     end
@@ -9932,11 +9941,8 @@ path.卫戍协议 = function()
         end, 5) then
         return
     end
-    appear("卫戍协议开始战斗", 40)
-    while findOne("卫戍协议开始战斗") do
-        ssleep(2)
-        path.卫戍协议回合()
-    end
+    if not appear("卫戍协议开始战斗", 40) then return end
+    return true
 end
 
 卫戍协议干员黑名单 = {
