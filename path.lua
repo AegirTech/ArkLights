@@ -9840,6 +9840,12 @@ path.卫戍协议 = function()
     干员职业 = JsonDecode(readFile("character_type_list.json"))
     格子 = {}
     已购买 = { 0, 0, 0, 0, 0, 0 }
+
+    if findAny({ '卫戍协议购买界面冻结标识' }) then --对局内启动的话
+        path.卫戍协议回合()
+        return
+    end
+
     path.跳转("首页")
     ssleep(.2)
     tap("面板活动")
@@ -9850,9 +9856,20 @@ path.卫戍协议 = function()
         end, 6) then
         return
     end
-    if findOne("卫戍协议首页") and findOne("卫戍协议每日已完成") then return true end
+    if agreement_repeat_run == false and findOne("卫戍协议首页") and findOne("卫戍协议每日已完成") then return true end
     log(98)
     ssleep(.2)
+    if agreement_reward_get and findOne("卫戍协议关键目标红点") then
+        tap("卫戍协议关键目标红点")
+        if not wait(function()
+                tap("卫戍协议关键目标一键领取")
+                tap(scale(1770), scale(28))
+                if findOne('卫戍协议关键目标已经领取') then return end
+            end, 6, .1) then
+            return
+        end
+        return
+    end
     if findOne("卫戍协议结束模拟") then
         tap("卫戍协议结束模拟")
         appearTap("卫戍协议结束模拟确认", 2)

@@ -1436,9 +1436,14 @@ show_auto_ui = function()
         make_jump_ui_command(layout, nil,
             "extra_mode='自动合成材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
     newRow(layout)
-    addButton(layout, nil, "卫戍协议每日",
+    addButton(layout, nil, "卫戍协议(限时活动)",
         make_jump_ui_command(layout, nil,
             "extra_mode='卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+    ui.addCheckBox(layout, "agreement_repeat_run", "卫戍协议重复运行", false)
+    ui.addCheckBox(layout, "agreement_reward_get", "卫戍协议领取【关键目标】奖励", false)
+    newRow(layout)
+    ui.addCheckBox(layout, "agreement_50_stop", "卫戍协议50级停止", false)
     newRow(layout)
     addTextView(layout, "--------------------自动作战相关--------------------")
 
