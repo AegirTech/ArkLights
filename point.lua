@@ -2335,6 +2335,7 @@ point = {
     面板 = "158|526|323232,172|520|323232,151|534|FFFFFF,223|543|323232,196|525|323232",
     -- 基建
     进驻总览 = "270|153|FFFFFF,233|315|FFFFFF,313|203|FFFFFF,267|58|313131",
+    进驻总览教程关闭 = "187|163|EAEAEA,217|180|303030",
     总览非工作区第四排宿舍 = { 1010, 995 },
     基建左侧列表 = {
         { 200, 520 }, { 440, 520 }, { 680, 520 }, { 80, 640 }, { 320, 640 }, { 559, 640 },
@@ -2724,6 +2725,8 @@ center = {
     线索布置白列表 = "center_center",
     线索布置数字右列表 = "right_top",
     小蓝圈 = "left_bottom",
+    长蓝圈 = "left_bottom",
+    基建收获干员休整 = "left_bottom",
     主页按下 = "left_top",
     主页按过 = "left_top",
     等级升 = "right_top",
@@ -2883,6 +2886,17 @@ center = {
     当前房间入住信息 = "right_top",
     排班调整提示 = "center_center",
     入驻干员右侧 = "right_top",
+    基建总览工作区 = "right_top",
+    基建总览非工作区 = "right_top",
+    基建干员休整 = "right_bottom",
+    基建干员休整灰 = "right_bottom",
+
+
+
+
+
+
+
     筛选确认 = "center_center",
     筛选技能 = "center_center",
     筛选技能降序 = "center_center",
@@ -2938,6 +2952,7 @@ center = {
     公开招募右确认 = "center_center",
     左取消 = "center_center",
     进驻总览 = "left_top",
+    进驻总览教程关闭 = "center_center",
     演习券 = "right_top",
     收取所有邮件 = "left_bottom",
     邮件信封 = "center_top",

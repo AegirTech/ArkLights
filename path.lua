@@ -2513,6 +2513,10 @@ path.总览换班 = function()
             if findOne("基建总览工作区") then return true end
             tap("进驻总览")
             ssleep(.2)
+            if findOne("基建总览教程关闭") then
+                tap("基建总览教程关闭")
+                ssleep(.2)
+            end
         end, 10) then
         return
     end
@@ -2887,6 +2891,10 @@ path.基建换班 = function()
             if findOne("基建总览工作区") then return true end
             tap("进驻总览")
             ssleep(.2)
+            if findOne("基建总览教程关闭") then
+                tap("基建总览教程关闭")
+                ssleep(.2)
+            end
         end, 10) then
         return
     end
@@ -9861,17 +9869,7 @@ path.卫戍协议 = function()
     if agreement_repeat_run == false and findOne("卫戍协议首页") and findOne("卫戍协议每日已完成") then return true end
     log(98)
     ssleep(.2)
-    if agreement_reward_get and findOne("卫戍协议关键目标红点") then
-        tap("卫戍协议关键目标红点")
-        if not wait(function()
-                tap("卫戍协议关键目标一键领取")
-                tap(scale(1770), scale(28))
-                if findOne('卫戍协议关键目标已经领取') then return end
-            end, 6, .1) then
-            return
-        end
-        return
-    end
+
     if findOne("卫戍协议结束模拟") then
         tap("卫戍协议结束模拟")
         appearTap("卫戍协议结束模拟确认", 2)
@@ -9885,6 +9883,18 @@ path.卫戍协议 = function()
             end, 10) then
             return
         end
+    end
+    if agreement_reward_get and findOne("卫戍协议关键目标红点") then
+        tap("卫戍协议关键目标红点")
+        ssleep(.2)
+        if not wait(function()
+                tap("卫戍协议关键目标一键领取")
+                tap(scale(1770), scale(28))
+                if findOne('卫戍协议关键目标已经领取') then return end
+            end, 6, .1) then
+            return
+        end
+        return
     end
     if not findOne("卫戍协议首页") then return false end
     if findOne("卫戍协议原型难度") then
@@ -10092,7 +10102,7 @@ path.卫戍协议回合 = function()
     end
     local deploy = function(x1, x2, y2, d)
         local y1 = screen.height - scale(132)                 -- 干员位置 x1
-        if y2 > 700 then d = 1 end                            --1上2右
+        if y2 > scale(700) then d = 1 end                     --1上2右
         d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d] --方向
         d = { d[1] * 500, d[2] * 500 }
         local dragd = 1200
