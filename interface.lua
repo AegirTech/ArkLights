@@ -1388,6 +1388,7 @@ show_auto_ui = function()
     newRow(layout)
     addTextView(layout, "--------------------自动养成相关--------------------")
 
+    --[[
     newRow(layout)
     addTextView(layout, "接口选择")
     ui.addSpinner(layout, "auto_raise_api_select", { "森空岛", "第三方", "自定义", "本地" }, 0)
@@ -1404,11 +1405,24 @@ show_auto_ui = function()
 
 
     --ui.addCheckBox(layout, "raise_material", "材料合成（未完成）", false)
+    ]]
 
     newRow(layout)
     ui.addCheckBox(layout, "not_use_ocr", "基建不使用ocr（低配置或基建崩溃建议打开）", false)
     newRow(layout)
-    ui.addTextView(layout, "勾选后无法使用红松林、多萝西等标准化组合，无法自动使用菲亚梅塔")
+    addTextView(layout, "勾选后无法使用红松林、多萝西等标准化组合，无法自动使用菲亚梅塔")
+    newRow(layout)
+    newRow(layout)
+    addButton(layout, nil, "开始模组任务2",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='自动模组';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    addTextView(layout, "干员名字,用空格分开")
+    ui.addEditText(layout, "mz_text", "", -2, -1)
+    newRow(layout)
+    addButton(layout, nil, "自动合成材料(跳转加工站后启动)",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='自动合成材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
+
     --[[
     newRow(layout)
     ui.addCheckBox(layout, "raise_fight_plan", "作战计划(未完成)", true)
@@ -1429,12 +1443,9 @@ show_auto_ui = function()
     addButton(layout, nil, "悖论模拟(测试)",
         make_jump_ui_command(layout, nil,
             "extra_mode='悖论模拟';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    addButton(layout, nil, "测试按钮",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='自动模组';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    addButton(layout, nil, "自动合成材料",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='自动合成材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
+
+    newRow(layout)
+    addTextView(layout, "--------------------卫戍协议相关--------------------")
     newRow(layout)
     addButton(layout, nil, "卫戍协议每日",
         make_jump_ui_command(layout, nil,

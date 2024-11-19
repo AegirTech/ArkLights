@@ -4100,7 +4100,7 @@ path.采购中心商店 = function()
             appearTap("获得物资", 3)
         end
         if table.search(red_ticket_shop_good_need, "干员") then
-            local red_ticket_shop_char = { "跃跃", "折光", "石英", "雪绒", "布丁", "蜜莓", "伊桑", "微风" }
+            local red_ticket_shop_char = { "云迹", "菲菜", "跃跃", "折光", "石英", "雪绒", "布丁", "蜜莓", "伊桑", "微风" }
             local char_exist = true
             local ret
             while char_exist do
@@ -8372,9 +8372,11 @@ end
 
 path.自动模组 = function()
     if not raise.init() then return end
-    raise.auto_module("黍")
-    raise.auto_module("棘刺")
-    raise.auto_module("银灰")
+    if mz_text == nil then return end
+    local names = string.split(mz_text)
+    for i, v in ipairs(names) do
+        raise.auto_module(v)
+    end
 end
 
 path.自动合成材料 = function()
