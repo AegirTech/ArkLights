@@ -512,6 +512,7 @@ path.bilibili_login = {
         log("等待加载出图")
         if bilibili_captcha_times > 1 and findOne("B服刷新验证") then
             tap("B服刷新验证")
+            ssleep(1)
         end
         if not appear({ "B服安全验证提交", "B服安全验证提交320DPI" }, 5) then
             log("等待节点识别加载失败")
