@@ -150,10 +150,11 @@ m.captcha = function()
     local image_pos = { image_box.bounds.l, image_box.bounds.t, image_box.bounds.r, image_box.bounds.b }
     log("图像坐标", image_pos)
 
-    local img = getWorkPath() .. "/capture_cloud.jpg"
+    local img = getWorkPath() .. "/capture_cloud_text.jpg"
     snapShot(img, text_pos[1], text_pos[2], text_pos[3], text_pos[4])
     local text_img_base64 = base64(img)
     ssleep(.1)
+    img = getWorkPath() .. "/capture_cloud.jpg"
     snapShot(img, image_pos[1], image_pos[2], image_pos[3], image_pos[4])
     local image_img_base64 = base64(img)
 

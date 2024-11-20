@@ -9642,7 +9642,7 @@ end
 path.烟花委员会 = function()
     log("烟花活动")
     -- 导航
-    if car_checked or copy_homework_only then --抄作业时候不做小游戏
+    if car_checked or copy_homework then --抄作业时候不做小游戏
         return
     end
     appear("烟花委员会进入", 3)
