@@ -14,6 +14,7 @@ path.base = {
     end,
     下载资源确认 = "下载资源确认",
     资源下载确定 = "资源下载确定",
+    适龄提示界面 = function() return path.base["start黄框"]() end,
     start黄框 = function()
         -- reset login history on app restart
         login_times = 0
@@ -21,9 +22,13 @@ path.base = {
 
         wait(function()
             tap("适龄提示")
+            ssleep(0.3)
             tap("保持配音")
+            ssleep(0.3)
             tap("保持配音确定")
+            ssleep(0.3)
             tap("start黄框")
+            ssleep(0.3)
         end)
     end,
     start黄框暗 = function() return path.base["start黄框"]() end,
