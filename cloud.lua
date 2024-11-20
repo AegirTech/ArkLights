@@ -176,7 +176,7 @@ m.captcha = function()
             for _, coord in pairs(data.data.points) do
                 x = coord[1] or 0
                 y = coord[2] or 0
-                tap({ image_pos[1] + x, image_pos[2] + y })
+                tap({ image_pos[1] + x + scale(math.random(5, 10)), image_pos[2] + y + scale(math.random(5, 10)) })
                 ssleep(0.3)
             end
             ssleep(0.3)
