@@ -510,6 +510,9 @@ path.bilibili_login = {
     end,
     B服安全验证 = disable_game_up_check_wrapper(function()
         log("等待加载出图")
+        if bilibili_captcha_times > 1 and findOne("B服刷新验证") then
+            tap("B服刷新验证")
+        end
         if not appear({ "B服安全验证提交", "B服安全验证提交320DPI" }, 5) then
             log("等待节点识别加载失败")
             if not checkPointColor({ 823, 605, "BAD9FF" }) then

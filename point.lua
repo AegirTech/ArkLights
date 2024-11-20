@@ -133,6 +133,7 @@ point = {
     产业合作洽谈会 = "175|114|1FBCB4,1788|139|FFFFFF",
     产业合作洽谈会策略 = { 1674, 945 },
     滑块验证节点 = { class = "android.widget.Image" },
+    B服刷新验证 = { text = "刷新验证" },
     B服安全验证框 = { class = "android.widget.RelativeLayout" },
     B服安全验证 = { text = "安全验证" },
     B服安全验证320DPI = "894|168|23ADE5,876|168|FFFFFF,891|159|FFFFFF,895|177|FFFFFF,907|165|FFFFFF,942|163|23ADE5",
