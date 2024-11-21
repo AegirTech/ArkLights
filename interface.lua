@@ -96,6 +96,10 @@ make_account_ui = function(layout, prefix)
     ui.addEditText(layout, prefix .. "low_priority_goods", "碳 家 急")
 
     newRow(layout)
+    addTextView(layout, "商店购买黑名单")
+    ui.addEditText(layout, prefix .. "shop_buy_black", "增补条 ")
+
+    newRow(layout)
     addTextView(layout, "自动招募")
     ui.addCheckBox(layout, prefix .. "auto_recruit0", "其他", true)
     ui.addCheckBox(layout, prefix .. "auto_recruit1", "车", true)
