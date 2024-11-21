@@ -9687,8 +9687,11 @@ path.烟花委员会 = function()
             disappear("烟花委员会首页", 3)
             if findOne("烟花关卡内部进入判断") then return true end
         end, 10) then
-        tap("生息演算_全局_返回")
-        ssleep(1)
+        wait(function()
+            tap("生息演算_全局_返回")
+            ssleep(1)
+            if findOne("活动导航0") then return true end
+        end, 10)
         return
     end
 
