@@ -6007,6 +6007,11 @@ path.商店搬空 = function()
             初始物品 = { scale(386), scale(535) }
         end
         local 商品购买黑名单 = { "增补条" }
+        if type(shop_buy_black) == 'string' and #shop_buy_black > 0 then
+            商品购买黑名单 = shop_buy_black:filterSplit()
+        end
+        log("商品黑名单", 商品购买黑名单)
+
         local 商店滑动前采样
         for x = 0, 购买方阵 do -- 3*3商品进行购买
             for y = 0, 购买方阵 do
@@ -6076,8 +6081,10 @@ path.商店搬空 = function()
                         ssleep(0.2)
                         tap(tap_x)
                         ssleep(0.5)
-                        if findOne("商店主页") then return true end
-                        if not findOne(商店购买前采样) then return true end
+                        if not findOne(商店购买前采样) then
+                            log(999)
+                            return true
+                        end
                     end, 5) then
                     log("没钱了，终止任务")
                     return
