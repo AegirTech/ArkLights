@@ -6158,7 +6158,6 @@ path.活动商店购买 = function()
                         ssleep(0.2)
                         if findOne("活动任务页面") then return end
                     end, 7) then
-                    return
                 end
             end
             tap("返回")
