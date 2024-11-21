@@ -12,6 +12,13 @@ if not fileExist("mnt/sdcard/Pictures/PaddLeOCR.apk") then
     unZip("mnt/sdcard/Pictures/ppocr.zip", "mnt/sdcard/Pictures")
 end
 
+if not fileExist("mnt/sdcard/Pictures/ppocr.zip") then
+    toast("请确保ppocr.zip在sdcard/Pictures/目录下")
+    console.show()
+    ssleep(10)
+    console.dismiss()
+end
+
 -- 加载插件 有时会加载不上插件 加载不上时请把APK删除重新释放即可
 local Loader = LuaEngine.loadApk("mnt/sdcard/Pictures/PaddLeOCR.apk")
 -- 初始化OCR插件 需要把 LuaEngine.loadApk函数返回的插件对象传递过去
