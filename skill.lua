@@ -2038,7 +2038,7 @@ workshopOperatorBest = function(operator, id, level)
                 s = s + 0.7
             elseif icon == "bskill_ws_asc2" and #id == 4 and utf8.left(id, 2) == "32" then
                 s = s + 0.8
-            elseif icon == "bskill_ws_p5" then --凯尔希，尽量让在基建上班
+            elseif icon == "bskill_ws_p5" then --凯尔希，尽量让在中枢上班
                 --s = s + 0.70
             elseif icon == "bskill_ws_p4" then
                 s = s + 0.65

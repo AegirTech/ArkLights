@@ -6096,6 +6096,120 @@ path.商店搬空 = function()
     end
 end
 
+path.活动商店购买 = function()
+    if not path.活动页面寻找(2) then return end
+
+    if not wait(function()
+            if findOne("活动商店导航") then return true end
+        end, 10) then
+        return
+    end
+
+    if appear("活动任务导航", .6) then
+        tap("活动任务导航")
+        ssleep(.2)
+        if appear("活动任务页面", 2) then
+            if findOne("活动任务一键领取") then
+                tap("活动任务一键领取")
+                ssleep(.5)
+                if not wait(function()
+                        tap("活动任务一键领取")
+                        ssleep(0.2)
+                        if findOne("活动任务页面") then return end
+                    end, 7) then
+                    return
+                end
+            end
+            tap("返回")
+            appear("活动商店导航", 1.5)
+        end
+    end
+
+    if not wait(function()
+            tap("活动商店导航")
+            if findOne("商店主页") then return true end
+        end, 5) then
+    end
+    ssleep(0.5)
+    disappear("正在提交反馈至神经", network_timeout)
+    -- 防止各种掉帧等导致卡在领取等页面
+    local 回到商店主页 = function()
+        if not wait(function()
+                if findOne("商店主页1") then return true end
+                tap("商店顶栏")
+                ssleep(0.2)
+            end, 10) then
+            return
+        end
+    end
+
+    if not appear("商店主页1", 1) then
+        log("未找到商店")
+        return
+    end
+    local 物品横间距, 物品纵间距 = scale(516), scale(242)
+    回到商店主页()
+    local t = os.time()
+    --point["商店支付1"] = "1387|837|" .. point["商店主题色"]
+    while true do
+        if os.time() - t > 5 * 60 then -- 任务总时长5分钟
+            log("商店任务超时")
+            return
+        end
+        for x = 0, 2 do -- 3*3商品进行购买
+            for y = 0, 2 do
+                log(x, y)
+                for i = 1, 7 do
+                    回到商店主页()
+                    local intX, intY = findMultiColor(scale(120) + x * 物品横间距, scale(515) + y * 物品纵间距,
+                        scale(386) + x * 物品横间距, scale(555) + y * 物品纵间距,
+                        "FFFFFF", scale(17) .. "|" .. scale(-2) .. "|575757|" .. scale(-100) .. "|" ..
+                        scale(-5) .. "|5A5A5A", 0, 0.85)
+                    if intX == -1 then break end
+                    if not wait(function()
+                            tap({ intX, intY })
+                            ssleep(.6)
+                            if findOne("购买物品面板") then return true end
+                        end, 1.8) then
+                    end
+                    if findOne("商店主页1") then
+                        log("未能进入商品，大概是识别错了")
+                        break
+                    end
+                    -- 点击购买
+                    if not wait(function()
+                            if findOne("生息演算繁荣馈赠商店最多") then
+                                tap("生息演算繁荣馈赠商店最多")
+                                ssleep(0.2)
+                            end
+                            if findOne("商店支付1") then
+                                tap("商店支付1")
+                                ssleep(0.5)
+                                disappear("正在提交反馈至神经", network_timeout)
+                            end
+                            if not findOne("购买物品面板") then return true end
+                        end, 5) then
+                    end
+                    --disappear("正在提交反馈至神经", network_timeout)
+                    if findOne("购买物品面板") then
+                        log("未能购买，大概是钱花完了")
+                        return true
+                    end
+                end
+                log("开始下一个商品")
+            end
+        end
+        回到商店主页()
+        ssleep(.5)
+        path.swip_hd_shop()
+        ssleep(.5)
+        if findOne("活动商店无限池") then
+            log("滑动到底")
+            break
+        end
+    end
+end
+
 path.故事解锁 = function()
     local t = os.time()
     if not shop_period then shop_period = 0 end
@@ -9887,6 +10001,7 @@ end
 
 path.卫戍协议 = function(不判断每日)
     干员职业 = JsonDecode(readFile("character_type_list.json"))
+    --每个格子是否已经部署干员
     格子 = {}
     --每个等级购买的棋子数量
     已购买 = { 0, 0, 0, 0, 0, 0 }
@@ -10183,10 +10298,6 @@ path.卫戍协议回合 = function()
             start = dragd + delay + 50,
         },
         }
-        -- if 1 or zl_enable_tap_before_drag then
-        --   tap({x1, y1})
-        --   ssleep(.5)
-        -- end
         gesture(finger)
         sleep(dragd + delay + dird + delay)
         log("deploy", finger)
@@ -10212,7 +10323,7 @@ path.卫戍协议回合 = function()
                 appear("卫戍协议手牌干员列表" .. i, 2)
                 ssleep(.8)
                 local n = 0
-                if 当前回合 == 10 then 格子[3] = nil end
+                if 当前回合 == 10 then 格子[4] = nil end
                 while findOne("卫戍协议手牌干员列表" .. i, 0.8) and n <= 5 do
                     if 职业 == "TANK" then
                         n = n + 1

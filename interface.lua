@@ -1433,6 +1433,10 @@ show_auto_ui = function()
         make_jump_ui_command(layout, nil,
             "extra_mode='自动升级潜能';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     newRow(layout)
+    addButton(layout, nil, "活动商店购买(测试)",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='活动商店购买';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
     addTextView(layout, "--------------------悖论模拟相关--------------------")
 
     newRow(layout)
