@@ -6000,13 +6000,13 @@ path.商店搬空 = function()
             return
         end
         local 每页购买次数 = 0
-        local 购买方阵 = 3
+        local 购买方阵 = 2
         if findOne("商店最后一列判断") then
             log("已经滑动到底部,只买2*2的")
-            购买方阵 = 2
+            购买方阵 = 1
             初始物品 = { scale(386), scale(535) }
         end
-        local 商品购买黑名单 = { "增补条" }
+        local 商品购买黑名单 = {}
         if type(shop_buy_black) == 'string' and #shop_buy_black > 0 then
             商品购买黑名单 = shop_buy_black:filterSplit()
         end
@@ -6018,8 +6018,8 @@ path.商店搬空 = function()
                 log(x, y)
                 local tap_x
                 local 商品x, 商品y = 初始物品[1] + 物品横间距 * x, 初始物品[2] + 物品纵间距 * y
-                local col_str_data = { string.format("%d|%d|595959", 商品x, 商品y), string.format("%d|%d|F9F9F9",
-                    商品x + scale(210), 商品y) }
+                local col_str_data = { string.format("%d|%d|595959", 商品x, 商品y), string.format("%d|%d|EDEDED",
+                    商品x, 商品y - scale(30)) }
                 local col_data = table.join(col_str_data, ",")
                 local 商店采样判断, 商店购买前采样, 商品名称
                 log(col_data)
@@ -6058,6 +6058,13 @@ path.商店搬空 = function()
 
                 if #商品名称 > 0 and 商品名称[1].text:includes(商品购买黑名单) then
                     log("商品黑名单")
+                    商品名称 = sample("商店")
+                    wait(function()
+                        if not findOne(商品名称) then return true end
+                        tap("商店顶栏")
+                        ssleep(0.5)
+                    end, 10)
+                    ssleep(1)
                     goto continue
                 end
 
@@ -6106,6 +6113,7 @@ path.商店搬空 = function()
                 log(998)
                 goto startshop
                 ::continue::
+                回到商店主页()
                 log("开始下一个商品")
             end
         end
@@ -6117,7 +6125,7 @@ path.商店搬空 = function()
             return
         end
         商店滑动前采样 = sample("商店")
-        if findOne("商店第四列商品") then
+        if find_color("商店第四列货币范围", point["商店主题色"], 0, 0.9) then
             path.swip_hd_shop()
         else
             -- 如果第四列不存在，则退出重进商店，自动进入下一列表
@@ -6127,7 +6135,10 @@ path.商店搬空 = function()
                 log(952)
                 return
             end
-            return path.商店搬空() -- 直接从头开始
+            appear("活动商店导航", 3)
+            tap("活动商店导航")
+            appear("商店主页", 3)
+            -- return path.商店搬空() -- 直接从头开始
         end
         ssleep(1)
         if findOne(商店滑动前采样) then
