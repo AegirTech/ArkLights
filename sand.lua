@@ -1059,7 +1059,7 @@ Tales_within_the_sand.商店购买 = function()
                     if not wait(function()
                             tap({ intX, intY })
                             ssleep(.6)
-                            if findOne("商店购买页面") then return true end
+                            if findOne("购买物品面板") then return true end
                         end, 1.8) then
                     end
                     if findOne("沙洲遗闻商店界面") then
@@ -1077,11 +1077,11 @@ Tales_within_the_sand.商店购买 = function()
                                 ssleep(0.5)
                                 disappear("正在提交反馈至神经", network_timeout)
                             end
-                            if not findOne("商店购买页面") then return true end
+                            if not findOne("购买物品面板") then return true end
                         end, 5) then
                     end
                     --disappear("正在提交反馈至神经", network_timeout)
-                    if findOne("商店购买页面") then
+                    if findOne("购买物品面板") then
                         log("未能购买，大概是钱花完了")
                         return true
                     end
