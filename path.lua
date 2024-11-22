@@ -10055,6 +10055,8 @@ path.重复卫戍协议 = function()
 end
 
 path.卫戍协议 = function(不判断每日)
+    if request_memory_clean() then path.跳转("首页") end
+
     干员职业 = JsonDecode(readFile("character_type_list.json"))
     --每个格子是否已经部署干员
     格子 = {}
@@ -10166,6 +10168,14 @@ path.卫戍协议 = function(不判断每日)
         end, 5) then
         return
     end
+    if findAny({
+            "面板", "活动公告返回", "签到返回", "签到返回黄",
+            "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+        }) then
+        path.跳转("首页")
+        return
+    end
+
     appear("卫戍协议开始战斗", 40)
     while findOne("卫戍协议开始战斗") do
         ssleep(1.5)
@@ -10214,6 +10224,14 @@ end
 }
 
 path.卫戍协议回合 = function()
+    local 掉线检查 = function()
+        if findAny({
+                "面板", "活动公告返回", "签到返回", "签到返回黄",
+                "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+            }) then
+            return true
+        end
+    end
     local 当前回合 = tonumber(ocro("卫戍协议回合数范围") or 1) or 1
     if 当前回合 >= 13 then
         tap("卫戍协议战斗返回")
@@ -10240,7 +10258,7 @@ path.卫戍协议回合 = function()
         return tonumber(string.match(ocro("卫戍协议剩余干员范围"), "%d+") or 1)
     end
     toast(当前回合 .. "回合," .. 当前本 .. "本")
-
+    if 掉线检查() then return true end
     if 当前本 < 6 then
         tap("驳船操作员")
         ssleep(.2)
@@ -10426,9 +10444,11 @@ path.卫戍协议回合 = function()
         if 购买干员() then return true end
     end, 40)
     购买干员()
+    if 掉线检查() then return true end
     wait(function()
         if 部署干员() then return true end
     end, 40)
+    if 掉线检查() then return true end
     tap("卫戍协议开始战斗")
     if appear("金币清零", 2) then
         tap("金币清零勾")
@@ -10438,6 +10458,7 @@ path.卫戍协议回合 = function()
     local 战斗结束 = { "卫戍协议选择奖励", "卫戍协议敌方信息", "卫戍协议结算", "卫戍协议开始战斗" }
     if not wait(function()
             local p = findAny(战斗结束)
+            if 掉线检查() then return true end
             log(p)
             if p == "卫戍协议选择奖励" then
                 ssleep(.5)
