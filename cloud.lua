@@ -139,11 +139,28 @@ m.captcha = function()
         return false
     end
     log("使用云控打码")
-    local text_box = findOne("B服安全验证目标字符")
-    -- log("text_box_右坐标", text_box.bounds.r)
-    local text_slice_box = findOne("B服安全验证目标字符切片")
-    -- log("text_slice_box_右坐标", text_slice_box.bounds.r)
-    local big_image_box = findOne("B服安全验证泛目标图像")
+    local node_count = 0
+    -- 验证码加载目标切片有上移动作，需要多次查找直到返回不变化才能确保节点稳定
+    -- local text_box = findOne("B服安全验证目标字符")
+    local text_box = nil
+    local text_slice_box = nil
+    local big_image_box = nil
+    wait(
+        function()
+            local text_box_pre = findOne("B服安全验证目标字符")
+            local text_slice_box_pre = findOne("B服安全验证目标字符切片")
+            local big_image_box_pre = findOne("B服安全验证泛目标图像")
+            if text_box_pre == text_box and text_slice_box_pre == text_slice_box and big_image_box_pre == big_image_box then
+                return true
+            end
+            text_box = text_box_pre
+            text_slice_box = text_slice_box_pre
+            big_image_box = big_image_box_pre
+            node_count = node_count + 1
+            log("B服云控打码节点刷新计数器", node_count)
+            sleep(100)
+        end
+    )
     local text_pos = { text_slice_box.bounds.r, text_box.bounds.t, big_image_box.bounds.r, text_box.bounds.b }
     log("目标字符坐标", text_pos)
     local image_box = findOne("B服安全验证目标图像")
@@ -173,10 +190,13 @@ m.captcha = function()
             log("云控打码数量", #data.data.points)
             toast("B服云控打码数量" .. #data.data.points)
             log("云控打码坐标", data.data.points)
+            -- 计算缩放比例 返回图片344x344
+            local x_scale = (image_pos[3] - image_pos[1]) / 344 or 1
+            local y_scale = (image_pos[4] - image_pos[2]) / 344 or 1
             for _, coord in pairs(data.data.points) do
-                x = coord[1] or 0
-                y = coord[2] or 0
-                tap({ image_pos[1] + x + scale(math.random(5, 10)), image_pos[2] + y + scale(math.random(5, 10)) })
+                x = (coord[1] or 0) * x_scale
+                y = (coord[2] or 0) * y_scale
+                tap({ image_pos[1] + x, image_pos[2] + y })
                 ssleep(0.3)
             end
             ssleep(0.3)

@@ -144,6 +144,7 @@ point = {
     -- B服自建打码切割
     B服安全验证目标字符 = {
         level = "14",
+        index = "0",
         package = "com.hypergryph.arknights.bilibili",
     },
     B服安全验证目标字符切片 = {
