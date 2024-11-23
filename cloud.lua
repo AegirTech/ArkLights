@@ -134,11 +134,26 @@ m.uploadImgToInquisition = function(img_path)
     end
 end
 
-m.captcha = function()
+m.captcha = function(box)
     if m.captchaServer == '' then
         return false
     end
     log("使用云控打码")
+    -- ssleep(1)
+    local x_size = box.r - box.l
+    local y_size = box.b - box.t
+    local text_pos = {
+        box.l + x_size * 0.49375 // 1,
+        box.t + y_size * 0.13958 // 1,
+        box.r,
+        box.t + y_size * 0.27708 // 1
+    }
+    local image_pos = {
+        box.l + x_size * 0.22708 // 1,
+        box.t + y_size * 0.27916 // 1,
+        box.l + x_size * 0.79583 // 1,
+        box.t + y_size * 0.85 // 1
+    }
     local node_count = 0
     -- 验证码加载目标切片有上移动作，需要多次查找直到返回不变化才能确保节点稳定
     -- local text_box = findOne("B服安全验证目标字符")
@@ -158,13 +173,13 @@ m.captcha = function()
             big_image_box = big_image_box_pre
             node_count = node_count + 1
             log("B服云控打码节点刷新计数器", node_count)
-            sleep(100)
+            ssleep(.1)
         end
     )
-    local text_pos = { text_slice_box.bounds.r, text_box.bounds.t, big_image_box.bounds.r, text_box.bounds.b }
+    -- local text_pos = { text_slice_box.bounds.r, text_box.bounds.t, big_image_box.bounds.r, text_box.bounds.b }
     log("目标字符坐标", text_pos)
-    local image_box = findOne("B服安全验证目标图像")
-    local image_pos = { image_box.bounds.l, image_box.bounds.t, image_box.bounds.r, image_box.bounds.b }
+    -- local image_box = findOne("B服安全验证目标图像")
+    -- local image_pos = { image_box.bounds.l, image_box.bounds.t, image_box.bounds.r, image_box.bounds.b }
     log("图像坐标", image_pos)
 
     local img = getWorkPath() .. "/capture_cloud_text.jpg"
@@ -180,6 +195,9 @@ m.captcha = function()
         image_base64 = image_img_base64,
         token = m.captchaToken
     }
+
+    -- log("验证码图像", image_img_base64)
+    -- log("验证码字符", text_img_base64)
 
     local res, code = httpPost(m.captchaServer .. "/captcha/select/base64", JsonEncode(data), 30,
         "Content-Type: application/json")
