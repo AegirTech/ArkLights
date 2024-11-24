@@ -808,44 +808,61 @@ solveCapture_new = function(rect, is_retry)
     -- rect.t = 207
     -- rect.r = 1287
     -- rect.b = 605
+    local exp_y = find_color({ rect.l, rect.t, rect.l + (rect.r - rect.l) * 0.0573888, rect.b }, "FCF9BA", 0, 0.95)
+    local exp_y2 = find_color({ rect.l, rect.t, rect.l + (rect.r - rect.l) * 0.0573888, rect.b }, "EFE568", 3, 0.95)
+    if exp_y then
+        if exp_y2 and exp_y2[2] - exp_y[2] > scale(110) then
+            exp_y = nil
+        else
+            exp_y = exp_y[2]
+        end
+    else
+        exp_y = nil
+    end
+    log("exp_y", exp_y)
 
     -- 11,11,11 50
     -- 理论上可以用getScreenPixel一次性获取全部的像素点，但是后面取有点麻烦。
-    local bb_socre, max_count, max_c = 150, 0, 50
+    local bb_socre, max_count, max_c = 150, 0, 60
     local best_x = 0
+    local mabs = math.abs
     for y = rect.t, rect.b do
         for x = rect.l, rect.r do
             local pixel = getPixelColor(x, y)
             local b, g, r = colorToRGB(pixel)
             local rx, gx, bx = math.abs(r - 11), math.abs(g - 11), math.abs(b - 11)
-
             if rx < max_c and gx < max_c and bx < max_c and rx + gx + bx < max_c then
-                local socre, count = 0, 0
-                for y2 = y, y + scale(100) do
-                    pixel = getPixelColor(x, y2)
-                    b, g, r = colorToRGB(pixel)
-                    rx, gx, bx = math.abs(r - 11), math.abs(g - 11), math.abs(b - 11)
+                if not (exp_y and mabs(y - exp_y) > scale(20)) then
+                    local socre, count = 0, 0
 
-                    if rx < max_c and gx < max_c and bx < max_c then
-                        socre = socre + rx + gx + bx
-                        count = count + 1
+                    local cal_cp = function(pixel_c)
+                        b, g, r = colorToRGB(pixel)
+                        if b == 76 and g == 76 and r == 76 then
+                            socre = socre - 1000
+                        else
+                            rx, gx, bx = math.abs(r - 11), math.abs(g - 11), math.abs(b - 11)
+                            if rx < max_c and gx < max_c and bx < max_c then
+                                socre = socre + rx + gx + bx
+                                count = count + 1
+                            end
+                        end
                     end
-                end
+                    for y2 = y, y + scale(100) do
+                        pixel = getPixelColor(x, y2)
+                        cal_cp(pixel)
+                    end
 
-                for x2 = x, x + scale(100) do
-                    pixel = getPixelColor(x2, y)
-                    b, g, r = colorToRGB(pixel)
-                    rx, gx, bx = math.abs(r - 11), math.abs(g - 11), math.abs(b - 11)
-                    if rx < max_c and gx < max_c and bx < max_c then
-                        socre = socre + rx + gx + bx
-                        count = count + 1
+                    for x2 = x, x + scale(100) do
+                        pixel = getPixelColor(x2, y)
+                        cal_cp(pixel)
                     end
-                end
-                socre = socre / count
-                if math.abs(socre - bb_socre) < 150 and count > max_count then
-                    bb_socre, max_count = socre, count
-                    log(x, y, socre, count)
-                    best_x = x
+
+                    socre = socre / count
+                    if socre > 0 and math.abs(socre - bb_socre) < 200 and count > max_count then
+                        bb_socre, max_count = socre, count
+                        -- log(x, y, socre, count)
+                        best_x = x
+                    end
                 end
             end
         end
@@ -854,8 +871,9 @@ solveCapture_new = function(rect, is_retry)
     log("滑块验证码位置", best_x)
     releaseCapture()
     if best_x == 0 and not is_retry then
-        log("重试")
-        solveCapture_new(rect, true)
+        log("失败")
+        -- solveCapture_new(rect, true)
+        return false
     end
 
     -- exit()
