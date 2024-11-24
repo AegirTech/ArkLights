@@ -10169,8 +10169,8 @@ path.卫戍协议 = function(不判断每日)
         return
     end
     if findAny({
-            "面板", "活动公告返回", "签到返回", "签到返回黄",
-            "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+            "面板", "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+            "手机验证码登录",
         }) then
         path.跳转("首页")
         return
@@ -10226,8 +10226,8 @@ end
 path.卫戍协议回合 = function()
     local 掉线检查 = function()
         if findAny({
-                "面板", "活动公告返回", "签到返回", "签到返回黄",
-                "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                "面板", "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                "手机验证码登录",
             }) then
             return true
         end
