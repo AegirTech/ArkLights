@@ -2888,7 +2888,7 @@ parse_fight_config = function(fight_ui)
                 table.insert(expand_fight, 'HD-EX' .. '-' .. i) --插入ex突袭关卡，做两次检测
             end
         elseif table.includes({ 'HD3' }, v) then                --【速通输入，“hd3”“HD3”】都会插入16个关卡坐标
-            for i = 1, 4 do
+            for i = 1, 5 do
                 table.insert(expand_fight, 'HD-S' .. '-' .. i)  --插入ex普通关卡
                 table.insert(expand_fight, 'HD-S' .. '-' .. i)  --插入ex突袭关卡，做两次检测
             end
@@ -3017,10 +3017,10 @@ update_state_from_ui = function()
     job = parse_from_ui("now_job_ui", all_job)
 
     -- 活动开放时间段
-    hd_nickname = "PV"
-    hd_max_stage = 10
-    hd_exclude = { 10 }
-    hd_open_time_end = parse_time("202411220400")
+    hd_nickname = "ZT"
+    hd_max_stage = 9
+    hd_exclude = { 9 }
+    hd_open_time_end = parse_time("202412050400")
     hd2_open_time_end = parse_time("202407160400") -- 故事集开放时间段
     hd_mod = "SS"
 

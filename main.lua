@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.24 00:54"
+release_date = "11.25 20:42"
 update_announcement = '最近更新：b服打码,卫戍协议每日(测试功能)。'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -145,6 +145,8 @@ if use_local_dictionary then
 end
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug mode")
+    swip("HD-10")
+    exit()
 end
 
 load(before_account_hook or '')()
