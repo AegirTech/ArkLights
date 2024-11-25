@@ -4252,6 +4252,7 @@ path.轮次作战 = function()
                 fight_tick = fight_tick - 1
             else
                 clean_fight(cur_fight)
+                table.insert(qqmessage, " " .. cur_fight .. "导航超时")
             end
         end
 
