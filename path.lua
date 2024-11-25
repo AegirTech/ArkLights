@@ -5313,7 +5313,7 @@ path.活动 = function(x)
     if not skip_guide then
         path.跳转("首页")
         -- tap("面板活动")
-        path.活动页面寻找(2)
+        path.活动页面寻找()
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -5528,7 +5528,7 @@ path.活动 = function(x)
         end
     end
 
-    local car_check = function()
+    local car_check1 = function()
         if car_checked then return end
         car_checked = true
 
@@ -5768,8 +5768,8 @@ path.活动 = function(x)
         返回循心初始页面()
     end
 
-    -- car_check1() --有些大型活动会自带一些任务
-    path.烟花委员会()
+    car_check1() --有些大型活动会自带一些任务
+    -- path.烟花委员会()
     log("skip_guide", skip_guide)
     if not skip_guide then
         if not findOne("活动导航0") then return end
@@ -5945,7 +5945,7 @@ path.商店搬空 = function()
     end
     log("商店清空任务")
 
-    if not path.活动页面寻找(2) then return end
+    if not path.活动页面寻找() then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
@@ -6149,7 +6149,7 @@ path.商店搬空 = function()
 end
 
 path.活动商店购买 = function()
-    if not path.活动页面寻找(2) then return end
+    if not path.活动页面寻找() then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
@@ -10070,7 +10070,7 @@ path.卫戍协议 = function(不判断每日)
 
     path.跳转("首页")
     ssleep(.2)
-    tap("面板活动")
+    tap("面板活动2")
     disappear("主页", 2)
     if not wait(function()
             if findOne("卫戍协议首页") then return true end

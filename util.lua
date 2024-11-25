@@ -3017,10 +3017,10 @@ update_state_from_ui = function()
     job = parse_from_ui("now_job_ui", all_job)
 
     -- 活动开放时间段
-    hd_nickname = "PV"
-    hd_max_stage = 10
-    hd_exclude = { 10 }
-    hd_open_time_end = parse_time("202411220400")
+    hd_nickname = "ZT"
+    hd_max_stage = 9
+    hd_exclude = {}
+    hd_open_time_end = parse_time("202412050400")
     hd2_open_time_end = parse_time("202407160400") -- 故事集开放时间段
     hd_mod = "SS"
 
