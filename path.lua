@@ -5766,7 +5766,10 @@ path.活动 = function(x)
             end
         end, 90)
         log(666)
+        -- 返回循心初始页面()
         返回循心初始页面()
+        back()
+        ssleep(1)
     end
 
     car_check1() --有些大型活动会自带一些任务
