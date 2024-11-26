@@ -2885,14 +2885,16 @@ parse_fight_config = function(fight_ui)
         elseif table.includes({ 'HD2' }, v) then                --【速通输入，“hd3”“HD3”】都会插入16个关卡坐标
             for i = 1, 8 do
                 table.insert(expand_fight, 'HD-EX' .. '-' .. i) --插入ex普通关卡
-                table.insert(expand_fight, 'HD-EX' .. '-' .. i) --插入ex突袭关卡，做两次检测
+                -- table.insert(expand_fight, 'HD-EX' .. '-' .. i) --插入ex突袭关卡，做两次检测
             end
-        elseif table.includes({ 'HD3' }, v) then                --【速通输入，“hd3”“HD3”】都会插入16个关卡坐标
+            table.insert(expand_fight, "BREAK")
+        elseif table.includes({ 'HD3' }, v) then               --【速通输入，“hd3”“HD3”】都会插入16个关卡坐标
             for i = 1, 5 do
-                table.insert(expand_fight, 'HD-S' .. '-' .. i)  --插入ex普通关卡
-                table.insert(expand_fight, 'HD-S' .. '-' .. i)  --插入ex突袭关卡，做两次检测
+                table.insert(expand_fight, 'HD-S' .. '-' .. i) --插入s普通关卡
+                -- table.insert(expand_fight, 'HD-S' .. '-' .. i) --插入s突袭关卡，做两次检测
             end
-            table.insert(expand_fight, 'HD-MO-1')               --插入MO
+            table.insert(expand_fight, 'HD-MO-1') --插入MO
+            table.insert(expand_fight, "BREAK")
         elseif table.includes({ '扭转醇', '轻锰矿', 'RMA70-12', '固源岩组', '固源岩', '研磨石', '全新装置',
                 '装置',
                 '聚酸酯组', '聚酸酯', '糖组', '糖', '异铁组', '异铁', '酮凝集组', '酮凝集', '凝胶',
