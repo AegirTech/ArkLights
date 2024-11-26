@@ -245,7 +245,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
             if oper["skill_usage"] == 1 then
                 table.insert(无限放技能干员, oper["name"])
             elseif oper["skill_usage"] == 2 then
-                技能指定次数干员[oper["name"]] = { oper["skill_times"], 0 }
+                技能指定次数干员[oper["name"]] = { oper["skill_times"] or 1, 0 }
             end
         end
 
@@ -1686,7 +1686,6 @@ end
         ["灰亳"] = "灰毫",
         ["势"] = "芬",
         ["淫灭之相"] = "湮灭之相",
-
     }
 
     if t == nil or #t == 0 then return "" end
