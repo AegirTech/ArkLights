@@ -362,8 +362,10 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 if isCharExsit["重岳"] then
                     base = base + 0.15
                 end
-            elseif icon == 'bskill_tra_limit&cost"' then
+            elseif icon == 'bskill_tra_limit&cost' then
                 storage = storage + 5
+            elseif icon == 'bskill_tra_limit&trade2' then -- 瑰盐0
+                storage = storage + 1
             elseif icon == 'bskill_tra_wt&cost2' and goodType == '贵金属' then
                 -- 认为裁缝B单独用效果极小
                 base = base + 0.02
@@ -628,6 +630,11 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                     -- base = base + 0.20 * tradingStationNum
                     station = station + 0.20 * tradingStationNum
                 end
+            elseif icon == 'bskill_man_spd&trade1' then
+                -- 引星棘刺2，使用贸易站数量
+                if goodType == '贵金属' then
+                    base = base + 0.03 * tradingStationNum
+                end
             elseif icon == 'bskill_man_gold3' then --杏仁
                 if goodType == '贵金属' then
                     base = base + 0.25
@@ -729,10 +736,15 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
             elseif icon == 'bskill_man_spd_add2' then
                 -- 8小时平均收益 ((0.15+0.23)/2*5+0.25*3)/8
                 base = base + 0.2125
-            elseif icon == 'bskill_man_marcille1' then --玛露西尔1
+            elseif icon == 'bskill_man_marcille1' then  --玛露西尔1
                 base = base + 0.2
-            elseif icon == 'bskill_man_marcille2' then --玛露西尔2
+            elseif icon == 'bskill_man_marcille2' then  --玛露西尔2
                 base = base + 0.3
+            elseif icon == 'bskill_man_spd&cost1' then  --裁度0
+                base = base + 0.2
+            elseif icon == 'bskill_man_spd&limit5' then --裁度2
+                base = base + 0.25
+                storage[operatoridx] = (storage[operatoridx] or 0) + 6
             elseif icon == "bskill_man_spd_add3" then
                 base = base + 0.1 -- 10小时平均收益 8h收益为0.073
             elseif icon == 'bskill_man_spd1' then
@@ -2052,23 +2064,27 @@ workshopOperatorBest = function(operator, id, level)
                 s = s + 0.75
             elseif icon == "bskill_ws_evolve1" then
                 s = s + 0.7
-            elseif icon == "bskill_ws_free" then
-                s = s + 0.79
+            elseif icon == "bskill_ws_free" then            --瑕光0
+                s = s + 0.8 - level * 0.1
+            elseif icon == "bskill_ws_cost_blemishine" then --瑕光2
+                s = s + 0.4
             elseif icon == "bskill_ws_bonus1" and level < 4 then
                 s = s + 0.9
             elseif icon == "bskill_ws_bonus2" and level == 4 then
                 s = s + 0.9
-            elseif icon == "bskill_ws_alloyblock" and id == "31024" then                 --号角
+            elseif icon == "bskill_ws_alloyblock" and id == "31024" then                     --号角
                 s = s + 1
-            elseif icon == "bskill_ws_orirock" and (id == "30014" or id == "30013") then --泥岩
+            elseif icon == "bskill_ws_orirock" and (id == "30014" or id == "30013") then     --泥岩
                 s = s + 0.9
-            elseif icon == "bskill_ws_device" and (id == "30064" or id == "30063") then  --贾维
+            elseif icon == "bskill_ws_device" and (id == "30064" or id == "30063") then      --贾维
                 s = s + 0.9
-            elseif icon == "bskill_ws_skill3" and (id == "3302" or id == "3303") then    --技能书
+            elseif icon == "bskill_ws_crystalline" and (id == "31034" or id == "30145") then --特克诺
                 s = s + 0.8
-            elseif icon == "bskill_ws_skill2" and (id == "3302" or id == "3303") then    --技能书
+            elseif icon == "bskill_ws_skill3" and (id == "3302" or id == "3303") then        --技能书
+                s = s + 0.8
+            elseif icon == "bskill_ws_skill2" and (id == "3302" or id == "3303") then        --技能书
                 s = s + 0.75
-            elseif icon == "bskill_ws_skill1" and (id == "3302" or id == "3303") then    --技能书
+            elseif icon == "bskill_ws_skill1" and (id == "3302" or id == "3303") then        --技能书
                 s = s + 0.7
             end
         end
