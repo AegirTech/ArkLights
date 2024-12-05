@@ -1452,6 +1452,7 @@ show_auto_ui = function()
         make_jump_ui_command(layout, nil,
             "extra_mode='悖论模拟';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
+    --[[
     newRow(layout)
     addTextView(layout, "--------------------卫戍协议相关--------------------")
     newRow(layout)
@@ -1465,6 +1466,7 @@ show_auto_ui = function()
         make_jump_ui_command(layout, nil,
             "extra_mode='重复卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     newRow(layout)
+    ]]
     addTextView(layout, "--------------------自动作战相关--------------------")
 
     newRow(layout)
