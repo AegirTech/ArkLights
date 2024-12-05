@@ -1561,6 +1561,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
     stay_in_dorm_once = x == "基建"
 
     -- 1分钟跳转失败
+    log(230, target, x)
     auto(p, path.fallback, 0, default_auto_timeout_second, true)
 
     -- post processing especially for 基建
