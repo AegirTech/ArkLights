@@ -10499,3 +10499,66 @@ path.卫戍协议回合 = function()
         return
     end
 end
+
+path.保全 = function()
+    path.跳转("首页")
+    tap("面板作战")
+    if not appear("主页") then return end
+
+    if not wait(function()
+            tap("主题曲")
+            if findOne("主题曲界面") then return true end
+        end) then
+        return
+    end
+
+    wait(function()
+        tap("每周部署")
+        if not findOne("主题曲界面") then return true end
+    end)
+
+    -- 注意有噪点
+    if not appear("主页") then return end
+    if not wait(function()
+            tap("保全派驻进入黄")
+            if not findOne("主页") then return true end
+        end, 5) then
+        return
+    end
+    log(699)
+    if not appear("保全派驻首页") then return end
+    -- if findOne("保全作战全部完成白条") then
+    --     return log("保全作战已经完成")
+    -- end
+    if findOne("保全关卡1全部完成勾") then
+        tap("保全关卡1全部完成勾") -- 左上角的那个
+        log(701)
+    elseif findOne("保全关卡2全部完成勾") then
+        tap("保全关卡2全部完成勾") -- 中间的那个
+        log(702)
+    else
+        log(703)
+        return
+    end
+
+    -- 代理卡
+    if not appear("保全作战开始按钮", 3) then return end
+    if not wait(function()
+            tap("保全prts按钮")
+            ssleep(0.5)
+            if findOne("全权委托变蓝") then return true end
+        end, 3) then
+        log(705)
+        return
+    end
+
+    tap("保全作战开始按钮")
+    if not appear("确认使用代理卷蓝", 3) then return end
+
+    tap("确认使用代理卷蓝")
+    -- 后面没测试
+    wait(function()
+        tap("开包skip")
+    end, 2)
+    return true
+end
