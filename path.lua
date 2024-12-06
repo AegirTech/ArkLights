@@ -4176,6 +4176,8 @@ get_fight_type = function(x)
         return "活动"
     elseif f('BREAK') then
         return "BREAK"
+    elseif table.any({ "BQ", "BQPZ" }, f) then
+        return "保全"
     else
         return "主线"
     end
@@ -10530,12 +10532,21 @@ path.保全 = function()
     -- if findOne("保全作战全部完成白条") then
     --     return log("保全作战已经完成")
     -- end
+    ssleep(1)
     if findOne("保全关卡1全部完成勾") then
         tap("保全关卡1全部完成勾") -- 左上角的那个
-        log(701)
     elseif findOne("保全关卡2全部完成勾") then
         tap("保全关卡2全部完成勾") -- 中间的那个
-        log(702)
+    elseif not sss_only_complete then
+        log(777)
+        if findOne("保全1可扫荡") then
+            tap("保全1进入")
+        elseif findOne("保全2可扫荡") then
+            tap("保全2进入")
+        else
+            log(778)
+            return
+        end
     else
         log(703)
         return
@@ -10554,11 +10565,18 @@ path.保全 = function()
 
     tap("保全作战开始按钮")
     if not appear("确认使用代理卷蓝", 3) then return end
-
     tap("确认使用代理卷蓝")
-    -- 后面没测试
-    wait(function()
-        tap("开包skip")
-    end, 2)
-    return true
+    if not wait(function()
+            appearTap("保全完成黄色竖条", 0.5)
+            if findOne("保全作战开始按钮") then return true end
+        end, 10) then
+        back()
+        log(711)
+        clean_fight(cur_fight)
+        return
+    else
+        log(710)
+        clean_fight(cur_fight)
+        return true
+    end
 end

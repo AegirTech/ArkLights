@@ -2872,6 +2872,11 @@ parse_fight_config = function(fight_ui)
             for _ = 1, 99 do table.insert(expand_fight, '长期委托1') end
             for _ = 1, 99 do table.insert(expand_fight, '长期委托2') end
             for _ = 1, 99 do table.insert(expand_fight, '长期委托3') end
+            if not isweekday() and sss_weekend_auto then
+                table.insert(expand_fight, 'BQPZ')
+            end
+        elseif table.includes({ "保全", "保全派驻", "BQ", "BQPZ" }, v) then
+            table.insert(expand_fight, "BQPZ")
         elseif table.includes({ 'HD' }, v) then
             for i = hd_max_stage, hd_max_stage - 2, -1 do
                 if not table.contains(hd_exclude, { i }) then
@@ -4101,6 +4106,9 @@ update_state_from_debugui = function()
     if restart_on_crontab_timeout == nil then restart_on_crontab_timeout = true end
     auto_update_mode = str2int(auto_update_mode, 1)
     auto_update_game_select = str2int(auto_update_game_select, 0)
+
+    sss_weekend_auto = (sss_weekend_auto == nil) and true or sss_weekend_auto
+    sss_only_complete = (sss_only_complete == nil) and true or sss_only_complete
 end
 
 -- 基建心情阈值与QQ号

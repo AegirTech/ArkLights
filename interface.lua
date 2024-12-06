@@ -41,7 +41,7 @@ end
 -- 将UI内容转为全局变量
 loadUIConfig = function(layouts)
     if not layouts then
-        layouts = { "multi_account", "gesture_capture", "extra", "debug", "main", "auto", "auto_login" }
+        layouts = { "multi_account", "gesture_capture", "extra", "debug", "main", "auto", "auto_login", "sss_fight" }
     end
     for _, layout in pairs(layouts) do
         assignGlobalVariable(loadOneUIConfig(layout))
@@ -521,7 +521,7 @@ make_jump_ui = function(layout)
         { nil, "测试功能", make_jump_ui_command(layout, "auto") },
         { nil, "肉鸽/生息", make_jump_ui_command(layout, "extra") },
         { "quit_script", "退出", make_jump_ui_command(layout, nil, "saveConfig('Not_Restart','true');peaceExit()") },
-        { nil, "保全(不可用)", make_jump_ui_command(layout, "auto") },
+        { nil, "保全派驻", make_jump_ui_command(layout, "sss_fight") },
         { nil, "高级设置", make_jump_ui_command(layout, "debug") },
         { "join_qq", "加入QQ群", make_jump_ui_command(layout, nil, "jump_qq_qun()") },
         { "join_channel", "QQ频道", make_jump_ui_command(layout, nil, "jump_qq_channel()") },
@@ -1490,6 +1490,37 @@ show_auto_ui = function()
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
     ui.setButton("map_online", "联网更新地图包")
+end
+
+show_sss_fight_ui = function()
+    local layout = "sss_fight"
+    saveConfig('last_layout', layout)
+    ui.newLayout(layout, ui_page_width, -2)
+    ui.setTitleText(layout, "保全派驻")
+
+    newRow(layout)
+    addButton(layout, nil, "返回",
+        make_jump_ui_command(layout, "main"),
+        nil, nil)
+
+    newRow(layout)
+    addTextView(layout, "--------------------基础设置--------------------")
+
+    newRow(layout)
+    addTextView(layout, "默认在每周日打剿灭之后扫荡保全,仅在写jm/wt时候有效")
+    newRow(layout)
+    addTextView(layout, "保全关卡代号: 保全 保全派驻 BQ BQPZ")
+    newRow(layout)
+    addTextView(layout, "作战使用保全关卡代号则无视每周扫荡选项")
+
+    newRow(layout)
+    ui.addCheckBox(layout, "sss_weekend_auto", "每周末自动扫荡", true)
+
+    newRow(layout)
+    ui.addCheckBox(layout, "sss_only_complete", "仅在完成6层后扫荡", true)
+
+    ui.loadProfile(getUIConfigPath(layout))
+    ui.show(layout, false)
 end
 
 auto_login_init = function()
