@@ -1004,19 +1004,19 @@ path.fallback = {
             if findAny({ "新年祝福返回", "面板" }) then return true end
         end, 10)
     end,
-    战备支援签到返回 = function()
-        wait(function()
-            tap("战备支援签到")
-            ssleep(.2)
-        end, 1)
-        wait(function()
-            tap("战备支援签到返回")
-            ssleep(.2)
-            tap("开包skip")
-            if not appear("面板") then tap("开包skip") end
-            if appear("面板", 1) then return true end
-        end, 5)
-    end,
+    -- 战备支援签到返回 = function()  --有误判
+    --     wait(function()
+    --         tap("战备支援签到")
+    --         ssleep(.2)
+    --     end, 1)
+    --     wait(function()
+    --         tap("战备支援签到返回")
+    --         ssleep(.2)
+    --         tap("开包skip")
+    --         if not appear("面板") then tap("开包skip") end
+    --         if appear("面板", 1) then return true end
+    --     end, 5)
+    -- end,
     端午签到返回 = function()
         wait(function()
             tap("端午签到左")
@@ -10520,6 +10520,7 @@ path.保全 = function()
     end)
 
     -- 注意有噪点
+    clean_fight(cur_fight)
     if not appear("主页") then return end
     if not wait(function()
             tap("保全派驻进入黄")
@@ -10528,7 +10529,11 @@ path.保全 = function()
         return
     end
     log(699)
-    if not appear("保全派驻首页") then return end
+
+    if not appear("保全派驻首页", 10) then
+        back()
+        return
+    end
     -- if findOne("保全作战全部完成白条") then
     --     return log("保全作战已经完成")
     -- end
@@ -10572,11 +10577,9 @@ path.保全 = function()
         end, 10) then
         back()
         log(711)
-        clean_fight(cur_fight)
         return
     else
         log(710)
-        clean_fight(cur_fight)
         return true
     end
 end
