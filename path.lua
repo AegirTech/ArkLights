@@ -4170,14 +4170,14 @@ get_fight_type = function(x)
         return "插曲"
     elseif table.any({ "GT" }, f) then
         return "别传"
+    elseif table.any({ "BQPZ", "BQPZ1", "BQPZ2" }, f) then
+        return "保全"
     elseif table.any(table.values(jianpin2name), f) then
         return "剿灭"
     elseif f('HD') then
         return "活动"
     elseif f('BREAK') then
         return "BREAK"
-    elseif table.any({ "BQ", "BQPZ" }, f) then
-        return "保全"
     else
         return "主线"
     end
@@ -4290,6 +4290,15 @@ jianpin2name = {
     -- BYBFFC = "北原冰封废城",
     -- DQSLJW = "大骑士领郊外",
     -- FQKQ = "废弃矿区",
+    保全 = "BQPZ",
+    保全1 = "BQPZ1",
+    保全2 = "BQPZ2",
+    保全派驻 = "BQPZ",
+    保全派驻1 = "BQPZ1",
+    保全派驻2 = "BQPZ2",
+    BQ = "BQPZ",
+    BQ1 = "BQPZ1",
+    BQ2 = "BQPZ2",
 }
 extrajianpin2name = {
     SYC = "上一次",
@@ -10540,10 +10549,39 @@ path.保全 = function()
         end
         return
     end
-    -- if findOne("保全作战全部完成白条") then
-    --     return log("保全作战已经完成")
-    -- end
+
+    if findOne("保全作战全部完成白条") then
+        log(701)
+        return
+    end
     ssleep(1)
+
+    -- 保全抄作业
+    if copy_homework then
+        log("抄作业", cur_fight)
+        if not homework[cur_fight] then return end
+        if cur_fight == "BQPZ1" then
+            if findOne("保全关卡1全部完成勾") then
+                log(731)
+                return
+            end
+            tap("保全1进入")
+        elseif cur_fight == "BQPZ2" then
+            if findOne("保全关卡2全部完成勾") then
+                log(732)
+                return
+            end
+            tap("保全2进入")
+        else
+            log("未知保全地图")
+            return
+        end
+        if not appear("保全作战开始按钮", 3) then return end
+        保全抄作业()
+        return
+    end
+
+    -- 扫荡
     if findOne("保全关卡1全部完成勾") then
         tap("保全关卡1全部完成勾") -- 左上角的那个
     elseif findOne("保全关卡2全部完成勾") then
