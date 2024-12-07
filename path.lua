@@ -10520,8 +10520,11 @@ path.保全 = function()
     end)
 
     -- 注意有噪点
+    -- 只做一次，防止循环等
     clean_fight(cur_fight)
+
     if not appear("主页") then return end
+    if not appear("保全派驻进入黄") then return end
     if not wait(function()
             tap("保全派驻进入黄")
             if not findOne("主页") then return true end
@@ -10532,6 +10535,9 @@ path.保全 = function()
 
     if not appear("保全派驻首页", 10) then
         back()
+        if appear("保全离开确认", 3) then
+            tap("保全离开确认")
+        end
         return
     end
     -- if findOne("保全作战全部完成白条") then
@@ -10558,7 +10564,10 @@ path.保全 = function()
     end
 
     -- 代理卡
-    if not appear("保全作战开始按钮", 3) then return end
+    if not appear("保全作战开始按钮", 3) then
+        back()
+        return
+    end
     if not wait(function()
             tap("保全prts按钮")
             ssleep(0.5)
