@@ -37,11 +37,11 @@ loadMap = function(关卡名)
     return JsonDecode(readFile(getWorkPath() .. '/maps/' .. 关卡名 .. ".json"))
 end
 
---加载作业
+--- 加载作业
+--- @param levelName string 关卡名字
+--- @param isLocal boolean 是否自带
 loadHomework = function(levelName, isLocal)
-    --levelName→关卡名字    isLocal→是否自带
     local levelName = levelName or ''
-    --if not 是否自带  then return end
     if isLocal then --自带的作业,比如肉鸽的
         return JsonDecode(readFile(levelName .. ".json"))
     else
@@ -50,7 +50,7 @@ loadHomework = function(levelName, isLocal)
         local url = 'https://prts.maa.plus/copilot/get/' .. maaCode
         ::重试::
         local ret, code = httpGet(url)
-        log(ret)
+        -- log(ret)
         local status, data = pcall(JsonDecode, ret)
         if not status then
             toast("未解析到作业,15s后重试")
@@ -62,7 +62,7 @@ loadHomework = function(levelName, isLocal)
         local ret, code = httpPost('https://prts.maa.plus/copilot/rating',
             JsonEncode({ rating = "Like", id = tonumber(maaCode), }), 30,
             "Content-Type: application/json")
-        log(ret)
+        log(maaCode, ret)
         return levelInfo
     end
 end
@@ -288,7 +288,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
     end
     地图数据0 = 地图数据[1] --放技能坐标
     地图数据1 = 地图数据[2] --放置干员坐标
-    地图类型 = 地图数据[3] --地图类型,主要用来区别杀敌数位置，1普通，2剿灭,3保全，4肉鸽，5悖论模拟
+    地图类型 = 地图数据[3] --地图类型,主要用来区别杀敌数位置:1普通，2剿灭, 3保全, 4肉鸽, 5悖论模拟
     训练地图 = 地图数据[4] --是否是教学关0否,1是
     log("读取地图数据成功", "地图类型", 地图类型, "训练地图", 训练地图)
 
@@ -396,6 +396,164 @@ auto_prts = function(作业名, 需要编队, 是否自带)
         return
     end
     sleep(3000)
+end
+
+auto_sss = function(作业名, 需要编队, 是否自带)
+    ------------------------init部分
+    local 技能未就绪 = 0
+    local homework = 作业名
+    print("prts作战开始", homework)
+    local 干员名单 = ""
+    --local 职业 = { "先锋", "近卫", "重装", "医疗", "术师", "狙击", "特种", "辅助", "召唤物", "all" }
+    群组 = {}
+    部署 = {}
+    队员技能 = {}
+    无限放技能干员 = {}
+    技能指定次数干员 = {}
+    作业 = loadHomework(作业名, 是否自带)
+    print(作业)
+    print("读取作业成功")
+    --构建技能相关数据
+    local processSkillData = function(oper)
+        if table.findk(oper, "skill_usage") then
+            if oper["skill_usage"] == 1 then
+                table.insert(无限放技能干员, oper["name"])
+            elseif oper["skill_usage"] == 2 then
+                技能指定次数干员[oper["name"]] = { oper["skill_times"] or 1, 0 }
+            end
+        end
+        if table.findk(oper, "skill") then
+            队员技能[oper["name"]] = oper["skill"]
+        end
+    end
+
+    local groups = 作业["groups"]
+    if groups and #groups > 0 then
+        for _, group in ipairs(groups) do
+            群组[group["name"]] = group["opers"]
+            群组[group["name"]]["qty_reqd"] = group["qty_reqd"] or 1
+            for _, oper in ipairs(group["opers"]) do
+                processSkillData(oper)
+            end
+            if table.findk(group, "skill") then
+                for _, oper in ipairs(group["opers"]) do
+                    队员技能[oper["name"]] = group["skill"]
+                end
+            end
+        end
+    end
+    log("读取群组成功")
+    log(groups)
+    log(作业["stage_name"])
+
+    ------------------------init部分完毕
+    --[[
+    if not wait(function()
+            if findOne("开始保全作战", 0.9) then
+                tap("开始保全作战")
+                sleep(10)
+            end
+            if findOne("选择导能元件") then return true end
+        end, 5) then
+        log("进入保全失败")
+        return
+    end
+    local 导能元件 = tonumber(作业["buff"]) or 3 --默认用第三个元件
+    tap("导能元件列表" .. 导能元件)
+    if not appear("导能元件确认选择蓝", 2) then return false end
+    sleep(100)
+    tap("导能元件确认选择蓝")
+    if not appear("选择战术装备", 3) then return false end
+    sleep(100)
+    local 战术装备 = 作业["equipment"]
+    log(战术装备)
+    for i = 1, 8 do
+        if 战术装备[i] ~= "A" or not findOne("战术装备列表" .. i, 0.9) then
+            tap("战术装备列表" .. i)
+            sleep(50)
+        end
+    end
+    tap("导能元件确认选择蓝")
+    disappear("正在提交反馈至神经", network_timeout)
+    sleep(100)
+
+    if not appear("保全快捷编队", 3) then return false end
+    if 需要编队 == true then
+        if 保全自动编队(作业["opers"], 群组, 作业["tool_men"], 作业["blacklist"]) == false then return false end
+        releaseCapture()
+    end
+
+    if not appear("导能元件确认选择蓝", 3) then
+        log("选人出现错误,没有选满")
+        return false
+    else
+        tap("导能元件确认选择蓝")
+        ssleep(4)
+    end
+    toast('等待2S 跳过教程')
+    wait(function()
+        tap("隐秘战线教程关闭")
+    end, 2)]]
+
+    for i = 1, 6 do
+        local 当前层数 = tonumber(utf8.right(ocro("保全层数范围"), 1) or 1)
+        i = 当前层数
+        log("当前层数" .. 当前层数, 作业["stages"][当前层数]["stage_name"])
+        local status, 地图数据
+
+        status, 地图数据 = pcall(loadMap, 作业["stages"][当前层数]["stage_name"])
+        if not status then
+            stop("地图数据读取失败,请去测试功能内更新地图包", '', true, true)
+        end
+        地图数据0 = 地图数据[1] --放技能坐标
+        地图数据1 = 地图数据[2] --放置干员坐标
+        地图类型 = 地图数据[3] --地图类型,主要用来区别杀敌数位置:1普通，2剿灭, 3保全, 4肉鸽, 5悖论模拟
+        训练地图 = 地图数据[4] --是否是教学关0否,1是
+        log("读取地图数据成功", "地图类型", 地图类型, "训练地图", 训练地图)
+        tap("开始行动保全")
+        ssleep(1)
+        if findOne("开始行动保全") then
+            tap("开始行动保全")
+            是否保全图 = 1
+            local 换牌数 = 0
+            while true do
+                if findOne("保全换牌") then
+                    干员列表 = 获取费用列表()
+                    for _, i in ipairs(干员列表) do
+                        if i[1] == "特种" or i[1] == "辅助" or i[1] == "医疗" or i[1] == "召唤物" then
+                            tap({ scale(i[3]), scale(i[4]) })
+                            换牌数 = 换牌数 + 1
+                            sleep(50)
+                            if 换牌数 > 3 then
+                                break
+                            end
+                        end
+                    end
+                    tap("保全换牌")
+                    break
+                end
+                sleep(500)
+            end
+        end
+        print("抄作业")
+        保全抄作业(作业["stages"][当前层数], tonumber(地图类型))
+
+        if not wait(function()
+                --[===[if findOne(肉鸽返回) == true then
+	tap(肉鸽返回[1], 肉鸽返回[2])
+	elseif findOne(肉鸽开始行动) == true then
+	tap(肉鸽开始行动[1], 肉鸽开始行动[2])
+	else]===]
+                if findOne("跳过剧情") then
+                    path.跳过剧情()
+                elseif findOne("作战中") then
+                    return true
+                end
+            end, 5) then
+            return
+        end
+        sleep(3000)
+    end
 end
 
 自动编队 = function(干员, 群组)
@@ -528,11 +686,138 @@ end
     -- end
 end
 
-选择干员 = function(干员目录, 字典, 是否群组)
+保全自动编队 = function(干员, 群组)
+    local 编入数量 = 0
+    local 未编入 = {}
+    local 未编入干员 = {}
+    local 干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+    local 未编入数量 = 0
+
+    local 干员职业 = JsonDecode(readFile("character_type_list.json"))
+    log("读取干员职业成功")
+    local printChar = function(t)
+        for _, i in ipairs(t) do
+            print("需要干员", i["name"], ",职业", 干员职业[i["name"]])
+        end
+    end
+
+    appear("保全快捷编队", 3)
+    if not wait(function()
+            if findOne("编队清空选择") then return true end
+            tap("保全快捷编队")
+            sleep(10)
+        end, 5) then
+        return
+    end
+    if not wait(function()
+            if findOne("无干员选中") then return true end
+            tap("编队清空选择")
+        end, 5) then
+        return
+    end
+    if not findOne("职业选择") then
+        tap("职业选择")
+        appear("职业选择", 2)
+    end
+    if not findOne("等级降序") then
+        tap("等级降序")
+        appear("等级降序", 2)
+    end
+    local choseChar = function(干员, 是否群组)
+        local 记录未编入数量
+        local group_selected = 0
+        local 群组需要数量 = 1
+        if 是否群组 then
+            记录未编入数量 = 未编入数量
+            群组需要数量 = 干员["qty_reqd"]
+        end
+        --8个职业
+        for i = 1, 8 do
+            local 干员名字字符串 = ""
+            local 干员目录 = {}
+            for _, item in ipairs(干员) do
+                if 干员职业[item["name"]] == 干员类别[i] then
+                    干员名字字符串 = 干员名字字符串 .. item["name"]
+                    table.insert(干员目录, item["name"] .. item["skill"])
+                end
+            end
+            if 干员名字字符串 ~= "" and group_selected == 0 then
+                if not findOne("普通作战编队列表" .. i) then
+                    tap("普通作战编队列表" .. i)
+                    appear("普通作战编队列表" .. i)
+                    sleep(200)
+                end
+                --print(干员目录)
+                未编入 = 选择干员(干员目录, "待编队干员", 是否群组, 群组需要数量)
+
+                未编入数量 = 未编入数量 + 未编入[1]
+                if 是否群组 and 未编入[1] == 0 then
+                    group_selected = 1
+                    未编入数量 = 记录未编入数量
+                    编入数量 = 编入数量 + 1
+                end
+                if 未编入数量 == 1 and 未编入干员[1] == nil then
+                    print(i, 未编入[2])
+                    未编入干员 = { i, 未编入[2] }
+                elseif 是否群组 == nil and 未编入数量 > 1 then
+                    log("缺少干员超过1个")
+                    exitScript()
+                end
+                if not 是否群组 then 编入数量 = #干员目录 + 编入数量 end
+            end
+            if i == 8 then
+                if not findOne("职业选择") then
+                    tap("职业选择")
+                    appear("职业选择", 2)
+                    sleep(300)
+                end
+            end
+            --print("编入数量", 编入数量)
+        end
+    end
+
+    printChar(干员)
+    choseChar(干员)
+    for name, group in pairs(群组) do
+        log(name)
+        if string.finds(name, { "工具人" }) then
+            if not findOne("稀有度升序", 0.9) then
+                tap("稀有度升序")
+                sleep(50)
+                tap("稀有度升序")
+                appear("等级降序", 2)
+            end
+        else
+            if not findOne("等级降序") then
+                tap("等级降序")
+                appear("等级降序", 2)
+            end
+        end
+        printChar(group)
+        choseChar(group, 1)
+    end
+
+    tap("编队确认")
+    appear("保全快捷编队", 3)
+    print(未编入干员)
+    if 未编入数量 >= 1 then
+        log("编队未完成，需要手动编队")
+        sleep(1000)
+        path.跳转("首页")
+        return false
+    end
+    -- if 未编入数量 == 1 then
+    --     Call 编入支援干员(未编入干员,1)
+    -- end
+end
+
+选择干员 = function(干员目录, 字典, 是否群组, 群组需要数量)
     local 需要干员数 = #干员目录
     local 已选择 = {}
     local selected = 0
     local 干员组, 技能组 = {}, {}
+    local 群组需要数量 = 群组需要数量 or 1
+    log(需要干员数, "群组需要数量", 群组需要数量)
     for i = 1, #干员目录 do
         干员组[i] = string.sub(干员目录[i], 1, string.len(干员目录[i]) - 1)
         技能组[i] = tonumber(string.sub(干员目录[i], -1)) or 1
@@ -559,8 +844,8 @@ end
                         break
                     end
                 end
-                print("已选择")
-                if 是否群组 and selected >= 1 then break end
+                print("已选择", selected, "个干员")
+                if 是否群组 and selected >= 群组需要数量 then break end
             else
                 print(干员组[i], "已编入")
             end
@@ -572,12 +857,12 @@ end
         print("识别上")
         local 识别结果 = 干员名ocr校正(ocrex("上排干员范围"))
         找干员(识别结果)
-        if 是否群组 and selected > 0 then return { 0 } end
+        if 是否群组 and selected >= 群组需要数量 then return { 0 } end
         print("识别下")
         识别结果 = 干员名ocr校正(ocrex("下排干员范围"))
         找干员(识别结果)
         print("已选择", selected, "个干员")
-        if 是否群组 and selected > 0 then return { 0 } end
+        if 是否群组 and selected >= 群组需要数量 then return { 0 } end
         if selected < 需要干员数 then
             print("下一页搜索")
             swipe_next_page()
@@ -634,7 +919,7 @@ swipe_next_page = function(left, nodelay)
         }
         delay = 250
     end
-    log(JsonEncode(finger))
+    --log(JsonEncode(finger))
     gesture(finger)
     sleep(duration + (nodelay and 0 or delay))
     return nodelay and delay or 0
