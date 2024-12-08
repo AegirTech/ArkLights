@@ -447,7 +447,7 @@ auto_sss = function(作业名, 需要编队, 是否自带)
     log(作业["stage_name"])
 
     ------------------------init部分完毕
-    --[[
+
     if not wait(function()
             if findOne("开始保全作战", 0.9) then
                 tap("开始保全作战")
@@ -493,7 +493,7 @@ auto_sss = function(作业名, 需要编队, 是否自带)
     toast('等待2S 跳过教程')
     wait(function()
         tap("隐秘战线教程关闭")
-    end, 2)]]
+    end, 2)
 
     for i = 1, 6 do
         local 当前层数 = tonumber(utf8.right(ocro("保全层数范围"), 1) or 1)
@@ -512,6 +512,27 @@ auto_sss = function(作业名, 需要编队, 是否自带)
         log("读取地图数据成功", "地图类型", 地图类型, "训练地图", 训练地图)
         tap("开始行动保全")
         ssleep(1)
+        if 当前层数 > 1 then
+            if not wait(function()
+                    if findOne("开始行动保全") then return true end
+                    if findOne("保全增调干员") then
+                        tap("保全增调干员")
+                        ssleep(.3)
+                        tap("保全放弃调用")
+                        ssleep(.3)
+                    end
+                    if findOne("导能配件甄选") then
+                        tap("导能配件甄选列表" .. (作业["buff_upgrade"] or 1))
+                        ssleep(.3)
+                        tap("保全放弃调用")
+                        ssleep(.3)
+                    end
+                    ssleep(.3)
+                end, 15) then
+                log("进入保全失败")
+                return
+            end
+        end
         if findOne("开始行动保全") then
             tap("开始行动保全")
             是否保全图 = 1
@@ -535,24 +556,18 @@ auto_sss = function(作业名, 需要编队, 是否自带)
                 sleep(500)
             end
         end
+        sleep(1000)
         print("抄作业")
         保全抄作业(作业["stages"][当前层数], tonumber(地图类型))
 
         if not wait(function()
-                --[===[if findOne(肉鸽返回) == true then
-	tap(肉鸽返回[1], 肉鸽返回[2])
-	elseif findOne(肉鸽开始行动) == true then
-	tap(肉鸽开始行动[1], 肉鸽开始行动[2])
-	else]===]
-                if findOne("跳过剧情") then
-                    path.跳过剧情()
-                elseif findOne("作战中") then
-                    return true
-                end
-            end, 5) then
+                tap("隐秘战线教程关闭")
+                ssleep(2)
+                if findOne("开始行动保全") then return true end
+            end, 15) then
             return
         end
-        sleep(3000)
+        ssleep(1)
     end
 end
 
@@ -1101,7 +1116,7 @@ end
     local 需要, 找到
     local 已部署干员 = {}
     local 操作后, 部署后
-    local 延迟消失技能 = { "爆裂黎明", "黄昏", }
+    local 延迟消失技能 = { "爆裂黎明", "黄昏", "灯火不灭", "饱和复仇", }
 
     if findOne("剧情中3") then
         tap("剧情中")
@@ -1344,23 +1359,386 @@ end
         end
         do_strategy()
 
-        if 是否保全图 == 1 then
-            差值 = 识别未部署干员数量()
-            print(差值)
-            if 差值 < 9 then
-                if cmpColor(scale(1869), scale(1081 - 370), "1965E9", 0.8) == 1 then
-                    print("抽卡")
-                    tap("抽卡")
-                    sleep(300)
-                    for i = 1, 9 - 差值 do
-                        if cmpColor(scale(1869), scale(1081 - 370), "1965E9", 0.8) == 1 then
-                            print("抽卡")
-                            tap("抽卡")
-                            sleep(300)
-                        end
-                    end
-                    sleep(1100)
+        数量变化 = 识别未部署干员数量() - 下排干员数量
+        print("下排干员数量", 下排干员数量, "数量变化", 数量变化)
+
+        if 数量变化 ~= 0 then
+            更新未部署干员(数量变化)
+            下排干员数量 = 识别未部署干员数量()
+        end
+        点战斗()
+        sleep(75)
+        if findOne("跳过剧情") then
+            path.跳过剧情()
+            print("跳过剧情")
+            appear("作战中", 3)
+            加速()
+        end
+
+
+        if not (findOne("作战中") or findOne("暂停中") or findOne("作战中2")) then
+            sleep(500)
+            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "生息演算剧情上", "生息演算剧情下" }) then
+                tap("剧情中")
+                --迷宫饭适配
+                tap({ scale(1040), scale(384) })
+                tap({ scale(1306), scale(608) })
+                print("跳过无按钮剧情")
+                appear("作战中", 2)
+                加速()
+            elseif findAny({ "作战中", "暂停中", "作战中2" }) then
+            else
+                --snapShot("/mnt/sdcard/test"..os.time()..".png")
+                if appear("战斗中剧情对话", 3) then
+                    wait(function()
+                        tap("点cost")
+                        ssleep(.3)
+                        if findAny({ "作战中", "暂停中", "作战中2" }) then return true end
+                    end, 30)
+                else
+                    print("结束抄作业")
+                    break
                 end
+            end
+        end
+    end
+end
+
+保全抄作业 = function(作业, maptype)
+    -- local 慢放 = 需要慢放干员
+
+    --maa普通作战兼容模式
+    部署 = 作业["actions"]
+    波数依赖命令数 = 0
+    波数依赖 = { "无命令" }
+
+    local 是否剿灭图 = (maptype == 2 or maptype == 3) and 2 or 1
+    print(maptype, "是否剿灭图", 是否剿灭图)
+    部署顺序 = 1
+    波数依赖顺序 = 1
+    print(#部署, 波数依赖命令数)
+
+    local cost = 0, wave, wavetxt
+    local cost依赖命令, wave依赖命令
+    local 部署指令, 等待cost, 需要cost
+    local wave依赖指令, wave部署, wave干员信息, 地图坐标
+    local 下排干员数量, 数量变化, 差值
+    local 需要, 找到
+    local 已部署干员 = {}
+    createTransposedArray = function(originalArray)
+        local rows = #originalArray    -- 原数组的行数
+        local cols = #originalArray[1] -- 原数组的列数
+        local transposedArray = {}     -- 创建一个新的空数组
+        -- 初始化新数组的行
+        for i = 1, cols do
+            transposedArray[i] = {}
+        end
+        -- 填充新数组
+        for i = 1, rows do
+            for j = 1, cols do
+                transposedArray[j][i] = {
+                    name = "无",
+                    终端 = false,
+                    核心 = false,
+                    times = 0,
+                }
+            end
+        end
+        return transposedArray
+    end
+    local 已部署格子 = createTransposedArray(地图数据0)
+    log(已部署格子)
+    local 操作后, 部署后
+    local 延迟消失技能 = { "爆裂黎明", "黄昏", "灯火不灭", "饱和复仇", }
+
+    if findOne("剧情中3") then
+        tap("剧情中")
+        print("跳过无按钮剧情")
+        appear("作战中", 2)
+        加速()
+    end
+
+    点暂停(1)
+    加速()
+    干员列表 = 识别未部署干员()
+    下排干员数量 = 识别未部署干员数量()
+
+    --自动释放技能
+    local do_strategy = function()
+        --print("无限放技能干员", 无限放技能干员)
+        --print("技能指定次数干员")
+        for k, v in pairs(技能指定次数干员) do print(k, v) end
+
+        for k, v in pairs(已部署干员) do
+            if table.search(无限放技能干员, k) or (技能指定次数干员[k] and 技能指定次数干员[k][2] < 技能指定次数干员[k][1]) then
+                地图坐标 = 地图数据0[v[2] + 1][v[1] + 1]
+                print("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
+                local intX, intY = findMultiColor(scale(地图坐标[1] - 10), scale(地图坐标[2] - 180), scale(地图坐标[1] + 10),
+                    scale(地图坐标[2] - 80), "EBA22F-101010", scale(-21) .. "|" .. scale(-21) ..
+                    "|F6A516-101010|" .. scale(5) .. "|" .. scale(-10) .. "|280500-101010|" .. scale(21) .. "|"
+                    .. scale(-21) .. "|E4932E-101010|" .. scale(-6) .. "|" .. scale(-8) .. "|2E1501-101010",
+                    0, 0.87)
+                if intX > -1 then
+                    print("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
+                    tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
+                    sleep(30)
+                    点暂停()
+                    appear("暂停中", 0.5)
+                    sleep(300)
+                    keepCapture()
+                    local p = findOne("技能ready")
+                    local skill_name = ocro("技能名称范围")
+                    log(1491)
+                    if p then
+                        tap({ p[1] - 20, p[2] - 50 })
+                    else
+                        tap("开技能")
+                    end
+                    sleep(300)
+                    releaseCapture()
+                    if not findOne("子弹时间", 0.85) then
+                        if 技能指定次数干员[k] then 技能指定次数干员[k][2] = 技能指定次数干员[k][2] + 1 end
+                        点战斗()
+                        sleep(150)
+                        if skill_name ~= nil and table.includes(延迟消失技能, skill_name) then sleep(400) end
+                    else
+                        tap("点cost")
+                        --sleep(50)
+                    end
+                    sleep(50)
+                end
+            end
+        end
+    end
+
+    --等待时需要自动释放技能
+    local sleep_and_do_strategy = function(delay)
+        local start = os.time()
+        local time = ((delay - 1) / 1000)
+        --print(start, time)
+        while os.time() - start < time do
+            keepCapture()
+            do_strategy()
+            sleep(50)
+        end
+        releaseCapture()
+        --print(os.time())
+    end
+
+    while true do
+        点战斗()
+        cost = tonumber(获得cost() or cost) or cost
+
+        wavetxt = 获得敌人数(是否剿灭图)
+        --print("当前波次", wavetxt)
+        local number = tonumber(string.match(wavetxt, "%d+"))
+        if number and number - wave < 5 then wave = number end
+
+        print("当前cost", cost, "已击败敌人数", wave)
+
+        if 部署顺序 <= #部署 then
+            部署指令 = 部署[部署顺序]
+            部署指令["kills"] = 部署指令["kills"] or 0
+            部署指令["costs"] = 部署指令["costs"] or 0
+            local 行 = 部署指令["location"][1]
+            local 列 = 部署指令["location"][2]
+            print("部署指令", 行, 列, 部署顺序, 部署指令)
+            if 部署指令["pre_delay"] then
+                print("前置延时")
+                sleep_and_do_strategy(部署指令["pre_delay"])
+            end
+            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "生息演算剧情上", "生息演算剧情下" }) then
+                tap("剧情中")
+                print("跳过无按钮剧情")
+                appear("作战中", 2)
+                加速()
+            end
+            if wave >= 部署指令["kills"] and cost >= 部署指令["costs"] then
+                if 干员列表 and (部署指令["type"] == "Deploy" or 部署指令["type"] == "deploy" or 部署指令["type"] == "部署") then
+                    local 需要cost = {}
+                    干员排位 = table.search(干员列表, 部署指令["name"])
+                    print(部署指令["name"], "在第", 干员排位)
+                    if 群组[部署指令["name"]] then
+                        local 找到 = false
+                        local 移到最后 = true
+                        print("群组部署命令", 部署指令["name"])
+                        if 已部署格子[行][列]["终端"] and 已部署格子[行][列]["times"] > 5 then
+                            print("行", 行, "列", 列, 已部署格子[行][列]["终端"], 已部署格子[行][列]["times"])
+                            移到最后 = false
+                            goto 跳过检测
+                        end
+                        if string.finds(部署指令["name"], { "终端" }) and 已部署格子[行][列]["times"] < 5 then
+                            print("行", 行, "列", 列, 已部署格子[行][列]["times"])
+                            goto 跳过检测
+                        end
+                        if string.finds(部署指令["name"], { "工具人" }) and 已部署格子[行][列]["times"] >= 4 then
+                            移到最后 = false
+                            goto 跳过检测
+                        end
+
+                        for i, v in ipairs(群组[部署指令["name"]]) do
+                            干员排位 = table.search(干员列表, v["name"])
+                            if 干员排位 ~= nil then
+                                已部署干员[v["name"]] = 部署指令["location"]
+                                已部署格子[行][列]["name"] = v["name"]
+                                需要cost = 坐标列表[干员排位]
+                                找到 = true
+                                break
+                            end
+                        end
+                        ::跳过检测::
+                        if 移到最后 then table.insert(部署, 部署[部署顺序]) end
+                        if not 找到 then
+                            -- 将当前指令移至最后并跳过
+                            部署顺序 = 部署顺序 + 1
+                        end
+                    else
+                        print("未找到干员,干员列表", 干员列表)
+                        if 训练地图 == 0 then 部署顺序 = 部署顺序 + 1 end
+                    end
+                    --干员是否可部署
+                    if #需要cost > 1 and (cmpColor(需要cost[1] + scale(5), 需要cost[2], "FFFFFF", 0.95) == 1 or cmpColor(需要cost[1] + scale(5), 需要cost[2] - scale(20), "FFFFFF", 0.95) == 1) then
+                        部署指令 = 部署干员(干员排位)
+                        下排干员数量 = 下排干员数量 - 1
+                        log(已部署格子[行][列])
+                        if string.finds(部署指令["name"], { "终端" }) then
+                            已部署格子[行][列]["终端"] = true
+                        elseif string.finds(部署指令["name"], { "核心" }) then
+                            已部署格子[行][列]["核心"] = true
+                        end
+                        已部署格子[行][列]["times"] = 已部署格子[行][列]["times"] + 1
+                        点战斗()
+                    end
+                elseif 部署指令["type"] == "Retreat" or 部署指令["type"] == "Retreat" or 部署指令["type"] == "撤退" then
+                    if not 部署指令["location"] then
+                        部署指令["location"] = 已部署干员[部署指令["name"]]
+                    end
+                    撤退干员(部署指令["location"])
+                    点战斗()
+                    部署顺序 = 部署顺序 + 1
+                elseif 部署指令["type"] == "Skill" or 部署指令["type"] == "skill" or 部署指令["type"] == "技能" then
+                    波数依赖顺序 = 部署顺序
+                    波数依赖[波数依赖顺序] = 部署指令
+                    波数依赖命令数 = 波数依赖顺序
+                    部署顺序 = 部署顺序 + 1
+                elseif 部署指令["type"] == "SpeedUp" then
+                    部署顺序 = 部署顺序 + 1
+                elseif 部署指令["type"] == "BulletTime" then
+                    部署顺序 = 部署顺序 + 1
+                elseif 部署指令["type"] == "SkillUsage" then
+                    if 部署指令["skill_usage"] == 1 then
+                        table.insert(无限放技能干员, 部署指令["name"])
+                    elseif 部署指令["skill_usage"] == 0 then
+                        table.removev(无限放技能干员, 部署指令["name"])
+                    end
+                    部署顺序 = 部署顺序 + 1
+                elseif 部署指令["type"] == "Output" then
+                    部署顺序 = 部署顺序 + 1
+                elseif 部署指令["type"] == "MoveCamera" then
+                    移动相机(部署指令["distance"])
+                    部署顺序 = 部署顺序 + 1
+                elseif 训练地图 == 0 then
+                    print("跳过指令")
+                    部署顺序 = 部署顺序 + 1
+                end
+                if 部署指令 and 部署指令["post_delay"] then
+                    sleep_and_do_strategy(部署指令["post_delay"])
+                elseif 部署指令 and 部署指令["rear_delay"] then
+                    sleep_and_do_strategy(部署指令["rear_delay"])
+                end
+            end
+        end
+        if 波数依赖顺序 <= 波数依赖命令数 then
+            wave依赖指令 = 波数依赖[波数依赖顺序]
+            wave依赖指令["kills"] = wave依赖指令["kills"] or 0
+            wave依赖指令["costs"] = wave依赖指令["costs"] or 0
+            local 行 = wave依赖指令["location"][1]
+            local 列 = wave依赖指令["location"][2]
+            if wave依赖指令["type"] == "SpeedUp" then
+                加速()
+                波数依赖顺序 = 波数依赖顺序 + 1
+            else
+                if wave >= wave依赖指令["kills"] and cost >= wave依赖指令["costs"] then
+                    -- If 操作时间戳1 <> 波数依赖顺序 Then
+                    --     操作前延时 = TickCount()
+                    --     操作时间戳1 = 波数依赖顺序
+                    -- End If
+
+
+                    if wave依赖指令["type"] == "Skill" or wave依赖指令["type"] == "skill" or wave依赖指令["type"] == "技能" then
+                        if wave依赖指令["location"] then
+                            wave依赖指令 = 释放坐标技能(wave依赖指令["location"])
+                        elseif 已部署干员[wave依赖指令["name"]] then
+                            wave依赖指令 = 释放坐标技能(已部署干员[wave依赖指令["name"]])
+                        else
+                            wave依赖指令 = 释放技能(wave依赖指令["name"])
+                        end
+                    elseif wave依赖指令["type"] == "Deploy" or wave依赖指令["type"] == "deploy" or wave依赖指令["type"] == "部署" then
+                        干员排位 = table.findk(干员列表, wave依赖指令["name"])
+                        print(wave依赖指令["name"], "干员排位", 干员排位)
+                        if 干员排位 > -1 then
+                            需要 = 费用列表(干员排位)
+                            print(需要)
+                            if cost >= 需要 then
+                                部署操作(干员排位, wave依赖指令)
+                                已部署干员[wave依赖指令["name"]] = wave依赖指令["location"]
+                                已部署格子[行][列]["name"] = wave依赖指令["name"]
+                                已部署格子[行][列]["times"] = 已部署格子[行][列]["times"] + 1
+                                下排干员数量 = 下排干员数量 - 1
+                                点战斗()
+                                波数依赖顺序 = 波数依赖顺序 + 1
+                            end
+                        elseif table.search(群组, wave依赖指令["name"]) == true then
+                            print(干员列表)
+                            for i, v in ipairs(群组[wave依赖指令["name"]]) do
+                                干员排位 = table.search(干员列表, v["name"])
+                                print(v["name"], "群组内干员排位", 干员排位)
+                                if 干员排位 > -1 then
+                                    需要 = 费用列表(干员排位)
+                                    部署操作(干员排位, wave依赖指令)
+                                    已部署干员[v["name"]] = wave依赖指令["location"]
+                                    已部署格子[行][列]["name"] = v["name"]
+                                    已部署格子[行][列]["times"] = 已部署格子[行][列]["times"] + 1
+                                    下排干员数量 = 下排干员数量 - 1
+                                    点战斗()
+                                    break
+                                end
+                            end
+                            波数依赖顺序 = 波数依赖顺序 + 1
+                        else
+                            波数依赖顺序 = 波数依赖顺序 + 1
+                        end
+                        wave依赖指令 = 波数依赖[波数依赖顺序]
+                    elseif wave依赖指令["type"] == "Retreat" or wave依赖指令["type"] == "retreat" or wave依赖指令["type"] == "撤退" then
+                        if not wave依赖指令["location"] then
+                            wave依赖指令["location"] = 已部署干员[wave依赖指令["name"]]
+                        end
+                        撤退干员(wave依赖指令["location"])
+                        点战斗()
+                        波数依赖顺序 = 波数依赖顺序 + 1
+                        wave依赖指令 = 波数依赖[波数依赖顺序]
+                    end
+                end
+            end
+        end
+        do_strategy()
+
+        差值 = 识别未部署干员数量()
+        print("差值", 差值)
+        if 差值 < 9 then
+            releaseCapture()
+            if findOne("保全调配干员") then
+                print("抽卡")
+                tap("保全抽卡")
+                sleep(300)
+                for i = 1, 9 - 差值 do
+                    if findOne("保全调配干员") then
+                        print("抽卡")
+                        tap("保全抽卡")
+                        sleep(300)
+                    end
+                end
+                sleep(1100)
             end
         end
 
@@ -1413,7 +1791,7 @@ end
     local 指令 = 部署[部署顺序]
     部署操作(干员排位, 指令)
     部署顺序 = 部署顺序 + 1
-    if 部署顺序 <= 部署命令数 then
+    if 部署顺序 <= #部署 then
         return 部署[部署顺序]
     end
 end
@@ -1492,7 +1870,7 @@ end
             if 干员名字 then
                 干员[1] = 干员名字
             end
-            if 干员数 >= 12 and (序号 == 4 or 序号 == 5) then
+            if 干员数 >= (12 - 是否保全图) and (序号 == 4 or 序号 == 5) then
                 -- 因为人太多点开之后会偏移漏掉,点回去
                 tap({ 干员[3], 干员[4] })
                 disappear(生命值蓝, 0.3)
@@ -1954,6 +2332,7 @@ end
         ["T"] = "山",
         ["任"] = "山",
         ["灰"] = "灰烬",
+        ["灰烟"] = "灰烬",
         ["委"] = "黍",
         ["默德克萨斯"] = "缄默德克萨斯",
         ["翎羽羽"] = "翎羽",

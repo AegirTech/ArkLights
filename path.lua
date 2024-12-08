@@ -10559,7 +10559,7 @@ path.保全 = function()
     -- 保全抄作业
     if copy_homework then
         log("抄作业", cur_fight)
-        if not homework[cur_fight] then return end
+        --if not homework[cur_fight] then return end
         if cur_fight == "BQPZ1" then
             if findOne("保全关卡1全部完成勾") then
                 log(731)
@@ -10567,17 +10567,18 @@ path.保全 = function()
             end
             tap("保全1进入")
         elseif cur_fight == "BQPZ2" then
-            if findOne("保全关卡2全部完成勾") then
+            --[[if findOne("保全关卡2全部完成勾") then
                 log(732)
                 return
-            end
+            end]]
             tap("保全2进入")
         else
             log("未知保全地图")
             return
         end
         if not appear("保全作战开始按钮", 3) then return end
-        保全抄作业()
+        --保全抄作业()
+        auto_sss(1, true, 1)
         return
     end
 
