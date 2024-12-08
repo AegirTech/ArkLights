@@ -2875,8 +2875,8 @@ parse_fight_config = function(fight_ui)
             if not isweekday() and sss_weekend_auto then
                 table.insert(expand_fight, 'BQPZ')
             end
-        elseif table.includes({ "保全", "保全派驻", "BQ", "BQPZ" }, v) then
-            table.insert(expand_fight, "BQPZ")
+        elseif table.includes({ "BQPZ", "BQPZ1", "BQPZ2" }, v) then
+            table.insert(expand_fight, v)
         elseif table.includes({ 'HD' }, v) then
             for i = hd_max_stage, hd_max_stage - 2, -1 do
                 if not table.contains(hd_exclude, { i }) then

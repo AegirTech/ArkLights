@@ -1004,19 +1004,19 @@ path.fallback = {
             if findAny({ "新年祝福返回", "面板" }) then return true end
         end, 10)
     end,
-    战备支援签到返回 = function()
-        wait(function()
-            tap("战备支援签到")
-            ssleep(.2)
-        end, 1)
-        wait(function()
-            tap("战备支援签到返回")
-            ssleep(.2)
-            tap("开包skip")
-            if not appear("面板") then tap("开包skip") end
-            if appear("面板", 1) then return true end
-        end, 5)
-    end,
+    -- 战备支援签到返回 = function()  --有误判
+    --     wait(function()
+    --         tap("战备支援签到")
+    --         ssleep(.2)
+    --     end, 1)
+    --     wait(function()
+    --         tap("战备支援签到返回")
+    --         ssleep(.2)
+    --         tap("开包skip")
+    --         if not appear("面板") then tap("开包skip") end
+    --         if appear("面板", 1) then return true end
+    --     end, 5)
+    -- end,
     端午签到返回 = function()
         wait(function()
             tap("端午签到左")
@@ -4170,14 +4170,14 @@ get_fight_type = function(x)
         return "插曲"
     elseif table.any({ "GT" }, f) then
         return "别传"
+    elseif table.any({ "BQPZ", "BQPZ1", "BQPZ2" }, f) then
+        return "保全"
     elseif table.any(table.values(jianpin2name), f) then
         return "剿灭"
     elseif f('HD') then
         return "活动"
     elseif f('BREAK') then
         return "BREAK"
-    elseif table.any({ "BQ", "BQPZ" }, f) then
-        return "保全"
     else
         return "主线"
     end
@@ -4290,6 +4290,15 @@ jianpin2name = {
     -- BYBFFC = "北原冰封废城",
     -- DQSLJW = "大骑士领郊外",
     -- FQKQ = "废弃矿区",
+    保全 = "BQPZ",
+    保全1 = "BQPZ1",
+    保全2 = "BQPZ2",
+    保全派驻 = "BQPZ",
+    保全派驻1 = "BQPZ1",
+    保全派驻2 = "BQPZ2",
+    BQ = "BQPZ",
+    BQ1 = "BQPZ1",
+    BQ2 = "BQPZ2",
 }
 extrajianpin2name = {
     SYC = "上一次",
@@ -10520,7 +10529,11 @@ path.保全 = function()
     end)
 
     -- 注意有噪点
+    -- 只做一次，防止循环等
+    clean_fight(cur_fight)
+
     if not appear("主页") then return end
+    if not appear("保全派驻进入黄") then return end
     if not wait(function()
             tap("保全派驻进入黄")
             if not findOne("主页") then return true end
@@ -10528,11 +10541,47 @@ path.保全 = function()
         return
     end
     log(699)
-    if not appear("保全派驻首页") then return end
-    -- if findOne("保全作战全部完成白条") then
-    --     return log("保全作战已经完成")
-    -- end
+
+    if not appear("保全派驻首页", 10) then
+        back()
+        if appear("保全离开确认", 3) then
+            tap("保全离开确认")
+        end
+        return
+    end
+
+    if findOne("保全作战全部完成白条") then
+        log(701)
+        return
+    end
     ssleep(1)
+
+    -- 保全抄作业
+    if copy_homework then
+        log("抄作业", cur_fight)
+        if not homework[cur_fight] then return end
+        if cur_fight == "BQPZ1" then
+            if findOne("保全关卡1全部完成勾") then
+                log(731)
+                return
+            end
+            tap("保全1进入")
+        elseif cur_fight == "BQPZ2" then
+            if findOne("保全关卡2全部完成勾") then
+                log(732)
+                return
+            end
+            tap("保全2进入")
+        else
+            log("未知保全地图")
+            return
+        end
+        if not appear("保全作战开始按钮", 3) then return end
+        保全抄作业()
+        return
+    end
+
+    -- 扫荡
     if findOne("保全关卡1全部完成勾") then
         tap("保全关卡1全部完成勾") -- 左上角的那个
     elseif findOne("保全关卡2全部完成勾") then
@@ -10553,7 +10602,10 @@ path.保全 = function()
     end
 
     -- 代理卡
-    if not appear("保全作战开始按钮", 3) then return end
+    if not appear("保全作战开始按钮", 3) then
+        back()
+        return
+    end
     if not wait(function()
             tap("保全prts按钮")
             ssleep(0.5)
@@ -10572,11 +10624,9 @@ path.保全 = function()
         end, 10) then
         back()
         log(711)
-        clean_fight(cur_fight)
         return
     else
         log(710)
-        clean_fight(cur_fight)
         return true
     end
 end
