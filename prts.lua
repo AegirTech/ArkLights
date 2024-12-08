@@ -1499,8 +1499,8 @@ end
                     if not findOne("子弹时间", 0.85) then
                         if 技能指定次数干员[k] then 技能指定次数干员[k][2] = 技能指定次数干员[k][2] + 1 end
                         点战斗()
-                        sleep(150)
-                        if skill_name ~= nil and table.includes(延迟消失技能, skill_name) then sleep(400) end
+                        sleep(550)
+                        --if skill_name ~= nil and table.includes(延迟消失技能, skill_name) then sleep(400) end
                     else
                         tap("点cost")
                         --sleep(50)
