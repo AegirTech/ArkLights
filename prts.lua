@@ -398,7 +398,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
     sleep(3000)
 end
 
-auto_sss = function(作业名, 需要编队, 是否自带)
+auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
     ------------------------init部分
     local 技能未就绪 = 0
     local homework = 作业名
@@ -447,54 +447,56 @@ auto_sss = function(作业名, 需要编队, 是否自带)
     log(作业["stage_name"])
 
     ------------------------init部分完毕
-
-    if not wait(function()
-            if findOne("开始保全作战", 0.9) then
-                tap("开始保全作战")
-                sleep(10)
-            end
-            if findOne("选择导能元件") then return true end
-        end, 5) then
-        log("进入保全失败")
-        return
-    end
-    local 导能元件 = tonumber(作业["buff"]) or 3 --默认用第三个元件
-    tap("导能元件列表" .. 导能元件)
-    if not appear("导能元件确认选择蓝", 2) then return false end
-    sleep(100)
-    tap("导能元件确认选择蓝")
-    if not appear("选择战术装备", 3) then return false end
-    sleep(100)
-    local 战术装备 = 作业["equipment"]
-    log(战术装备)
-    for i = 1, 8 do
-        if 战术装备[i] ~= "A" or not findOne("战术装备列表" .. i, 0.9) then
-            tap("战术装备列表" .. i)
-            sleep(50)
+    if not 是否续打 then
+        if not wait(function()
+                if findOne("开始保全作战", 0.9) then
+                    tap("开始保全作战")
+                    sleep(10)
+                end
+                if findOne("选择导能元件") then return true end
+            end, 5) then
+            log("进入保全失败")
+            return
         end
-    end
-    tap("导能元件确认选择蓝")
-    disappear("正在提交反馈至神经", network_timeout)
-    sleep(100)
-
-    if not appear("保全快捷编队", 3) then return false end
-    if 需要编队 == true then
-        if 保全自动编队(作业["opers"], 群组, 作业["tool_men"], 作业["blacklist"]) == false then return false end
-        releaseCapture()
-    end
-
-    if not appear("导能元件确认选择蓝", 3) then
-        log("选人出现错误,没有选满")
-        return false
-    else
+        local 导能元件 = tonumber(作业["buff"]) or 3 --默认用第三个元件
+        tap("导能元件列表" .. 导能元件)
+        if not appear("导能元件确认选择蓝", 2) then return false end
+        sleep(100)
         tap("导能元件确认选择蓝")
-        ssleep(4)
-    end
-    toast('等待2S 跳过教程')
-    wait(function()
-        tap("隐秘战线教程关闭")
-    end, 2)
+        if not appear("选择战术装备", 3) then return false end
+        sleep(100)
+        local 战术装备 = 作业["equipment"]
+        log(战术装备)
+        for i = 1, 8 do
+            if 战术装备[i] ~= "A" or not findOne("战术装备列表" .. i, 0.9) then
+                tap("战术装备列表" .. i)
+                sleep(50)
+            end
+        end
+        tap("导能元件确认选择蓝")
+        disappear("正在提交反馈至神经", network_timeout)
+        sleep(100)
 
+        if not appear("保全快捷编队", 3) then return false end
+        if 需要编队 == true then
+            if 保全自动编队(作业["opers"], 群组, 作业["tool_men"], 作业["blacklist"]) == false then return false end
+            releaseCapture()
+        end
+
+        if not appear("导能元件确认选择蓝", 3) then
+            log("选人出现错误,没有选满")
+            return false
+        else
+            tap("导能元件确认选择蓝")
+            ssleep(4)
+        end
+        toast('等待2S 跳过教程')
+        wait(function()
+            tap("隐秘战线教程关闭")
+        end, 2)
+    end
+
+    --------------------循环抄作业部分
     for i = 1, 6 do
         local 当前层数 = tonumber(utf8.right(ocro("保全层数范围"), 1) or 1)
         i = 当前层数
