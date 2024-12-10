@@ -4968,30 +4968,6 @@ path.活动 = function(x)
     local car_check = function()
         if car_checked then return end
         car_checked = true
-        fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
-        if not appear("用餐区域", 1) then return end
-
-        if not wait(function()
-                tap("用餐区域")
-                if disappear("用餐区域", 1) then return true end
-            end, 5) then
-            return
-        end
-
-        wait(function() tap({ screen.width // 2, screen.height * 3 // 4 }) end, 1)
-        wait(function() tap("用餐") end, 1)
-        if not wait(function()
-                if appear("活动导航0", 1) then return true end
-                back()
-                -- tap("返回")
-            end, 5) then
-            return
-        end
-    end
-
-    local car_check = function()
-        if car_checked then return end
-        car_checked = true
         car_check_times = car_check_times + 1
         if not appear("活动导航0", 1) then return end
 
