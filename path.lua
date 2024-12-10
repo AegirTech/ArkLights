@@ -2425,17 +2425,19 @@ path.总览换班 = function()
             return
         end
     end
-
+    local 总次数 = 0
 
     local first_look = false
     if disable_control_shift and disable_meeting_shift then first_look = true end
     local visitedy = {}
-    local f = function(times)
+    local f = function()
         -- 0.1 是 从干员列表退出后 取消连续点击 保证滑动手势有效
         -- 0.5 是 首次进入界面时 需要多点时间
+        if 总次数 > 5 then return end
         local timeout = (first_look and .5 or .25)
         local p
         log(800, p)
+        总次数 = 总次数 + 1
         first_look = false
         -- 至少做两次"入驻干员"检测，慢机只靠timeout不够可能，强制加一次
         if not appear("入驻干员", timeout) and findOne("基建总览非工作区") and
@@ -2501,7 +2503,7 @@ path.总览换班 = function()
             return x[7] == false
         end)
 
-        operator = table.slice(operator, 1, 需要选择干员数)
+        operator = table.slice(operator, 1, 需要选择干员数 + 1)
 
         log(819, operator)
 
@@ -2556,7 +2558,7 @@ path.总览换班 = function()
             tap(finx_x)
             disappear(bottom, 1)
             ssleep(.5)
-            while f(i) do log(475) end
+            while f() do log(475) end
         end
         if findOne("确认蓝") then
             back()
