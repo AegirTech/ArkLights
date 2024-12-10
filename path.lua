@@ -1783,73 +1783,6 @@ path.宿舍清空 = function()
     for i = 1, 4 do f(i) end
 end
 
-path.基建筛选 = function(tap_list) -- 需要点击筛选名称的列表 ["未进驻","产出设施"]
-    -- 进入筛选界面
-    local all_list = { "未进驻", "产出设施", "功能设施", "自定义设施", "控制中枢", "生产类后勤", "功能类后勤", "恢复类后勤" }
-    if not wait(function()
-            if findOne("筛选取消") then return true end
-            tap("筛选")
-        end, 5) then
-        return
-    end
-
-    if not appear({ "筛选未进驻选中", "筛选未进驻" }, 5) then
-        return
-    end
-
-    if not findOne("筛选未进驻选中") then
-        if not wait(function()
-                if findOne("筛选未进驻选中") then return true end
-                tap("筛选未进驻选中")
-                appear("筛选未进驻选中", .5)
-            end, 5) then
-            return
-        end
-    end
-
-    local 交集 = table.intersect(all_list, tap_list) -- 选中对象
-    local 补集 = table.subtract(all_list, tap_list) -- 不选中对象
-    for _, v in pairs(交集) do
-        -- tap("筛选" .. v)
-        -- tap ("筛选" .. v .. "选中")
-        if not findOne("筛选" .. v .. "选中") then
-            if not wait(function()
-                    if findOne("筛选" .. v .. "选中") then return true end
-                    tap("筛选" .. v)
-                    appear("筛选" .. v .. "选中", .5)
-                end, 5) then
-                return
-            end
-        end
-    end
-
-    for _, v in pairs(补集) do
-        if findOne("筛选" .. v .. "选中") then
-            if not wait(function()
-                    if not findOne("筛选" .. v .. "选中") then return true end
-                    tap("筛选" .. v .. "选中")
-                    appear("筛选" .. v, .5)
-                end, 5) then
-                return
-            end
-        end
-    end
-
-    if not wait(function()
-            if findOne("心情降序") then return true end
-            tap("心情")
-        end, 5) then
-        return
-    end
-
-    if not wait(function()
-            if not findOne("筛选确认") then return true end
-            tap("筛选确认")
-        end, 5) then
-        return
-    end
-end
-
 path.宿舍换班 = function()
     if disable_dorm_shift then return end
     local f
@@ -2013,79 +1946,6 @@ path.宿舍换班 = function()
         end
 
         log(842, #operator)
-        -- 把未进驻的非满心情干员放进去
-        if nil and #operator < 5 then
-            -- 进入筛选界面
-            if not wait(function()
-                    if findOne("筛选取消") then return true end
-                    tap("筛选")
-                end, 5) then
-                return
-            end
-
-            if not appear({ "筛选未进驻选中", "筛选未进驻" }, 5) then
-                return
-            end
-
-            if not findOne("筛选未进驻选中") then
-                if not wait(function()
-                        if findOne("筛选未进驻选中") then return true end
-                        tap("筛选未进驻选中")
-                        appear("筛选未进驻选中", .5)
-                    end, 5) then
-                    return
-                end
-            end
-
-            if not wait(function()
-                    if not findOne("筛选取消") then return true end
-                    tap("筛选确认")
-                end, 5) then
-                return
-            end
-
-            if not wait(function()
-                    if findOne("干员未选中") and findOne("第一干员未选中") then
-                        return true
-                    end
-                    tap("清空选择")
-                end, 5) then
-                return
-            end
-
-            -- 选择后续干员
-            operator = map(function(x) return "干员选择列表" .. x end,
-                range(1, 5))
-            ssleep(0.25)
-            tapAll(operator)
-
-            -- 进入筛选界面
-            if not wait(function()
-                    if findOne("筛选取消") then return true end
-                    tap("筛选")
-                end, 5) then
-                return
-            end
-
-            if not appear({ "筛选未进驻选中", "筛选未进驻" }, 5) then
-                return
-            end
-            if not findOne("筛选未进驻") then
-                if not wait(function()
-                        if findOne("筛选未进驻") then return true end
-                        tap("筛选未进驻")
-                        appear("筛选未进驻", 1)
-                    end, 5) then
-                    return
-                end
-            end
-            if not wait(function()
-                    if not findOne("筛选取消") then return true end
-                    tap("筛选确认")
-                end, 5) then
-                return
-            end
-        end
 
         确认干员选择()
     end
@@ -2385,38 +2245,6 @@ path.制造换班 = function(trading)
 
         log("使用默认筛选")
 
-        -- -- 筛选出无进驻技能排序
-        -- if not wait(function()
-        --   if findOne("筛选取消") then return true end
-        --   tap("筛选")
-        -- end, 5) then return end
-        --
-        -- if not appear({"筛选未进驻选中", "筛选未进驻"}) then return end
-        -- if not appear({"筛选技能降序", "筛选技能", "筛选技能升序"}) then
-        --   return
-        -- end
-        --
-        -- if not findOne("筛选未进驻选中") then
-        --   if not wait(function()
-        --     if findOne("筛选未进驻选中") then return true end
-        --     tap("筛选未进驻选中")
-        --     appear("筛选未进驻选中", 1)
-        --   end, 5) then return end
-        -- end
-        --
-        -- if prefer_skill and not findOne("筛选技能降序") then
-        --   if not wait(function()
-        --     if findOne("筛选技能降序") then return true end
-        --     tap("筛选技能降序")
-        --     appear("筛选技能降序", 1)
-        --   end, 5) then return end
-        -- end
-        --
-        -- if not wait(function()
-        --   if not findOne("筛选取消") then return true end
-        --   tap("筛选确认")
-        -- end, 5) then return end
-
         local start_time = time()
         if not wait(function()
                 if findOne("干员未选中") and findOne("第一干员未选中") then
@@ -2522,7 +2350,7 @@ end
 -- 5.5周年后ui大改,暂时舍弃工作区兜底换班
 path.总览换班 = function()
     if disable_overview_shift then return end
-    local f
+
     path.跳转("基建")
     if not wait(function()
             if findOne("基建总览工作区") then return true end
@@ -2536,33 +2364,10 @@ path.总览换班 = function()
         return
     end
 
-
     path.控制中枢换班()
     log(1034)
     path.会客厅换班()
 
-
-    local swipd = function()
-        local flipd = 150
-        local flips = 50
-        local duration = flipd + flips + 50
-        local x1 = screen.width - scale(1280 - 500)
-        local x2 = x1 + scale(100)
-        local x3 = screen.width - 1
-        local y1 = scale(150)
-        local y2 = screen.height - scale(300)
-        local paths = {
-            { point = { { x1, y1 }, { x3, y1 } }, duration = duration },
-            { point = { { x1, y2 }, { x2, y2 } }, duration = flipd,   start = flips },
-        }
-        -- sleep(100)
-        gesture(paths)
-        sleep(duration + 50)
-        -- 可能还是需要按下
-        tap("入驻干员右侧")
-        -- 不用的话，大分辨率还是有可能出现错过加号
-        sleep(100)
-    end
     if not wait(function()
             if findOne("基建总览非工作区") then return true end
             tap("基建总览非工作区")
@@ -2583,7 +2388,7 @@ path.总览换班 = function()
     local first_look = false
     if disable_control_shift and disable_meeting_shift then first_look = true end
     local visitedy = {}
-    f = function(times)
+    local f = function(times)
         -- 0.1 是 从干员列表退出后 取消连续点击 保证滑动手势有效
         -- 0.5 是 首次进入界面时 需要多点时间
         local timeout = (first_look and .5 or .25)
@@ -2626,7 +2431,6 @@ path.总览换班 = function()
         ssleep(.2)
         tap("基建技能排序")
         ssleep(.2)
-
 
         local operator
         -- 根据心情阈值选择
@@ -2700,21 +2504,6 @@ path.总览换班 = function()
     local all_s = { "宿舍未满员1", "宿舍未满员2", "宿舍未满员3", "宿舍未满员4" }
     排除已经进驻 = true
     for i = 1, 4 do
-        -- if i ~= 1 then
-        --     -- TODO wait bottom for stable
-        --     if not appear(bottom, 1) then
-        --         if not findOne('基建总览工作区') then
-        --             stop('总览换班滑动异常', 'cur')
-        --         end
-        --         reach_bottom = true
-        --     end
-        -- end
-        -- if i == 60 then stop('总览换班滑动', 'cur') end
-        -- visitedy = {}
-        -- while f(i) do log(475) end
-        -- if reach_bottom then break end
-        -- -- sample bottom after first detect
-        -- if not bottom then bottom = sample("进驻总览底部") end
         if i ~= 1 then
             if not appear(bottom, 1) then
                 if not findAny({ "基建总览工作区", "基建总览非工作区" }) then
@@ -2739,7 +2528,6 @@ path.总览换班 = function()
         log(1099, i)
     end
     排除已经进驻 = false
-    -- if not findOne("基建总览非工作区") then return end
 end
 
 path.基建换班 = function()
