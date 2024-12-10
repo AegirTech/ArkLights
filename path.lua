@@ -2345,6 +2345,88 @@ path.总览换班 = function()
         return
     end
 
+    if isCharExsit["迷迭香"] or isCharExsit["鸿雪"] then
+        -- 进入最后一间宿舍
+        if not wait(function()
+                if findOne("确认蓝") then return true end
+                if findOne("基建总览非工作区") then
+                    tap("总览非工作区第四排宿舍")
+                end
+            end, 10) then
+            return
+        end
+
+        if not findOne("确认蓝") then return true end
+        local limit = findOne("清空选择") and 5 or 1
+        tap("清空选择")
+        if not wait(function()
+                if findOne("干员未选中") and findOne("第一干员未选中") then
+                    return true
+                end
+                tap("清空选择")
+            end, 5) then
+            return
+        end
+
+        local stationType = "宿舍"
+
+        ssleep(.2)
+        tap("基建技能排序")
+        ssleep(.2)
+        chooseOperator(stationType)
+        ssleep(.2)
+        tap("基建工作状态排序")
+        ssleep(.2)
+        local start_time = time()
+        if not wait(function()
+                if findOne("干员未选中") and findOne("第一干员未选中") then
+                    return true
+                end
+                if time() - start_time > 1000 then
+                    tap("干员选择列表1")
+                    start_time = time()
+                end
+                tap("清空选择")
+            end, 5) then
+            log(1037)
+            return
+        end
+
+        log("limit", limit)
+
+        -- 排除异格干员
+        local operator = {}
+        discover(operator, {}, 1, true)
+        log("1905", operator)
+        operator = table.filter(operator, function(x) return x[3] >= 0 end)
+        operator = map(function(x) return x[4] end, operator)
+        operator = table.slice(operator, 1, limit)
+
+        if not wait(function()
+                if not findOne("干员未选中") then return true end
+
+                -- 不得不等，不然不按序
+                -- 不用等，因为加了异格检测需要时间？
+                ssleep(0.25)
+                tapAll(operator)
+                disappear("干员未选中", 2)
+            end, 5) then
+            return
+        end
+
+        if not wait(function(reset_wait_start_time)
+                if findAny({ "基建总览非工作区", "基建总览干员休整" }) then return true end
+                tap("确认蓝")
+                ssleep(.5) --点太快点到休整就白换了
+                if findOne("正在提交反馈至神经") then
+                    reset_wait_start_time()
+                end
+            end, 3) then
+            return
+        end
+    end
+
+
     local first_look = false
     if disable_control_shift and disable_meeting_shift then first_look = true end
     local visitedy = {}
