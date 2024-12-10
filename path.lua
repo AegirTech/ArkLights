@@ -2225,26 +2225,6 @@ path.制造换班 = function(trading)
             end
         end
 
-        -- TODO 下面这段稳定吗
-        -- if not wait(function()
-        --   if findOne("筛选") then return true end
-        --   if findOne("进驻信息选中") then
-        --     wait(function()
-        --       if findOne("筛选") then return true end
-        --       tap("进驻第一人")
-        --     end, 1)
-        --   elseif findOne("进驻信息") then
-        --     tap("进驻信息")
-        --     ssleep(.2)
-        --     wait(function()
-        --       if findOne("筛选") then return true end
-        --       tap("进驻第一人")
-        --     end, 1)
-        --   end
-        -- end, 5) then return end
-
-        log("使用默认筛选")
-
         local start_time = time()
         if not wait(function()
                 if findOne("干员未选中") and findOne("第一干员未选中") then
@@ -2498,10 +2478,6 @@ path.总览换班 = function()
         return true
     end
     local bottom
-    local reach_bottom = false
-
-
-    local all_s = { "宿舍未满员1", "宿舍未满员2", "宿舍未满员3", "宿舍未满员4" }
     排除已经进驻 = true
     for i = 1, 4 do
         if i ~= 1 then
@@ -2509,12 +2485,11 @@ path.总览换班 = function()
                 if not findAny({ "基建总览工作区", "基建总览非工作区" }) then
                     stop('总览换班滑动异常', 'cur')
                 end
-                reach_bottom = true
             end
         end
         visitedy = {}
         bottom = sample("进驻总览底部")
-        local finx_x = findAny(all_s)
+        local finx_x = findAny({ "宿舍未满员1", "宿舍未满员2", "宿舍未满员3", "宿舍未满员4" })
         if finx_x then
             tap(finx_x)
             disappear(bottom, 1)

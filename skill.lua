@@ -267,20 +267,9 @@ discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only
     log(114, card)
     local empty1_num = 0
     for idx, v in pairs(card) do
-        -- 技能判断
-        local icon1 = {
-            v[1] + scale(7), v[2] + scale(18), v[1] + scale(60), v[2] + scale(70),
-        }
-        local name = "干员名未识别"
-
-        local png = ''
-        local png2 = ''
-
         -- 心情判断
         local mood = 0
-        -- log(v[1])
         local mood1 = { v[1] + scale(49), v[2] + scale(93) }
-        -- log(mood1)
         for i = 24, 1, -1 do
             local moodi = { mood1[1] + scale((i - 1) * 5.3478), mood1[2] }
             if cmpColor(moodi[1], moodi[2], 'FFFFFF', 0.4) == 1 then
@@ -288,9 +277,9 @@ discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only
                 break
             end
         end
-        log(129, idx, operator, mood, name, v[3])
+        log(129, idx, operator, mood, v[3])
 
-        table.insert(operators, { png, png2, mood, icon1, pageid, name, v[3] })
+        table.insert(operators, { '', '', mood, '' pageid, '', v[3] })
     end
     log(217, operators)
 end)
