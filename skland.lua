@@ -11,10 +11,19 @@ API = "https://zonai.skland.com/api/v1"
 Skland_app_code = '4ca99fa6b56cc2ba'
 Skland_sign_token = "" -- 新版森空岛签名使用
 cred = ""
+s_did = "Bhi+n3V0eVXaBxsh5G7oeZ9CV6kaTu/deEmazBCN063BVnFjZogK5bptnvNpc6rhBiQ8UN+5Va6+wARWMovetog=="
 
 Headers = {
-    ["User-Agent"] = 'Skland/1.0.1 (com.hypergryph.skland; build:100001047; Android 33; ) Okhttp/4.11.0',
-    ["Content-Type"] = "application/json"
+    ["User-Agent"]   =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+    ["Content-Type"] = "application/json",
+    ["cred"]         = cred,
+    ["platform"]     = '3',
+    ["timestamp"]    = '',
+    ["dId"]          = s_did,
+    ["vName"]        = '1.0.0',
+    ["origin"]       = 'https://www.skland.com',
+    ["referer"]      = 'https://www.skland.com',
 }
 
 skland = {}
@@ -63,7 +72,7 @@ end
 skland_get_cred_by_token = function(code)
     log("[3]获取cred开始")
     if code == 0 then return 0 end
-    local url = API .. "/user/auth/generate_cred_by_code"
+    local url = "https://zonai.skland.com/web/v1/user/auth/generate_cred_by_code"
     local data = {
         kind = 1,
         code = code
@@ -85,25 +94,27 @@ end
 --生成签名sign值，并直接设置Headers
 skland.sign = function(url, data)
     skland.get_refresh_token()
-    local data = data or ""
-    local sha = require("sha2")
-    local hmac = sha.hmac
+    local data           = data or ""
+    local sha            = require("sha2")
+    local hmac           = sha.hmac
     -- local curtime = os.time() 部分设备时间不对
-    local curtime = get_timestamp_oneline(1)
-    local headers = {
-        ["platform"] = 'Android',
+    local curtime        = tonumber(get_timestamp_oneline(1)) - 2
+    curtime              = tostring(curtime)
+    local headers        = {
+        ["platform"] = '3',
         ["timestamp"] = '',
-        ["dId"] = '0f1c0e9ea95e832d',
-        ["vName"] = '1.1.0'
+        ["dId"] = s_did,
+        ["vName"] = '1.0.0'
     }
     headers["timestamp"] = curtime
-    -- log(JsonEncode(headers))
-    local temp = '{"platform":"Android","timestamp":"%s","dId":"0f1c0e9ea95e832d","vName":"1.1.0"}'
-    temp = string.format(temp, curtime)
-    local data = "/api/v1" .. url .. data .. curtime .. temp
-    local ret = hmac(sha.sha256, Skland_sign_token, data)
-    ret = MD5(ret)
+    log(JsonEncode(headers))
+    local temp      = '{"platform":"3","timestamp":"%s","dId":"' .. s_did .. '","vName":"1.0.0"}'
+    temp            = string.format(temp, curtime)
+    local data      = "/api/v1" .. url .. data .. curtime .. temp
+    local ret       = hmac(sha.sha256, Skland_sign_token, data)
+    ret             = MD5(ret)
     headers["sign"] = ret
+    log("sign", ret)
     for k, v in pairs(headers) do
         Headers[k] = v
     end
@@ -272,7 +283,10 @@ skland_daily_checkin = function(account, password)
         return true
     end
     skland_init(account, password)
-    local list = skland.get_bind_info()
+    local list = get(account_data, str(account), "binding")
+    if list == nil then
+        list = skland.get_bind_info()
+    end
     if list == nil then
         log("森空岛签到失败")
         table.insert(qqmessage, "森空岛签到失败,获取绑定id失败")
@@ -293,6 +307,7 @@ skland_daily_checkin = function(account, password)
             table.insert(qqmessage, "森空岛签到未知错误，请联系开发者")
         end
     end
+    account_data[account]["binding"] = list
     account_data[account]["lastcheckintime"] = curtime
     save_local_config()
     return true
