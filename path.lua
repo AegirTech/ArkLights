@@ -2503,7 +2503,7 @@ path.总览换班 = function()
             return x[7] == false
         end)
 
-        operator = table.slice(operator, 1, 需要选择干员数 + 1)
+        operator = table.slice(operator, 1, 需要选择干员数)
 
         log(819, operator)
 

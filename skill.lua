@@ -267,6 +267,9 @@ discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only
     log(114, card)
     local empty1_num = 0
     for idx, v in pairs(card) do
+        local icon1 = {
+            v[1] + scale(7), v[2] + scale(18), v[1] + scale(60), v[2] + scale(70),
+        }
         -- 心情判断
         local mood = 0
         local mood1 = { v[1] + scale(49), v[2] + scale(93) }
@@ -279,7 +282,7 @@ discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only
         end
         log(129, idx, operator, mood, v[3])
 
-        table.insert(operators, { '', '', mood, '', pageid, '', v[3] })
+        table.insert(operators, { '', '', mood, icon1, pageid, '', v[3] })
     end
     log(217, operators)
 end)
