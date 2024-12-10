@@ -279,7 +279,7 @@ discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only
         end
         log(129, idx, operator, mood, v[3])
 
-        table.insert(operators, { '', '', mood, '' pageid, '', v[3] })
+        table.insert(operators, { '', '', mood, '', pageid, '', v[3] })
     end
     log(217, operators)
 end)

@@ -244,56 +244,9 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
             skip_account = true
         end
         log(job)
-        if multi_account_only_login then
-            job = { "游戏监控" }
-            if #username > 0 and #password > 0 and 快速切号功能状态 ~= true then
-                table.insert(job, 1, "退出账号")
-            end
-            run(job)
-        else
-            if not skip_account then run(job) end
-        end
+        if not skip_account then run(job) end
     end
     saveConfig("continue_account", '')
-elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi) and
-    multi_account_enable and multi_account_only_login then
-    -- 仅上号模式
-    log("仅上号模式")
-
-    auto_login_init()
-
-    showUI("auto_login")
-
-    while true do
-        username = account_map[login_account_idx].username
-        password = account_map[login_account_idx].password
-        server = account_map[login_account_idx].server
-        account_idx = account_map[login_account_idx].idx
-        apply_multi_account_setting(account_idx)
-        update_state_from_ui()
-        log(account_idx, username, password, server)
-        if multi_account_end_closeotherapp then
-            closeapp(appid == oppid and bppid or oppid)
-        end
-
-        if multi_account_end_closeapp then closeapp(appid) end
-
-        -- 无密码切号方案
-        switch_account()
-
-        job = { "游戏监控" }
-
-        if not 快速切号功能状态 then
-            table.insert(job, 1, "退出账号")
-        end
-        run(job)
-        log("监控到游戏已经退出")
-        -- if auto_login_add then
-        --     login_account_idx = login_account_idx + 1
-        -- end
-        saveConfig("hideUIOnce", "false")
-        showUI("auto_login")
-    end
 elseif not crontab_enable_only then
     -- 单帐号模式
     log("单帐号模式")

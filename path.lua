@@ -967,23 +967,6 @@ path.fallback = {
             if appear("面板", 1) then return true end
         end, 5)
     end,
-    九色鹿签到返回 = function()
-        wait(function()
-            tap("九色鹿签到")
-            ssleep(.2)
-        end, 1)
-        wait(function()
-            tap("九色鹿签到返回")
-            ssleep(.2)
-            -- tap("开包skip")
-            if not appear("面板") then tap("开包skip") end
-            if appear("面板", 1) then
-                return true
-            else
-                tap("开包skip")
-            end
-        end, 5)
-    end,
     新年祝福返回 = function()
         wait(function()
             --tap("新年祝福签到")
@@ -1585,9 +1568,6 @@ start_time = parse_time("202101010400")
 -- 对于单个用户的不同任务
 update_state = function()
     car_checked = false
-    car_check_idx = 1
-    car_check_fight_idx = -1
-    car_check_list = table.shuffle(range(1, 4))
 
     -- 禁用重复刷模式
     repeat_fight_mode = false
@@ -5208,7 +5188,7 @@ path.活动 = function(x)
         ssleep(1)
     end
 
-    -- car_check1() --有些大型活动会自带一些任务
+    -- car_check() --有些大型活动会自带一些任务
     -- path.烟花委员会()
     log("skip_guide", skip_guide)
     if not skip_guide then
@@ -8374,22 +8354,6 @@ path.自动培养 = function()
     raise.auto_raise()
 end
 
-path.游戏监控 = function()
-    path.跳转("首页")
-    hideControlBar()
-    while true do
-        if not nodeLib.findOne(0, 0, 0, 0, { package = server == 0 and oppid or bppid }, false) then
-            break
-        end
-        ssleep(1)
-    end
-    if not 快速切号功能状态 then
-        path.账户数据保存()
-    end
-    setControlBar()
-    return true
-end
-
 path.宝石铭刻活动 = function()
     第九关打完了 = false
     forever(path.宝石铭刻寻找课程)
@@ -9161,45 +9125,6 @@ end
 
 path.专注失调 = function()
     auto_skill()
-end
-
-path.森空岛小活动 = function(xtime)
-    xtime = xtime or 0
-    appid = "com.hypergryph.skland"
-    disable_game_up_check = true
-    appear("游戏进行判断", 15)
-    local all_p = {}
-    wait(function()
-        if find_color("游戏范围判断", point["游戏上部分红"], 1, 0.9) then
-            return true
-        end
-        ssleep(0.2)
-    end, 10)
-    ssleep(1.5)
-    local count_p = function(col, xp1)
-        for i = 1, 5 do
-            for j = 1, 5 do
-                local tx, ty = xp1.x + (j - 1) * scale(67), xp1.y + (i - 1) * scale(67)
-                if cmpColor(tx, ty, col, 0.9) == 1 then
-                    table.insert(all_p, tostring(i) .. tostring(j))
-                end
-            end
-        end
-    end
-    count_p(point["游戏上部分红"], { x = scale(263), y = scale(339) })
-    count_p(point["游戏下部分蓝"], { x = scale(256), y = scale(764) })
-    all_p = table.remove_duplicate(all_p)
-    log("数量", all_p)
-    local 总数 = tostring(#all_p)
-    for char in 总数:gmatch(".") do
-        tap("选择" .. char)
-    end
-    appear("游戏结算画面", 20)
-    disappear("游戏结算画面", 20)
-    xtime = xtime + 1
-    toast("森空岛小活动" .. xtime .. "分")
-    appear("游戏进行判断", 20)
-    path.森空岛小活动(xtime)
 end
 
 -- 原先的table.equal不知道为什么有误，重写的

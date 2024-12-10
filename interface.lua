@@ -41,7 +41,7 @@ end
 -- 将UI内容转为全局变量
 loadUIConfig = function(layouts)
     if not layouts then
-        layouts = { "multi_account", "gesture_capture", "extra", "debug", "main", "auto", "auto_login", "sss_fight" }
+        layouts = { "multi_account", "gesture_capture", "extra", "debug", "main", "auto", "sss_fight" }
     end
     for _, layout in pairs(layouts) do
         assignGlobalVariable(loadOneUIConfig(layout))
@@ -141,12 +141,11 @@ show_multi_account_ui = function()
         nil)
 
     local cmd = {
-        "auto_login_init()", "ui.saveProfile('" .. getUIConfigPath("multi_account") .. "')",
-        "ui.dismiss('multi_account');", "show_auto_login_ui()", "sync_ui_config('multi_account')",
+        "ui.saveProfile('" .. getUIConfigPath("multi_account") .. "')",
+        "ui.dismiss('multi_account');", "sync_ui_config('multi_account')",
     }
     ui_cmd = table.join(cmd, ';')
 
-    addButton(layout, nil, "切号助手", ui_cmd, nil, nil)
 
     -- addButton(layout, nil, "启动", make_jump_ui_command(layout, nil,
     --                                                       "crontab_enable=false;lock:remove(main_ui_lock)"),
@@ -1521,108 +1520,6 @@ show_sss_fight_ui = function()
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
-end
-
-auto_login_init = function()
-    loadUIConfig()
-    account_map = {}
-    for i = 1, multi_account_num do
-        username = (_G["username" .. i] or ''):map({
-            ["＃"] = "#",
-            ["\n"] = "",
-            [" "] = "",
-            ["　"] = "",
-        })
-        password = (_G["password" .. i] or ''):map({
-            ["\n"] = "",
-            [" "] = "",
-            ["　"] = "",
-        })
-        server = _G["server" .. i] or 0
-
-        if username:find("#") then
-            usernote = username:sub(username:find('#') + 1, #username):trim()
-            username = username:sub(1, username:find('#') - 1):trim()
-        end
-
-        if #username > 0 and #password > 0 then
-            username = username:trim()
-            password = password:trim()
-            table.insert(account_map,
-                { username = username, password = password, server = server, idx = i, usernote = usernote })
-        end
-    end
-    log(account_map)
-    login_account_idx = 1
-end
-
-auto_login_account_action = function(pre)
-    if pre then
-        if login_account_idx == 1 then
-            login_account_idx = multi_account_num
-        else
-            login_account_idx = login_account_idx - 1
-        end
-    else
-        if login_account_idx == multi_account_num then
-            login_account_idx = 1
-        else
-            login_account_idx = login_account_idx + 1
-        end
-    end
-
-    if account_map[login_account_idx] == nil then
-        -- ui.setTextView("auto_login_number", tostring(login_account_idx))
-        ui.setSpinner("auto_login_account_spinner", auto_login_account_choice, login_account_idx - 1)
-        ui.setTextView("auto_login_account_server", "此序号账户为空")
-        return
-    end
-    -- ui.setTextView("auto_login_number", tostring(login_account_idx))
-    ui.setSpinner("auto_login_account_spinner", auto_login_account_choice, login_account_idx - 1)
-    local server_text = account_map[login_account_idx].server == 0 and "官服" or "B服"
-    local cur_username = account_map[login_account_idx].username
-    local cur_usernote = account_map[login_account_idx].usernote or ""
-    ui.setTextView("auto_login_account_server", server_text .. " 账号：" .. cur_username .. " 备注：" .. cur_usernote)
-end
-
-show_auto_login_ui = function()
-    local layout = "auto_login"
-    ui.newLayout(layout, ui_page_width, -2)
-    ui.setTitleText(layout, "切号小助手")
-
-    newRow(layout)
-    addButton(layout, nil, "上一个", "auto_login_account_action(true)")
-    -- addTextView(layout, tostring(login_account_idx), "auto_login_number")
-    auto_login_account_choice = map(function(x)
-        return "账号" .. tostring(x):padStart(2, '0')
-    end, range(1, multi_account_num))
-    ui.addSpinner(layout, "auto_login_account_spinner", auto_login_account_choice, 0)
-    addButton(layout, nil, "下一个", "auto_login_account_action(false)")
-
-    newRow(layout)
-    local server_text = account_map[login_account_idx].server == 0 and "官服" or "B服"
-    local cur_username = account_map[login_account_idx].username
-    local cur_usernote = account_map[login_account_idx].usernote or ""
-    addTextView(layout, server_text .. " 账号：" .. cur_username .. " 备注：" .. cur_usernote, "auto_login_account_server")
-
-    newRow(layout)
-    -- ui.addCheckBox(layout, "auto_login_add", "序号自动加一", false)
-    -- ui.addCheckBox(layout, "auto_login_auto_next", "不弹出此窗口自动切号", false)
-    ui.addTextView(layout, id or randomString(32), "点击确认登录账号 返回桌面重新打开助手")
-
-    newRow(layout)
-    addButton(layout, nil, "返回",
-        make_jump_ui_command(layout, loadConfig("last_layout", "multi_account")),
-        nil, nil)
-    addButton(layout, nil, "确认", make_jump_ui_command(layout, nil, "lock:remove(main_ui_lock)"), nil, nil)
-    addButton(layout, nil, "退出", make_jump_ui_command(layout, nil, "saveConfig('Not_Restart','true');peaceExit()"), nil,
-        nil)
-    ui.loadProfile(getUIConfigPath(layout))
-    ui.show(layout, false)
-
-    -- ui.setTextView("auto_login_number", tostring(login_account_idx))
-    ui.setTextView("auto_login_account_server", server_text .. " 账号：" .. cur_username .. " 备注：" .. cur_usernote)
-    ui.setSpinner("auto_login_account_spinner", auto_login_account_choice, login_account_idx - 1)
 end
 
 jump_readme = function()
