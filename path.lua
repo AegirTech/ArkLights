@@ -4965,48 +4965,6 @@ path.活动 = function(x)
         end
     end
 
-    -- 理想城：长夏狂欢季
-    local car_check = function()
-        if car_checked then return end
-        car_checked = true
-        fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
-
-        if not wait(function()
-                if findOne("自走车友会有") then return true end
-                tap("后院工坊")
-            end, 5) then
-            return
-        end
-        if not wait(function()
-                if findOne("车友交流") then return true end
-                tap("自走车友会")
-            end, 2) then
-            return
-        end
-
-        if not wait(function(reset_wait_start_time)
-                if not findOne("车友交流") then return true end
-                if findOne('正在提交反馈至神经') then
-                    reset_wait_start_time()
-                end
-                tap("车友交流")
-                disappear("车友交流")
-            end, 5) then
-            return
-        end
-
-        if not wait(function(reset_wait_start_time)
-                if not disappear("车友交流") then return true end
-                if findOne('正在提交反馈至神经') then
-                    reset_wait_start_time()
-                end
-                tap("车友交流" .. 1 + math.round(math.random()))
-            end, 5) then
-            return
-        end
-        return true
-    end
-
     local car_check = function()
         if car_checked then return end
         car_checked = true
