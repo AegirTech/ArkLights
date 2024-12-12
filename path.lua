@@ -872,6 +872,20 @@ path.fallback = {
         return path.fallback.签到返回()
     end,
     活动签到返回 = function()
+        if findOne("电影签到返回") then
+            appear("电影签到观看")
+            tap("电影签到观看")
+            if not wait(function()
+                    if findOne("电影签到观看") then return true end
+                    if findOne("跳过剧情") then path.跳过剧情() end
+                end, 6) then
+                return
+            end
+            if findOne("电影签到观看") then
+                back()
+            end
+            return path.fallback.签到返回()
+        end
         ssleep(0.5) -- 等待签到界面加载
         for u = screen.width // 2 + scale(730 - 1920 // 2), screen.width // 2 + scale(1730 - 1920 // 2), scale(100) do
             tap({ u, scale(560) })
