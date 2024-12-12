@@ -873,15 +873,14 @@ path.fallback = {
     end,
     活动签到返回 = function()
         if findOne("电影签到返回") then
-            appear("电影签到观看")
             tap("电影签到观看")
             if not wait(function()
-                    if findOne("电影签到观看") then return true end
+                    if findOne("电影签到返回") then return true end
                     if findOne("跳过剧情") then path.跳过剧情() end
                 end, 6) then
                 return
             end
-            if findOne("电影签到观看") then
+            if findOne("电影签到返回") then
                 back()
             end
             return path.fallback.签到返回()
