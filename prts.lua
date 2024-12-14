@@ -538,7 +538,7 @@ auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
                 return
             end
         end
-        if findOne("开始行动保全") then
+        if appear("开始行动保全") then
             tap("开始行动保全")
             是否保全图 = 1
             local 换牌数 = 0
