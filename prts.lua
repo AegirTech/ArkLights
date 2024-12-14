@@ -40,13 +40,14 @@ end
 --- 加载作业
 --- @param levelName string 关卡名字
 --- @param isLocal boolean 是否自带
-loadHomework = function(levelName, isLocal)
+loadHomework = function(levelName, isLocal, 不点赞)
     local levelName = levelName or ''
     if isLocal then --自带的作业,比如肉鸽的
         return JsonDecode(readFile(levelName .. ".json"))
     else
         local maaCode = levelName or ''
         print("读取MAA作业站作业", maaCode, "并自动点赞")
+
         local url = 'https://prts.maa.plus/copilot/get/' .. maaCode
         ::重试::
         local ret, code = httpGet(url)
@@ -59,10 +60,12 @@ loadHomework = function(levelName, isLocal)
         end
         local x = get(data, 'data', 'content')
         local levelInfo = JsonDecode(x)
-        local ret, code = httpPost('https://prts.maa.plus/copilot/rating',
-            JsonEncode({ rating = "Like", id = tonumber(maaCode), }), 30,
-            "Content-Type: application/json")
-        log(maaCode, ret)
+        if not 不点赞 then
+            local ret, code = httpPost('https://prts.maa.plus/copilot/rating',
+                JsonEncode({ rating = "Like", id = tonumber(maaCode), }), 30,
+                "Content-Type: application/json")
+            log(maaCode, ret)
+        end
         return levelInfo
     end
 end
@@ -402,7 +405,7 @@ auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
     ------------------------init部分
     local 技能未就绪 = 0
     local homework = 作业名
-    print("prts作战开始", homework)
+    log("prts保全派驻开始", homework)
     local 干员名单 = ""
     --local 职业 = { "先锋", "近卫", "重装", "医疗", "术师", "狙击", "特种", "辅助", "召唤物", "all" }
     群组 = {}
@@ -410,7 +413,7 @@ auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
     队员技能 = {}
     无限放技能干员 = {}
     技能指定次数干员 = {}
-    作业 = loadHomework(作业名, 是否自带)
+    作业 = loadHomework(作业名, 是否自带, true)
     print(作业)
     print("读取作业成功")
     --构建技能相关数据

@@ -9972,16 +9972,29 @@ path.保全 = function()
     -- 注意有噪点
     -- 只做一次，防止循环等
     clean_fight(cur_fight)
-
+    local 继续打
     if not appear("主页") then return end
-    if not appear("保全派驻进入黄") then return end
+    if not appear("保全派驻进入黄") then
+        if copy_homework then
+            继续打 = true
+        else
+            return
+        end
+    end
     if not wait(function()
             tap("保全派驻进入黄")
             if not findOne("主页") then return true end
         end, 5) then
         return
     end
-    log(699)
+    log(699, cur_fight)
+    if 继续打 then
+        ssleep(4)
+        appear("开始行动保全")
+        auto_sss(homework[cur_fight], true, nil, 继续打)
+        return
+    end
+
 
     if not appear("保全派驻首页", 10) then
         back()
@@ -9999,7 +10012,7 @@ path.保全 = function()
 
     -- 保全抄作业
     if copy_homework then
-        log("抄作业", cur_fight)
+        log("抄作业", cur_fight, homework[cur_fight])
         --if not homework[cur_fight] then return end
         if cur_fight == "BQPZ1" then
             if findOne("保全关卡1全部完成勾") then
@@ -10019,7 +10032,7 @@ path.保全 = function()
         end
         if not appear("保全作战开始按钮", 3) then return end
         --保全抄作业()
-        auto_sss(1, true, 1)
+        auto_sss(homework[cur_fight], true)
         return
     end
 
