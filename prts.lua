@@ -538,8 +538,16 @@ auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
                 return
             end
         end
-        if appear("开始行动保全") then
-            tap("开始行动保全")
+        ssleep(.3)
+        if appear("开始行动保全", 15) then
+            if not wait(function()
+                    tap("开始行动保全")
+                    ssleep(.3)
+                    if disappear("开始行动保全") then return true end
+                end, 15) then
+                log("进入保全失败")
+                return
+            end
             是否保全图 = 1
             local 换牌数 = 0
             while true do
