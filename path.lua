@@ -5528,7 +5528,7 @@ path.商店搬空 = function()
             商品购买黑名单 = shop_buy_black:filterSplit()
         end
         log("商品黑名单", 商品购买黑名单)
-
+        local sd_retry = 0
         local 商店滑动前采样
         for x = 0, 购买方阵 do -- 3*3商品进行购买
             for y = 0, 购买方阵 do
@@ -5541,6 +5541,10 @@ path.商店搬空 = function()
                 local 商店采样判断, 商店购买前采样, 商品名称
                 log(col_data)
                 ::startshop::
+                if sd_retry > 10 then
+                    log("商店重试次数过多")
+                    return
+                end
                 回到商店主页()
                 if not findOne("商店主页") then return end -- 防止跳到其他页面
 
@@ -5568,6 +5572,7 @@ path.商店搬空 = function()
                         ssleep(.5)
                     end, 10) then
                     log("未能进入购买页面")
+                    sd_retry = sd_retry + 1
                     goto startshop
                 end
                 ssleep(.5)
@@ -5593,6 +5598,7 @@ path.商店搬空 = function()
                 end, 2)
                 if not tap_x then
                     log("未找到购买按钮")
+                    sd_retry = sd_retry + 1
                     goto continue
                 end
                 log("tapx", tap_x)
