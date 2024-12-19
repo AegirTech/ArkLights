@@ -1,4 +1,4 @@
-:: ¿ÉÄÜĞèÒªÊÖ¶¯´¦ÀíÒ»ÏÂ±àÂëÎÊÌâ£¬´Ë½Å±¾±àÂëutf-8¿ÉÄÜÔËĞĞ²»ÁË
+:: å¯èƒ½éœ€è¦æ‰‹åŠ¨å¤„ç†ä¸€ä¸‹ç¼–ç é—®é¢˜ï¼Œæ­¤è„šæœ¬ç¼–ç utf-8å¯èƒ½è¿è¡Œä¸äº†
 @echo off
 setlocal enabledelayedexpansion
 
@@ -11,29 +11,29 @@ for %%d in (%directories%) do (
     )
 )
 
-echo Î´ÕÒµ½ Python ¿ÉÖ´ĞĞÎÄ¼ş¡£
+echo æœªæ‰¾åˆ° Python å¯æ‰§è¡Œæ–‡ä»¶ã€‚
 exit /b
 
 :found
-echo ÕÒµ½ Python ¿ÉÖ´ĞĞÎÄ¼ş: %py_path%
+echo æ‰¾åˆ° Python å¯æ‰§è¡Œæ–‡ä»¶: %py_path%
 
-echo ÇëÑ¡ÔñÒ»¸öÑ¡Ïî:
-echo 1) ¹Ø¿¨distance¼ÆËã
-echo 2) »ù½¨¼¼ÄÜÊı¾İ×ª»»
-echo 3) »ù½¨Í¼±ê×ª»»(Í¸Ã÷±³¾°£©
-echo 4) ¹«ÕĞ×éºÏÌáÈ¡
-echo 5) ¸ÉÔ±Êı¾İÌáÈ¡(³­×÷Òµ£©
-echo 6) µØÍ¼Êı¾İ(³­×÷Òµ£©
+echo è¯·é€‰æ‹©ä¸€ä¸ªé€‰é¡¹:
+echo 1) å…³å¡distanceè®¡ç®—
+echo 2) åŸºå»ºæŠ€èƒ½æ•°æ®è½¬æ¢
+echo 3) åŸºå»ºå›¾æ ‡è½¬æ¢(é€æ˜èƒŒæ™¯ï¼‰
+echo 4) å…¬æ‹›ç»„åˆæå–
+echo 5) å¹²å‘˜æ•°æ®æå–(æŠ„ä½œä¸šï¼‰
+echo 6) åœ°å›¾æ•°æ®(æŠ„ä½œä¸šï¼‰
 
-set /p choice=ÇëÊäÈëÄãµÄÑ¡Ôñ: 
+set /p choice=è¯·è¾“å…¥ä½ çš„é€‰æ‹©: 
 
 if "%choice%"=="1" (
     "%py_path%" extract.py screencap_distance
 ) else if "%choice%"=="2" (
     "%py_path%" extract.py skillicon2operator
 ) else if "%choice%"=="3" (
-    echo ÇëÊäÈëÍ¼±êÎÄ¼ş¼ĞÂ·¾¶:
-    set /p user_path=Â·¾¶: 
+    echo è¯·è¾“å…¥å›¾æ ‡æ–‡ä»¶å¤¹è·¯å¾„:
+    set /p user_path=è·¯å¾„: 
 	set "parent_path=!user_path!"
 	if "!parent_path:~-1!"=="\" set "parent_path=!parent_path:~0,-1!"
 	for %%i in ("!parent_path!") do set "parent_path=%%~dpi"
@@ -47,7 +47,7 @@ if "%choice%"=="1" (
 ) else if "%choice%"=="6" (
     "%py_path%" res\maps\maps.py
 ) else (
-    echo ÎŞĞ§µÄÑ¡Ôñ£¬ÇëÖØĞÂÔËĞĞ½Å±¾²¢Ñ¡ÔñÓĞĞ§Ñ¡Ïî¡£
+    echo æ— æ•ˆçš„é€‰æ‹©ï¼Œè¯·é‡æ–°è¿è¡Œè„šæœ¬å¹¶é€‰æ‹©æœ‰æ•ˆé€‰é¡¹ã€‚
 )
 
 pause
