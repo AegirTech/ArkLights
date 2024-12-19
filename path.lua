@@ -5356,6 +5356,7 @@ path.活动 = function(x)
     swip(x)
     log(626)
     ssleep(.5)
+    --exit() --手动取点时取消注释
     if x:includes({ "ST-", "TR-", "-MO-1" }) then
         --剧情关/教学观/剿灭关只打一遍
         log("剧情关/教学观/剿灭关")
