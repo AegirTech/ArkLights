@@ -1445,11 +1445,11 @@ show_auto_ui = function()
             "extra_mode='活动商店购买';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     newRow(layout)
     addTextView(layout, "--------------------悖论模拟相关--------------------")
-
+    --[[
     newRow(layout)
     addTextView(layout, "悖论作业")
     ui.addEditText(layout, "bl_text", "", -2, -1)
-
+    ]]
     newRow(layout)
     addButton(layout, nil, "悖论模拟(测试)",
         make_jump_ui_command(layout, nil,
@@ -1468,8 +1468,8 @@ show_auto_ui = function()
     addButton(layout, nil, "重复到打满",
         make_jump_ui_command(layout, nil,
             "extra_mode='重复卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    newRow(layout)
     ]]
+    newRow(layout)
     addTextView(layout, "--------------------自动作战相关--------------------")
 
     newRow(layout)
