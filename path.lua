@@ -8092,6 +8092,38 @@ path.自动合成材料 = function()
     exit()
 end
 
+path.自动合成模组材料 = function(target_level)
+    local level = target_level or 3
+    if not raise.init() then return end
+    for i = 0, 2 do
+        local current_level = math.min(i, 1)
+        log("当前模组等级" .. i)
+        if i > 0 then
+            tap("模组升级")
+            appear("模组升级确认", 2)
+        end
+        if findOne("干员模组" .. current_level .. "级红") then
+            tap("干员模组" .. current_level .. "级红材料")
+            appearTap("干员模组" .. current_level .. "级红材料跳转")
+            appear("加工站")
+            raise.材料合成()
+            tap("返回")
+            appear("干员模组" .. current_level .. "级红材料跳转")
+            ssleep(.2)
+            tap("干员模组" .. current_level .. "级红材料")
+            disappear("干员模组" .. current_level .. "级红材料跳转")
+        end
+        if not wait(function()
+                if findOne("模组升级") then return true end
+                tap("模组升级确认")
+                ssleep(.3)
+            end, 3) then
+        end
+        if level == i + 1 then exit() end
+    end
+    exit()
+end
+
 path.自动升级潜能 = function()
     path.跳转("干员")
     appear("干员界面", 3)

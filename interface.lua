@@ -1421,11 +1421,15 @@ show_auto_ui = function()
             "extra_mode='自动模组';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     addTextView(layout, "干员名字,用空格分开")
     ui.addEditText(layout, "mz_text", "", -2, -1)
+
     newRow(layout)
     addButton(layout, nil, "自动合成材料(跳转加工站后启动)",
         make_jump_ui_command(layout, nil,
             "extra_mode='自动合成材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
-
+    newRow(layout)
+    addButton(layout, nil, "将当前模组升到满级",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='自动合成模组材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
     --[[
     newRow(layout)
     ui.addCheckBox(layout, "raise_fight_plan", "作战计划(未完成)", true)
