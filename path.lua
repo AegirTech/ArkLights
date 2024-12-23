@@ -8093,7 +8093,7 @@ path.自动合成材料 = function()
 end
 
 path.自动合成模组材料 = function(target_level)
-    local level = target_level or 3
+    local target_level = target_level or 3
     if not raise.init() then return end
     for i = 0, 2 do
         local current_level = math.min(i, 1)
@@ -8117,9 +8117,9 @@ path.自动合成模组材料 = function(target_level)
                 if findOne("模组升级") then return true end
                 tap("模组升级确认")
                 ssleep(.3)
-            end, 3) then
+            end, 3.5) then
         end
-        if level == i + 1 then exit() end
+        if target_level == i + 1 then exit() end
     end
     exit()
 end
