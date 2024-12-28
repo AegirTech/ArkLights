@@ -663,6 +663,10 @@ show_debug_ui = function()
     ui.addEditText(debug_layout_验证码, "cloud_captcha_server", "")
 
     newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "自定义打码地址②")
+    ui.addEditText(debug_layout_验证码, "cloud_captcha_server2", "")
+
+    newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "自定义打码标识")
     ui.addEditText(debug_layout_验证码, "cloud_captcha_token", "")
 
