@@ -1013,23 +1013,28 @@ end
 
 
 update_analytics = function(action)
-    local url       = "https://st.enlysure.com:11222/api/send"
-    local id        = "ad896c86-9db6-46c4-a1bb-d4b0a0ed56fa"
-    local data      = {
+    local url  = "https://st.enlysure.com:11222/api/send"
+    local id   = "ad896c86-9db6-46c4-a1bb-d4b0a0ed56fa"
+    local data = {
         ["type"] = "event",
         ["payload"] = {
             ["website"] = id,
             ["name"] = action,
-            ["screen"] = screen.width .. "*" .. screen.height,
-            ["data"] = {
-                ["lr_version"] = release_date,
-                ["apk_version"] = getApkVerInt(),
-                ["cpu_arch"] = get_cpu_arch():trim(),
-            }
+            ["screen"] = screen.width .. "x" .. screen.height,
+            ["data"] = nil
         }
     }
+    if action ~= nil then
+        data["payload"]["data"] = {
+            ["lr_version"] = release_date,
+            ["apk_version"] = getApkVerInt(),
+            ["cpu_arch"] = get_cpu_arch():trim(),
+            ["cloud"] = cloud_get_task,
+            ["multi"] = multi_account_num_get()
+        }
+    end
 
     local res, code = httpPost("https://st.enlysure.com:11222/api/send", JsonEncode(data), 10,
         "Content-Type:application/json")
-    log("update_analytics", res, code, url, data)
+    log("update_analytics", code)
 end
