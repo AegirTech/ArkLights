@@ -251,10 +251,11 @@ end
 --B服点选打码，用其他接口打码
 m.captchaSecond = function(box)
     --第二个接口地址长度小于10则返回去用图鉴的
-    if #cloud_captcha_server2 < 10 then
+    log("云控打码 方式二")
+    if type(cloud_captcha_server2) ~= "string" or #cloud_captcha_server2 < 10 then
         return false
     end
-    log("使用云控打码 方式二")
+
     local img = getWorkPath() .. "/capture.jpg"
     snapShot(img, box.l, box.t, box.r, box.b)
     local img_base64 = base64(img)
@@ -284,7 +285,7 @@ m.captchaSecond = function(box)
     }
     local res, code = httpPost(cloud_captcha_server2 .. "/captcha/select/base64", JsonEncode(data),
         30, "Content-Type: application/json;charset=UTF-8")
-
+    log(3058, res, code)
     if code == 200 then
         -- log("code,200")
         local status, data = pcall(JsonDecode, res)

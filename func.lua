@@ -1013,8 +1013,8 @@ end
 
 
 update_analytics = function(action)
-    local url  = "https://st.enlysure.com:11222/api/send"
-    local id   = "ad896c86-9db6-46c4-a1bb-d4b0a0ed56fa"
+    local url  = "https://cloud.umami.is/api/send"
+    local id   = "98a122fb-3f89-4412-baed-67be392329a9"
     local data = {
         ["type"] = "event",
         ["payload"] = {
@@ -1034,7 +1034,7 @@ update_analytics = function(action)
         }
     end
 
-    local res, code = httpPost("https://st.enlysure.com:11222/api/send", JsonEncode(data), 10,
+    local res, code = httpPost(url, JsonEncode(data), 5,
         "Content-Type:application/json")
     log("update_analytics", code)
 end
