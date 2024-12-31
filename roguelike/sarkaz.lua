@@ -361,6 +361,56 @@ sarkaz.肉鸽选路 = function()
     end
 end
 
+sarkaz.招募并记录干员 = function(干员, 肉鸽白名单)
+    local idx, name = zl.招募干员(干员, 肉鸽白名单)
+    log(idx, name)
+    if table.findk(肉鸽参数["operators"], name) then
+        肉鸽参数["operators"][name] = 肉鸽参数["operators"][name] + 1
+    end
+    zl.选择干员(idx)
+end
+
+sarkaz.更新肉鸽参数 = function(key)
+    if not findk(肉鸽参数, key) then return end
+end
+
+sarkaz.保持黄负荷 = function()
+    if not findOne("萨卡兹_大地图") then return end
+    if findOne("萨卡兹_思维负荷黄") then return true end
+    tap("萨卡兹_思维负荷黄")
+    --跳过教程
+    toast('等待2S 跳过教程')
+    wait(function()
+        tap("隐秘战线教程关闭")
+    end, 2)
+    appear("萨卡兹_收起负荷干员")
+    local text = ocro("萨卡兹_思维ocr范围")
+    log(text)
+    local 当前负荷 = tonumber(string.match(text, "%d+"))
+    local 负荷上限 = 当前负荷 - 1
+    local 负荷下限 = math.floor((当前负荷 + 1) * 2 / 3)
+    log(负荷下限, 负荷上限)
+    tap("萨卡兹_点击负荷干员")
+    appear('萨卡兹_等待负荷干员列表出现')
+    ssleep(.5)
+    for i = 1, 3 do
+        if findOne("萨卡兹_负荷干员选中列表" .. i) then
+            tap("萨卡兹_选项负荷干员列表" .. i)
+        end
+    end
+    ssleep(.5)
+    local ret = ocro("萨卡兹_思维临界点ocr范围")
+    log(ret)
+    local 临界点 = tonumber(string.match(ret, "%d+") or 5)
+    log(临界点)
+    if 临界点 <= 负荷上限 and 临界点 >= 负荷下限 then
+        tap("萨卡兹_收起负荷干员")
+        ssleep(.8)
+        tap("萨卡兹_收起负荷干员")
+        return
+    end
+end
+
 sarkaz.蓝图速通 = function()
     log('start skz spdrun')
     初始队员 = { "维什戴尔", "谷米", "卡达" }
@@ -370,37 +420,46 @@ sarkaz.蓝图速通 = function()
         hp = 0,
         hope = 0,
         floor = 0,
+        collection = {},
+        operators = {
+            维什戴尔 = 0,
+            古米 = 0,
+            卡达 = 0,
+            玛恩纳 = 0,
+            澄闪 = 0,
+            荒芜拉普兰德 = 0,
+            苏苏洛 = 0,
+            承曦格雷伊 = 0
+        },
+        idea = 0,
     }
     --第五层暂停 = ReadUIConfig("第五层暂停")
     招募开局干员 = 0
-    肉鸽白名单 = { "维什戴尔", "古米", "卡达", "玛恩纳", "澄闪", "异客", "苏苏洛" }
+    肉鸽白名单 = { "维什戴尔", "古米", "卡达", "玛恩纳", "澄闪", "荒芜拉普兰德", "苏苏洛", "承曦格雷伊" }
     肉鸽队员 = {}
     sarkaz.跳转()
 
-    -- 肉鸽每8小时做日常
 
     -- 开始探索 一路按到 招募干员
     -- local first_time_see_first_card = 0
-
-    local tapy = scale(904)
     local tapx = scale(258) + scale(414) * (tonumber(zl_blueprint_position) - 1)
+    local tapy = scale(904)
     if not wait(function(reset_wait_start_time)
-            if findOne("萨卡兹_初始招募") then return true end
+            if findOne("萨卡兹_初始招募组合") then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
             tap({ tapx, tapy })
-            ssleep(.2)
+            ssleep(.8)
         end, 10) then
         return
     end
     log("初始招募")
     if not wait(function(reset_wait_start_time)
             if findOne("萨卡兹_初始招募") then return true end
-            tap("萨卡兹_医疗招募券")
+            tap("萨卡兹_稳扎稳打分队")
+            ssleep(.8)
         end, 10) then
         return
     end
-
-
     log('招募狙击')
     if not wait(function()
             tap("萨卡兹_医疗招募券")
@@ -410,9 +469,7 @@ sarkaz.蓝图速通 = function()
         return
     end
     log('招募维什戴尔')
-    local idx = zl.招募干员("维什戴尔", 肉鸽白名单)
-    log(idx)
-    zl.选择干员(idx)
+    sarkaz.招募并记录干员("维什戴尔", 肉鸽白名单)
 
     -- 第2人
     if not wait(function(reset_wait_start_time)
@@ -421,7 +478,6 @@ sarkaz.蓝图速通 = function()
         end, 10) then
         return
     end
-
 
     log('招募狙击')
     if not wait(function()
@@ -432,8 +488,7 @@ sarkaz.蓝图速通 = function()
         return
     end
     log('招募古米')
-    local idx = zl.招募干员("古米", 肉鸽白名单)
-    zl.选择干员(idx)
+    sarkaz.招募并记录干员("古米", 肉鸽白名单)
     --ssleep(1)
     -- 第3人
     log('招募医疗')
@@ -445,10 +500,8 @@ sarkaz.蓝图速通 = function()
         return
     end
     log('招募卡达')
-    local idx = zl.招募干员("卡达", 肉鸽白名单)
-    zl.选择干员(idx)
-
-
+    sarkaz.招募并记录干员("卡达", 肉鸽白名单)
+    log(肉鸽参数["operators"])
     if not appear("萨卡兹_初始招募") then return end
     log(2698)
     -- 进入探索 必须分为两段，否则产生位移
@@ -476,6 +529,8 @@ sarkaz.蓝图速通 = function()
 
     appear("萨卡兹_进入后判断", 5)
     ssleep(0.5) -- 右边第三列有概率加载过慢
+
+
     sx = { scale(1761), scale(846) }
     oricol = getColor(sx[1], sx[2])
     if not wait(function()
@@ -501,34 +556,7 @@ sarkaz.蓝图速通 = function()
     ssleep(0.15)
     sarkaz.关卡刷新()
 
-    -- 思绪过多,丢掉一个
-    if findOne("萨卡兹_思维负荷红") then
-        findTap("萨卡兹_思维负荷红")
-        local t = time()
-        if not wait(function()
-                if time() - t > 1000 then
-                    t = time()
-                    tap('招募说明关闭') --第一次加载会有这个弹窗
-                end
-                if findOne('萨卡兹_点击负荷干员') then return true end
-            end, 6, .2) then
-            return false
-        end
-        if not wait(function()
-                local x = appear({
-                    "萨卡兹_第一个思绪", "萨卡兹_思绪舍弃"
-                })
-                log(2575, x)
-                tap(x)
-                if x == "萨卡兹_思绪舍弃" then appear('萨卡兹_第一个思绪') end
-                if not findOne("萨卡兹_第一个思绪") then return true end
-            end, 10, .2) then
-            return false
-        end
-        ssleep(.5)
-        appearTap("萨卡兹_收起负荷干员", 1.5)
-        appear("萨卡兹_待编入负荷干员", 1)
-    end
+
     ssleep(0.3)
     wait(function()
         tap({ scale(134), scale(504) })

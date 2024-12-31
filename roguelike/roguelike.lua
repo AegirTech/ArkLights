@@ -21,14 +21,14 @@ zl.招募干员 = function(干员, 肉鸽白名单)
                     elseif 被招募干员 == "维什戴尔" then
                         招募开局干员 = 1
                     end
-                    return (i + 1)
+                    return (i + 1), 被招募干员
                 end
             end
             ssleep(.5)
             zl.招募翻页()
         end
     end
-    return 1
+    return 0, 0
 end
 
 zl.招募翻页 = function(left, nodelay)
@@ -49,7 +49,7 @@ zl.招募翻页 = function(left, nodelay)
         --修改x2坐标
         local x2 = scale(1200)
         local x3 = scale(1695)
-        local y3 = scale(452)
+        local y3 = scale(310)
         local slids = 50
         local slidd = 200
         local taps = slids + slidd + 150
@@ -99,6 +99,9 @@ zl.选择干员 = function(idx)
         return
     end
 end
+
+
+
 
 zl.shop_get_coin = function()
     if not wait(function()

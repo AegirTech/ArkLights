@@ -663,6 +663,10 @@ show_debug_ui = function()
     ui.addEditText(debug_layout_验证码, "cloud_captcha_server", "")
 
     newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "自定义打码地址②")
+    ui.addEditText(debug_layout_验证码, "cloud_captcha_server2", "")
+
+    newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "自定义打码标识")
     ui.addEditText(debug_layout_验证码, "cloud_captcha_token", "")
 
@@ -1421,11 +1425,15 @@ show_auto_ui = function()
             "extra_mode='自动模组';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     addTextView(layout, "干员名字,用空格分开")
     ui.addEditText(layout, "mz_text", "", -2, -1)
+
     newRow(layout)
     addButton(layout, nil, "自动合成材料(跳转加工站后启动)",
         make_jump_ui_command(layout, nil,
             "extra_mode='自动合成材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
-
+    newRow(layout)
+    addButton(layout, nil, "将当前模组升到满级",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='自动合成模组材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
     --[[
     newRow(layout)
     ui.addCheckBox(layout, "raise_fight_plan", "作战计划(未完成)", true)
@@ -1441,11 +1449,11 @@ show_auto_ui = function()
             "extra_mode='活动商店购买';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     newRow(layout)
     addTextView(layout, "--------------------悖论模拟相关--------------------")
-
+    --[[
     newRow(layout)
     addTextView(layout, "悖论作业")
     ui.addEditText(layout, "bl_text", "", -2, -1)
-
+    ]]
     newRow(layout)
     addButton(layout, nil, "悖论模拟(测试)",
         make_jump_ui_command(layout, nil,
@@ -1464,8 +1472,8 @@ show_auto_ui = function()
     addButton(layout, nil, "重复到打满",
         make_jump_ui_command(layout, nil,
             "extra_mode='重复卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    newRow(layout)
     ]]
+    newRow(layout)
     addTextView(layout, "--------------------自动作战相关--------------------")
 
     newRow(layout)

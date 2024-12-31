@@ -248,6 +248,69 @@ m.captcha_report = function()
     log("云控打码失败上报", res, code)
 end
 
+--B服点选打码，用其他接口打码
+m.captchaSecond = function(box)
+    --第二个接口地址长度小于10则返回去用图鉴的
+    if #cloud_captcha_server2 < 10 then
+        return false
+    end
+    log("使用云控打码 方式二")
+    local img = getWorkPath() .. "/capture.jpg"
+    snapShot(img, box.l, box.t, box.r, box.b)
+    local img_base64 = base64(img)
+    local ans = nil
+
+    wait(
+        function()
+            local text_box_pre = findOne("B服安全验证目标字符")
+            local text_slice_box_pre = findOne("B服安全验证目标字符切片")
+            local big_image_box_pre = findOne("B服安全验证泛目标图像")
+            if text_box_pre == text_box and text_slice_box_pre == text_slice_box and big_image_box_pre == big_image_box then
+                return true
+            end
+            text_box = text_box_pre
+            text_slice_box = text_slice_box_pre
+            big_image_box = big_image_box_pre
+            node_count = node_count + 1
+            log("B服云控打码节点刷新计数器2", node_count)
+            ssleep(.1)
+        end
+    )
+    -- local text_pos = { text_slice_box.bounds.r, text_box.bounds.t, big_image_box.bounds.r, text_box.bounds.b }
+    log("图像坐标2", box)
+
+    local data = {
+        raw_base64 = img_base64,
+    }
+    local res, code = httpPost(cloud_captcha_server2 .. "/captcha/select/base64", JsonEncode(data),
+        30, "Content-Type: application/json;charset=UTF-8")
+
+    if code == 200 then
+        -- log("code,200")
+        local status, data = pcall(JsonDecode, res)
+        data = data or {}
+        ans = get(data, "data", "points") or ""
+        log(ans, '3059')
+    else
+        log("云控打码", "网络错误")
+        return false
+    end
+    if not ans then return false end
+    for i = 1, #ans do
+        local x = ans[i]
+        log(x)
+        local points = splitStr(x, ",")
+        local x = str2int(points[1], 0) + box.l
+        local y = str2int(points[2], 0) + box.t
+        --local ans_p = { rect.l + x, rect.t + y }
+        local ans_p = { x, y }
+        tap(ans_p)
+        ssleep(0.3)
+    end
+    return true
+end
+
+
 m.FAILTASK_LINEBUSY = 'lineBusy'
 m.FAILTASK_ACCOUNTERROR = 'accountError'
 

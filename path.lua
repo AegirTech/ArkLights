@@ -5356,6 +5356,7 @@ path.活动 = function(x)
     swip(x)
     log(626)
     ssleep(.5)
+    --exit() --手动取点时取消注释
     if x:includes({ "ST-", "TR-", "-MO-1" }) then
         --剧情关/教学观/剿灭关只打一遍
         log("剧情关/教学观/剿灭关")
@@ -8088,6 +8089,38 @@ path.自动合成材料 = function()
     if not raise.init() then return end
     raise.材料合成()
     tap("返回")
+    exit()
+end
+
+path.自动合成模组材料 = function(target_level)
+    local target_level = target_level or 3
+    if not raise.init() then return end
+    for i = 0, 2 do
+        local current_level = math.min(i, 1)
+        log("当前模组等级" .. i)
+        if i > 0 then
+            tap("模组升级")
+            appear("模组升级确认", 2)
+        end
+        if findOne("干员模组" .. current_level .. "级红") then
+            tap("干员模组" .. current_level .. "级红材料")
+            appearTap("干员模组" .. current_level .. "级红材料跳转")
+            appear("加工站")
+            raise.材料合成()
+            tap("返回")
+            appear("干员模组" .. current_level .. "级红材料跳转")
+            ssleep(.2)
+            tap("干员模组" .. current_level .. "级红材料")
+            disappear("干员模组" .. current_level .. "级红材料跳转")
+        end
+        if not wait(function()
+                if findOne("模组升级") then return true end
+                tap("模组升级确认")
+                ssleep(.3)
+            end, 3.5) then
+        end
+        if target_level == i + 1 then exit() end
+    end
     exit()
 end
 
