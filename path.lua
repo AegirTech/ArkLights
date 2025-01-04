@@ -3820,7 +3820,7 @@ path.采购中心商店 = function()
             appearTap("获得物资", 3)
         end
         if table.search(red_ticket_shop_good_need, "干员") then
-            local red_ticket_shop_char = { "云迹", "菲菜", "跃跃", "折光", "石英", "雪绒", "布丁", "蜜莓", "伊桑", "微风" }
+            local red_ticket_shop_char = { "云迹", "菲莱", "跃跃", "折光", "石英", "雪绒", "布丁", "蜜莓", "伊桑", "微风" }
             local char_exist = true
             local ret
             while char_exist do

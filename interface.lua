@@ -1473,6 +1473,17 @@ show_auto_ui = function()
         make_jump_ui_command(layout, nil,
             "extra_mode='重复卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     ]]
+
+    newRow(layout)
+    addTextView(layout, "--------------------小游戏相关--------------------")
+    newRow(layout)
+
+    addTextView(layout, "建议ew、异拉放5本")
+    newRow(layout)
+    addButton(layout, nil, "卫戍协议每日",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+
     newRow(layout)
     addTextView(layout, "--------------------自动作战相关--------------------")
 
