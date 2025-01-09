@@ -966,10 +966,11 @@ end
 -- 选择干员
 char_choose = function(char_name)
     path.跳转("干员")
-    ssleep(.3)
+    ssleep(1)
     --只跳转一次会有概率无反应,多加一次
     path.跳转("干员")
-    ssleep(.3)
+    ssleep(1)
+    if not findOne("干员界面") then return end
     if not findOne("职业选择") then
         tap("职业选择")
         appear("职业选择", 2)
