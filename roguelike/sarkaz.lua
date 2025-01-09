@@ -77,12 +77,16 @@ sarkaz.不期而遇处理 = function()
 
     if string.finds(str, { "虫", '故事', '之店' }) then
         return zl_event_solve(3, "萨卡兹_战略帮助")
-    elseif string.finds(str, { '解', '高空', '不散' }) then
+    elseif string.finds(str, { '高空', '不散' }) then
         return zl_event_solve(2, "萨卡兹_战略帮助")
-    elseif string.finds(str, { "萨米", "维", "女士" }) then
+    elseif string.finds(str, { '解', "萨米", "维", "女士" }) then
         return zl_event_solve(1, "萨卡兹_战略帮助")
     elseif string.finds(str, { '相' }) then
-        return zl_event_solve(4, "萨卡兹_战略帮助")
+        if 相遇选美愿 then
+            return zl_event_solve(6, "萨卡兹_战略帮助")
+        else
+            return zl_event_solve(4, "萨卡兹_战略帮助")
+        end
     elseif string.finds(str, { '黑' }) then
         return zl_event_solve(5, "萨卡兹_战略帮助")
     end
@@ -1147,6 +1151,7 @@ sarkaz.蓝图分队 = function()
     end
     if jumpout then return end
 
+
     local t = time()
     if not wait(function(reset_wait_start_time)
             if findOne("战略返回") then return true end
@@ -1159,6 +1164,31 @@ sarkaz.蓝图分队 = function()
                 return true
             end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+
+            --加载种子
+            相遇选美愿 = false --用美愿可以多存10块
+            if appear("萨卡兹_启用参数", 0.3) then
+                log("使用种子")
+                tap("萨卡兹_启用参数")
+                ssleep(.5)
+                appearTap("萨卡兹_设置预设参数页面")
+                ssleep(.3)
+                appearTap("萨卡兹_请输入或粘贴参数")
+                if appear('inputbox', 1) then
+                    --写ui让用户输入种子
+                    input("inputbox", "i2OuA77O5I5a820OuI,rogue_4,12")
+                    tap("okbutton")
+                    相遇选美愿 = true --用美愿可以多存10块
+                end
+                ssleep(.3)
+                tap("萨卡兹_使用参数确认")
+                disappear("正在提交反馈至神经", network_timeout)
+                ssleep(.3)
+                tap("萨卡兹_设为该难度")
+                ssleep(.3)
+                tap("继续探索")
+                ssleep(.5)
+            end
             tap("新战略确认")
             tap("继续探索")
             if time() - t > 2 * 1000 and findOne('萨卡兹_选择一次难度等级') then --第一次时候，需要选择难度等级
@@ -1175,6 +1205,9 @@ sarkaz.蓝图分队 = function()
     end
     if jumpout then return end
     log(2650)
+
+
+
     -- 开始探索 一路按到 招募干员
     -- local first_time_see_first_card = 0
 
@@ -2161,9 +2194,9 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                     if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
                     if string.finds(str, { "虫" }) then
                         if zl_event_solve(3, "萨卡兹_战略帮助") then return true end
-                    elseif string.finds(str, { '解', '故事', '高空', '不散' }) then
-                        if zl_event_solve(2, "萨卡兹_战略帮助") then return true end
-                    elseif string.finds(str, { '相遇', "萨米", "维", "女士" }) then
+                    elseif string.finds(str, { '故事', '高空', '不散' }) then
+                        if zl_event_solve(2, '相遇', "萨卡兹_战略帮助") then return true end
+                    elseif string.finds(str, { '解', '惑', "萨米", "维", "女士" }) then
                         if zl_event_solve(1, "萨卡兹_战略帮助") then return true end
                     end
                 end
