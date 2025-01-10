@@ -1165,30 +1165,7 @@ sarkaz.蓝图分队 = function()
             end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
 
-            --加载种子
-            相遇选美愿 = false --用美愿可以多存10块
-            if appear("萨卡兹_启用参数", 0.3) then
-                log("使用种子")
-                tap("萨卡兹_启用参数")
-                ssleep(.5)
-                appearTap("萨卡兹_设置预设参数页面")
-                ssleep(.3)
-                appearTap("萨卡兹_请输入或粘贴参数")
-                if appear('inputbox', 1) then
-                    --写ui让用户输入种子
-                    input("inputbox", "i2OuA77O5I5a820OuI,rogue_4,12")
-                    tap("okbutton")
-                    相遇选美愿 = true --用美愿可以多存10块
-                end
-                ssleep(.3)
-                tap("萨卡兹_使用参数确认")
-                disappear("正在提交反馈至神经", network_timeout)
-                ssleep(.3)
-                tap("萨卡兹_设为该难度")
-                ssleep(.3)
-                tap("继续探索")
-                ssleep(.5)
-            end
+            sarkaz.加载种子()
             tap("新战略确认")
             tap("继续探索")
             if time() - t > 2 * 1000 and findOne('萨卡兹_选择一次难度等级') then --第一次时候，需要选择难度等级
@@ -1621,6 +1598,34 @@ sarkaz.蓝图分队 = function()
     return goto_next_level()
 end
 
+sarkaz.加载种子 = function()
+    --加载种子
+    相遇选美愿 = false --用美愿可以多存10块
+    if appear("萨卡兹_启用参数", 0.3) then
+        log("使用种子")
+        tap("萨卡兹_启用参数")
+        ssleep(.5)
+        appearTap("萨卡兹_设置预设参数页面")
+        ssleep(.3)
+        appearTap("萨卡兹_请输入或粘贴参数")
+        if appear('inputbox', 1) then
+            --写ui让用户输入种子
+            input("inputbox", "i2OuA77O5I5a820OuI,rogue_4,12")
+            tap("okbutton")
+            相遇选美愿 = true --用美愿可以多存10块
+        end
+        ssleep(.3)
+        tap("萨卡兹_使用参数确认")
+        disappear("正在提交反馈至神经", network_timeout)
+        ssleep(.3)
+        tap("萨卡兹_设为该难度")
+        ssleep(.3)
+        tap("继续探索")
+        ssleep(.5)
+    end
+end
+
+
 path.萨卡兹的无终奇语前瞻投资 = function()
     if zl_blueprint then
         sarkaz.蓝图分队()
@@ -1735,6 +1740,8 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                 return true
             end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+
+            sarkaz.加载种子
             tap("新战略确认")
             tap("继续探索")
             if time() - t > 2 * 1000 then --第一次时候，需要选择难度等级
