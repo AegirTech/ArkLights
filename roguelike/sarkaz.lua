@@ -1151,6 +1151,50 @@ sarkaz.蓝图分队 = function()
     end
     if jumpout then return end
 
+    相遇选美愿 = false
+
+    if zl_skz_use_seed then
+        -- 加载种子
+        if zl_skz_seed == nil or zl_skz_seed == '' then
+            zl_skz_seed = "i2OuA77O5I5a820OuI,rogue_4,12"
+        end
+        wait(function(reset_wait_start_time)
+            if findOne("战略返回") then return true end
+            -- 第二次数据更新处理
+            if findAny({
+                    "面板", "活动公告返回", "签到返回", "签到返回黄",
+                    "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                }) then
+                jumpout = true
+                return true
+            end
+            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+        end, 50)
+
+        if appear("萨卡兹_启用参数", 1) then
+            log("使用种子")
+            tap("萨卡兹_启用参数")
+            ssleep(.5)
+            appearTap("萨卡兹_设置预设参数页面")
+            ssleep(.3)
+            appearTap("萨卡兹_请输入或粘贴参数")
+            if appear('inputbox', 1) then
+                --写ui让用户输入种子
+                input("inputbox", zl_skz_seed)
+                tap("okbutton")
+                相遇选美愿 = true --用美愿可以多存10块
+                固定路线 = true
+            end
+            ssleep(.3)
+            tap("萨卡兹_使用参数确认")
+            disappear("正在提交反馈至神经", network_timeout)
+            ssleep(.3)
+            tap("萨卡兹_设为该难度")
+            ssleep(.3)
+            tap("继续探索")
+            ssleep(.5)
+        end
+    end
 
     local t = time()
     if not wait(function(reset_wait_start_time)
@@ -1165,30 +1209,6 @@ sarkaz.蓝图分队 = function()
             end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
 
-            --加载种子
-            相遇选美愿 = false --用美愿可以多存10块
-            if appear("萨卡兹_启用参数", 0.3) then
-                log("使用种子")
-                tap("萨卡兹_启用参数")
-                ssleep(.5)
-                appearTap("萨卡兹_设置预设参数页面")
-                ssleep(.3)
-                appearTap("萨卡兹_请输入或粘贴参数")
-                if appear('inputbox', 1) then
-                    --写ui让用户输入种子
-                    input("inputbox", "i2OuA77O5I5a820OuI,rogue_4,12")
-                    tap("okbutton")
-                    相遇选美愿 = true --用美愿可以多存10块
-                end
-                ssleep(.3)
-                tap("萨卡兹_使用参数确认")
-                disappear("正在提交反馈至神经", network_timeout)
-                ssleep(.3)
-                tap("萨卡兹_设为该难度")
-                ssleep(.3)
-                tap("继续探索")
-                ssleep(.5)
-            end
             tap("新战略确认")
             tap("继续探索")
             if time() - t > 2 * 1000 and findOne('萨卡兹_选择一次难度等级') then --第一次时候，需要选择难度等级
@@ -1205,7 +1225,6 @@ sarkaz.蓝图分队 = function()
     end
     if jumpout then return end
     log(2650)
-
 
 
     -- 开始探索 一路按到 招募干员
@@ -1351,17 +1370,19 @@ sarkaz.蓝图分队 = function()
     -- ssleep(100)
     sarkaz.关卡刷新()
     ssleep(0.5)
-    if not wait(function()
-            if findOne("萨卡兹_作战列表2选中") then
-                return true
-            end
-            tap("萨卡兹_第一列_作战列表2")
-            appear("萨卡兹_作战列表2选中")
-        end, 5) then
-        return
+    if not 固定路线 then
+        if not wait(function()
+                if findOne("萨卡兹_作战列表2选中") then
+                    return true
+                end
+                tap("萨卡兹_第一列_作战列表2")
+                appear("萨卡兹_作战列表2选中")
+            end, 5) then
+            return
+        end
+        ssleep(0.15)
+        sarkaz.关卡刷新()
     end
-    ssleep(0.15)
-    sarkaz.关卡刷新()
 
     -- 思绪过多,丢掉一个
     if findOne("萨卡兹_思维负荷红") then
@@ -1399,7 +1420,6 @@ sarkaz.蓝图分队 = function()
     ssleep(1)
 
     -- 分支选择 返回每一列行数
-
     萨卡兹路线 = sarkaz.分支选择()
     log("路线选择", 萨卡兹路线)
     log('在选择节点界面')
@@ -1422,25 +1442,6 @@ sarkaz.蓝图分队 = function()
     table.remove(萨卡兹路线, 1)
     ssleep(.5)
     appear("萨卡兹_不期而遇判断", 3)
-    -- 不期而遇处理 = function()
-    --     --判断不期而遇事件，并处理
-    --     log("进入不期而遇")
-    --     appear('萨卡兹_不期而遇节点出现')
-    --     wait(function()
-    --         tap("萨卡兹_进入")
-    --         tap("萨卡兹_思维混乱确认红") --偶尔有情况 思维负载太多了，第一第二个节点都是作战时候，第三个节点有概率出现
-    --     end, 2)
-    --     if not wait(function()
-    --             if not findOne("萨米_战略帮助") then return true end
-    --             tap("战略确认")
-    --         end, 5) then
-    --         restart('进入不期而遇出错,可能误点到了什么') --减少重启次数
-    --         return false
-    --     end
-
-    --     if not zl_不期而遇处理_萨卡兹() then return false end
-    --     return true
-    -- end
 
     if not sarkaz.不期而遇处理() then return end --有时候出错就重开
     ssleep(0.5)

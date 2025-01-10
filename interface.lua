@@ -1168,6 +1168,11 @@ show_extra_ui = function()
     ui.addEditText(rouge_layout_萨卡兹, "zl_blueprint_position", [[3]]) --蓝图分队解锁的话 大多在第三个位置
 
     newRow(rouge_layout_萨卡兹)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_skz_use_seed", "使用预设种子", false)
+    addTextView(rouge_layout_萨卡兹, "种子ID")
+    ui.addEditText(rouge_layout_萨卡兹, "zl_skz_seed", [[]])
+
+    newRow(rouge_layout_萨卡兹)
     addTextView(rouge_layout_萨卡兹, [[需求商品]])
     ui.addEditText(rouge_layout_萨卡兹, "zl_need_goods_skz", [[]])
     addTextView(rouge_layout_萨卡兹, [[等级]])
