@@ -2480,9 +2480,7 @@ uploadStatistician = function(is_download)
 end
 
 hotUpdate = function()
-    update_analytics(nil)
     local update_info = check_hot_update()
-    update_analytics("update")
     if not update_info then return false end
     if get(update_info, "isOldApk") then
         toast("当前APK版本过旧，请更新！")
@@ -2504,7 +2502,6 @@ hotUpdate = function()
     updateLr(update_info)
     updateSkill(update_info)
     uploadStatistician(true)
-    update_analytics("download")
     sleep(1000)
     log("更新完成")
 
