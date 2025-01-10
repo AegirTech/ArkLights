@@ -1586,12 +1586,12 @@ sarkaz.加载种子 = function()
     if zl_skz_seed == nil or zl_skz_seed == '' then
         zl_skz_seed = "i2OuA77O5I5a820OuI,rogue_4,12"
     end
-    local txt = ocr("参数启用ocr范围")
-    txt = table.findv(txt, function(x) return x.text:find('参数已') end)
-    if txt then
-        return
-    end
     if appear("萨卡兹_启用参数", 1) then
+        local txt = ocr("参数启用ocr范围")
+        txt = table.findv(txt, function(x) return x.text:find('参数已') end)
+        if txt then
+            return
+        end
         if not findOne("萨卡兹_启用参数") then return end
         log("使用种子")
         tap("萨卡兹_启用参数")
@@ -1604,6 +1604,9 @@ sarkaz.加载种子 = function()
             input("inputbox", zl_skz_seed)
             tap("okbutton")
             相遇选美愿 = true --用美愿可以多存10块
+        else
+            log('没有找到输入框')
+            return
         end
         ssleep(.3)
         tap("萨卡兹_使用参数确认")
