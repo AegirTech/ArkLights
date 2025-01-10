@@ -962,6 +962,7 @@ path.fallback = {
         -- end, 10) then stop(217) end
     end,
     限时幸运签 = function()
+        findTap("集成战略签到活动领取")
         tapAll(point.限时幸运签列表)
         ssleep(.25)
         tap("限时幸运签抽取")
