@@ -61,7 +61,7 @@ sarkaz.不期而遇处理 = function()
                 event = incident[1].text or ''
             end
             --只有识别到下面的字符串才做返回
-            if string.finds(event, { "萨米", "维", "女士", '相', '黑', '解', '故事', '高空', '不散', '虫', '之店' }) then return true end
+            if string.finds(event, { "萨米", "维", "女士", '相', '黑', '解', '故事', '高空', '不散', '虫', '之店', "是而", "似是" }) then return true end
         end, 8, .1) then
         log('不能检测到事件')
         return false
@@ -75,7 +75,7 @@ sarkaz.不期而遇处理 = function()
     if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
 
 
-    if string.finds(str, { "虫", '故事', '之店' }) then
+    if string.finds(str, { "虫", '故事', '之店', "是而", "似是" }) then
         return zl_event_solve(3, "萨卡兹_战略帮助")
     elseif string.finds(str, { '高空', '不散' }) then
         return zl_event_solve(2, "萨卡兹_战略帮助")
@@ -1196,6 +1196,7 @@ sarkaz.蓝图分队 = function()
 
     zl_blueprint_position = tonumber(zl_blueprint_position)
     while zl_blueprint_position > 4 do
+        ssleep(0.5)
         path.swip_hd_shop(false, scale(1704))
         ssleep(0.5)
         zl_blueprint_position = zl_blueprint_position - 4
