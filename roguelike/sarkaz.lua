@@ -1190,6 +1190,18 @@ sarkaz.蓝图分队 = function()
 
     --local tapy = scale(904)
     --local tapx = scale(258) + scale(414) * (tonumber(zl_blueprint_position) - 1)
+    if not appear("萨卡兹_选择分队页面", 10) then
+        return
+    end
+
+    zl_blueprint_position = tonumber(zl_blueprint_position)
+    while zl_blueprint_position > 4 do
+        path.swip_hd_shop(false, scale(1704))
+        ssleep(0.5)
+        zl_blueprint_position = zl_blueprint_position - 4
+    end
+    zl_blueprint_position = tostring(zl_blueprint_position)
+
     if not wait(function(reset_wait_start_time)
             if findOne("萨卡兹_初始招募") then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
