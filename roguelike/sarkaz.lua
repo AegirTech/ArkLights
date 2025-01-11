@@ -1156,6 +1156,7 @@ sarkaz.蓝图分队 = function()
     local t = time()
     if not wait(function(reset_wait_start_time)
             if findOne("战略返回") then return true end
+            if findOne("萨卡兹_选择分队页面") then return true end
             -- 第二次数据更新处理
             if findAny({
                     "面板", "活动公告返回", "签到返回", "签到返回黄",
@@ -1175,6 +1176,7 @@ sarkaz.蓝图分队 = function()
                 t = time()
                 log('选择一次难度等级')
                 tap('萨卡兹_选择一次难度等级')
+                ssleep(0.1)
             end
         end, 60) then
         -- 初始选难度
@@ -1194,19 +1196,19 @@ sarkaz.蓝图分队 = function()
         return
     end
 
-    zl_blueprint_position = tonumber(zl_blueprint_position)
-    while zl_blueprint_position > 4 do
+    local x_position = tonumber(zl_blueprint_position)
+    while x_position > 4 do
         ssleep(0.5)
         path.swip_hd_shop(false, scale(1704))
         ssleep(0.5)
-        zl_blueprint_position = zl_blueprint_position - 4
+        x_position = x_position - 4
     end
-    zl_blueprint_position = tostring(zl_blueprint_position)
+    local t_position = zl_blueprint_position == str(x_position) and zl_blueprint_position or str(x_position)
 
     if not wait(function(reset_wait_start_time)
             if findOne("萨卡兹_初始招募") then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
-            tap('萨卡兹_蓝图分队位置列表' .. zl_blueprint_position)
+            tap('萨卡兹_蓝图分队位置列表' .. t_position)
         end, 10) then
         return
     end
