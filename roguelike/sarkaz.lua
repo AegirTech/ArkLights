@@ -1614,11 +1614,15 @@ sarkaz.加载种子 = function()
         appearTap("萨卡兹_设置预设参数页面")
         ssleep(.3)
         appearTap("萨卡兹_请输入或粘贴参数")
-        if appear('inputbox', 1) then
+        if server == 0 and appear('inputbox', 1) then
             --写ui让用户输入种子
             input("inputbox", zl_skz_seed)
             tap("okbutton")
             相遇选美愿 = true --用美愿可以多存10块
+        elseif server == 1 and appear('inputbox_bili', 1) then -- b服
+            input("inputbox_bili", zl_skz_seed)
+            tap("okbutton_bili")
+            相遇选美愿 = true
         else
             log('没有找到输入框')
             return

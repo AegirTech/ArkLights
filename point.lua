@@ -1354,9 +1354,17 @@ point = {
         class = "android.widget.EditText",
         package = "com.hypergryph.arknights",
     },
+    inputbox_bili = {
+        class = "android.widget.EditText",
+        package = "com.hypergryph.arknights.bilibili",
+    },
     okbutton = {
         class = "android.widget.Button",
         package = "com.hypergryph.arknights",
+    },
+    okbutton_bili = {
+        class = "android.widget.Button",
+        package = "com.hypergryph.arknights.bilibili",
     },
     gesture_capture_ui = { text = "亮屏解锁" },
     keyguard_indication = {
