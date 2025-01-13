@@ -7641,6 +7641,22 @@ path.肉鸽任务 = function()
         end
     end
 
+    -- 分辨率检查
+    if math.abs(screen.width // screen.height - 16 // 9) < 0.1 then
+        log("分辨率检查通过")
+    else
+        log("分辨率检查未通过")
+        toast("分辨率不支持，请使用720p或者1080p")
+        toast("手机可以使用光速虚拟机，电脑请使用雷电模拟器")
+        stop("分辨率不支持", '', true, true)
+    end
+
+    if detect_simulators() == "mumu" then
+        toast("mumu请关闭保活，否则可能出现循环重启")
+        toast("如果仍然有问题，请更换雷电模拟器，mumu问题太多，不做适配")
+        ssleep(5)
+    end
+
     if zl_mizuki then
         log("水月任务开始")
         水月肉鸽完成 = false

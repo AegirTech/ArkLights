@@ -970,6 +970,7 @@ detect_simulators = function()
     if 设备 == "mumu" then
         console.println(3, "如果出现任何问题，请更换雷电模拟器，不推荐使用Mumu。")
     end
+    return 设备
 end
 
 upload_log = function()
