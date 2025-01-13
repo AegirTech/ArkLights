@@ -1163,12 +1163,12 @@ show_extra_ui = function()
     ui.addCheckBox(rouge_layout_萨卡兹, "zl_only_coin_skz", "只是投币", false)
 
     newRow(rouge_layout_萨卡兹)
-    ui.addCheckBox(rouge_layout_萨卡兹, "zl_blueprint", "使用蓝图分队", false)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_blueprint", "使用蓝图/点刺/后勤分队,", false)
     addTextView(rouge_layout_萨卡兹, [[分队位置]])
     ui.addEditText(rouge_layout_萨卡兹, "zl_blueprint_position", [[3]]) --蓝图分队解锁的话 大多在第三个位置
 
     newRow(rouge_layout_萨卡兹)
-    ui.addCheckBox(rouge_layout_萨卡兹, "zl_skz_use_seed", "使用预设种子", false)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_skz_use_seed", "使用预设参数:", false)
     addTextView(rouge_layout_萨卡兹, "种子ID")
     ui.addEditText(rouge_layout_萨卡兹, "zl_skz_seed", [[]])
 
@@ -1478,16 +1478,6 @@ show_auto_ui = function()
         make_jump_ui_command(layout, nil,
             "extra_mode='重复卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     ]]
-
-    newRow(layout)
-    addTextView(layout, "--------------------小游戏相关--------------------")
-    newRow(layout)
-
-    addTextView(layout, "建议ew、异拉放5本")
-    newRow(layout)
-    addButton(layout, nil, "卫戍协议每日",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     newRow(layout)
     addTextView(layout, "--------------------自动作战相关--------------------")
