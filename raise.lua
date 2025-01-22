@@ -140,8 +140,7 @@ raise.init = function()
     end
     -- 正在进行技能专精
     mastering = false
-    -- 无人机不够用来加速完成芯片
-    not_enough_drone = false
+
     if not character_name2id then
         character_name2id = {}
         for k, v in pairs(character_table) do
@@ -1224,8 +1223,8 @@ raise.elite_one_phase = function(material_need)
                     end
                     ssleep(.8)
                     appear("制造站设施列表1", 2)
-                    path.制造加速(true)
-                    ssleep(1)
+                    ssleep(6) --最多一次造4个，等待要超过4s
+                    tap("制造站收取")
                     break
                 end
             end
@@ -2520,16 +2519,14 @@ raise.auto_raise = function()
         end
         if not char_do_not_have[name] and ((i > 1 and findOne("干员档案") and name == raise_plan[i - 1]["name"]) or char_choose(name)) then
             local elite = raise.recognize_elite_level(id)
-            if raise_plan[i]["elite"] and not not_enough_drone then
+            if raise_plan[i]["elite"] then
                 toast("精英化干员")
                 local elite = raise.recognize_elite_level(id)
                 log("精英化等级", elite)
                 if elite >= raise_plan[i]["elite"] then
                     log(name, "已达到精英等级")
                 else
-                    if not raise.elite_char(id, elite, raise_plan[i]["elite"]) then
-                        not_enough_drone = true
-                    end
+                    raise.elite_char(id, elite, raise_plan[i]["elite"])
                 end
             elseif raise_plan[i]["skills"] and elite >= 1 then
                 toast("升级技能")
