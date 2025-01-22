@@ -1011,31 +1011,3 @@ copy_file_s = function(src, dest)
     src_file:close()
     dest_file:close()
 end
-
-
-update_analytics = function(action)
-    local url  = "https://cloud.umami.is/api/send"
-    local id   = "98a122fb-3f89-4412-baed-67be392329a9"
-    local data = {
-        ["type"] = "event",
-        ["payload"] = {
-            ["website"] = id,
-            ["name"] = action,
-            ["screen"] = screen.width .. "x" .. screen.height,
-            ["data"] = nil
-        }
-    }
-    if action ~= nil then
-        data["payload"]["data"] = {
-            ["lr_version"] = release_date,
-            ["apk_version"] = getApkVerInt(),
-            ["cpu_arch"] = get_cpu_arch():trim(),
-            ["cloud"] = cloud_get_task,
-            ["multi"] = multi_account_num_get()
-        }
-    end
-
-    local res, code = httpPost(url, JsonEncode(data), 5,
-        "Content-Type:application/json")
-    log("update_analytics", code)
-end

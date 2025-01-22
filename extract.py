@@ -440,7 +440,7 @@ def screencap_distance2(path="screencap"):
     print(all_list)
 
     # 滑动到最右边时 hd-1的x坐标相距屏幕中心的距离
-    shift_right = -86
+    shift_right = -0
     distance[1] = 0
     # EX和S关大部分在同一页上 少数不在
     same_page = len(list(screencap.glob("*.png"))) == 1
@@ -472,6 +472,7 @@ def screencap_distance2(path="screencap"):
             text = text.replace("--", "-")
             m = re.search("^.?.-(\d+)$", text)
             n = re.search("^.?.-.?.-(\d+)$", text)
+
             m = m or n
             if not m:
                 continue
@@ -537,7 +538,7 @@ def screencap_distance(path="screencap"):
     distance = defaultdict(int)
     shift_right = 0
     # 滑动到最右边时 hd-1的x坐标相距屏幕中心的距离
-    distance[1] = 360
+    distance[1] = 0
     for x in sorted(screencap.glob("*.png")):
         x = reader.readtext(str(x))
         print("x", x)
@@ -556,7 +557,11 @@ def screencap_distance(path="screencap"):
             text = text.replace("B12", "BI-2")
             text = text.replace(" ", "")
             text = text.replace("1C", "IC")
+            text = text.replace("ORG", "OR-6")
             text = text.replace("EX", "")
+            text = text.replace("4", "-4")
+            text = text.replace("1", "-1")
+            text = text.replace("UR", "")
             text = text.replace("--", "-")
             m = re.search("^.?.-(\d+)$", text)
             print("m", m)
@@ -568,6 +573,7 @@ def screencap_distance(path="screencap"):
             if point[m]:
                 continue
             point[m] = loc[0]
+        print(visible_point)
         for m in sorted(visible_point):
             if m in distance:
                 continue
@@ -584,7 +590,7 @@ def screencap_distance(path="screencap"):
         print(f'["HD-{x}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
 
     # 距离膨胀系数，部分活动需要微调
-    distanceExpansionCoefficient = 1.14
+    distanceExpansionCoefficient = 1.11
     for x in sorted(distance):
         p = distance[x] - shift_right
         p = int(p * distanceExpansionCoefficient)

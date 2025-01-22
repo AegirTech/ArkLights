@@ -2077,7 +2077,7 @@ path.基建信息获取 = function()
     -- exit()
 
     releaseCapture()
-
+    log(powerStation, tradingStation, manufacturingStation, dormitoryStation)
     log(1216, tradingStationLevel, manufacturingStationLevel, powerStationLevel,
         dormitoryLevel)
 end
@@ -2327,7 +2327,7 @@ path.总览换班 = function()
 
     path.跳转("基建")
     if not wait(function()
-            if findOne("基建总览工作区") then return true end
+            if findOne("基建总览工作区蓝") then return true end
             tap("进驻总览")
             ssleep(.2)
             if findOne("基建总览教程关闭") then
@@ -2343,7 +2343,7 @@ path.总览换班 = function()
     path.会客厅换班()
 
     if not wait(function()
-            if findOne("基建总览非工作区") then return true end
+            if not findOne("基建总览工作区蓝") then return true end
             tap("基建总览非工作区")
             ssleep(.5)
         end, 10) then
@@ -2600,7 +2600,7 @@ path.基建换班 = function()
     path.办公室换班()
     path.跳转("基建")
     if not wait(function()
-            if findOne("基建总览工作区") then return true end
+            if findOne("基建总览工作区蓝") then return true end
             tap("进驻总览")
             ssleep(.2)
             if findOne("基建总览教程关闭") then
@@ -5014,6 +5014,7 @@ removeTrailingDigits = function(str)
 end
 
 path.活动 = function(x)
+    log(1213123)
     local t = parse_time()
     if t >= hd_open_time_end then
         clean_hdfight()
