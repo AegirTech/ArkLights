@@ -1964,15 +1964,19 @@ point = {
         ["PR-D-0"] = "689|628|000000,693|646|FFFFFF,537|626|000000,699|671|FFFFFF",
 
         -- 教学关和故事判断一下蓝色的六边形,打过就不打了
+        ["HD-ST-1"] = "575|337|00B3FD",
+        ["HD-TR-1"] = "800|542|00B0FA",
         ["HD-1"] = { 960, 798 },
         ["HD-2"] = { 960, 798 },
         ["HD-3"] = { 960, 594 },
         ["HD-4"] = { 960, 387 },
         ["HD-5"] = { 960, 705 },
+        ["HD-ST-2"] = "1223|546|00B3FD",
         ["HD-6"] = { 960, 369 },
         ["HD-7"] = { 960, 522 },
         ["HD-8"] = { 960, 612 },
         ["HD-9"] = { 960, 612 },
+        ["HD-ST-3"] = "1216|633|00B3FD",
 
         ["CW-6"] = { 960, 603 },
         ["GT-5"] = { 1270, 570 },
@@ -3072,15 +3076,19 @@ center = {
 }
 
 distance = {
+    ["HD-ST-1"] = { swip_right_max, -0 },
+    ["HD-TR-1"] = { swip_right_max, -0 },
     ["HD-1"] = { swip_right_max, -0 },
     ["HD-2"] = { swip_right_max, -404 },
     ["HD-3"] = { swip_right_max, -581 },
     ["HD-4"] = { swip_right_max, -759 },
     ["HD-5"] = { swip_right_max, -1023 },
+    ["HD-ST-2"] = { swip_right_max, -1023 },
     ["HD-6"] = { swip_right_max, -1607 },
     ["HD-7"] = { swip_right_max, -1802 },
     ["HD-8"] = { swip_right_max, -2049 },
     ["HD-9"] = { swip_right_max, -2331 },
+    ["HD-ST-3"] = { swip_right_max, -2331 },
 
     ["CW-6"] = { swip_right_max, -1349 },
     ["GT-5"] = { swip_right_max, -1535 },
