@@ -274,7 +274,7 @@ read_local_config = function()
         local json = file:read("*a")
         local status
         status, account_data = pcall(JsonDecode, json)
-        if account_data == nil then
+        if not status then
             account_data = {}
             file:write("{}")
         end
