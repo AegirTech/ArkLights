@@ -1530,6 +1530,40 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
                 return
             end
         end,
+        基建全白判断 = function()
+            log('基建全白判断')
+            if not 基建白屏卡住时间 then
+                基建白屏卡住时间 = time()
+                log(基建白屏卡住时间)
+            end
+            if time() - 基建白屏卡住时间 > 15 * 1000 then
+                log('15s timeout')
+                if findOne('启动卡黑屏界面') then
+                    restartapp(appid)
+                    基建白屏卡住时间 = nil
+                end
+            else
+                log(time() - 基建白屏卡住时间)
+            end
+            ssleep(.1)
+        end,
+        基建全黑判断 = function()
+            log('基建全黑')
+            if not 基建黑屏卡住时间 then
+                基建黑屏卡住时间 = time()
+                log(基建黑屏卡住时间)
+            end
+            if time() - 基建黑屏卡住时间 > 15 * 1000 then
+                log('15s timeout')
+                if findOne('启动卡黑屏界面') then
+                    restartapp(appid)
+                    基建黑屏卡住时间 = nil
+                end
+            else
+                log(time() - 基建黑屏卡住时间)
+            end
+            ssleep(.1)
+        end,
     })
     if x == prev_jump and x ~= "首页" or disable_quick_jump then p.主页 = nil end
     p[target] = function()
@@ -1584,6 +1618,8 @@ update_state = function()
     car_checked = false
 
     启动界面卡住的时间 = nil
+    基建黑屏卡住时间 = nil
+    基建白屏卡住时间 = nil
 
     -- 禁用重复刷模式
     repeat_fight_mode = false

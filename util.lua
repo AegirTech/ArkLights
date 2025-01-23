@@ -1200,19 +1200,6 @@ zoom = function(retry)
         return true
     end
 
-    if retry > 8 then
-        if not wait(function()
-                if findOne("进驻总览") then return true end
-                ssleep(.1)
-            end, 15)
-        then
-            log("缩放时候未找到进驻，超时")
-            restartapp(appid)
-            return path.跳转("基建")
-        end
-    end
-
-
     log(696, findOne("进驻总览"))
     if not findOne("进驻总览") then return path.跳转("基建") end
     if findOne("缩放结束") then
