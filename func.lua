@@ -272,7 +272,12 @@ read_local_config = function()
     local file = io.open(filePath, "r")
     if file then
         local json = file:read("*a")
-        account_data = JsonDecode(json)
+        local status
+        status, account_data = pcall(JsonDecode, json)
+        if account_data == nil then
+            account_data = {}
+            file:write("{}")
+        end
         file:close()
         return
     else
@@ -1010,4 +1015,11 @@ copy_file_s = function(src, dest)
 
     src_file:close()
     dest_file:close()
+end
+
+clear_cache = function()
+    delfile(getWorkPath() .. "/account_data.json")
+    delfile(getWorkPath() .. "/HypergryphSdkPreferences.xml")
+    delfile("/storage/emulated/0/" .. package)
+    toast("清除缓存成功")
 end

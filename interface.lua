@@ -939,6 +939,8 @@ show_debug_ui = function()
 
     -- newRow(layout)
     -- ui.addCheckBox(layout, "disable_shift_mood", "高产换班忽略心情", false)
+    newRow(debug_layout_调试)
+    addButton(debug_layout_调试, nil, "清除缓存", "clear_cache()")
 
     newRow(debug_layout_调试)
     ui.addCheckBox(debug_layout_调试, "use_system_library", "使用系统支持库", true)
