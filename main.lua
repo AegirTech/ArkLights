@@ -52,8 +52,8 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "01.23 05:26"
-update_announcement = '最近更新：萨卡兹肉鸽种子/蓝图分队'
+release_date = "01.23 12:25"
+update_announcement = '最近更新：新年活动/基建修复'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -145,6 +145,10 @@ if use_local_dictionary then
 end
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug mode")
+    ssleep(1)
+    path.基建信息获取()
+    -- path.线索交流()
+    exit()
 end
 
 load(before_account_hook or '')()
