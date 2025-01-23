@@ -3171,12 +3171,41 @@ path.线索交流 = function()
     if not f(0) then return end
     if not appear("线索传递") then return end
     path.线索布置()
+    path.会客室信用收集()
 end
 
 -- tap with offset -50,50
 tapCard = function(k)
     local x, y = point[k]:match("(%d+)" .. coord_delimeter .. "(%d+)")
     tap({ tonumber(x) - scale(50), tonumber(y) + scale(50) })
+end
+
+path.会客室信用收集 = function()
+    log("会客室信用收集")
+    back()
+    if not appear({ "进驻信息", "会客室点开信用家具" }) then return end
+    if not wait(function()
+            if findOne("会客室点开信用家具变黄") then return true end
+            tap("会客室点开信用家具")
+        end, 10) then
+        return
+    end
+
+    local ret = find_color("会客室信用家具查找范围", "FFE30A", 0, 0.9)
+    if not ret then return end
+
+    if not wait(function()
+            if findOne("会客室信用右上角橙") then return true end
+            tap(ret)
+            ssleep(.5)
+        end, 5) then
+        return
+    end
+
+    if findOne("会客室信用领取橙") then
+        tap("会客室信用领取橙")
+        back()
+    end
 end
 
 path.线索布置 = function()
