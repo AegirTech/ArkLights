@@ -1565,6 +1565,10 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
             ssleep(.1)
         end,
     })
+    if x ~= "基建" then
+        p["基建全白判断"] = nil
+        p["基建全黑判断"] = nil
+    end
     if x == prev_jump and x ~= "首页" or disable_quick_jump then p.主页 = nil end
     p[target] = function()
         if prev_jump == "基建" and x == "基建" and not leaving_jump then
