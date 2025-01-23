@@ -1949,7 +1949,7 @@ path.宿舍换班 = function()
 end
 
 -- 各站数量与等级，直接全局变量
-path.基建信息获取 = function()
+path.基建信息获取 = function(retry)
     dormitoryCapacity = 0
     dormitoryLevelSum = 0
     dormitoryNum = 0
@@ -1971,7 +1971,8 @@ path.基建信息获取 = function()
     isCharExsit = {}
 
     path.跳转("基建")
-
+    -- 再执行一次
+    zoom()
     local type2color = {
         制造站 = "#FFCC00",
         贸易站 = "#33CCFF",
@@ -2082,6 +2083,17 @@ path.基建信息获取 = function()
     log(powerStation, tradingStation, manufacturingStation, dormitoryStation)
     log(1216, tradingStationLevel, manufacturingStationLevel, powerStationLevel,
         dormitoryLevel)
+    if tradingStationLevel == {} or manufacturingStationLevel == {} or powerStationLevel == {} then
+        log("基建信息获取可能出错")
+        local retry = retry or 0
+        if retry < 3 then
+            return path.基建信息获取(retry + 1)
+        end
+    end
+    if #tradingStationLevel + #manufacturingStationLevel + #powerStationLevel < 9 then
+        log("基建信息获取可能失败2")
+        return path.基建信息获取(3)
+    end
 end
 
 -- trading 是否是贸易站
