@@ -3054,10 +3054,10 @@ path.线索交流 = function()
         end, 5) then
         return
     end
-    if not appear({ "进驻信息", "进驻信息选中" }) then return end
+    if not appear({ "进驻信息", "会客室点开线索" }) then return end
     if not wait(function()
             if findAny({ "线索传递", "本次线索交流活动" }) then return true end
-            tap("制造站进度")
+            tap("会客室点开线索")
         end, 10) then
         return
     end
