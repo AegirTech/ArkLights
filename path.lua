@@ -1583,6 +1583,8 @@ start_time = parse_time("202101010400")
 update_state = function()
     car_checked = false
 
+    启动界面卡住的时间 = nil
+
     -- 禁用重复刷模式
     repeat_fight_mode = false
     pre_fight = nil
