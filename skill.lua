@@ -1840,7 +1840,7 @@ powerStationOperatorBest = function(operator)
     for _, o in pairs(operator) do
         local s = 0
         for _, icon in pairs({ o[1], o[2] }) do
-            if icon == "bskill_pow_count" then --程曦格雷伊2 发电站数量+1
+            if icon == "bskill_pow_count" then --承曦格雷伊2 发电站数量+1
                 if isCharExsit["正义骑士号"] or isCharExsit["作业平台"] then
                     s = s - 1
                 else
@@ -1864,8 +1864,8 @@ powerStationOperatorBest = function(operator)
                 s = s + 0.13
             elseif icon == "bskill_power_rec_rhine" then --缪尔赛思
                 s = s + 0.11
-            elseif icon == "bskill_pow_drone" then
-                s = s + 0.2
+            elseif icon == "bskill_pow_drone" then       --承曦格雷伊1，无人机上限/10
+                s = s + 0.22
             elseif icon == "bskill_pow_spd3" then
                 s = s + 0.2
                 if table.findv({ "Lancet-2", "Castle-3", "THRM-EX", "正义骑士号", "Friston-3", "PhonoR-0" }, o[6]) then
