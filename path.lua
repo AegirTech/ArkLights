@@ -2123,12 +2123,13 @@ path.基建信息获取 = function(retry)
     log(powerStation, tradingStation, manufacturingStation, dormitoryStation)
     log(1216, tradingStationLevel, manufacturingStationLevel, powerStationLevel,
         dormitoryLevel)
+    if retry > 2 then
+        return
+    end
     if tradingStationLevel == {} or manufacturingStationLevel == {} or powerStationLevel == {} then
         log("基建信息获取可能出错")
         local retry = retry or 0
-        if retry < 3 then
-            return path.基建信息获取(retry + 1)
-        end
+        return path.基建信息获取(retry + 1)
     end
     if #tradingStationLevel + #manufacturingStationLevel + #powerStationLevel < 9 then
         log("基建信息获取可能失败2")
