@@ -2404,11 +2404,9 @@ path.总览换班 = function()
     end
     log(1035)
 
-    if appear("总览换班锁定编辑", 1.5) then
+    if appearTap("总览换班锁定编辑", 1.5) then
         ssleep(.5)
-        tap("总览换班锁定编辑")
-        appear("总览换班锁定清空", 3)
-        tap("总览换班锁定清空")
+        appearTap("总览换班锁定清空", 3)
         ssleep(.5)
         tap("总览换班锁定确认")
     end
@@ -2416,19 +2414,18 @@ path.总览换班 = function()
     wait(function()
         if findOne("总览换班锁定编辑") then return true end
         tap("总览换班锁定确认")
+        ssleep(.5)
     end, 3)
 
-    appear("非工作区绿色")
-    local sp = sample("总览换班弹出")
-    if not wait(function()
-            if findOne("基建干员休整灰") and findOne("非工作区绿色") then return true end
-            tap("基建干员休整")
-            ssleep(.2)
-            disappear("正在释放神经递质", 5)
-        end, 10) then
-        return
-    end
-    appear(sp, 10)
+    -- appear("非工作区绿色")
+    -- if not wait(function()
+    --         if findOne("基建干员休整灰") and findOne("非工作区绿色") then return true end
+    --         tap("基建干员休整")
+    --         ssleep(.2)
+    --         disappear("正在释放神经递质", 5)
+    --     end, 10) then
+    --     return
+    -- end
 
     local f2 = function()
         if isCharExsit["迷迭香"] or isCharExsit["鸿雪"] then
