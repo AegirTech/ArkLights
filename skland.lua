@@ -11,7 +11,7 @@ API = "https://zonai.skland.com/api/v1"
 Skland_app_code = '4ca99fa6b56cc2ba'
 Skland_sign_token = "" -- 新版森空岛签名使用
 cred = ""
-s_did = "Bhi+n3V0eVXaBxsh5G7oeZ9CV6kaTu/deEmazBCN063BVnFjZogK5bptnvNpc6rhBiQ8UN+5Va6+wARWMovetog=="
+s_did = "Bx5OkK8qwdR/Xigp+Y7IJ2a2vNRqO3cHtOUuKDWwTD/IJGtYGkpts++flC1ehEKYgg6RRyd8i940PsUYGQrLYig=="
 
 Headers = {
     ["User-Agent"]   =
@@ -290,6 +290,8 @@ skland_daily_checkin = function(account, password)
     if list == nil then
         log("森空岛签到失败")
         table.insert(qqmessage, "森空岛签到失败,获取绑定id失败")
+        account_data[account]["cred"] = ""
+        save_local_config()
         return false
     end
     for i, v in pairs(list) do
@@ -305,6 +307,9 @@ skland_daily_checkin = function(account, password)
             table.insert(qqmessage, "森空岛签到重复")
         else
             table.insert(qqmessage, "森空岛签到未知错误，请联系开发者")
+            account_data[account]["cred"] = ""
+            save_local_config()
+            return false
         end
     end
     account_data[account]["binding"] = list
