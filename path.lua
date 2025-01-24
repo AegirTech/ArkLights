@@ -2517,7 +2517,6 @@ path.总览换班 = function()
 
     local first_look = false
     if disable_control_shift and disable_meeting_shift then first_look = true end
-    local visitedy = {}
     local f = function()
         -- 0.1 是 从干员列表退出后 取消连续点击 保证滑动手势有效
         -- 0.5 是 首次进入界面时 需要多点时间
@@ -2680,31 +2679,29 @@ path.总览换班 = function()
         return true
     end
     appear("非工作区绿色", .2)
-    local bottom
     排除已经进驻 = true
-    for i = 1, 4 do
-        if i ~= 1 then
-            if not appear(bottom, 3) then
-                if findOne("非工作区绿色") then
-                    ssleep(1)
-                    bottom = sample("进驻总览底部")
-                elseif findOne("确认蓝") then
-                    back()
-                    ssleep(1)
-                    if not appear("非工作区绿色", 3) then
-                        table.insert(qqmessage, "总览换班失败")
-                        return
-                    end
-                end
+    for i = 1, 6 do
+        if findOne("非工作区绿色") then
+            ssleep(1)
+            bottom = sample("进驻总览底部")
+        elseif findOne("确认蓝") then
+            back()
+            ssleep(1)
+            if not appear("非工作区绿色", 3) then
+                table.insert(qqmessage, "总览换班失败")
+                return
             end
+        else
+            table.insert(qqmessage, "总览换班失败2")
+            return
         end
-        visitedy = {}
-        bottom = sample("进驻总览底部")
         local finx_x = findAny({ "宿舍未满员1", "宿舍未满员2", "宿舍未满员3", "宿舍未满员4" })
         if finx_x then
-            tap(finx_x)
-            disappear(bottom, 1)
-            ssleep(.5)
+            wait(function()
+                if findOne("确认蓝") then return true end
+                tap(finx_x)
+                ssleep(.5)
+            end, 5)
             f()
             log(475)
             -- while f() do log(475) end
@@ -2716,7 +2713,7 @@ path.总览换班 = function()
         -- f()
         if findOne("确认蓝") then
             back()
-            appear(bottom, 3)
+            appear("非工作区绿色", 3)
         end
         log(1099, i)
     end
