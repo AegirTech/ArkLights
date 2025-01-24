@@ -2421,7 +2421,7 @@ path.总览换班 = function()
     appear("非工作区绿色")
     local sp = sample("总览换班弹出")
     if not wait(function()
-            if findOne("基建干员休整灰") or findOne("非工作区绿色") then return true end
+            if findOne("基建干员休整灰") and findOne("非工作区绿色") then return true end
             tap("基建干员休整")
             ssleep(.2)
             disappear("正在释放神经递质", 5)
@@ -2679,13 +2679,22 @@ path.总览换班 = function()
         ssleep(1)
         return true
     end
+    appear("非工作区绿色", .2)
     local bottom
     排除已经进驻 = true
     for i = 1, 4 do
         if i ~= 1 then
-            if not appear(bottom, 1) then
-                if not findAny({ "基建总览工作区", "基建总览非工作区" }) then
-                    stop('总览换班滑动异常', 'cur')
+            if not appear(bottom, 3) then
+                if findOne("非工作区绿色") then
+                    ssleep(1)
+                    bottom = sample("进驻总览底部")
+                elseif findOne("确认蓝") then
+                    back()
+                    ssleep(1)
+                    if not appear("非工作区绿色", 3) then
+                        table.insert(qqmessage, "总览换班失败")
+                        return
+                    end
                 end
             end
         end
@@ -2700,7 +2709,7 @@ path.总览换班 = function()
             log(475)
             -- while f() do log(475) end
         end
-        -- appear("非工作区绿色", 5)
+        appear("非工作区绿色", 5)
         -- tap("宿舍未满员" .. i)
         -- disappear(bottom, 1)
         -- ssleep(.5)
