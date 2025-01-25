@@ -1096,7 +1096,7 @@ findBuildingSkill = function(x1, y1, x2, y2, pngdata)
             best = k
         end
     end
-    log(2208, best_score, best, x1, y1, x2, y2)
+    --log(2208, best_score, best, x1, y1, x2, y2)
     --exit()
     return best
 end

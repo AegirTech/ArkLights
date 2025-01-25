@@ -145,7 +145,7 @@ else
         --[[if max_height then
 	r = table.filter(r, function(x) return (x.b - x.t) <= max_height end)
 	end]]
-        print("ocroutput", res)
+        --print("ocroutput", res)
 
         --释放 LuaEngine.snapShot 截取的图片 如不释放会导致内存溢出
         if BitMap ~= nil and BitMap.isRecycled() == false then
