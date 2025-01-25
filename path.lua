@@ -3011,14 +3011,14 @@ path.加工站选人 = function(stationType, material_id, material_level)
     return true
 end
 
-path.会客厅换班 = function(stationType, a)
+path.会客厅换班 = function(stationType, force_change)
     if disable_meeting_shift and not stationType then return end
 
     stationType = stationType or "会客厅"
     log(2946, stationType)
 
     -- 检查是否缺人，不缺不换
-    if not a and not appear("入驻干员" .. stationType, .5) and findOne("基建总览工作区") and
+    if not force_change and not appear("入驻干员" .. stationType, .5) and findOne("基建总览工作区") and
         not findOne("入驻干员" .. stationType) then
         log("无入驻干员")
         return
