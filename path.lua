@@ -2380,7 +2380,7 @@ path.总览换班 = function()
 
     path.跳转("基建")
     if not wait(function()
-            if findOne("基建总览工作区蓝") then return true end
+            if findOne("基建总览工作区") then return true end
             tap("进驻总览")
             ssleep(.2)
             if findOne("基建总览教程关闭") then
@@ -2396,7 +2396,7 @@ path.总览换班 = function()
     path.会客厅换班()
 
     if not wait(function()
-            if not findOne("基建总览工作区蓝") then return true end
+            if not findOne("基建总览工作区") then return true end
             tap("基建总览非工作区")
             ssleep(.5)
         end, 10) then
@@ -2737,7 +2737,7 @@ path.基建换班 = function()
     path.办公室换班()
     path.跳转("基建")
     if not wait(function()
-            if findOne("基建总览工作区蓝") then return true end
+            if findOne("基建总览工作区") then return true end
             tap("进驻总览")
             ssleep(.2)
             if findOne("基建总览教程关闭") then
@@ -2754,9 +2754,9 @@ path.基建换班 = function()
     path.总览换班()
 end
 
-path.控制中枢换班 = function(a)
+path.控制中枢换班 = function(force_change)
     if disable_control_shift then return end
-    return path.会客厅换班("控制中枢", a)
+    return path.会客厅换班("控制中枢", force_change)
 end
 
 path.发电站换班 = function()
@@ -3016,11 +3016,12 @@ path.会客厅换班 = function(stationType, force_change)
 
     stationType = stationType or "会客厅"
     log(2946, stationType)
-
+    ssleep(.1)
+    log(findOne("入驻干员控制中枢"))
+    log(findOne("基建总览工作区"))
     -- 检查是否缺人，不缺不换
-    if not force_change and not appear("入驻干员" .. stationType, .5) and findOne("基建总览工作区") and
-        not findOne("入驻干员" .. stationType) then
-        log("无入驻干员")
+    if not force_change and not appear("入驻干员" .. stationType, .5) and findOne("基建总览工作区") then
+        log("无需入驻干员")
         return
     end
 
@@ -3031,6 +3032,7 @@ path.会客厅换班 = function(stationType, force_change)
         end, 10) then
         return
     end
+
 
     -- 清空选择
     local start_time = time()
