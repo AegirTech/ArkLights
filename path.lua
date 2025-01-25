@@ -2417,15 +2417,15 @@ path.总览换班 = function()
         ssleep(.5)
     end, 3)
 
-    -- appear("基建总览非工作区")
-    -- if not wait(function()
-    --         if findOne("基建干员休整灰") and findOne("基建总览非工作区") then return true end
-    --         tap("基建干员休整")
-    --         ssleep(.2)
-    --         disappear("正在释放神经递质", 5)
-    --     end, 10) then
-    --     return
-    -- end
+    appear("基建总览非工作区")
+    if not wait(function()
+            if findOne("基建干员休整灰") and findOne("基建总览非工作区") then return true end
+            tap("基建干员休整")
+            ssleep(.2)
+            disappear("正在释放神经递质", 5)
+        end, 10) then
+        return
+    end
 
     local f2 = function()
         if isCharExsit["迷迭香"] or isCharExsit["鸿雪"] then
@@ -2456,11 +2456,23 @@ path.总览换班 = function()
             ssleep(.2)
             tap("基建技能排序")
             ssleep(.2)
+            tap("基建换班筛选")
+            wait(function()
+                if findOne("基建换班筛选弹出窗口") then
+                    ssleep(.1)
+                    tap("基建换班筛选未进驻")
+                    return true
+                end
+            end, 5)
+            ssleep(.2)
             chooseOperator(stationType)
             ssleep(.2)
-            tap("基建工作状态排序")
+            tap("基建心情排序")
+            ssleep(.2)
+            tap("基建心情排序")
             ssleep(.2)
             local start_time = time()
+
             if not wait(function()
                     if findOne("干员未选中") and findOne("第一干员未选中") then
                         return true
@@ -2477,7 +2489,6 @@ path.总览换班 = function()
 
             log("limit", limit)
 
-            -- 排除异格干员
             local operator = {}
             discover(operator, {}, 1, true)
             log("1905", operator)
@@ -2500,7 +2511,7 @@ path.总览换班 = function()
             if not wait(function(reset_wait_start_time)
                     if findAny({ "基建总览非工作区", "基建总览干员休整" }) then return true end
                     tap("确认蓝")
-                    ssleep(.5) --点太快点到休整就白换了
+                    ssleep(.8) --点太快点到休整就白换了
                     if findOne("正在提交反馈至神经") then
                         reset_wait_start_time()
                     end
@@ -2526,7 +2537,7 @@ path.总览换班 = function()
         -- 至少做两次"入驻干员"检测，慢机只靠timeout不够可能，强制加一次
         if not appear("入驻干员", timeout) and findOne("基建总览非工作区") and
             not findOne("入驻干员") then
-            log("无入驻干员")
+            log("无需入驻干员")
             return
         end
 
@@ -2556,18 +2567,15 @@ path.总览换班 = function()
             end, 5) then
             return
         end
-
+        tap("基建换班筛选")
         wait(function()
-            if findOne("基建换班筛选未进驻变蓝") then return true end
             if findOne("基建换班筛选弹出窗口") then
+                ssleep(.1)
                 tap("基建换班筛选未进驻")
-                ssleep(.5)
-                if findOne("基建换班筛选未进驻变蓝", 1) then return true end
+                return true
             end
-            tap("基建换班筛选")
-            ssleep(.5)
         end, 5)
-
+        ssleep(.2)
         wait(function()
             if findOne("基建心情升序") then
                 return true
@@ -2754,9 +2762,9 @@ path.基建换班 = function()
     path.总览换班()
 end
 
-path.控制中枢换班 = function(a)
+path.控制中枢换班 = function(force_change)
     if disable_control_shift then return end
-    return path.会客厅换班("控制中枢", a)
+    return path.会客厅换班("控制中枢", force_change)
 end
 
 path.发电站换班 = function()
@@ -2823,7 +2831,7 @@ path.发电站换班 = function()
 
         wait(function(reset_wait_start_time)
             tap("确认蓝")
-            if findAny({ "进驻信息", "进驻信息选中" }) then
+            if findAny({ "进驻信息", "进驻信息选中", "基建总览工作区" }) then
                 return true
             end
             if findOne("正在提交反馈至神经") then
@@ -3011,6 +3019,7 @@ path.加工站选人 = function(stationType, material_id, material_level)
     return true
 end
 
+-- 2025基建更新之后改为在基建总览换班
 path.会客厅换班 = function(stationType, force_change)
     if disable_meeting_shift and not stationType then return end
 
@@ -3054,7 +3063,8 @@ path.会客厅换班 = function(stationType, force_change)
 
     if not wait(function(reset_wait_start_time)
             tap("确认蓝")
-            if findOne("撤下干员") then return true end
+            ssleep(.5)
+            if findAny({ "撤下干员", "基建总览工作区" }) then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
         end, 3) then
         return
