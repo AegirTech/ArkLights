@@ -3213,7 +3213,7 @@ path.制造加速 = function(only)
     end)
     if not wait(function()
             if findOne("制造站加速") then return true end
-            tap("无人机加速确定")
+            tap("无人机加速确定2")
         end, 5) then
         return
     end
