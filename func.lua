@@ -979,6 +979,10 @@ detect_simulators = function()
 end
 
 upload_log = function()
+    if not write_log then
+        ui.setButton("upload_log_server", "请先勾选保存日志到本地")
+        return
+    end
     ui.setButton("upload_log_server", "上传日志中，请稍后")
     local url = "https://arktoken.enlysure.com:21999/upload_log?verify=arklights"
     local log_path = log_path .. "log_backup.txt"
