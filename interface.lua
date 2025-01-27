@@ -98,6 +98,7 @@ make_account_ui = function(layout, prefix)
     newRow(layout)
     addTextView(layout, "商店购买黑名单")
     ui.addEditText(layout, prefix .. "shop_buy_black", "增补条 ")
+    ui.addCheckBox(layout, prefix .. "accelerate_trading", "无人机用于贸易站", false)
 
     newRow(layout)
     addTextView(layout, "自动招募")

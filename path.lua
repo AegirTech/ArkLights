@@ -3071,8 +3071,99 @@ path.会客厅换班 = function(stationType, force_change)
     end
 end
 
+path.贸易站加速 = function()
+    path.跳转("基建")
+    local station
+    for i = 1, #point.基建左侧列表 do
+        local x, y = table.unpack(point["基建左侧列表" .. i])
+        log(x, y, default_findcolor_confidence)
+        log(type(default_findcolor_confidence))
+        if compareColor(x, y, "#33CCFF", default_findcolor_confidence) then -- 贸易站
+            station = x .. coord_delimeter .. y .. coord_delimeter .. "#33CCFF"
+            point.station = station
+            rfl.station = true
+            break
+        end
+    end
+    log(2035)
+    if not station then return end
+    log(station)
+    if not wait(function()
+            if not findOne("进驻总览") or not findOne("缩放结束") then
+                return true
+            end
+            tap("station")
+        end, 5) then
+        return
+    end
+
+    wait(function()
+        if findAny({ "贸易站设施列表1", "未进驻设施列表1" }) then
+            return true
+        end
+        tap("贸易站进度")
+    end, 5)
+
+    good = findAny({ "龙门商法", "开采协力" }) or "龙门商法"
+
+    log(2036, good)
+    if not good then
+        log("未进入")
+        return
+    end
+    if not disappear("制造站补货通知", 10) then return end
+    log(2037)
+
+
+    local f = function()
+        if not wait(function()
+                if findOne("无人机加速") then return true end
+                tap("贸易站第一订单加速")
+            end, 10) then
+            return
+        end
+
+        -- appear("无人机加速加", .5)
+        wait(function()
+            if not findOne("无人机加速加") then return true end
+            tap("无人机加速最大")
+        end)
+        if not wait(function()
+                if findAny("贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付") then return true end
+                tap("无人机加速确定")
+                ssleep(.5)
+            end, 5) then
+            return
+        end
+        return true
+    end
+    for i = 1, 5 do
+        local px = appear({ "贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付" }, 5)
+        if px == "贸易站第一不可交付" then
+            log("贸易站材料缺少")
+            accelerate_trading = false
+            return path.制造加速()
+        end
+        if px == "贸易站第一可交付" then
+            tap("贸易站第一可交付")
+            appear("贸易站第一订单加速", 5)
+        end
+        if i > 2 and px ~= "贸易站第一可交付" then
+            log("无人机使用完毕")
+            return true
+        end
+        appear("贸易站第一订单加速", 5)
+        tap("贸易站第一订单加速")
+        f()
+        log(2038)
+    end
+end
+
 ---@param only any 不从基建跳转仅仅加速
 path.制造加速 = function(only)
+    if not only and accelerate_trading then
+        return path.贸易站加速()
+    end
     if not only then
         path.跳转("基建")
         local station
