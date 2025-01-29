@@ -3367,7 +3367,18 @@ end
 
 path.会客室信用收集 = function()
     log("会客室信用收集")
-    back()
+    path.跳转("基建")
+
+    if not wait(function()
+            if not findOne("进驻总览") or not findOne("缩放结束") then
+                return true
+            end
+            tap("会客厅")
+            disappear("进驻总览", 2)
+        end, 5) then
+        return
+    end
+    log(1036)
     if not appear({ "进驻信息", "会客室点开信用家具" }) then return end
     if not wait(function()
             if findOne("会客室点开信用家具变黄") then return true end
@@ -3389,7 +3400,6 @@ path.会客室信用收集 = function()
 
     if findOne("会客室信用领取橙") then
         tap("会客室信用领取橙")
-        back()
     end
 end
 
