@@ -984,26 +984,6 @@ path.fallback = {
             if appear("面板", 1) then return true end
         end, 5)
     end,
-    新年祝福返回 = function()
-        wait(function()
-            --tap("新年祝福签到")
-            if not findOne("新年祝福奖励领取界面") then tap("新年祝福签到") end
-        end, 1.5)
-        wait(function()
-            if findAny({ "新年祝福返回", "面板" }) then return true end
-            tap("开包skip")
-        end, 2)
-        wait(function()
-            for h = 200, 951, 150 do
-                if findOne("新年祝福返回") then
-                    tap({ scale(1300), scale(h) })
-                    ssleep(.5)
-                end
-            end
-            tap("开包skip")
-            if findAny({ "新年祝福返回", "面板" }) then return true end
-        end, 10)
-    end,
     -- 战备支援签到返回 = function()  --有误判
     --     wait(function()
     --         tap("战备支援签到")
