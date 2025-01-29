@@ -1131,8 +1131,7 @@ path.限时活动 = function(retry)
             '活动签到返回', '抽签返回', '限时开放许可',
             "限时幸运签", "月饼", '产业合作洽谈会',
             '红包', "祈愿牌返回", '五周年专享月卡返回',
-            "生日设置返回",
-            --"新年祝福返回",'国庆签到返回','感谢庆典返回',
+            "生日设置返回", "新年祝福返回", '国庆签到返回', '感谢庆典返回',
         })
         if findOne('红包') then
             wait(function()
@@ -3133,7 +3132,7 @@ path.贸易站加速 = function()
         end)
         if not wait(function()
                 if findAny("贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付") then return true end
-                tap("无人机加速确定")
+                tap("无人机加速确定2")
                 ssleep(.5)
             end, 5) then
             return
@@ -3216,7 +3215,7 @@ path.制造加速 = function(only)
     end)
     if not wait(function()
             if findOne("制造站加速") then return true end
-            tap("无人机加速确定2")
+            tap("无人机加速确定")
         end, 5) then
         return
     end
