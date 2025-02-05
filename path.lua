@@ -2410,8 +2410,8 @@ path.总览换班 = function()
             if findOne("基建总览工作区") then return true end
             tap("进驻总览")
             ssleep(.2)
-            if findOne("基建总览教程关闭") then
-                tap("基建总览教程关闭")
+            if findOne("教程关闭") then
+                tap("教程关闭")
                 ssleep(.2)
             end
         end, 10) then
@@ -2775,8 +2775,8 @@ path.基建换班 = function()
             if findOne("基建总览工作区") then return true end
             tap("进驻总览")
             ssleep(.2)
-            if findOne("基建总览教程关闭") then
-                tap("基建总览教程关闭")
+            if findOne("教程关闭") then
+                tap("教程关闭")
                 ssleep(.2)
             end
         end, 10) then
@@ -5745,6 +5745,7 @@ path.活动页面寻找 = function(n)
                 ssleep(0.1)
             end
             if findOne("跳过剧情") then path.跳过剧情() end
+            if findOne("教程关闭") then tap("教程关闭") end
         end, 5) then
         path.活动页面寻找(n + 1)
     end
