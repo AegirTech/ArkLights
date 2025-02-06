@@ -1208,7 +1208,7 @@ end
         点战斗()
         cost = tonumber(获得cost() or cost) or cost
 
-        wavetxt = 获得敌人数(是否剿灭图)
+        wavetxt = 获得敌人数(是否剿灭图) or 0
         --print("当前波次", wavetxt)
         local number = tonumber(string.match(wavetxt, "%d+"))
         if number and number - wave < 5 then wave = number end
@@ -1542,7 +1542,7 @@ end
         点战斗()
         cost = tonumber(获得cost() or cost) or cost
 
-        wavetxt = 获得敌人数(是否剿灭图)
+        wavetxt = 获得敌人数(是否剿灭图) or 0
         --print("当前波次", wavetxt)
         local number = tonumber(string.match(wavetxt, "%d+"))
         if number and number - wave < 5 then wave = number end
@@ -2071,7 +2071,8 @@ end
 获得敌人数 = function(a)
     local ret
     if use_local_dictionary then
-        ret = TURING.图灵识别({ { 屏幕范围 = point["敌人数范围" .. a] }, { { 二值化 = { "41-166" } } }, { 范围投影 = { 1, 1 } }, { 六十四进制字库数组 = { 杀敌数字库(screen.height) } }, { 0 } })
+        ret = TURING.图灵识别({ { 屏幕范围 = point["敌人数范围" .. a] }, { { 二值化 = { "41-166" } } }, { 范围投影 = { 1, 1 } }, { 六十四进制字库数组 = { 杀敌数字库(screen.height) } }, { 0 } }) or
+            0
     else
         ret = ocro("敌人数范围" .. a)
     end
