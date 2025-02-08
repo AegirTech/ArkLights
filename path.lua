@@ -5732,7 +5732,20 @@ hd_wrapper = function(func)
 end
 
 path.活动页面寻找 = function(n)
-    local n = n or 1
+    local check_time = function()                         -- 离活动结束只有1星期时自动点击下面活动
+        local current_time = os.time()                    -- 当前时间
+        local time_diff = hd_open_time_end - current_time -- 时间差（秒）
+        local n
+        -- 如果时间差小于7天（7天 * 24小时/天 * 60分钟/小时 * 60秒/分钟）
+        if time_diff < 7 * 24 * 60 * 60 then
+            n = 2
+        else
+            n = 1 -- 如果时间差大于等于7天，可以设置为其他值，这里假设为1
+        end
+        return n
+    end
+
+    local n = n or check_time()
     if n > 3 then return false end
     path.跳转("首页")
     local l = { "面板活动", "面板活动2", "面板作战" }
@@ -5998,10 +6011,11 @@ path.活动商店购买 = function()
                 if not wait(function()
                         tap("活动任务一键领取")
                         ssleep(0.2)
-                        if findOne("活动任务页面") then return end
+                        if findOne("活动任务页面") then return true end
                     end, 7) then
                 end
             end
+            ssleep(0.2)
             tap("返回")
             appear("活动商店导航", 1.5)
         end
