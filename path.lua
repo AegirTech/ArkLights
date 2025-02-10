@@ -1122,7 +1122,7 @@ path.fallback = {
             "签到返回", "签到返回黄", "活动签到返回",
             "抽签返回", "战略返回", '限时开放许可', "限时幸运签",
             "线索传递界面", "阿米娅", "可露希尔", "生日设置返回",
-            "新春限时签到2025"
+            -- "新春限时签到2025"
             --'五周年专享月卡返回',
             --"新年祝福返回", "国庆签到返回", '感谢庆典返回',
         }, .1)
@@ -1155,7 +1155,9 @@ path.限时活动 = function(retry)
             '活动签到返回', '抽签返回', '限时开放许可',
             "限时幸运签", "月饼", '产业合作洽谈会',
             '红包', "祈愿牌返回", '五周年专享月卡返回',
-            "生日设置返回", "新春限时签到2025", '国庆签到返回', '感谢庆典返回',
+            "生日设置返回", '国庆签到返回', '感谢庆典返回',
+            -- "新春限时签到2025",
+
         })
         if findOne('红包') then
             wait(function()
@@ -1497,7 +1499,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
                 target, "活动公告返回", "签到返回", "签到返回黄",
                 "活动签到返回", "国庆签到返回", "抽签返回",
                 "单选确认框", "返回3", "阿米娅", "生日设置返回",
-                "新春限时签到2025"
+                -- "新春限时签到2025"
             }, timeout)
             log(209)
         end,
@@ -7945,6 +7947,7 @@ path.肉鸽任务 = function()
     log("肉鸽任务开始")
     if zl_ky then
         log("傀影")
+        zl.放弃未结束的肉鸽探索()
         zl_level_enough = false
         傀影肉鸽完成 = false
         zl_skip_coin = zl_skip_coin_ky
@@ -7979,6 +7982,7 @@ path.肉鸽任务 = function()
 
     if zl_mizuki then
         log("水月任务开始")
+        zl.放弃未结束的肉鸽探索()
         水月肉鸽完成 = false
         zl_level_enough = false
         zl_skip_coin = zl_skip_coin_mizuki
@@ -7996,7 +8000,8 @@ path.肉鸽任务 = function()
     end
 
     if zl_sami then
-        log("萨卡兹")
+        log("萨米")
+        zl.放弃未结束的肉鸽探索()
         萨米肉鸽完成 = false
         zl_skip_coin = zl_skip_coin_sami
         zl_only_coin = zl_only_coin_sami
@@ -8014,6 +8019,7 @@ path.肉鸽任务 = function()
 
     if zl_skz then
         log("萨卡兹")
+        zl.放弃未结束的肉鸽探索()
         萨卡兹肉鸽完成 = false
         zl_level_enough = false
         zl_skip_coin = zl_skip_coin_skz

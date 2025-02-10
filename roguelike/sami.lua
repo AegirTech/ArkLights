@@ -21,6 +21,7 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
         toast(in_fight_return or '重开')
         ssleep(3)
         if not request_memory_clean() then
+            log('点天赋')
             path.探索者的银淞止境前瞻投资(true)
         else
             path.跳转("首页")
@@ -49,9 +50,15 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     zl_level_coin_enough()
 
     --点天赋
-    -- if lighter and not lighter_enough and not zl_disable_lighter then
-    -- end
+    if not zl_disable_lighter and lighter and not findOne("萨米技能树满级") then
+        zl.萨米点天赋()
+    end
 
+    --发现还在冷却中的话，去尝试点天赋
+    if findOne('萨米_常规行动') and findOne('萨米_探索冷却中') then
+        zl.萨米点天赋()
+        return
+    end
 
     if not wait(function(reset_wait_start_time)
             if findOne("战略返回") then return true end
@@ -75,10 +82,15 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     if jumpout then return end
 
     -- 开始探索 一路按到 招募干员
+    local timeout = time()
     local first_time_see_first_card = 0
     if not wait(function(reset_wait_start_time)
             if findOne("萨米_初始招募") then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+            if time() - timeout > 3 * 1000 and findOne('萨米_选择难度界面') then
+                tap('萨米_选择难度界面')
+                timeout = time()
+            end
             tap("战略确认")
             tap("战略确认")
             tap("战略确认")

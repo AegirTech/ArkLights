@@ -1,6 +1,140 @@
 -- 肉鸽通用函数
 zl = {}
 
+
+zl.萨米点天赋 = function()
+    do
+        local xf = function()
+            gesture({
+                {
+                    point = {
+                        { screen.width * 0.95,                      screen.height / 2 },
+                        { screen.width * 0.95 - screen.width * 0.8, screen.height / 2 }
+                    },
+                    start = 0,
+                    duration = 1500
+                }
+            })
+            ssleep(3)
+        end
+        local f = function()
+            if not wait(function()
+                    if findOne("萨米技能树页面") then
+                        return true
+                    end
+                    tap("萨米技能树")
+                end, 3) then
+                return
+            end
+            if not upgraded then
+                ssleep(2)
+                tap("萨米技能树优先列表1")
+                ssleep(2)
+                tap("萨米技能树升级")
+                ssleep(0.7)
+                for i = 2, #point["萨米技能树优先列表"] do
+                    if findOne("萨米技能树未解锁") or findOne("萨米技能树点数不足") then
+                        return
+                    end
+                    tap("萨米技能树优先列表" .. i)
+                    ssleep(0.7)
+                    tap("萨米技能树升级")
+                    ssleep(0.7)
+                    if i == 4 or i == 9 then
+                        tap("萨米技能树翻页")
+                        ssleep(1)
+                    end
+                    if i == 13 then
+                        xf()
+                    end
+                    if i == 14 then
+                        if findOne("萨米技能树已升级") then
+                            upgraded = true
+                        end
+                        tap("返回")
+                        if not appear("萨米常规行动", 3) then
+                            return
+                        end
+                        if not wait(function()
+                                if findOne("萨米技能树页面") then
+                                    return true
+                                end
+                                tap("萨米技能树")
+                            end, 3) then
+                            return
+                        end
+                    end
+                end
+            end
+            ssleep(2)
+            tap("萨米技能树优先列表1")
+            ssleep(2)
+            for i = 2, #point["萨米技能树列表"] do
+                if findOne("萨米技能树未解锁") or findOne("萨米技能树点数不足") then
+                    return
+                end
+                tap("萨米技能树列表" .. i)
+                ssleep(0.7)
+                tap("萨米技能树升级")
+                ssleep(0.7)
+                if i == 3 or i == 11 then
+                    tap("萨米技能树翻页")
+                    ssleep(1)
+                end
+                if i == 20 then
+                    xf()
+                end
+            end
+        end
+        f()
+        return
+    end
+end
+
+--开始之前检测一下，有没有其他肉鸽未结束探索
+zl.放弃未结束的肉鸽探索 = function()
+    path.跳转("首页")
+
+    tap("面板作战")
+    if not appear("主页") then return false end
+
+    if not wait(function()
+            if findOne("主题曲界面") then return true end
+            tap("主题曲")
+        end, 5) then
+        return false
+    end
+
+    if not wait(function()
+            if findOne("在长期探索") then return true end
+            tap("集成战略")
+        end, 5) then
+        return false
+    end
+
+    local jump = true
+    toast('检测是否有未结束的肉鸽探索')
+    if not wait(function()
+            if findAny({ "傀影_探索中", "水月_探索中", "萨米_探索中", "萨卡兹_探索中" }) then
+                log('还有探索没有结束')
+                tap({ scale(279), scale(501) })
+                jump = false
+                return true
+            end
+        end, 3, .1) then
+        return false
+    end
+    disappear('在长期探索')
+    ssleep(2)
+    local rougelike_list = { "傀影_放弃本次探索", "水月_放弃本次探索", "萨米_放弃本次探索", "萨卡兹_放弃本次探索" }
+    local p = findAny(rougelike_list) or 'nil'
+    local pp = p:match("^(.-)_")
+    log(pp)
+    zl_abandon_explore(pp)
+    path.跳转("首页")
+end
+
+
 zl.招募干员 = function(干员, 肉鸽白名单)
     log("肉鸽招募干员", 干员)
     log(肉鸽白名单)
@@ -725,12 +859,12 @@ zl_navigation = function(常规行动, 需要点击的肉鸽)
             --if not findOne("选择集成战略列表界面") then return true end --防止滑动出错
             gesture({
                 {
-                    point = { { screen.width * 0.1,   scale(800) },
-                        { screen.width * 0.9,             scale(800) },
-                        { screen.width * 0.9 - scale(10), scale(800) },
-                        { screen.width * 0.9 + scale(10), scale(800) } },
+                    point = { { screen.width * 0.2,   scale(800) },
+                        { screen.width * 0.8,             scale(800) },
+                        { screen.width * 0.8 - scale(10), scale(800) },
+                        { screen.width * 0.8 + scale(10), scale(800) } },
                     start = 0,
-                    duration = 500,
+                    duration = 800,
                 },
             })
             ssleep(1.5)
