@@ -5320,7 +5320,7 @@ removeTrailingDigits = function(str)
 end
 
 path.活动 = function(x)
-    log(1213123)
+    log("检测活动开放时间")
     local t = parse_time()
     if t >= hd_open_time_end then
         clean_hdfight()
