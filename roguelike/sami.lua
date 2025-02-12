@@ -59,7 +59,7 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
         zl.萨米点天赋()
         return
     end
-
+    local timeout = time()
     if not wait(function(reset_wait_start_time)
             if findOne("战略返回") then return true end
             -- 第二次数据更新处理
@@ -69,6 +69,10 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
                 }) then
                 jumpout = true
                 return true
+            end
+            if time() - timeout > 3 * 1000 and findOne('萨米_选择难度界面') then
+                tap('萨米_选择难度界面')
+                timeout = time()
             end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
             tap("战略确认")
@@ -82,15 +86,11 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     if jumpout then return end
 
     -- 开始探索 一路按到 招募干员
-    local timeout = time()
     local first_time_see_first_card = 0
     if not wait(function(reset_wait_start_time)
             if findOne("萨米_初始招募") then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
-            if time() - timeout > 3 * 1000 and findOne('萨米_选择难度界面') then
-                tap('萨米_选择难度界面')
-                timeout = time()
-            end
+
             tap("战略确认")
             tap("战略确认")
             tap("战略确认")

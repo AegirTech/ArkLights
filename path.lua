@@ -984,29 +984,29 @@ path.fallback = {
             if appear("面板", 1) then return true end
         end, 5)
     end,
-    新春限时签到2025 = function()
-        wait(function()
-            if findAny({ "新春限时签到_签到界面", "面板" }) then
-                return true
-            else
-                tap("新春限时签到_收下祝福")
-            end
-        end, 2)
-        wait(function()
-            if findAny({ "新春限时签到_签到界面", "面板" }) then return true end
-            tap("开包skip")
-        end, 2)
-        wait(function()
-            for h = 200, 951, 150 do
-                if findOne("新春限时签到_签到界面") then
-                    tap({ scale(1300), scale(h) })
-                    ssleep(.5)
-                end
-            end
-            tap("开包skip")
-            if findAny({ "新春限时签到_签到界面", "面板" }) then return true end
-        end, 10)
-    end,
+    -- 新春限时签到2025 = function()
+    --     wait(function()
+    --         if findAny({ "新春限时签到_签到界面", "面板" }) then
+    --             return true
+    --         else
+    --             tap("新春限时签到_收下祝福")
+    --         end
+    --     end, 2)
+    --     wait(function()
+    --         if findAny({ "新春限时签到_签到界面", "面板" }) then return true end
+    --         tap("开包skip")
+    --     end, 2)
+    --     wait(function()
+    --         for h = 200, 951, 150 do
+    --             if findOne("新春限时签到_签到界面") then
+    --                 tap({ scale(1300), scale(h) })
+    --                 ssleep(.5)
+    --             end
+    --         end
+    --         tap("开包skip")
+    --         if findAny({ "新春限时签到_签到界面", "面板" }) then return true end
+    --     end, 10)
+    -- end,
     -- 新年祝福返回 = function()
     --     wait(function()
     --         --tap("新年祝福签到")
@@ -7947,7 +7947,7 @@ path.肉鸽任务 = function()
     log("肉鸽任务开始")
     if zl_ky then
         log("傀影")
-        zl.放弃未结束的肉鸽探索()
+        -- zl.放弃未结束的肉鸽探索()
         zl_level_enough = false
         傀影肉鸽完成 = false
         zl_skip_coin = zl_skip_coin_ky
@@ -7982,7 +7982,7 @@ path.肉鸽任务 = function()
 
     if zl_mizuki then
         log("水月任务开始")
-        zl.放弃未结束的肉鸽探索()
+        --   zl.放弃未结束的肉鸽探索()
         水月肉鸽完成 = false
         zl_level_enough = false
         zl_skip_coin = zl_skip_coin_mizuki
@@ -8001,7 +8001,7 @@ path.肉鸽任务 = function()
 
     if zl_sami then
         log("萨米")
-        zl.放弃未结束的肉鸽探索()
+        --   zl.放弃未结束的肉鸽探索()
         萨米肉鸽完成 = false
         zl_skip_coin = zl_skip_coin_sami
         zl_only_coin = zl_only_coin_sami
@@ -8019,7 +8019,7 @@ path.肉鸽任务 = function()
 
     if zl_skz then
         log("萨卡兹")
-        zl.放弃未结束的肉鸽探索()
+        --   zl.放弃未结束的肉鸽探索()
         萨卡兹肉鸽完成 = false
         zl_level_enough = false
         zl_skip_coin = zl_skip_coin_skz

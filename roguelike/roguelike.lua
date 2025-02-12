@@ -859,14 +859,15 @@ zl_navigation = function(常规行动, 需要点击的肉鸽)
             --if not findOne("选择集成战略列表界面") then return true end --防止滑动出错
             gesture({
                 {
-                    point = { { screen.width * 0.2,   scale(800) },
-                        { screen.width * 0.8,             scale(800) },
-                        { screen.width * 0.8 - scale(10), scale(800) },
-                        { screen.width * 0.8 + scale(10), scale(800) } },
+                    point = { { screen.width * 0.3,   screen.height * 0.95 },
+                        { screen.width * 0.8,             screen.height * 0.95 },
+                        { screen.width * 0.8 - scale(10), screen.height * 0.95 },
+                        { screen.width * 0.8 + scale(10), screen.height * 0.95 } },
                     start = 0,
                     duration = 800,
                 },
             })
+
             ssleep(1.5)
             if appear('傀影与猩红孤钻', 2) then return true end
             --作为定位，是否滑到了最左边
