@@ -599,7 +599,7 @@ trySolveCaptureFreeServer = function(rect)
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
 
     local img_base64 = base64(img)
-    local url = "http://124.222.39.231:8899/yolo_new/"
+    local url = "http://175.178.58.160:8899/yolo_new/"
     local param = "img=" .. encodeUrl(img_base64)
 
     log("图鉴准备发送")

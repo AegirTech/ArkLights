@@ -11,7 +11,7 @@ API = "https://zonai.skland.com/api/v1"
 Skland_app_code = '4ca99fa6b56cc2ba'
 Skland_sign_token = "" -- 新版森空岛签名使用
 cred = ""
-s_did = "Bx5OkK8qwdR/Xigp+Y7IJ2a2vNRqO3cHtOUuKDWwTD/IJGtYGkpts++flC1ehEKYgg6RRyd8i940PsUYGQrLYig=="
+s_did = "BthF/q9lF2i1A5Rg/RmK/tSaf1lQsyGDtShjEXP8C8bO1bQp54yS952DEQPVCouDQJontBBrVK6EbDfXBOzPEnQ=="
 
 Headers = {
     ["User-Agent"]   =
