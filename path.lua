@@ -10429,6 +10429,13 @@ path.保全 = function()
             tap("保全1进入")
         elseif findOne("保全2可扫荡") then
             tap("保全2进入")
+        elseif sss_try_complete then
+            cur_fight = "BQPZ1&maa://44971"
+            log("抄作业", cur_fight, homework[cur_fight])
+            tap("保全1进入")
+            if not appear("保全作战开始按钮", 3) then return end
+            --保全抄作业()
+            auto_sss(homework[cur_fight], true)
         else
             log(778)
             return

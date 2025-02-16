@@ -1535,6 +1535,9 @@ show_sss_fight_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "sss_only_complete", "仅在完成6层后扫荡", true)
 
+    newRow(layout)
+    ui.addCheckBox(layout, "sss_try_complete", "未完成6层则尝试抄作业", false)
+
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
 end
