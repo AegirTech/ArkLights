@@ -11,7 +11,7 @@ ArkLights is the <b> lightning fast</b> and <b> fully managed</b> Arknights game
 
 ## 使用指南
 
-[【必读】快速开始使用ArkLights](docs/guide.md)
+[【必读】快速开始使用ArkLights](https://arkdoc.enlysure.com/guide.html)
 
 ## 参与开发
 
@@ -52,7 +52,7 @@ ArkLights is the <b> lightning fast</b> and <b> fully managed</b> Arknights game
     ./extract.py screencap_distance
     ```
     
-    更多说明请参考 [开发与贡献指南](./docs/development.md)
+    更多说明请参考 [开发与贡献指南](https://arkdoc.enlysure.com/development.html)
 
 ## 错误反馈
 
