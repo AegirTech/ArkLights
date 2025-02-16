@@ -3029,8 +3029,8 @@ update_state_from_ui = function()
     hd_nickname = "OR"
     hd_max_stage = 9
     hd_exclude = {}
-    hd_open_time_end = parse_time("202502120400")
-    hd2_open_time_end = parse_time("202407160400") -- 故事集开放时间段
+    hd_open_time_end = parse_time("202502210400")
+    hd2_open_time_end = parse_time("202502210400") -- 故事集开放时间段
     hd_mod = "SS"
 
     fight = parse_fight_config(fight_ui)

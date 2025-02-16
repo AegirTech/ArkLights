@@ -8,7 +8,8 @@ import math
 import zipfile
 import glob
 
-import np
+import numpy as np
+
 import requests
 
 
