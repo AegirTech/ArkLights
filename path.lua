@@ -5334,8 +5334,8 @@ path.活动 = function(x)
 
     if not skip_guide then
         path.跳转("首页")
-        -- tap("面板活动")
-        path.活动页面寻找()
+        tap("面板活动")
+        -- path.活动页面寻找()
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -10429,6 +10429,13 @@ path.保全 = function()
             tap("保全1进入")
         elseif findOne("保全2可扫荡") then
             tap("保全2进入")
+        elseif sss_try_complete then
+            cur_fight = "BQPZ1&maa://44971"
+            log("抄作业", cur_fight, homework[cur_fight])
+            tap("保全1进入")
+            if not appear("保全作战开始按钮", 3) then return end
+            --保全抄作业()
+            auto_sss(homework[cur_fight], true)
         else
             log(778)
             return

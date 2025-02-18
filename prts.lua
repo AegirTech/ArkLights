@@ -706,6 +706,11 @@ end
     if 未编入数量 >= 1 then
         log("编队未完成，需要手动编队")
         sleep(1000)
+        --有时候会在编队界面卡主 一直返回不了主页
+        wait(function()
+            back()
+        end, 3, .3)
+        ssleep(1)
         path.跳转("首页")
         return false
     end
@@ -1228,6 +1233,9 @@ end
                 appear("作战中", 2)
                 加速()
             end
+            log(wave, 部署指令["kills"], cost, 部署指令["costs"])
+            --偶尔wave为空，下面会出现空值比较出错，直接停止脚本
+            wave = wave or 0
             if wave >= 部署指令["kills"] and cost >= 部署指令["costs"] then
                 if 干员列表 and (部署指令["type"] == "Deploy" or 部署指令["type"] == "deploy" or 部署指令["type"] == "部署") then
                     local 需要cost = {}
