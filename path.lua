@@ -4512,7 +4512,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             state = findAny({
                 "开始行动突袭", "开始行动红", "源石恢复理智取消", "药剂恢复理智取消",
                 "单选确认框", "源石恢复理智不足", "当期委托侧边栏",
-                "行动结束",
+                "行动结束", "开始行动故事集S",
             })
             -- 剿灭后一直按开始行动导致开始行动界面消失，可能出现下面的界面
             if state == "当前委托侧边栏" then
@@ -5665,7 +5665,7 @@ path.活动 = function(x)
     log(626)
     ssleep(.5)
     --exit() --手动取点时取消注释
-    if x:includes({ "ST-", "TR-", "-MO-1" }) then
+    if x:includes({ "ST-", "TR-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
         --剧情关/教学观/剿灭关只打一遍
         log("剧情关/教学观/剿灭关")
         if findOne("作战列表" .. x) then return true end
