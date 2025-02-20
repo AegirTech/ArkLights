@@ -492,28 +492,6 @@ trySolvePointSelectionCapture = function(rect)
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local img_base64 = base64(img)
     local ans = nil
-    -- if bili_captcha_mode == 0 then
-    --     -- 云码
-    --     if not jfbym_token or #jfbym_token < 5 then return end
-    --     local data = {
-    --         token = jfbym_token,
-    --         type = "88888",
-    --         image = img_base64,
-    --     }
-
-    --     local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
-    --         30, "Content-Type: application/json;charset=UTF-8")
-
-    --     local status, data = pcall(JsonDecode, res)
-    --     log("识别结果", data)
-    --     data = data or {}
-    --     if get(data, "code") ~= 10000 then
-    --         log("识别失败")
-    --         return
-    --     end
-    --     unique_code = get(data, "data", "unique_code") or ""
-
-    --     ans = get(data, "data", "data") or ""
     if use_captcha then
         -- 图鉴
         if not captcha_username or not captcha_password then return end
@@ -534,30 +512,28 @@ trySolvePointSelectionCapture = function(rect)
             if not success then return end
             ans = get(data, "data", "result") or ""
         end
-    else
-        if use_jfbym_dx then
-            -- 云码
-            if not jfbym_token or #jfbym_token < 5 then return end
-            local data = {
-                token = jfbym_token,
-                type = "88888",
-                image = img_base64,
-            }
+    elseif use_jfbym_dx then
+        -- 云码
+        if not jfbym_token or #jfbym_token < 5 then return end
+        local data = {
+            token = jfbym_token,
+            type = "88888",
+            image = img_base64,
+        }
 
-            local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
-                30, "Content-Type: application/json;charset=UTF-8")
+        local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
+            30, "Content-Type: application/json;charset=UTF-8")
 
-            local status, data = pcall(JsonDecode, res)
-            log("识别结果", data)
-            data = data or {}
-            if get(data, "code") ~= 10000 then
-                log("识别失败")
-                return
-            end
-            unique_code = get(data, "data", "unique_code") or ""
-
-            ans = get(data, "data", "data") or ""
+        local status, data = pcall(JsonDecode, res)
+        log("识别结果", data)
+        data = data or {}
+        if get(data, "code") ~= 10000 then
+            log("识别失败")
+            return
         end
+        unique_code = get(data, "data", "unique_code") or ""
+
+        ans = get(data, "data", "data") or ""
     end
     if not ans then return end
     for coord in string.gmatch(ans, "%d+,%d+") do

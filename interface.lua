@@ -543,6 +543,16 @@ make_ui_title = function(layout, name)
     ui.setTitleText(layout, title)
 end
 
+jump_buy_address = function()
+    local intent = {
+        action = "android.intent.action.VIEW",
+        uri = "https://weidian.com/item.html?itemID=7398821178",
+    }
+    runIntent(intent)
+    toast("正在跳转到购买地址")
+    peaceExit()
+end
+
 show_main_ui = function()
     local layout = "main"
 
@@ -628,6 +638,20 @@ show_debug_ui = function()
     local debug_layout_验证码 = "debug_tab_yzm"
     ui.addTab("debug_tab", debug_layout_验证码, "验证码")
 
+    -- newRow(debug_layout_验证码)
+    -- addTextView(debug_layout_验证码, "速通云打码用于点选验证码，购买地址(打码每次0.012元)")
+
+    -- newRow(debug_layout_验证码)
+    -- addButton(debug_layout_验证码, nil, "微店购买",
+    --     make_jump_ui_command(layout, nil, [[jump_buy_address()]]))
+
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "速通云打码服务Token")
+    ui.addEditText(debug_layout_验证码, "cloud_captcha_token", "")
+
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "=======================================")
+
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "-->滑块验证码(2个至少勾选一个!)")
 
@@ -637,6 +661,9 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_验证码, "use_free_server_captcha", "使用免费打码服务(仅滑块验证码)", false)
     -- newRow(debug_layout_验证码)
     -- ui.addCheckBox(debug_layout_验证码, "use_jfbym", "使用云码API处理滑块验证码", false)
+
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "=======================================")
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "-->点选验证码(只要填写自定义打码地址则会优先使用)")
@@ -650,26 +677,22 @@ show_debug_ui = function()
     addTextView(debug_layout_验证码, "图鉴密码")
     ui.addEditText(debug_layout_验证码, "captcha_password", "")
 
-    newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "云码Token")
-    ui.addEditText(debug_layout_验证码, "jfbym_token", "")
-    newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "use_jfbym_dx", "使用云码处理点选", false)
+    -- newRow(debug_layout_验证码)
+    -- addTextView(debug_layout_验证码, "云码Token")
+    -- ui.addEditText(debug_layout_验证码, "jfbym_token", "")
+    -- newRow(debug_layout_验证码)
+    -- ui.addCheckBox(debug_layout_验证码, "use_jfbym_dx", "使用云码处理点选", false)
 
     -- newRow(debug_layout_验证码)
     -- ui.addCheckBox(debug_layout_验证码, "use_free_server_captcha", "使用免费服务器解决官服滑块验证码", false)
 
-    newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "自定义打码地址")
-    ui.addEditText(debug_layout_验证码, "cloud_captcha_server", "")
+    -- newRow(debug_layout_验证码)
+    -- addTextView(debug_layout_验证码, "自定义打码地址")
+    -- ui.addEditText(debug_layout_验证码, "cloud_captcha_server", "")
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "自定义打码地址②")
     ui.addEditText(debug_layout_验证码, "cloud_captcha_server2", "")
-
-    newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "自定义打码标识")
-    ui.addEditText(debug_layout_验证码, "cloud_captcha_token", "")
 
     local debug_layout_云控 = "debug_tab_yk"
     ui.addTab("debug_tab", debug_layout_云控, "云控")
