@@ -1126,7 +1126,8 @@ end
     波数依赖顺序 = 1
     print(部署命令数, 波数依赖命令数)
 
-    local cost = 0, wave, wavetxt
+    local cost = 0
+    local wave = 0, wavetxt
     local cost依赖命令, wave依赖命令
     local 部署指令, 等待cost, 需要cost
     local wave依赖指令, wave部署, wave干员信息, 地图坐标
@@ -1212,12 +1213,10 @@ end
     while true do
         点战斗()
         cost = tonumber(获得cost() or cost) or cost
-
         wavetxt = 获得敌人数(是否剿灭图) or 0
         --print("当前波次", wavetxt)
-        local number = tonumber(string.match(wavetxt, "%d+"))
+        local number = tonumber(string.match(wavetxt, "%d+")) or 0
         if number and number - wave < 5 then wave = number end
-
         print("当前cost", cost, "已击败敌人数", wave)
 
         if 部署顺序 <= 部署命令数 then
@@ -1235,9 +1234,6 @@ end
                 appear("作战中", 2)
                 加速()
             end
-            log(wave, 部署指令["kills"], cost, 部署指令["costs"])
-            --偶尔wave为空，下面会出现空值比较出错，直接停止脚本
-            wave = wave or 0
             if wave >= 部署指令["kills"] and cost >= 部署指令["costs"] then
                 if 干员列表 and (部署指令["type"] == "Deploy" or 部署指令["type"] == "deploy" or 部署指令["type"] == "部署") then
                     local 需要cost = {}
@@ -1324,8 +1320,6 @@ end
                     --     操作前延时 = TickCount()
                     --     操作时间戳1 = 波数依赖顺序
                     -- End If
-
-
                     if wave依赖指令["type"] == "Skill" or wave依赖指令["type"] == "skill" or wave依赖指令["type"] == "技能" then
                         if wave依赖指令["location"] then
                             wave依赖指令 = 释放坐标技能(wave依赖指令["location"])
@@ -1395,7 +1389,6 @@ end
             appear("作战中", 3)
             加速()
         end
-
 
         if not (findOne("作战中") or findOne("暂停中") or findOne("作战中2")) then
             sleep(500)

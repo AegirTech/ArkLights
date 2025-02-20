@@ -2,6 +2,8 @@
 --               萨米肉鸽相关
 -- ===========================================
 
+sami = {}
+
 path.探索者的银淞止境前瞻投资 = function(lighter)
     --ssleep(.1)
     log('start 探索')
@@ -51,12 +53,12 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
 
     --点天赋
     if not zl_disable_lighter and lighter and not findOne("萨米技能树满级") then
-        zl.萨米点天赋()
+        sami.点天赋()
     end
 
     --发现还在冷却中的话，去尝试点天赋
     if findOne('萨米_常规行动') and findOne('萨米_探索冷却中') then
-        zl.萨米点天赋()
+        sami.点天赋()
         return
     end
     local timeout = time()
@@ -457,4 +459,93 @@ zl_fight_after_sami = function()
         return false
     end
     return true
+end
+
+sami.点天赋 = function()
+    do
+        local xf = function()
+            gesture({
+                {
+                    point = {
+                        { screen.width * 0.95,                      screen.height / 2 },
+                        { screen.width * 0.95 - screen.width * 0.8, screen.height / 2 }
+                    },
+                    start = 0,
+                    duration = 1500
+                }
+            })
+            ssleep(3)
+        end
+        local f = function()
+            if not wait(function()
+                    if findOne("萨米技能树页面") then
+                        return true
+                    end
+                    tap("萨米技能树")
+                end, 3) then
+                return
+            end
+            if not upgraded then
+                ssleep(2)
+                tap("萨米技能树优先列表1")
+                ssleep(2)
+                tap("萨米技能树升级")
+                ssleep(0.7)
+                for i = 2, #point["萨米技能树优先列表"] do
+                    if findOne("萨米技能树未解锁") or findOne("萨米技能树点数不足") then
+                        return
+                    end
+                    tap("萨米技能树优先列表" .. i)
+                    ssleep(0.7)
+                    tap("萨米技能树升级")
+                    ssleep(0.7)
+                    if i == 4 or i == 9 then
+                        tap("萨米技能树翻页")
+                        ssleep(1)
+                    end
+                    if i == 13 then
+                        xf()
+                    end
+                    if i == 14 then
+                        if findOne("萨米技能树已升级") then
+                            upgraded = true
+                        end
+                        tap("返回")
+                        if not appear("萨米常规行动", 3) then
+                            return
+                        end
+                        if not wait(function()
+                                if findOne("萨米技能树页面") then
+                                    return true
+                                end
+                                tap("萨米技能树")
+                            end, 3) then
+                            return
+                        end
+                    end
+                end
+            end
+            ssleep(2)
+            tap("萨米技能树优先列表1")
+            ssleep(2)
+            for i = 2, #point["萨米技能树列表"] do
+                if findOne("萨米技能树未解锁") or findOne("萨米技能树点数不足") then
+                    return
+                end
+                tap("萨米技能树列表" .. i)
+                ssleep(0.7)
+                tap("萨米技能树升级")
+                ssleep(0.7)
+                if i == 3 or i == 11 then
+                    tap("萨米技能树翻页")
+                    ssleep(1)
+                end
+                if i == 20 then
+                    xf()
+                end
+            end
+        end
+        f()
+        return
+    end
 end
