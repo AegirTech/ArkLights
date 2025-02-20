@@ -6126,17 +6126,15 @@ path.故事解锁 = function()
     log("故事集剧情解锁")
 
     if not path.活动页面寻找(1) then return end
-
-    if not wait(function()
-            if findOne("故事集导航") then return true end
-        end, 10) then
+    if not appear("故事集导航", 5) then
+        log("未找到故事集导航")
         return
     end
-
     if not wait(function()
             tap("故事集导航")
             if not findOne("故事集导航") then return true end
         end, 5) then
+        return
     end
 
     disappear("正在提交反馈至神经", network_timeout)
@@ -6146,7 +6144,7 @@ path.故事解锁 = function()
     -- 边栏宽度 0-260 143-底
     ssleep(1)
     if not wait(function()
-            local tc = getColor(360, 940)
+            local tc = getColor(scale(360), scale(940))
             log(tc)
             if tc == "EDEDED" or tc == "313131" then return true end
         end, 5) then
