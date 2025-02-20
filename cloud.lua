@@ -236,9 +236,7 @@ m.captcha_report = function()
         return
     end
 
-    local postdata = [[{"captcha_id": "]] .. cloud_captcha_id .. [["}]]
-
-    local res, code = httpPost(m.captchaServer .. "/captcha/report", postdata, 30,
+    local res, code = httpPost(m.captchaServer .. "/captcha/report?captcha_id=" .. cloud_captcha_id, 30,
         [[Content-Type: application/json;
         Authorization: Bearer ]] .. m.captchaToken)
     cloud_captcha_id = nil
