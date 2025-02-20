@@ -236,13 +236,11 @@ m.captcha_report = function()
         return
     end
 
-    local data = {
-        captcha_id = cloud_captcha_id,
-        token = m.captchaToken
-    }
+    local postdata = [[{"captcha_id": "]] .. cloud_captcha_id .. [["}]]
 
-    local res, code = httpPost(m.captchaServer .. "/captcha/select/report", JsonEncode(data), 30,
-        "Content-Type: application/json")
+    local res, code = httpPost(m.captchaServer .. "/captcha/report", postdata, 30,
+        [[Content-Type: application/json;
+        Authorization: Bearer ]] .. m.captchaToken)
     cloud_captcha_id = nil
     log("云控打码失败上报", res, code)
 end

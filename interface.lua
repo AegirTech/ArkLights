@@ -650,7 +650,7 @@ show_debug_ui = function()
     ui.addEditText(debug_layout_验证码, "cloud_captcha_token", "")
 
     newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "=======================================")
+    addTextView(debug_layout_验证码, "==================================")
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "-->滑块验证码(2个至少勾选一个!)")
@@ -663,7 +663,7 @@ show_debug_ui = function()
     -- ui.addCheckBox(debug_layout_验证码, "use_jfbym", "使用云码API处理滑块验证码", false)
 
     newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "=======================================")
+    addTextView(debug_layout_验证码, "==================================")
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "-->点选验证码(只要填写自定义打码地址则会优先使用)")
