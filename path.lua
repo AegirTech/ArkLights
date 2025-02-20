@@ -5847,9 +5847,10 @@ path.商店搬空 = function()
             初始物品 = { scale(386), scale(535) }
         end
         local 商品购买黑名单 = {}
-        if type(shop_buy_black) == 'string' and #shop_buy_black > 0 then
-            商品购买黑名单 = shop_buy_black:filterSplit()
-        end
+        -- 存在bug，临时禁用
+        -- if type(shop_buy_black) == 'string' and #shop_buy_black > 0 then
+        --     商品购买黑名单 = shop_buy_black:filterSplit()
+        -- end
         log("商品黑名单", 商品购买黑名单)
         local sd_retry = 0
         local 商店滑动前采样
@@ -5899,19 +5900,19 @@ path.商店搬空 = function()
                     goto startshop
                 end
                 ssleep(.5)
-                商品名称 = ocr("商店物品名字范围")
+                -- 商品名称 = ocr("商店物品名字范围")
 
-                if #商品名称 > 0 and 商品名称[1].text:includes(商品购买黑名单) then
-                    log("商品黑名单")
-                    商品名称 = sample("商店")
-                    wait(function()
-                        if not findOne(商品名称) then return true end
-                        tap("商店顶栏")
-                        ssleep(0.5)
-                    end, 10)
-                    ssleep(1)
-                    goto continue
-                end
+                -- if #商品名称 > 0 and 商品名称[1].text:includes(商品购买黑名单) then
+                --     log("商品黑名单")
+                --     商品名称 = sample("商店")
+                --     wait(function()
+                --         if not findOne(商品名称) then return true end
+                --         tap("商店顶栏")
+                --         ssleep(0.5)
+                --     end, 10)
+                --     ssleep(1)
+                --     goto continue
+                -- end
 
                 log(989)
                 wait(function()
@@ -5984,7 +5985,6 @@ path.商店搬空 = function()
             appear("活动商店导航", 3)
             tap("活动商店导航")
             appear("商店主页", 3)
-            -- return path.商店搬空() -- 直接从头开始
         end
         ssleep(1)
         if findOne(商店滑动前采样) then
