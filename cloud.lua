@@ -17,10 +17,10 @@ m.setDeviceToken = function(deviceToken)
 end
 
 m.setCaptcha = function(server, token)
-    server = strOr(server):trim()
-    server = server:gsub("/+$", '')
-    if #server < 5 then return end
-    m.captchaServer = server
+    -- server = strOr(server):trim()
+    -- server = server:gsub("/+$", '')
+    -- if #server < 5 then return end
+    m.captchaServer = "https://captcha.aunly.cn"
 
     token = strOr(token):trim()
     if #token < 5 then return end
@@ -135,7 +135,7 @@ m.uploadImgToInquisition = function(img_path)
 end
 
 m.captcha = function(box)
-    if m.captchaServer == '' then
+    if m.captchaToken == '' then
         return false
     end
     log("使用云控打码")
@@ -190,28 +190,27 @@ m.captcha = function(box)
     snapShot(img, image_pos[1], image_pos[2], image_pos[3], image_pos[4])
     local image_img_base64 = base64(img)
 
-    local data = {
-        text_base64 = text_img_base64,
-        image_base64 = image_img_base64,
-        token = m.captchaToken
-    }
-
-    -- log("验证码图像", image_img_base64)
-    -- log("验证码字符", text_img_base64)
-
-    local res, code = httpPost(m.captchaServer .. "/captcha/select/base64", JsonEncode(data), 30,
-        "Content-Type: application/json")
+    -- local data = {
+    --     text_base64 = text_img_base64,
+    --     image_base64 = image_img_base64,
+    -- }
+    local postdata = [[{"image_base64": "]] .. image_img_base64 .. [[", "text_base64": "]] .. text_img_base64 .. [["}]]
+    -- log(postdata)
+    local res, code = httpPost(m.captchaServer .. "/captcha/geetest_v3/select/base64", postdata, 30,
+        [[Content-Type: application/json;
+        Authorization: Bearer ]] .. m.captchaToken)
+    log(res, code)
     if code == 200 then
         status, data = pcall(JsonDecode, res)
         if data.code == 0 then
             cloud_captcha_id = data.data.captcha_id or nil
-            log("云控打码数量", #data.data.points)
-            toast("B服云控打码数量" .. #data.data.points)
-            log("云控打码坐标", data.data.points)
+            -- log("云控打码数量", #data.data.result.point)
+            -- toast("B服云控打码数量" .. #data.data.result.point)
+            -- log("云控打码坐标", data.data.result.point)
             -- 计算缩放比例 返回图片344x344
             local x_scale = (image_pos[3] - image_pos[1]) / 344 or 1
             local y_scale = (image_pos[4] - image_pos[2]) / 344 or 1
-            for _, coord in pairs(data.data.points) do
+            for _, coord in pairs(data.data.result.point) do
                 x = (coord[1] or 0) * x_scale
                 y = (coord[2] or 0) * y_scale
                 tap({ image_pos[1] + x, image_pos[2] + y })
@@ -237,13 +236,9 @@ m.captcha_report = function()
         return
     end
 
-    local data = {
-        captcha_id = cloud_captcha_id,
-        token = m.captchaToken
-    }
-
-    local res, code = httpPost(m.captchaServer .. "/captcha/select/report", JsonEncode(data), 30,
-        "Content-Type: application/json")
+    local res, code = httpPost(m.captchaServer .. "/captcha/report?captcha_id=" .. cloud_captcha_id, 30,
+        [[Content-Type: application/json;
+        Authorization: Bearer ]] .. m.captchaToken)
     cloud_captcha_id = nil
     log("云控打码失败上报", res, code)
 end

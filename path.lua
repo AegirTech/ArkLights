@@ -965,6 +965,10 @@ path.fallback = {
         if findOne("新春限时签到2025") then
             return path.fallback.新春限时签到2025()
         end
+        if findOne("集成战略回顾水月") then
+            tap("集成战略回顾水月")
+            return path.fallback.签到返回()
+        end
         findTap("集成战略签到活动领取")
         tapAll(point.限时幸运签列表)
         ssleep(.25)
@@ -5334,7 +5338,7 @@ path.活动 = function(x)
 
     if not skip_guide then
         path.跳转("首页")
-        tap("面板活动")
+        tap("面板活动2")
         -- path.活动页面寻找()
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
@@ -5847,9 +5851,10 @@ path.商店搬空 = function()
             初始物品 = { scale(386), scale(535) }
         end
         local 商品购买黑名单 = {}
-        if type(shop_buy_black) == 'string' and #shop_buy_black > 0 then
-            商品购买黑名单 = shop_buy_black:filterSplit()
-        end
+        -- 存在bug，临时禁用
+        -- if type(shop_buy_black) == 'string' and #shop_buy_black > 0 then
+        --     商品购买黑名单 = shop_buy_black:filterSplit()
+        -- end
         log("商品黑名单", 商品购买黑名单)
         local sd_retry = 0
         local 商店滑动前采样
@@ -5899,19 +5904,19 @@ path.商店搬空 = function()
                     goto startshop
                 end
                 ssleep(.5)
-                商品名称 = ocr("商店物品名字范围")
+                -- 商品名称 = ocr("商店物品名字范围")
 
-                if #商品名称 > 0 and 商品名称[1].text:includes(商品购买黑名单) then
-                    log("商品黑名单")
-                    商品名称 = sample("商店")
-                    wait(function()
-                        if not findOne(商品名称) then return true end
-                        tap("商店顶栏")
-                        ssleep(0.5)
-                    end, 10)
-                    ssleep(1)
-                    goto continue
-                end
+                -- if #商品名称 > 0 and 商品名称[1].text:includes(商品购买黑名单) then
+                --     log("商品黑名单")
+                --     商品名称 = sample("商店")
+                --     wait(function()
+                --         if not findOne(商品名称) then return true end
+                --         tap("商店顶栏")
+                --         ssleep(0.5)
+                --     end, 10)
+                --     ssleep(1)
+                --     goto continue
+                -- end
 
                 log(989)
                 wait(function()
@@ -5984,7 +5989,6 @@ path.商店搬空 = function()
             appear("活动商店导航", 3)
             tap("活动商店导航")
             appear("商店主页", 3)
-            -- return path.商店搬空() -- 直接从头开始
         end
         ssleep(1)
         if findOne(商店滑动前采样) then
@@ -6126,17 +6130,15 @@ path.故事解锁 = function()
     log("故事集剧情解锁")
 
     if not path.活动页面寻找(1) then return end
-
-    if not wait(function()
-            if findOne("故事集导航") then return true end
-        end, 10) then
+    if not appear("故事集导航", 5) then
+        log("未找到故事集导航")
         return
     end
-
     if not wait(function()
             tap("故事集导航")
             if not findOne("故事集导航") then return true end
         end, 5) then
+        return
     end
 
     disappear("正在提交反馈至神经", network_timeout)
@@ -6146,7 +6148,7 @@ path.故事解锁 = function()
     -- 边栏宽度 0-260 143-底
     ssleep(1)
     if not wait(function()
-            local tc = getColor(360, 940)
+            local tc = getColor(scale(360), scale(940))
             log(tc)
             if tc == "EDEDED" or tc == "313131" then return true end
         end, 5) then
@@ -6646,7 +6648,11 @@ path.退出账号 = function()
         --  开始唤醒 = "账号管理",
         开始唤醒 = function()
             check_login_frequency()
-            tap("账号管理")
+            if not findOne("账号管理") then
+                tap("开始登录单独")
+            else
+                tap("账号管理")
+            end
             disappear("开始唤醒")
         end,
         bilibili_username_inputbox = true,
