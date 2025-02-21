@@ -6648,7 +6648,11 @@ path.退出账号 = function()
         --  开始唤醒 = "账号管理",
         开始唤醒 = function()
             check_login_frequency()
-            tap("账号管理")
+            if not findOne("账号管理") then
+                tap("开始登录单独")
+            else
+                tap("账号管理")
+            end
             disappear("开始唤醒")
         end,
         bilibili_username_inputbox = true,
