@@ -4522,7 +4522,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
 
             if state == "单选确认框" then return true end
             if state == "开始行动红" then return true end
-            if state == "开始行动突袭" then return true end --我也没看懂这是干嘛的,先加着
+            if state == "开始行动突袭" or state == "开始行动故事集S" then return true end --我也没看懂这是干嘛的,先加着
             if state == "行动结束" then return true end
             if state and not disappear(state, .5) then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
@@ -4583,7 +4583,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             if findOne("单选确认框") then return end
         end
         return path.base.接管作战()
-    elseif state == "开始行动突袭" then
+    elseif state == "开始行动突袭" or state == "开始行动故事集S" then
         no_success_one_loop = 0
         ssleep(0.5)
         auto_prts(homework[x], true)

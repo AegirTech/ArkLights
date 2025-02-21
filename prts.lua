@@ -375,6 +375,8 @@ auto_prts = function(作业名, 需要编队, 是否自带)
                     ssleep(.3)
                     if findOne("作战中") or findOne("暂停中") or findOne("作战中2") then return true end
                 end, 30)
+            elseif findOne("开始行动故事集S确认") then
+                tap("开始行动故事集S确认")
             elseif findOne("作战中") then
                 return true
             end
