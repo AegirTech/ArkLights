@@ -1960,12 +1960,13 @@ path.宿舍换班 = function()
                         if findOne("基建心情降序", .85) then tap("基建心情降序") end
                         ssleep(.2)
                         -- 取消选择
-                        tap("干员选择列表2")
-                        tap("干员选择列表1")
+                        tap("清空选择")
                         ssleep(.2)
                         -- 重置顺序为干员,肥鸭
                         tap("干员选择列表2")
+                        ssleep(.1)
                         tap("干员选择列表1")
+                        ssleep(.1)
                         确认干员选择()
                         ssleep(.2)
                         fiammetta_used = true
