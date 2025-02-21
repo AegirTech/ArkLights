@@ -965,6 +965,10 @@ path.fallback = {
         if findOne("新春限时签到2025") then
             return path.fallback.新春限时签到2025()
         end
+        if findOne("集成战略回顾水月") then
+            tap("集成战略回顾水月")
+            return path.fallback.签到返回()
+        end
         findTap("集成战略签到活动领取")
         tapAll(point.限时幸运签列表)
         ssleep(.25)
@@ -5334,7 +5338,7 @@ path.活动 = function(x)
 
     if not skip_guide then
         path.跳转("首页")
-        tap("面板活动")
+        tap("面板活动2")
         -- path.活动页面寻找()
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
