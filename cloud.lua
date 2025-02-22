@@ -20,7 +20,7 @@ m.setCaptcha = function(server, token)
     -- server = strOr(server):trim()
     -- server = server:gsub("/+$", '')
     -- if #server < 5 then return end
-    m.captchaServer = "https://captcha.aunly.cn"
+    m.captchaServer = "https://api.aunly.cn"
 
     token = strOr(token):trim()
     if #token < 5 then return end
