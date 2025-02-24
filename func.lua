@@ -1003,3 +1003,21 @@ clear_cache = function()
     delfile("/storage/emulated/0/" .. package)
     toast("清除缓存成功")
 end
+
+show_ad = function()
+    if not multi_account_enable then
+        return
+    end
+    if type(cloud_captcha_token) == "string" and #cloud_captcha_token == 43 then
+        return
+    end
+    console.clearLog()
+    toast("===============广告===============")
+    console.show()
+    log("速通云打码平台：https://captcha.aunly.cn/")
+    log("适用b服点选验证码，价格0.012/次，价格更便宜！")
+    log("（此广告将会在15s内自动关闭）")
+    ssleep(15)
+    console.dismiss()
+    console.clearLog()
+end
