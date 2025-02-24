@@ -4490,6 +4490,8 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 if findOne("连战次数列表" .. i) then
                     battle_times = i - 1
                     break
+                else
+                    battle_times = 1
                 end
             end
             rfg["连战次数白"][2] = (876 - 92 * battle_times) * hscale
