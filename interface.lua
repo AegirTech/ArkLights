@@ -543,10 +543,10 @@ make_ui_title = function(layout, name)
     ui.setTitleText(layout, title)
 end
 
-jump_buy_address = function()
+jump_address = function(address)
     local intent = {
         action = "android.intent.action.VIEW",
-        uri = "https://weidian.com/item.html?itemID=7398821178",
+        uri = address,
     }
     runIntent(intent)
     toast("正在跳转到购买地址")
@@ -638,12 +638,14 @@ show_debug_ui = function()
     local debug_layout_验证码 = "debug_tab_yzm"
     ui.addTab("debug_tab", debug_layout_验证码, "验证码")
 
-    -- newRow(debug_layout_验证码)
-    -- addTextView(debug_layout_验证码, "速通云打码用于点选验证码，购买地址(打码每次0.012元)")
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "速通云打码用于点选验证码，平台注册&购买地址(打码每次0.012元)")
 
-    -- newRow(debug_layout_验证码)
-    -- addButton(debug_layout_验证码, nil, "微店购买",
-    --     make_jump_ui_command(layout, nil, [[jump_buy_address()]]))
+    newRow(debug_layout_验证码)
+    addButton(debug_layout_验证码, nil, "速通云打码官网",
+        make_jump_ui_command(layout, nil, [[jump_address("https://captcha.aunly.cn/")]]))
+    addButton(debug_layout_验证码, nil, "微店购买充值CDK",
+        make_jump_ui_command(layout, nil, [[jump_address("https://weidian.com/item.html?itemID=7398821178")]]))
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "速通云打码服务Token")
@@ -667,7 +669,7 @@ show_debug_ui = function()
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "-->点选验证码(只要填写自定义打码地址则会优先使用)")
-    -- ui.addSpinner(debug_layout_验证码, "bili_captcha_mode", { "云码", "图鉴" }, 1)
+
     newRow(debug_layout_验证码)
     ui.addCheckBox(debug_layout_验证码, "use_captcha", "使用图鉴打码", true)
     newRow(debug_layout_验证码)
