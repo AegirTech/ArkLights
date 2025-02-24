@@ -5339,8 +5339,8 @@ path.活动 = function(x)
 
     if not skip_guide then
         path.跳转("首页")
-        tap("面板活动2")
-        -- path.活动页面寻找()
+        --tap("面板活动2")
+        path.活动页面寻找()
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -5742,6 +5742,7 @@ path.活动页面寻找 = function(n)
     local check_time = function()                         -- 离活动结束只有1星期时自动点击下面活动
         local current_time = os.time()                    -- 当前时间
         local time_diff = hd_open_time_end - current_time -- 时间差（秒）
+        log("距离活动结束还有" .. time_diff / (24 * 3600) .. "天")
         local n
         -- 如果时间差小于7天（7天 * 24小时/天 * 60分钟/小时 * 60秒/分钟）
         if time_diff < 7 * 24 * 60 * 60 then
