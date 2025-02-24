@@ -965,6 +965,10 @@ path.fallback = {
         if findOne("新春限时签到2025") then
             return path.fallback.新春限时签到2025()
         end
+        if findOne("集成战略回顾水月") then
+            tap("集成战略回顾水月")
+            return path.fallback.签到返回()
+        end
         findTap("集成战略签到活动领取")
         tapAll(point.限时幸运签列表)
         ssleep(.25)
@@ -1956,12 +1960,13 @@ path.宿舍换班 = function()
                         if findOne("基建心情降序", .85) then tap("基建心情降序") end
                         ssleep(.2)
                         -- 取消选择
-                        tap("干员选择列表2")
-                        tap("干员选择列表1")
+                        tap("清空选择")
                         ssleep(.2)
                         -- 重置顺序为干员,肥鸭
                         tap("干员选择列表2")
+                        ssleep(.1)
                         tap("干员选择列表1")
+                        ssleep(.1)
                         确认干员选择()
                         ssleep(.2)
                         fiammetta_used = true
@@ -4512,7 +4517,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             state = findAny({
                 "开始行动突袭", "开始行动红", "源石恢复理智取消", "药剂恢复理智取消",
                 "单选确认框", "源石恢复理智不足", "当期委托侧边栏",
-                "行动结束",
+                "行动结束", "开始行动故事集S",
             })
             -- 剿灭后一直按开始行动导致开始行动界面消失，可能出现下面的界面
             if state == "当前委托侧边栏" then
@@ -4522,7 +4527,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
 
             if state == "单选确认框" then return true end
             if state == "开始行动红" then return true end
-            if state == "开始行动突袭" then return true end --我也没看懂这是干嘛的,先加着
+            if state == "开始行动突袭" or state == "开始行动故事集S" then return true end --我也没看懂这是干嘛的,先加着
             if state == "行动结束" then return true end
             if state and not disappear(state, .5) then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
@@ -4583,7 +4588,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             if findOne("单选确认框") then return end
         end
         return path.base.接管作战()
-    elseif state == "开始行动突袭" then
+    elseif state == "开始行动突袭" or state == "开始行动故事集S" then
         no_success_one_loop = 0
         ssleep(0.5)
         auto_prts(homework[x], true)
@@ -5334,7 +5339,7 @@ path.活动 = function(x)
 
     if not skip_guide then
         path.跳转("首页")
-        tap("面板活动")
+        tap("面板活动2")
         -- path.活动页面寻找()
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
@@ -5665,7 +5670,7 @@ path.活动 = function(x)
     log(626)
     ssleep(.5)
     --exit() --手动取点时取消注释
-    if x:includes({ "ST-", "TR-", "-MO-1" }) then
+    if x:includes({ "ST-", "TR-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
         --剧情关/教学观/剿灭关只打一遍
         log("剧情关/教学观/剿灭关")
         if findOne("作战列表" .. x) then return true end
@@ -5847,9 +5852,10 @@ path.商店搬空 = function()
             初始物品 = { scale(386), scale(535) }
         end
         local 商品购买黑名单 = {}
-        if type(shop_buy_black) == 'string' and #shop_buy_black > 0 then
-            商品购买黑名单 = shop_buy_black:filterSplit()
-        end
+        -- 存在bug，临时禁用
+        -- if type(shop_buy_black) == 'string' and #shop_buy_black > 0 then
+        --     商品购买黑名单 = shop_buy_black:filterSplit()
+        -- end
         log("商品黑名单", 商品购买黑名单)
         local sd_retry = 0
         local 商店滑动前采样
@@ -5899,19 +5905,19 @@ path.商店搬空 = function()
                     goto startshop
                 end
                 ssleep(.5)
-                商品名称 = ocr("商店物品名字范围")
+                -- 商品名称 = ocr("商店物品名字范围")
 
-                if #商品名称 > 0 and 商品名称[1].text:includes(商品购买黑名单) then
-                    log("商品黑名单")
-                    商品名称 = sample("商店")
-                    wait(function()
-                        if not findOne(商品名称) then return true end
-                        tap("商店顶栏")
-                        ssleep(0.5)
-                    end, 10)
-                    ssleep(1)
-                    goto continue
-                end
+                -- if #商品名称 > 0 and 商品名称[1].text:includes(商品购买黑名单) then
+                --     log("商品黑名单")
+                --     商品名称 = sample("商店")
+                --     wait(function()
+                --         if not findOne(商品名称) then return true end
+                --         tap("商店顶栏")
+                --         ssleep(0.5)
+                --     end, 10)
+                --     ssleep(1)
+                --     goto continue
+                -- end
 
                 log(989)
                 wait(function()
@@ -5984,7 +5990,6 @@ path.商店搬空 = function()
             appear("活动商店导航", 3)
             tap("活动商店导航")
             appear("商店主页", 3)
-            -- return path.商店搬空() -- 直接从头开始
         end
         ssleep(1)
         if findOne(商店滑动前采样) then
@@ -6126,17 +6131,15 @@ path.故事解锁 = function()
     log("故事集剧情解锁")
 
     if not path.活动页面寻找(1) then return end
-
-    if not wait(function()
-            if findOne("故事集导航") then return true end
-        end, 10) then
+    if not appear("故事集导航", 5) then
+        log("未找到故事集导航")
         return
     end
-
     if not wait(function()
             tap("故事集导航")
             if not findOne("故事集导航") then return true end
         end, 5) then
+        return
     end
 
     disappear("正在提交反馈至神经", network_timeout)
@@ -6146,7 +6149,7 @@ path.故事解锁 = function()
     -- 边栏宽度 0-260 143-底
     ssleep(1)
     if not wait(function()
-            local tc = getColor(360, 940)
+            local tc = getColor(scale(360), scale(940))
             log(tc)
             if tc == "EDEDED" or tc == "313131" then return true end
         end, 5) then
@@ -6646,7 +6649,11 @@ path.退出账号 = function()
         --  开始唤醒 = "账号管理",
         开始唤醒 = function()
             check_login_frequency()
-            tap("账号管理")
+            if not findOne("账号管理") then
+                tap("开始登录单独")
+            else
+                tap("账号管理")
+            end
             disappear("开始唤醒")
         end,
         bilibili_username_inputbox = true,
