@@ -1957,7 +1957,7 @@ path.宿舍换班 = function()
                         ssleep(.4)
                         tap("干员选择列表1") -- 这时候是肥鸭,干员,需要把他们换个顺序
                         ssleep(.2)
-                        if findOne("基建心情降序", .85) then tap("基建心情降序") end
+                        tap("基建心情降序")
                         ssleep(.2)
                         -- 取消选择
                         tap("清空选择")
