@@ -608,8 +608,11 @@ end
 
 show_ad_ui = function()
     if dev_mode then return end
-    if not multi_account_enable then return end
-    if multi_account_num_get() < 5 then return end
+    if multi_account_enable then
+        if multi_account_num_get() < 5 then return end
+    else
+        return
+    end
     if type(cloud_captcha_token) == "string" and #cloud_captcha_token == 43 then return end
     local layout = "advertisement"
     ui.newLayout(layout, ui_page_width, -2)
