@@ -3166,7 +3166,8 @@ path.贸易站加速 = function()
                 if findAny("贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付") then return true end
                 tap("无人机加速确定2")
                 ssleep(.5)
-            end, 5) then
+                disappear("正在提交反馈至神经", network_timeout)
+            end, 6) then
             return
         end
         return true
