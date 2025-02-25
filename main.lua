@@ -137,6 +137,7 @@ applyRemoteConfig()
 restart_mode_hook()
 update_state_from_debugui()
 check_crontab_on_start()
+show_ad_ui()
 cloud.startHeartBeat()
 
 if use_local_dictionary then
