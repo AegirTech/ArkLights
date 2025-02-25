@@ -611,9 +611,12 @@ show_ad_ui = function()
     if multi_account_enable then
         if multi_account_num_get() < 5 then return end
     else
-        return
+        if not cloud_get_task then
+            return
+        end
     end
     if type(cloud_captcha_token) == "string" and #cloud_captcha_token == 43 then return end
+
     local layout = "advertisement"
     ui.newLayout(layout, ui_page_width, -2)
     ui.setTitleText(layout, "广告")
