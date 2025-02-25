@@ -1957,7 +1957,7 @@ path.宿舍换班 = function()
                         ssleep(.4)
                         tap("干员选择列表1") -- 这时候是肥鸭,干员,需要把他们换个顺序
                         ssleep(.2)
-                        if findOne("基建心情降序", .85) then tap("基建心情降序") end
+                        tap("基建心情降序")
                         ssleep(.2)
                         -- 取消选择
                         tap("清空选择")
@@ -3166,7 +3166,8 @@ path.贸易站加速 = function()
                 if findAny("贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付") then return true end
                 tap("无人机加速确定2")
                 ssleep(.5)
-            end, 5) then
+                disappear("正在提交反馈至神经", network_timeout)
+            end, 6) then
             return
         end
         return true
