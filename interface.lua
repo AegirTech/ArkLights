@@ -606,6 +606,67 @@ show_main_ui = function()
     ui.setBackground("start_and_clock", "#ff37a652")
 end
 
+show_ad_ui = function()
+    if dev_mode then return end
+    if multi_account_enable then
+        if multi_account_num_get() < 5 then return end
+    else
+        if not cloud_get_task then
+            return
+        end
+    end
+    if type(cloud_captcha_token) == "string" and #cloud_captcha_token == 43 then return end
+
+    local layout = "advertisement"
+    ui.newLayout(layout, ui_page_width, -2)
+    ui.setTitleText(layout, "广告")
+    add_text = function(text)
+        newRow(layout)
+        addTextView(layout, text)
+    end
+
+    add_text("===============广告===============")
+    add_text("Aunly 打码平台：https://captcha.aunly.cn/")
+    add_text("适用b服点选验证码，价格0.012/次，价格更便宜！")
+    add_text("打码设置在 高级设置-验证码 中可以看到")
+
+    newRow(layout)
+    addButton(layout, nil, "Aunly打码平台官网",
+        make_jump_ui_command(layout, nil, [[jump_address("https://captcha.aunly.cn/")]]))
+    addButton(layout, nil, "微店购买充值CDK",
+        make_jump_ui_command(layout, nil, [[jump_address("https://weidian.com/item.html?itemID=7398821178")]]))
+
+    add_text("\r\n \r\n")
+    add_text("此广告的收益将用于维护脚本和服务器\r\n")
+    add_text("如何关闭广告：非多账户模式下不会展示广告")
+    add_text("或者已经购买使用Aunly打码平台也不会展示该广告\r\n")
+    add_text("本页面将在20s后自动关闭（不会影响脚本自启动等）")
+
+    newRow(layout)
+    addButton(layout, "close_ad_b", "点此关闭广告(剩余5s)", "close_ad()")
+    addButton(layout, "close_ad_c", "退出脚本", "peaceExit()")
+    ui.show(layout, false)
+    ad_close_time = os.time() + 5
+    ad_ui_lock = lock:add()
+    if not wait(function()
+            sleep(1000)
+            if ad_close_time - os.time() > 0 then
+                ui.setButton("close_ad_b", "点此关闭广告(剩余" .. (ad_close_time - os.time()) .. "s)")
+            else
+                ui.setButton("close_ad_b", "点此关闭广告")
+            end
+            return not lock:exist(ad_ui_lock)
+        end, 20) then
+        close_ad()
+    end
+end
+
+close_ad = function()
+    if ad_close_time > os.time() then return end
+    ui.dismiss("advertisement")
+    lock:remove(ad_ui_lock)
+end
+
 show_debug_ui = function()
     local layout = "debug"
     debug_page_width = screen.width * 0.5
@@ -639,16 +700,16 @@ show_debug_ui = function()
     ui.addTab("debug_tab", debug_layout_验证码, "验证码")
 
     newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "速通云打码用于点选验证码，平台注册&购买地址(打码每次0.012元)")
+    addTextView(debug_layout_验证码, "Aunly打码用于点选验证码，平台注册&购买地址(打码每次0.012元)")
 
     newRow(debug_layout_验证码)
-    addButton(debug_layout_验证码, nil, "速通云打码官网",
+    addButton(debug_layout_验证码, nil, "Aunly打码平台官网",
         make_jump_ui_command(layout, nil, [[jump_address("https://captcha.aunly.cn/")]]))
     addButton(debug_layout_验证码, nil, "微店购买充值CDK",
         make_jump_ui_command(layout, nil, [[jump_address("https://weidian.com/item.html?itemID=7398821178")]]))
 
     newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "速通云打码服务Token")
+    addTextView(debug_layout_验证码, "Aunly打码服务Token")
     ui.addEditText(debug_layout_验证码, "cloud_captcha_token", "")
 
     newRow(debug_layout_验证码)

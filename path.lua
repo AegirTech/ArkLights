@@ -3148,7 +3148,7 @@ path.贸易站加速 = function()
     if not disappear("制造站补货通知", 10) then return end
     log(2037)
 
-
+    local 无人机使用完毕 = false
     local f = function()
         if not wait(function()
                 if findOne("无人机加速") then return true end
@@ -3158,12 +3158,16 @@ path.贸易站加速 = function()
         end
 
         -- appear("无人机加速加", .5)
+        if findOne("无人机加速不可点击") then
+            无人机使用完毕 = true
+            return
+        end
         wait(function()
             if not findOne("无人机加速加") then return true end
             tap("无人机加速最大")
         end)
         if not wait(function()
-                if findAny("贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付") then return true end
+                if not findOne("无人机加速确定2") then return true end
                 tap("无人机加速确定2")
                 ssleep(.5)
                 disappear("正在提交反馈至神经", network_timeout)
@@ -3172,7 +3176,9 @@ path.贸易站加速 = function()
         end
         return true
     end
-    for i = 1, 5 do
+    start_time = os.time()
+    while not 无人机使用完毕 do
+        -- for i = 1, 5 do
         local px = appear({ "贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付" }, 5)
         if px == "贸易站第一不可交付" then
             log("贸易站材料缺少")
@@ -3183,15 +3189,21 @@ path.贸易站加速 = function()
             tap("贸易站第一可交付")
             appear("贸易站第一订单加速", 5)
         end
-        if i > 2 and px ~= "贸易站第一可交付" then
-            log("无人机使用完毕")
-            return true
-        end
+        -- if i > 2 and px ~= "贸易站第一可交付" then
+        --     log("无人机使用完毕")
+        --     return true
+        -- end
         appear("贸易站第一订单加速", 5)
         tap("贸易站第一订单加速")
         f()
         log(2038)
+        if os.time() - start_time > 60 * 2 then
+            log("贸易站超时")
+            back()
+            return
+        end
     end
+    back()
 end
 
 ---@param only any 不从基建跳转仅仅加速

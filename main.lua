@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "02.25 16:51"
+release_date = "02.25 20:46"
 update_announcement = '最近更新：复刻活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -137,6 +137,7 @@ applyRemoteConfig()
 restart_mode_hook()
 update_state_from_debugui()
 check_crontab_on_start()
+show_ad_ui()
 cloud.startHeartBeat()
 
 if use_local_dictionary then
