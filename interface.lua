@@ -631,10 +631,10 @@ show_ad_ui = function()
     add_text("打码设置在 高级设置-验证码 中可以看到")
 
     newRow(layout)
-    addButton(layout, nil, "Aunly打码平台官网",
-        make_jump_ui_command(layout, nil, [[jump_address("https://captcha.aunly.cn/")]]))
-    addButton(layout, nil, "微店购买充值CDK",
-        make_jump_ui_command(layout, nil, [[jump_address("https://weidian.com/item.html?itemID=7398821178")]]))
+    addButton(layout, nil, "Aunly打码平台官网", [[putClipboard("https://captcha.aunly.cn/");
+    toast("已复制到剪贴板")]])
+    -- addButton(layout, nil, "微店购买充值CDK",
+    --     make_jump_ui_command(layout, nil, [[jump_address("https://weidian.com/item.html?itemID=7398821178")]]))
 
     add_text("\r\n \r\n")
     add_text("此广告的收益将用于维护脚本和服务器\r\n")

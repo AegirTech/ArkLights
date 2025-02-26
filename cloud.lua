@@ -235,8 +235,8 @@ m.captcha_report = function()
     if not cloud_captcha_id then
         return
     end
-
-    local res, code = httpPost(m.captchaServer .. "/captcha/report?captcha_id=" .. cloud_captcha_id, 30,
+    log(m.captchaServer .. "/captcha/report?captcha_id=" .. cloud_captcha_id)
+    local res, code = httpPost(m.captchaServer .. "/captcha/report?captcha_id=" .. cloud_captcha_id, nil, 30,
         [[Content-Type: application/json;
         Authorization: Bearer ]] .. m.captchaToken)
     cloud_captcha_id = nil
