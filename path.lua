@@ -1941,7 +1941,7 @@ path.宿舍换班 = function()
                 local char_after_fiammetta
                 if table.any(operator,
                         function(x)
-                            if table.includes({ "但书", "巫恋", "龙舌兰" }, x[6]) then
+                            if table.includes({ "但书", "清流" }, x[6]) then
                                 char_after_fiammetta = x[4]
                                 return true
                             end
