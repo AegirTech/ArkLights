@@ -5766,7 +5766,7 @@ path.活动页面寻找 = function(n)
         return n
     end
 
-    local n = n or check_time()
+    local n = n or 1
     if n > 3 then return false end
     path.跳转("首页")
     local l = { "面板活动", "面板活动2", "面板作战" }
