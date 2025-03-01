@@ -3569,22 +3569,16 @@ path.线索传递 = function()
         if random then
             idx = 1 -- 有人只有一个好友
         else
-            for _, p in pairs(findOnes("线索传递橙框")) do
-                log(857, p)
-                local i = 1
-                for j = 1, 4 do
-                    if p.y < point["传递列表" .. j][2] then
-                        i = j
+            for col = 1, 7 do
+                for row = 1, 4 do
+                    if cmpColor(scale(1230 + col * 65), scale(row * 225 - 80), "EB701D", 0.9) == 1 then
+                        idx = row
                         break
                     end
                 end
-                if findOne("今日登录列表" .. i) then
-                    idx = i
-                    break
-                end
+                if idx then break end
             end
         end
-
         if idx then
             log("线索传递", idx, point.传递列表[idx])
             if fake_transfer then exit() end
