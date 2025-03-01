@@ -105,6 +105,9 @@ raise = {}
     ["3281"] = { level = 2, name = "特种芯片" },
     ["3282"] = { level = 3, name = "特种芯片组" },
     ["3283"] = { child = { ["32001"] = 1, ["3282"] = 2 }, level = 4, name = "特种双芯片" },
+    ["3303"] = { child = { ["3302"] = 3 }, level = 3, name = "技巧概要·卷3" },
+    ["3302"] = { child = { ["3301"] = 3 }, level = 2, name = "技巧概要·卷2" },
+    ["3301"] = { level = 1, name = "技巧概要·卷1" },
 }
 --定义日常材料与刷取副本的期望映射关系
 daily_materials_stage_json =
@@ -1395,8 +1398,13 @@ raise.master_skill = function(id, skill_numb, start_level, level)
     appear("专精技能确认", 5)
     -- 森空岛接口有延迟,这里用判断有没有红点来决定要不要合材料
     if findOne("干员技能专精红") then
+        local p0 = findOne("干员专精材料0红") --技能书
+        log(1402, p0)
         local p1 = findOne("干员专精材料1红")
         local p2 = findOne("干员专精材料2红")
+        if p0 then
+            raise.jump_to_workshop("专精", 0)
+        end
         if p1 then
             raise.jump_to_workshop("专精", 1)
         end
@@ -2552,37 +2560,5 @@ raise.auto_raise = function()
             char_do_not_have[name] = true
             toast("未拥有或者未找到干员:" .. name)
         end
-        --[[
-        if player_character_info[id] then
-            log("拥有干员", id)
-            if raise_plan[i]["elite"] then
-                log("精英化干员")
-                local elite = raise.get_char_elite(id)
-                if elite >= raise_plan[i]["elite"] then
-                    log("已达到精英等级")
-                else
-                    return raise.elite_char(id, elite, raise_plan[i]["elite"])
-                end
-            elseif raise_plan[i]["skill_master"] and not mastering then
-                log("专精技能")
-                --几技能
-                local skill_numb = raise_plan[i]["skill"]
-                local skill_level = raise.get_char_skill(id, skill_numb)
-                log("通用技能等级:", skill_level[1], ";" .. skill_numb .. "技能专精等级:", skill_level[2])
-                if skill_level[2] >= raise_plan[i]["skill_master"] then
-                    log(skill_numb, "技能已达到专精等级")
-                else
-                    return raise.master_skill(id, skill_numb, skill_level[2],skill_level)
-                end
-            elseif raise_plan[i]["skills"] then
-                log("升级技能")
-                local skill_level = raise.get_char_skill(id, 1)
-                if skill_level[1] >= (raise_plan[i]["skills"] or 7) then
-                    log("技能已达到指定等级")
-                else
-                    return raise.upgrade_skill(id, skill_numb, skill_level)
-                end
-            end
-        end]]
     end
 end

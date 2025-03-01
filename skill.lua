@@ -2146,11 +2146,11 @@ workshopOperatorBest = function(operator, id, level)
             elseif icon == "bskill_ws_crystalline" and (id == "31034" or id == "30145") then --特克诺
                 s = s + 0.8
             elseif icon == "bskill_ws_skill3" and (id == "3302" or id == "3303") then        --技能书
-                s = s + 0.8
+                s = s + 0.8 + 1                                                              -- +1超过其他合成材料的加成
             elseif icon == "bskill_ws_skill2" and (id == "3302" or id == "3303") then        --技能书
-                s = s + 0.75
+                s = s + 0.75 + 1                                                             -- +1超过其他合成材料的加成
             elseif icon == "bskill_ws_skill1" and (id == "3302" or id == "3303") then        --技能书
-                s = s + 0.7
+                s = s + 0.7 + 1                                                              -- +1超过其他合成材料的加成
             end
         end
         table.insert(best, { s, o })
