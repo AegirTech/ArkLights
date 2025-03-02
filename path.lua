@@ -3169,14 +3169,14 @@ path.贸易站加速 = function()
         if not wait(function()
                 if not findOne("无人机加速确定2") then return true end
                 tap("无人机加速确定2")
-                ssleep(.5)
+                ssleep(.8)
                 disappear("正在提交反馈至神经", network_timeout)
             end, 6) then
             return
         end
         return true
     end
-    start_time = os.time()
+    local start_time = os.time()
     while not 无人机使用完毕 do
         -- for i = 1, 5 do
         local px = appear({ "贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付" }, 5)
@@ -3569,22 +3569,16 @@ path.线索传递 = function()
         if random then
             idx = 1 -- 有人只有一个好友
         else
-            for _, p in pairs(findOnes("线索传递橙框")) do
-                log(857, p)
-                local i = 1
-                for j = 1, 4 do
-                    if p.y < point["传递列表" .. j][2] then
-                        i = j
+            for col = 1, 7 do
+                for row = 1, 4 do
+                    if cmpColor(scale(1230 + col * 65), scale(row * 225 - 80), "EB701D", 0.9) == 1 then
+                        idx = row
                         break
                     end
                 end
-                if findOne("今日登录列表" .. i) then
-                    idx = i
-                    break
-                end
+                if idx then break end
             end
         end
-
         if idx then
             log("线索传递", idx, point.传递列表[idx])
             if fake_transfer then exit() end
