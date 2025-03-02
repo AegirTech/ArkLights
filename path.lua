@@ -3160,6 +3160,7 @@ path.贸易站加速 = function()
         -- appear("无人机加速加", .5)
         if findOne("无人机加速不可点击") then
             无人机使用完毕 = true
+            log("无人机使用完毕")
             return
         end
         wait(function()
@@ -3180,6 +3181,7 @@ path.贸易站加速 = function()
     while not 无人机使用完毕 do
         -- for i = 1, 5 do
         local px = appear({ "贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付" }, 5)
+        log(px)
         if px == "贸易站第一不可交付" then
             log("贸易站材料缺少")
             accelerate_trading = false
