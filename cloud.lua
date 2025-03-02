@@ -134,6 +134,25 @@ m.uploadImgToInquisition = function(img_path)
     end
 end
 
+m.check_captcha_token = function()
+    if type(m.captchaToken) ~= 'string' or m.captchaToken == '' then
+        return false
+    end
+    local res, code = httpGet(m.captchaServer .. "/token/info", 30,
+        [[Content-Type: application/json;
+        Authorization: Bearer ]] .. m.captchaToken)
+    if code == 200 then
+        status, data = pcall(JsonDecode, res)
+        if data.data.user_balance > 20 then
+            return true
+        else
+            return false
+        end
+    else
+        return false
+    end
+end
+
 m.captcha = function(box)
     if m.captchaToken == '' then
         return false

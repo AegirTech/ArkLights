@@ -607,6 +607,13 @@ show_main_ui = function()
 end
 
 show_ad_ui = function()
+    local curday = os.date('%y%m%d')
+    if loadConfig("check_captcha_time", "null") == curday then return end
+    local check_result = cloud.check_captcha_token()
+    if check_result then
+        saveConfig("check_captcha_time", curday)
+    end
+
     if dev_mode then return end
     if multi_account_enable then
         if multi_account_num_get() < 5 then return end
@@ -615,7 +622,6 @@ show_ad_ui = function()
             return
         end
     end
-    if type(cloud_captcha_token) == "string" and #cloud_captcha_token == 43 then return end
 
     local layout = "advertisement"
     ui.newLayout(layout, ui_page_width, -2)
