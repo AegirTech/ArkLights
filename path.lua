@@ -4032,6 +4032,7 @@ path.采购中心商店 = function()
             ssleep(0.1)
             if not wait(function()
                     tap(v)
+                    ssleep(.5)
                     if findOne("购买物品面板") then return true end
                 end, 5) then
             end
@@ -4097,7 +4098,8 @@ path.采购中心商店 = function()
             return
         end
         disappear("正在提交反馈至神经", network_timeout)
-        if not appear("红票商店面板", 1) then return end
+        ssleep(.5)
+        if not appear("红票商店面板", 1.5) then return end
         if table.search(red_ticket_shop_good_need, "模组数据块") then
             local p
             for i = 0, 3 do
@@ -4113,6 +4115,7 @@ path.采购中心商店 = function()
 
             if not wait(function()
                     tap(p)
+                    ssleep(.5)
                     if findOne("购买物品面板") then
                         return true
                     end
