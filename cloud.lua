@@ -196,9 +196,44 @@ m.captcha = function(box)
     -- }
     local postdata = [[{"image_base64": "]] .. image_img_base64 .. [[", "text_base64": "]] .. text_img_base64 .. [["}]]
     -- log(postdata)
-    local res, code = httpPost(m.captchaServer .. "/captcha/geetest_v3/select/base64", postdata, 30,
-        [[Content-Type: application/json;
-        Authorization: Bearer ]] .. m.captchaToken)
+
+    -- local headers = [[Content-Type: application/json;]]
+    -- if cloud_get_task then
+    --     headers = headers .. [[
+    --     Type: cloud;
+    --     Cloud_url: ]] .. m.server .. ";"
+    -- elseif multi_account_enable then
+    --     headers = headers .. [[
+    --     Type: multi_account;]]
+    -- end
+    local UA = "Arklights/" .. getApkVerInt() .. " " .. release_date
+
+    if cloud_get_task then
+        headers = [[Content-Type: application/json
+            Type: cloud
+            Cloud_url: {SERVER}
+            User-Agent: {UA}
+            Authorization: Bearer {CAPTCHATOKEN}
+            Account: {ACCOUNT}]]
+        headers = string.gsub(headers, "{SERVER}", cloud_server)
+    elseif multi_account_enable then
+        headers = [[Content-Type: application/json
+            Type: multi_account
+            User-Agent: {UA}
+            Authorization: Bearer {CAPTCHATOKEN}
+            Account: {ACCOUNT}]]
+    else
+        headers = [[Content-Type: application/json
+            Type: single
+            User-Agent: {UA}
+            Authorization: Bearer {CAPTCHATOKEN}
+            Account: {ACCOUNT}]]
+    end
+    headers = string.gsub(headers, "{APKVERSION}", getApkVerInt())
+    headers = string.gsub(headers, "{CAPTCHATOKEN}", m.captchaToken)
+    headers = string.gsub(headers, "{ACCOUNT}", username)
+    headers = string.gsub(headers, "{UA}", UA)
+    local res, code = httpPost(m.captchaServer .. "/captcha/geetest_v3/select/base64", postdata, 30, headers)
     log(res, code)
     if code == 200 then
         status, data = pcall(JsonDecode, res)
