@@ -3197,6 +3197,8 @@ path.贸易站加速 = function()
         tap("贸易站第一订单加速")
         f()
         log(2038)
+        appear({ "贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付" }, 5)
+        ssleep(1)
         if os.time() - start_time > 60 * 2 then
             log("贸易站超时")
             back()
