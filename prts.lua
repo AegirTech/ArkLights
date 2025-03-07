@@ -1399,6 +1399,7 @@ end
                 --迷宫饭适配
                 tap({ scale(1040), scale(384) })
                 tap({ scale(1306), scale(608) })
+                tap({ scale(702), scale(355) })
                 print("跳过无按钮剧情")
                 appear("作战中", 2)
                 加速()
