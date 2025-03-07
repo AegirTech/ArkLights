@@ -5826,8 +5826,13 @@ path.商店搬空 = function()
                         if findOne("活动任务一键领取") then return end
                     end, 7)
                 end
-                tap("返回")
-                appear("活动商店导航", 1.5)
+                if not wait(function()
+                        back()
+                        ssleep(.5)
+                        if findOne("活动任务页面") then return true end
+                    end, 5) then
+                    return path.商店搬空()
+                end
             end
         end
     end
@@ -5879,8 +5884,8 @@ path.商店搬空 = function()
                 log(x, y)
                 local tap_x
                 local 商品x, 商品y = 初始物品[1] + 物品横间距 * x, 初始物品[2] + 物品纵间距 * y
-                local col_str_data = { string.format("%d|%d|595959", 商品x, 商品y), string.format("%d|%d|EDEDED",
-                    商品x, 商品y - scale(30)) }
+                local col_str_data = { string.format("%d|%d|595959", 商品x, 商品y), string.format("%d|%d|595959",
+                    商品x + scale(100), 商品y) }
                 local col_data = table.join(col_str_data, ",")
                 local 商店采样判断, 商店购买前采样, 商品名称
                 log(col_data)
@@ -5891,6 +5896,7 @@ path.商店搬空 = function()
                 end
                 回到商店主页()
                 if not findOne("商店主页") then return end -- 防止跳到其他页面
+                ssleep(0.1)
 
                 if cmpColorEx(col_data, 0.9) == 1 then
                     log("商品找到")
