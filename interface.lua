@@ -114,6 +114,10 @@ make_account_ui = function(layout, prefix)
 
     -- local max_checkbox_one_row = getScreen().width //200
     local max_checkbox_one_row = 3
+    if not enable_raise_func then
+        table.removev(all_job, "自动培养")
+    end
+
     for k, v in pairs(all_job) do
         if k % max_checkbox_one_row == 1 then
             newRow(layout, prefix .. "now_job_row" .. k)
@@ -1513,6 +1517,9 @@ show_auto_ui = function()
 
     --ui.addCheckBox(layout, "raise_material", "材料合成（未完成）", false)
     ]]
+
+    newRow(layout)
+    ui.addCheckBox(layout, "enable_raise_func", "启用自动养成", false)
 
     newRow(layout)
     ui.addCheckBox(layout, "not_use_ocr", "基建不使用ocr（低配置或基建崩溃建议打开）", false)
