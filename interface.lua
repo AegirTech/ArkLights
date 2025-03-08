@@ -114,9 +114,6 @@ make_account_ui = function(layout, prefix)
 
     -- local max_checkbox_one_row = getScreen().width //200
     local max_checkbox_one_row = 3
-    if not enable_raise_func then
-        table.removev(all_job, "自动培养")
-    end
 
     for k, v in pairs(all_job) do
         if k % max_checkbox_one_row == 1 then
