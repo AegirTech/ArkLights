@@ -1394,11 +1394,12 @@ end
 
         if not (findOne("作战中") or findOne("暂停中") or findOne("作战中2")) then
             sleep(500)
-            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "生息演算剧情上", "生息演算剧情下" }) then
+            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "生息演算剧情上", "生息演算剧情下" }) then
                 tap("剧情中")
                 --迷宫饭适配
                 tap({ scale(1040), scale(384) })
                 tap({ scale(1306), scale(608) })
+                tap({ scale(713), scale(370) })
                 print("跳过无按钮剧情")
                 appear("作战中", 2)
                 加速()
