@@ -8862,6 +8862,7 @@ path.森空岛签到 = function()
 end
 
 path.自动培养 = function()
+    if not enable_raise_func then return end
     raise.auto_raise()
 end
 
