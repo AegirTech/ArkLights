@@ -272,6 +272,18 @@ skland.get_refresh_token = function()
     end
 end
 
+skland_sign_cloud = function(account, password)
+    local url = "https://skland-api.enlysure.com:13000/skland/sign"
+    local data = {
+        account = account,
+        password = password,
+        verify = "arklights"
+    }
+    local res, code = httpPost(url, JsonEncode(data), 30, "Content-Type: application/json")
+    log("cloud sign", res, code)
+end
+
+
 -- 森空岛每日签到
 skland_daily_checkin = function(account, password)
     log("森空岛签到开始")
@@ -280,6 +292,12 @@ skland_daily_checkin = function(account, password)
     if lasttime == curtime then
         log("森空岛签到跳过")
         table.insert(qqmessage, "森空岛签到跳过")
+        return true
+    end
+    if skland_use_cloud then
+        skland_sign_cloud(account, password)
+        account_data[account]["lastcheckintime"] = curtime
+        table.insert(qqmessage, "森空岛签到完成")
         return true
     end
     -- did 从接口获取（有点麻烦，没法写lua版本的）

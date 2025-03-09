@@ -1494,6 +1494,12 @@ show_auto_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "single_password", "")
 
+    newRow(layout)
+    ui.addCheckBox(layout, "skland_use_cloud", "森空岛签到使用云端接口", false)
+    newRow(layout)
+    addTextView(layout, [[勾选使用云端接口请求时候会附带账户密码
+不勾选此选项则所有的请求全在本地完成
+部分设备（如光速虚拟机）内无法使用curl，故本地签到会失败]])
 
     newRow(layout)
     addTextView(layout, "--------------------自动养成相关--------------------")
