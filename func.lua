@@ -1003,3 +1003,29 @@ clear_cache = function()
     delfile("/storage/emulated/0/" .. package)
     toast("清除缓存成功")
 end
+
+
+backup_config = function()
+    local backup_path = "/sdcard/" .. getPackageName() .. "/backup/"
+    local config_path = getWorkPath() .. "/"
+    mkdir(backup_path)
+
+    local source_path, dest_path
+    if fileExist(config_path .. "config_main.json") then
+        log("开始备份配置")
+        source_path, dest_path = config_path, backup_path
+    elseif fileExist(backup_path .. "config_main.json") then
+        toast("自动恢复旧配置")
+        source_path, dest_path = backup_path, config_path
+    else
+        return
+    end
+
+    for _, layout in pairs(script_layouts) do
+        local c_path = source_path .. "config_" .. layout .. ".json"
+        local d_path = dest_path .. "config_" .. layout .. ".json"
+        if fileExist(c_path) then
+            copy_file_s(c_path, d_path)
+        end
+    end
+end

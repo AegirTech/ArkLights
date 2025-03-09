@@ -52,8 +52,8 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "03.08 03:43"
-update_announcement = '最近更新：复刻活动导航'
+release_date = "03.09 11:49"
+update_announcement = '最近更新：活动导航/配置恢复/其他功能修复'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -131,6 +131,7 @@ remove_old_log()
 remove_lr_ad()
 detectServer()
 predebug_hook()
+backup_config()
 showUI()
 loadUIConfig()
 applyRemoteConfig()

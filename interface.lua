@@ -8,6 +8,8 @@ all_job = {
     "限时活动", "商店搬空", "故事解锁", "森空岛签到",
 }
 
+script_layouts = { "multi_account", "gesture_capture", "extra", "debug", "main", "auto", "sss_fight" }
+
 now_job = table.filter(all_job, function(x) return x ~= "副手换人" end)
 now_job = table.filter(all_job, function(x) return true end)
 multi_account_num = 30
@@ -41,7 +43,7 @@ end
 -- 将UI内容转为全局变量
 loadUIConfig = function(layouts)
     if not layouts then
-        layouts = { "multi_account", "gesture_capture", "extra", "debug", "main", "auto", "sss_fight" }
+        layouts = script_layouts
     end
     for _, layout in pairs(layouts) do
         assignGlobalVariable(loadOneUIConfig(layout))
