@@ -3027,7 +3027,7 @@ update_state_from_ui = function()
 
     -- 活动开放时间段
     hd_nickname = "EA"
-    hd_max_stage = 9
+    hd_max_stage = 8
     hd_exclude = {}
     hd_open_time_end = parse_time("202503210400")
     hd2_open_time_end = parse_time("202502210400") -- 故事集开放时间段
