@@ -302,13 +302,13 @@ skland_daily_checkin = function(account, password)
     end
     -- did 从接口获取（有点麻烦，没法写lua版本的）
     local did_time = get(account_data, "did_time")
-    if did_time == nil or did_time < os.date('%y%m%d') then
+    if did_time == nil or did_time ~= curtime then
         local res, code = httpGet("https://skland-api.enlysure.com:13000/skland/get_did?verify=arklights", 10)
         log("did code get", res, code)
         if code == 200 then
             s_did = res
             Headers["dId"] = s_did
-            account_data["did_time"] = os.date('%y%m%d', os.time() + 3 * 24 * 60 * 60)
+            account_data["did_time"] = curtime
             account_data["did"] = s_did
             save_local_config()
         end
