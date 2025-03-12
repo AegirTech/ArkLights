@@ -291,7 +291,7 @@ skland_daily_checkin = function(account, password)
     local lasttime = get(account_data, str(account), "lastcheckintime")
     if lasttime == curtime then
         log("森空岛签到跳过")
-        table.insert(qqmessage, "森空岛签到跳过")
+        -- table.insert(qqmessage, "森空岛签到跳过")
         return true
     end
     if skland_use_cloud then
@@ -303,6 +303,7 @@ skland_daily_checkin = function(account, password)
     -- did 从接口获取（有点麻烦，没法写lua版本的）
     local did_time = get(account_data, "did_time")
     if did_time == nil or did_time ~= curtime then
+        log("get did start")
         local res, code = httpGet("https://skland-api.enlysure.com:13000/skland/get_did?verify=arklights", 10)
         log("did code get", res, code)
         if code == 200 then
@@ -338,7 +339,7 @@ skland_daily_checkin = function(account, password)
             table.insert(qqmessage, "森空岛签到完成")
         elseif ret == 1 then
             log("森空岛签到重复")
-            table.insert(qqmessage, "森空岛签到重复")
+            -- table.insert(qqmessage, "森空岛签到重复")
         else
             table.insert(qqmessage, "森空岛签到未知错误，请联系开发者")
             account_data[account]["cred"] = ""
