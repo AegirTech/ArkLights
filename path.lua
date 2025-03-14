@@ -5816,28 +5816,23 @@ path.商店搬空 = function()
         end, 10) then
         return
     end
-    if hd_mod == "SS" then
-        if appear("活动任务导航", .6) then
-            tap("活动任务导航")
-            ssleep(.2)
-            if appear("活动任务页面", 2) then
-                if findOne("活动任务一键领取") then
-                    tap("活动任务一键领取")
-                    ssleep(.5)
-                    wait(function()
+    if appear("活动任务导航", 1) then
+        tap("活动任务导航")
+        ssleep(.2)
+        if appear("活动任务页面", 2) then
+            if findOne("活动任务一键领取") then
+                tap("活动任务一键领取")
+                ssleep(.5)
+                if not wait(function()
                         tap("活动任务一键领取")
                         ssleep(0.2)
-                        if findOne("活动任务一键领取") then return end
-                    end, 7)
-                end
-                if not wait(function()
-                        back()
-                        ssleep(.5)
                         if findOne("活动任务页面") then return true end
-                    end, 5) then
-                    return path.商店搬空()
+                    end, 7) then
                 end
             end
+            ssleep(0.2)
+            tap("返回")
+            appear("活动商店导航", 1.5)
         end
     end
 
