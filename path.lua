@@ -2445,7 +2445,7 @@ path.总览换班 = function()
     path.会客厅换班()
 
     if not wait(function()
-            if not findOne("基建总览工作区") then return true end
+            if findOne("基建总览非工作区") then return true end
             tap("基建总览非工作区")
             ssleep(.5)
         end, 10) then
@@ -2477,96 +2477,94 @@ path.总览换班 = function()
     end
 
     local f2 = function()
-        if isCharExsit["迷迭香"] or isCharExsit["鸿雪"] then
-            -- 进入最后一间宿舍
-            if not wait(function()
-                    if findOne("确认蓝") then return true end
-                    if findOne("基建总览非工作区") then
-                        tap("总览非工作区第四排宿舍")
-                    end
-                end, 10) then
-                return
-            end
+        -- 进入最后一间宿舍
+        if not wait(function()
+                if findOne("确认蓝") then return true end
+                if findOne("基建总览非工作区") then
+                    tap("宿舍列表4")
+                end
+            end, 10) then
+            return
+        end
 
-            if not findOne("确认蓝") then return true end
-            local limit = findOne("清空选择") and 5 or 1
-            tap("清空选择")
-            if not wait(function()
-                    if findOne("干员未选中") and findOne("第一干员未选中") then
-                        return true
-                    end
-                    tap("清空选择")
-                end, 5) then
-                return
-            end
-
-            local stationType = "宿舍"
-
-            ssleep(.2)
-            tap("基建技能排序")
-            ssleep(.2)
-            tap("基建换班筛选")
-            wait(function()
-                if findOne("基建换班筛选弹出窗口") then
-                    ssleep(.1)
-                    tap("基建换班筛选未进驻")
+        if not findOne("确认蓝") then return true end
+        local limit = findOne("清空选择") and 5 or 1
+        tap("清空选择")
+        if not wait(function()
+                if findOne("干员未选中") and findOne("第一干员未选中") then
                     return true
                 end
-            end, 5)
-            ssleep(.2)
-            chooseOperator(stationType)
-            ssleep(.2)
-            tap("基建心情排序")
-            ssleep(.2)
-            tap("基建心情排序")
-            ssleep(.2)
-            local start_time = time()
+                tap("清空选择")
+            end, 5) then
+            return
+        end
 
-            if not wait(function()
-                    if findOne("干员未选中") and findOne("第一干员未选中") then
-                        return true
-                    end
-                    if time() - start_time > 1000 then
-                        tap("干员选择列表1")
-                        start_time = time()
-                    end
-                    tap("清空选择")
-                end, 5) then
-                log(1037)
-                return
+        local stationType = "宿舍"
+
+        ssleep(.2)
+        tap("基建技能排序")
+        ssleep(.2)
+        tap("基建换班筛选")
+        wait(function()
+            if findOne("基建换班筛选弹出窗口") then
+                ssleep(.1)
+                tap("基建换班筛选未进驻")
+                return true
             end
+        end, 5)
+        ssleep(.2)
+        chooseOperator(stationType)
+        ssleep(.2)
+        tap("基建心情排序")
+        ssleep(.2)
+        tap("基建心情排序")
+        ssleep(.2)
+        local start_time = time()
 
-            log("limit", limit)
+        if not wait(function()
+                if findOne("干员未选中") and findOne("第一干员未选中") then
+                    return true
+                end
+                if time() - start_time > 1000 then
+                    tap("干员选择列表1")
+                    start_time = time()
+                end
+                tap("清空选择")
+            end, 5) then
+            log(1037)
+            return
+        end
 
-            local operator = {}
-            discover(operator, {}, 1, true)
-            log("1905", operator)
-            operator = table.filter(operator, function(x) return x[3] >= 0 end)
-            operator = map(function(x) return x[4] end, operator)
-            operator = table.slice(operator, 1, limit)
+        log("limit", limit)
 
-            if not wait(function()
-                    if not findOne("干员未选中") then return true end
+        local operator = {}
+        discover(operator, {}, 1, true)
+        log("1905", operator)
+        operator = table.filter(operator, function(x) return x[3] >= 0 end)
+        operator = map(function(x) return x[4] end, operator)
+        operator = table.slice(operator, 1, limit)
 
-                    -- 不得不等，不然不按序
-                    -- 不用等，因为加了异格检测需要时间？
-                    ssleep(0.25)
-                    tapAll(operator)
-                    disappear("干员未选中", 2)
-                end, 5) then
-                return
-            end
+        if not wait(function()
+                if not findOne("干员未选中") then return true end
 
-            if not wait(function(reset_wait_start_time)
-                    if findAny({ "基建总览非工作区", "基建总览干员休整" }) then return true end
-                    tap("确认蓝")
-                    ssleep(.8) --点太快点到休整就白换了
-                    if findOne("正在提交反馈至神经") then
-                        reset_wait_start_time()
-                    end
-                end, 3) then
-                return
-            end
+                -- 不得不等，不然不按序
+                -- 不用等，因为加了异格检测需要时间？
+                ssleep(0.25)
+                tapAll(operator)
+                disappear("干员未选中", 2)
+            end, 5) then
+            return
+        end
+
+        if not wait(function(reset_wait_start_time)
+                if findAny({ "基建总览非工作区", "基建总览干员休整" }) then return true end
+                tap("确认蓝")
+                ssleep(.8) --点太快点到休整就白换了
+                if findOne("正在提交反馈至神经") then
+                    reset_wait_start_time()
+                end
+            end, 3) then
+            return
         end
     end
 
@@ -2607,7 +2605,7 @@ path.总览换班 = function()
         end
 
         if not findOne("确认蓝") then return true end
-        tap("清空选择")
+
         if not wait(function()
                 if findOne("干员未选中") and findOne("第一干员未选中") then
                     return true
@@ -2631,7 +2629,7 @@ path.总览换班 = function()
             end
             tap("基建心情排序")
         end, 5)
-
+        tap("清空选择")
         --选前5
         local operator = map(function(x) return "干员选择列表" .. x end,
             range(1, 5))
@@ -2653,72 +2651,6 @@ path.总览换班 = function()
             return
         end
 
-
-        -- local 需要选择干员数 = 5
-        -- for i = 1, 5 do
-        --     if findOne("选人选中" .. i) then
-        --         需要选择干员数 = 5 - i
-        --     end
-        -- end
-        -- log(801, 需要选择干员数)
-        -- if 需要选择干员数 == 0 then return end
-        -- tap("基建工作状态排序")
-        -- ssleep(.2)
-        -- tap("基建技能排序")
-        -- ssleep(.2)
-
-        -- local operator
-        -- -- 根据心情阈值选择
-        -- operator = {}
-
-        -- local maxSwipTimes = 5
-
-        -- for i = 1, maxSwipTimes do
-        --     if discoverAndChoose(operator, {}, i, true) then break end
-        --     local state = sample("干员第一个")
-        --     for j = 1, 3 do
-        --         log("842尝试翻页", j)
-        --         if findOne("正在提交反馈至神经") then
-        --             disappear("正在提交反馈至神经", network_timeout)
-        --             ssleep(.5)
-        --         end
-        --         swipo()
-        --         if not findOne(state) then break end
-        --     end
-        -- end
-        -- swipo(true, true)
-        -- ssleep(1)
-        -- log(818, operator)
-
-        -- operator = table.filter(operator, function(x)
-        --     return x[7] == false
-        -- end)
-
-        -- operator = table.slice(operator, 1, 需要选择干员数)
-
-        -- log(819, operator)
-
-        -- local pageid = 1
-        -- for i = 1, #operator do
-        --     pageid = 1
-        --     while operator[i][5] > pageid do
-        --         local state = sample("干员第一个")
-        --         for j = 1, 3 do
-        --             log("844尝试翻页", j)
-        --             if findOne("正在提交反馈至神经") then
-        --                 disappear("正在提交反馈至神经", network_timeout)
-        --                 ssleep(.5)
-        --             end
-        --             swipo()
-        --             if not findOne(state) then break end
-        --         end
-        --         pageid = pageid + 1
-        --     end
-        --     local p = operator[i][4]
-        --     tap({ p[1] + scale(106), p[2] })
-        --     sleep(50)
-        -- end
-
         if not wait(function(reset_wait_start_time)
                 if not findOne("确认蓝") then return true end
                 tap("确认蓝")
@@ -2733,11 +2665,10 @@ path.总览换班 = function()
         return true
     end
     appear("基建总览非工作区", .2)
-    排除已经进驻 = true
-    for i = 1, 6 do
+    for i = 1, 4 do
         if findOne("基建总览非工作区") then
-            ssleep(1)
-            bottom = sample("进驻总览底部")
+            ssleep(.5)
+            --bottom = sample("进驻总览底部")
         elseif findOne("确认蓝") then
             back()
             ssleep(1)
@@ -2749,18 +2680,21 @@ path.总览换班 = function()
             table.insert(qqmessage, "总览换班失败2")
             return
         end
-        local finx_x = findAny({ "宿舍未满员1", "宿舍未满员2", "宿舍未满员3", "宿舍未满员4" })
-        if finx_x then
-            wait(function()
-                if findOne("确认蓝") then return true end
-                tap(finx_x)
-                ssleep(.5)
-            end, 5)
-            f()
-            log(475)
-            -- while f() do log(475) end
+        if i == 4 and (isCharExsit["迷迭香"] or isCharExsit["鸿雪"]) then
+            f2()
+        else
+            if findOne("宿舍未满员列表" .. i) then
+                log(2687, i)
+                wait(function()
+                    if findOne("确认蓝") then return true end
+                    tap("宿舍未满员列表" .. i)
+                    ssleep(.5)
+                end, 5)
+                f()
+            end
         end
-        appear("基建总览非工作区", 5)
+        log(476)
+        appear("基建总览非工作区", 3)
         -- tap("宿舍未满员" .. i)
         -- disappear(bottom, 1)
         -- ssleep(.5)
@@ -2769,12 +2703,7 @@ path.总览换班 = function()
             back()
             appear("基建总览非工作区", 3)
         end
-        log(1099, i)
     end
-    排除已经进驻 = false
-
-    -- 迷迭香体系
-    f2()
 end
 
 path.基建换班 = function()

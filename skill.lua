@@ -223,7 +223,7 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
 end)
 
 -- 宿舍总览换班，保持原有并填满剩余的
-discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only, stationType)
+--[[ discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only, stationType)
     local prewhite = 0
     local y = scale(383)
     local corner = {}
@@ -285,7 +285,7 @@ discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only
         table.insert(operators, { '', '', mood, icon1, pageid, '', v[3] })
     end
     log(217, operators)
-end)
+end) ]]
 
 
 -- 贸易站干员选择
