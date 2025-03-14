@@ -875,7 +875,7 @@ raise.material_synthesis = function(id, count)
         ssleep(.3)
         tap("开始加工")
         if not appearTap("获得物资", 10) then
-            log("合成材料失败")
+            log("子材料不足,合成材料失败")
             return
         end
         appear("加工站", 3)
@@ -903,6 +903,9 @@ raise.material_synthesis = function(id, count)
         if appear("获得物资", 10) then
             ssleep(.2)
             tap("获得物资")
+        else
+            log("子材料不足,合成材料失败")
+            return
         end
         appear("加工站", 3)
         ssleep(.3)
