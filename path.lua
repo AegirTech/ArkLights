@@ -1857,22 +1857,14 @@ path.宿舍换班 = function()
     local f
     local fiammetta_used = false
     f = function(i)
-        path.跳转("基建")
-
         if not wait(function()
-                if not findOne("进驻总览") or not findOne("缩放结束") then
-                    return true
-                end
+                if findOne("筛选") then return true end
                 tap("宿舍列表" .. i)
             end) then
             return
         end
 
         local 进入宿舍并清空干员 = function()
-            if not appear({ "进驻信息", "进驻信息选中" }, 5) then
-                log("621")
-                return
-            end
             if not wait(function()
                     if findOne("筛选") then return true end
                     --[[if not findOne("基建心情升序") then
@@ -1910,18 +1902,23 @@ path.宿舍换班 = function()
         end
         local 确认干员选择 = function()
             if not wait(function(reset_wait_start_time)
-                    if findAny({ "隐藏", "进驻信息", "进驻信息选中" }) then
+                    if findAny({ "隐藏", "基建总览非工作区", "总览换班锁定编辑" }) then
                         return true
                     end
                     if findOne("正在提交反馈至神经") then
                         reset_wait_start_time()
                     end
                     tap("确认蓝")
+                    ssleep(.8)
+                    if findOne("正在提交反馈至神经") then
+                        reset_wait_start_time()
+                    end
                 end, 5) then
                 return
             end
         end
 
+        log(1923)
         进入宿舍并清空干员()
         local operator
 
@@ -2018,6 +2015,25 @@ path.宿舍换班 = function()
         log(842, #operator)
 
         确认干员选择()
+    end
+    path.跳转("基建")
+    if not wait(function()
+            if findOne("基建总览工作区") then return true end
+            tap("进驻总览")
+            ssleep(.2)
+            if findOne("教程关闭") then
+                tap("教程关闭")
+                ssleep(.2)
+            end
+        end, 10) then
+        return
+    end
+    if not wait(function()
+            if findOne("基建总览非工作区") then return true end
+            tap("基建总览非工作区")
+            ssleep(.5)
+        end, 10) then
+        return
     end
     for i = 1, 4 do f(i) end
 end
@@ -2408,7 +2424,6 @@ path.贸易换班 = function()
     return path.制造换班(true)
 end
 
--- 5.5周年后ui大改,暂时舍弃工作区兜底换班
 path.总览换班 = function()
     if disable_overview_shift then return end
 
