@@ -793,6 +793,9 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
             elseif icon == 'bskill_man_spd&limit&cost3' then
                 base = base + 0.25
                 storage[operatoridx] = (storage[operatoridx] or 0) - 12
+            elseif icon == 'bskill_man_spd&limit6' then
+                base = base + 0.20
+                storage[operatoridx] = (storage[operatoridx] or 0) - 8
             elseif icon == 'bskill_man_spd_add1' then
                 -- 8小时平均收益 ((0.2+0.24)/2*5+0.25*3)/8
                 base = base + 0.23125
