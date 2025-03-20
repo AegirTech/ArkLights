@@ -223,7 +223,7 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
 end)
 
 -- 宿舍总览换班，保持原有并填满剩余的
-discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only, stationType)
+--[[ discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only, stationType)
     local prewhite = 0
     local y = scale(383)
     local corner = {}
@@ -285,7 +285,7 @@ discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only
         table.insert(operators, { '', '', mood, icon1, pageid, '', v[3] })
     end
     log(217, operators)
-end)
+end) ]]
 
 
 -- 贸易站干员选择
@@ -450,7 +450,6 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
         -- 火哨
         if all["bskill_tra_share1"] then base = base + (level - 1) * 0.15 end
 
-
         -- 拉狗徳狗
         local texas = all['bskill_tra_texas1'] or all['bskill_tra_texas2']
         if all['bskill_tra_lappland1'] then
@@ -487,7 +486,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
         if all["bskill_trade_ord_spd_variable"] then base = base + storage * 0.04 end
 
         -- 锏2
-        if icon == "bskill_tra_limit2spd" then base = base + min(1.00, math.floor(storage / 5) * 0.25) end
+        if all["bskill_tra_limit2spd"] then base = base + min(1.00, math.floor(storage / 5) * 0.25) end
 
         -- 孑
         if all['bskill_tra_limit_count'] then
@@ -550,7 +549,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
 
         return base, only_need
     end
-
+    log(353)
     -- 过滤心情小于阈值的干员
     local minAllowedMood = shift_min_mood
     if disable_shift_mood then minAllowedMood = -1 end
@@ -575,7 +574,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
     end
 
     best = table.index(operator, best)
-
+    log(355, #best_only_need)
     -- 特殊处理，只需要部分干员
     if #best_only_need > 0 then
         best = table.filter(best, function(v)
@@ -793,6 +792,9 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
             elseif icon == 'bskill_man_spd&limit&cost3' then
                 base = base + 0.25
                 storage[operatoridx] = (storage[operatoridx] or 0) - 12
+            elseif icon == 'bskill_man_spd&limit6' then
+                base = base + 0.20
+                storage[operatoridx] = (storage[operatoridx] or 0) - 8
             elseif icon == 'bskill_man_spd_add1' then
                 -- 8小时平均收益 ((0.2+0.24)/2*5+0.25*3)/8
                 base = base + 0.23125
@@ -1075,21 +1077,9 @@ findBuildingSkill = function(x1, y1, x2, y2, pngdata)
         end
         score = score / scoreBase
 
-        if k == 'bskill_man_spd&power3' then log(662, score, tmp) end
-        if k == 'bskill_man_spd&power2' then log(663, score, tmp) end
-        if k == 'bskill_man_spd&power1' then log(663, score, tmp) end --异客
-        -- if k == 'bskill_tra_spd_variable22' then log(662, score, tmp) end
-        -- if k == 'bskill_tra_spd&wt1' then log(663, score, tmp) end
-        --
-        -- if k == 'bskill_tra_texas1' then log(662, score, tmp) end
-        -- if k == 'bskill_tra_lappland2' then log(663, score, tmp) end
-        -- if k == 'bskill_meet_spd3' then log(663, score, tmp) end
-        -- if k == 'bskill_meet_spd2' then log(662, score, tmp) end
-        -- if k == 'bskill_man_spd2' then log(663, score, tmp) end
-        -- if k == 'bskill_man_exp2' then log(662, score, tmp) end
-        -- if k == 'bskill_ctrl_t_spd' then log('t', score, tmp) end
-        -- if k == 'bskill_ctrl_c_spd' then log('c', score, tmp) end
-        -- exit()
+        --if k == 'bskill_man_spd&power3' then log(662, score, tmp) end
+        --if k == 'bskill_man_spd&power2' then log(663, score, tmp) end
+        --if k == 'bskill_man_spd&power1' then log(663, score, tmp) end --异客
 
         if best_score > score then
             best_score = score
@@ -1097,7 +1087,6 @@ findBuildingSkill = function(x1, y1, x2, y2, pngdata)
         end
     end
     --log(2208, best_score, best, x1, y1, x2, y2)
-    --exit()
     return best
 end
 

@@ -2027,7 +2027,7 @@ closeapp = function(package)
     if root_mode then
         exec("su root sh -c 'am force-stop " .. package .. "'")
     else
-        log("无障碍模式关闭app方式", app_close_way)
+        --log("无障碍模式关闭app方式", app_close_way)
         if app_close_way == 1 then
             local intent = {
                 action = "android.settings.APPLICATION_DETAILS_SETTINGS",
