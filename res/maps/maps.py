@@ -13,8 +13,6 @@ import numpy as np
 import requests
 
 
-
-
 @dataclass
 class Tile:
     heightType: int
@@ -99,7 +97,7 @@ class Calc:
         return -1.4 * t, -2.8 * t
 
     def run(
-            self, code: str = "", name: str = "", side: bool = False
+        self, code: str = "", name: str = "", side: bool = False
     ) -> List[List[Tuple[Tile, Tuple[int, int]]]]:
         """
         :param code: 关卡代号 例如:0-1 1-7
@@ -206,6 +204,8 @@ if response.status_code == 200:
             maptype = 4  # 肉鸽
         elif data["stageId"].startswith("mem"):
             maptype = 5  # 悖论模拟
+        elif "multi" in data["stageId"]:
+            maptype = 6  # 促融共竞
         trainmap = 0
         if "TR-" in data["code"]:
             trainmap = 1
@@ -295,7 +295,7 @@ params = {
     "verify": "arklights",
 }
 file = {"file": open(output_path, "rb")}
-ret = requests.post(upload_url, params=params, files=file,timeout=500)
+ret = requests.post(upload_url, params=params, files=file, timeout=500)
 print(ret.status_code, ret.text)
 
 """
