@@ -8408,7 +8408,13 @@ end
 
 path.自动合成模组材料 = function(target_level)
     local target_level = target_level or 3
-    if not raise.init() then return end
+    if not item_name2id then
+        item_name2id = {}
+        for k, v in pairs(高级材料2低级材料) do
+            local name = v["name"]
+            item_name2id[name] = tostring(k)
+        end
+    end
     for i = 0, 2 do
         local current_level = math.min(i, 1)
         log("当前模组等级" .. i)
