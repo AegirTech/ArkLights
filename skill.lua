@@ -216,7 +216,6 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
             end
         end
         log(129, idx, operator, mood, name)
-
         table.insert(operators, { png, png2, mood, icon1, pageid, name })
     end
     log(217, operators)
