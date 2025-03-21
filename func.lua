@@ -1029,3 +1029,13 @@ backup_config = function()
         end
     end
 end
+
+
+close_app_r = function()
+    if root_mode then
+        exec("sudo pkill -f 'su root sh -c'")
+        exec("sudo killall -9 sh")
+    end
+    saveConfig('Not_Restart', 'true')
+    exit()
+end
