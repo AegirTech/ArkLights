@@ -2701,11 +2701,52 @@ path.总览换班 = function()
     end
 end
 
+path.重置控制中枢位置 = function()
+    if findAny({ "基建总览非工作区", "基建总览工作区" }) then
+        tap("返回")
+        if not appear("进驻总览", 5) then return end
+        if not wait(function()
+                if findOne("基建总览工作区") then return true end
+                tap("进驻总览")
+                ssleep(.2)
+                if findOne("教程关闭") then
+                    tap("教程关闭")
+                    ssleep(.2)
+                end
+            end, 10) then
+            return
+        end
+    else
+        return
+    end
+end
+
+path.基建总览翻页 = function()
+    local flipd = 150
+    local flips = 50
+    local duration = flipd + flips + 50
+    local x1 = screen.width - scale(1280 - 500)
+    local x2 = x1 + scale(100)
+    local x3 = screen.width - 1
+    local y1 = scale(150)
+    local y2 = screen.height - scale(300)
+    local paths = {
+        { point = { { x1, y1 }, { x3, y1 } }, duration = duration },
+        { point = { { x1, y2 }, { x2, y2 } }, duration = flipd,   start = flips },
+    }
+    -- sleep(100)
+    gesture(paths)
+    sleep(duration + 50)
+    -- 可能还是需要按下
+    tap("入驻干员右侧")
+    -- 不用的话，大分辨率还是有可能出现错过加号
+    sleep(100)
+end
+
 path.基建换班 = function()
     -- TODO 掉线需要重跑而非继续
-    path.宿舍换班()
     path.基建信息获取()
-
+    path.宿舍换班()
     path.发电站换班()
     path.办公室换班()
     path.跳转("基建")
@@ -2739,12 +2780,9 @@ path.发电站换班 = function()
     local station_color = "#CCFF66"
     local type
     local good
-
-    local f
-    f = function(i, station, stationLevel)
+    local p
+    local f = function(i, station, stationLevel)
         path.跳转("基建")
-
-
         -- 进入发电站
         if not wait(function()
                 if not findOne("进驻总览") or not findOne("缩放结束") then
@@ -2804,10 +2842,88 @@ path.发电站换班 = function()
             end
         end, 5)
     end
+    path.重置控制中枢位置()
+    for i = 1, 4 do
+        path.基建总览翻页()
+        p = findOne("基建总览发电站")
+        log(p)
+        if p then break end
+    end
+    local f1 = function(i, station, stationLevel)
+        -- 进入发电站
+        if not wait(function()
+                if findOne("筛选") then return true end
+                tap(station)
+            end) then
+            return
+        end
 
-    -- 找到所有制造站
+        if not wait(function()
+                if findOne("筛选") then return true end
+                if findOne("进驻信息选中") then
+                    wait(function()
+                        if findOne("筛选") then return true end
+                        tap("进驻第一人")
+                    end, 2)
+                elseif findOne("进驻信息") then
+                    tap("进驻信息")
+                    ssleep(.2)
+                    wait(function()
+                        if findOne("筛选") then return true end
+                        tap("进驻第一人")
+                    end, 3)
+                end
+            end, 7) then
+            return
+        end
+
+        if not wait(function()
+                if findOne("干员未选中") and findOne("第一干员未选中") then
+                    return true
+                end
+                tap("第一干员未选中")
+                ssleep(.5)
+            end, 7) then
+            log("发电站超时")
+            return
+        end
+
+        log(1217, tradingStationLevel, manufacturingStationLevel, powerStationLevel,
+            dormitoryLevel)
+
+        local stationType = "发电站"
+        chooseOperator(stationType, type, stationLevel, tradingStationNum,
+            virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
+            goldStationNum, totalStationLevel)
+
+        wait(function(reset_wait_start_time)
+            if findOne("基建总览工作区") then return true end
+            if findOne("正在提交反馈至神经") then
+                reset_wait_start_time()
+            end
+            tap("确认蓝")
+            ssleep(.8)
+            if findOne("正在提交反馈至神经") then
+                reset_wait_start_time()
+            end
+        end, 5)
+    end
+    -- 所有制造站位置
     local station = powerStation
+    if p then
+        f = f1
+        for i = 1, #powerStation do
+            station[i] = { p[1] + scale(376), --标志到第一个干员的横坐标差值
+                p[2] + i * scale(238) - scale(100) }
+        end
+    end
+
     local stationLevel = powerStationLevel
+
+
+
+    local f2
+
     for i = 1, #station do f(i, station[i], stationLevel[i]) end
 end
 
@@ -2815,20 +2931,25 @@ path.办公室换班 = function(stationType)
     if disable_office_shift then return end
     --if 1 then return end
     stationType = stationType or "办公室"
-
-    path.跳转("基建")
+    local p = stationType
+    if findOne("基建总览发电站") then
+        for i = 1, 2 do
+            path.基建总览翻页()
+        end
+        p = "基建总览办公室"
+    else
+        path.跳转("基建")
+    end
 
     -- 进办公室
     if not wait(function()
-            if not findOne("进驻总览") or not findOne("缩放结束") then
+            if findAny({ "进驻信息", "进驻信息选中", "筛选" }) then
                 return true
             end
-            tap(stationType)
+            tap(p)
         end) then
         return
     end
-
-    if not appear({ "进驻信息", "进驻信息选中" }, 5) then return end
 
     if not wait(function()
             if findOne("确认蓝") then return true end
@@ -2857,10 +2978,11 @@ path.办公室换班 = function(stationType)
         goldStationNum, totalStationLevel)
 
     if not wait(function(reset_wait_start_time)
-            tap("确认蓝")
-            if findAny({ "隐藏", "进驻信息", "进驻信息选中" }) then
+            if findAny({ "进驻信息", "进驻信息选中", "基建总览工作区" }) then
                 return true
             end
+            tap("确认蓝")
+            ssleep(.8)
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
         end, 3) then
         return
