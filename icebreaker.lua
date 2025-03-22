@@ -1,5 +1,8 @@
 -- 促融共竞通用函数
 ib = {}
+local 角色A编队作业 = 48985
+local 角色B编队作业 = 48987
+
 
 auto_ib = function(作业名, 需要编队, 是否自带)
     --local t = os.clock()
@@ -159,6 +162,58 @@ auto_ib = function(作业名, 需要编队, 是否自带)
     sleep(3000)
 end
 
+ib.auto_team_formation = function(作业名, 是否自带)
+    print("prts作战开始", homework)
+    local 干员名单 = ""
+    local 群组 = {}
+    local 队员技能 = {}
+    local 无限放技能干员 = {}
+    local 技能指定次数干员 = {}
+    local 作业 = loadHomework(作业名, 是否自带, true)
+    print(作业)
+    print("读取作业成功")
+    local processSkillData = function(oper)
+        if table.findk(oper, "skill_usage") then
+            if oper["skill_usage"] == 1 then
+                table.insert(无限放技能干员, oper["name"])
+            elseif oper["skill_usage"] == 2 then
+                技能指定次数干员[oper["name"]] = { oper["skill_times"] or 1, 0 }
+            end
+        end
+
+        if table.findk(oper, "skill") then
+            队员技能[oper["name"]] = oper["skill"]
+        end
+    end
+    local groups = 作业["groups"]
+    if groups and #groups > 0 then
+        for _, group in ipairs(groups) do
+            群组[group["name"]] = group["opers"]
+            for _, oper in ipairs(group["opers"]) do
+                processSkillData(oper)
+            end
+            if table.findk(group, "skill") then
+                for _, oper in ipairs(group["opers"]) do
+                    队员技能[oper["name"]] = group["skill"]
+                end
+            end
+        end
+    end
+
+    for _, oper in ipairs(作业["opers"]) do
+        processSkillData(oper)
+    end
+    log("读取群组成功")
+    if not findOne("ib_组队参赛") then
+        path.跳转("首页")
+        tap("面板活动")
+        appear("ib_组队参赛", 10)
+    end
+    if ib.自动编队(作业["opers"], 群组) == false then return false end
+
+    releaseCapture()
+end
+
 ib.自动编队 = function(干员, 群组)
     local 编入数量 = 0
     local 未编入 = {}
@@ -173,18 +228,24 @@ ib.自动编队 = function(干员, 群组)
             print("需要干员", i["name"], ",职业", 干员职业[i["name"]])
         end
     end
-
-    appear("快捷编队", 3)
     if not wait(function()
-            if findOne("编队清空选择") then return true end
-            tap("快捷编队")
+            if findOne("ib_高顺位快捷编队") then return true end
+            tap("ib_编队")
+            ssleep(1)
+        end, 5) then
+        return
+    end
+    appear("ib_高顺位快捷编队", 3)
+    if not wait(function()
+            if findOne("ib_编队清空选择") then return true end
+            tap("ib_高顺位快捷编队")
             sleep(10)
         end, 5) then
         return
     end
     if not wait(function()
-            if findOne("无干员选中") then return true end
-            tap("编队清空选择")
+            if findOne("ib_无干员选中") then return true end
+            tap("ib_编队清空选择")
         end, 5) then
         return
     end
@@ -219,7 +280,7 @@ ib.自动编队 = function(干员, 群组)
                     sleep(200)
                 end
                 --print(干员目录)
-                未编入 = 选择干员(干员目录, "待编队干员", 是否群组)
+                未编入 = ib.选择干员(干员目录, "待编队干员", 是否群组)
 
                 未编入数量 = 未编入数量 + 未编入[1]
                 if 是否群组 and 未编入[1] == 0 then
@@ -254,8 +315,10 @@ ib.自动编队 = function(干员, 群组)
         choseChar(group, 1)
     end
     tap("编队确认")
-    appear("快捷编队", 3)
-    print(未编入干员)
+    appear("ib_高顺位快捷编队", 3)
+    log(未编入干员)
+    -- 增加选择风格
+    back()
     if 未编入数量 >= 1 then
         log("编队未完成，需要手动编队")
         sleep(1000)
@@ -272,7 +335,7 @@ ib.自动编队 = function(干员, 群组)
     -- end
 end
 
-local 选择干员 = function(干员目录, 字典, 是否群组, 群组需要数量)
+ib.选择干员 = function(干员目录, 字典, 是否群组, 群组需要数量)
     local 需要干员数 = #干员目录
     local 已选择 = {}
     local selected = 0
@@ -292,9 +355,7 @@ local 选择干员 = function(干员目录, 字典, 是否群组, 群组需要�
                     --print(结果)
                     if 结果["text"] == 干员组[i] then
                         if 字典 == "待编队干员" then
-                            tap({ 结果["r"] - 100, 结果["b"] - 200 })
-                        else
-                            tap({ 结果["r"] - 100, 结果["b"] - 200 }) --肉鸽?
+                            tap({ 结果["l"] + scale(100), 结果["b"] - scale(100) })
                         end
                         --加一个appear出现角色选择的蓝框
                         print(干员组[i], "正在编入,选择", 技能组[i], "技能")
@@ -316,11 +377,11 @@ local 选择干员 = function(干员目录, 字典, 是否群组, 群组需要�
     keepCapture()
     for i = 1, 18 do
         print("识别上")
-        local 识别结果 = 干员名ocr校正(ocrex("上排干员范围"))
+        local 识别结果 = 干员名ocr校正(ocrex("ib_上排干员范围"))
         找干员(识别结果)
         if 是否群组 and selected >= 群组需要数量 then return { 0 } end
         print("识别下")
-        识别结果 = 干员名ocr校正(ocrex("下排干员范围"))
+        识别结果 = 干员名ocr校正(ocrex("ib_下排干员范围"))
         找干员(识别结果)
         print("已选择", selected, "个干员")
         if 是否群组 and selected >= 群组需要数量 then return { 0 } end

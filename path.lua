@@ -10585,20 +10585,20 @@ path.促融共竞 = function()
     if extra_crgj_select == 1 then
         never_end_wrapper(path.促融共竞房主开始())
     else
-        if findOne("促融共竞_加入") then
-        elseif findOne("促融共竞_组队参赛") then
+        if findOne("ib_加入") then
+        elseif findOne("ib_组队参赛") then
             wait(function()
-                tap("促融共竞_组队参赛")
-                if findOne("促融共竞_加入") then return true end
+                tap("ib_组队参赛")
+                if findOne("ib_加入") then return true end
                 ssleep(0.3)
             end, 10)
         else
             path.跳转("首页")
             tap("面板活动")
-            appear("促融共竞_组队参赛", 10)
+            appear("ib_组队参赛", 10)
             wait(function()
-                tap("促融共竞_组队参赛")
-                if findOne("促融共竞_加入") then return true end
+                tap("ib_组队参赛")
+                if findOne("ib_加入") then return true end
                 ssleep(0.3)
             end, 10)
         end
@@ -10608,54 +10608,54 @@ end
 
 path.促融共竞参与者开始 = function()
     local 促融共竞 = {
-        促融共竞_加入 = function()
-            tap("促融共竞_加入")
+        ib_加入 = function()
+            tap("ib_加入")
             if not wait(function()
-                    wait(function() input("促融共竞_输入框", extra_crgj_room) end, 1)
+                    wait(function() input("ib_输入框", extra_crgj_room) end, 1)
                     log(110)
-                    tap("促融共竞_输入确认")
+                    tap("ib_输入确认")
                     ssleep(0.5)
-                    if findOne("促融共竞_搜索加入") then
+                    if findOne("ib_搜索加入") then
                         if not wait(function()
-                                tap("促融共竞_搜索加入")
-                                disappear("促融共竞_搜索加入", 1)
-                                if not findOne("促融共竞_搜索加入") then return true end
+                                tap("ib_搜索加入")
+                                disappear("ib_搜索加入", 1)
+                                if not findOne("ib_搜索加入") then return true end
                             end, 10) then
                         end
                     end
-                    if not findOne("促融共竞_搜索加入") then return true end
+                    if not findOne("ib_搜索加入") then return true end
                 end, 15) then
                 return
             end
         end,
-        促融共竞_准备参赛 = function()
-            tap("促融共竞_准备参赛")
-            disappear("促融共竞_准备参赛", 5)
+        ib_准备参赛 = function()
+            tap("ib_准备参赛")
+            disappear("ib_准备参赛", 5)
         end,
-        促融共竞_下一步 = function()
-            tap("促融共竞_下一步")
-            disappear("促融共竞_下一步", 5)
+        ib_下一步 = function()
+            tap("ib_下一步")
+            disappear("ib_下一步", 5)
         end,
-        促融共竞_准备就绪 = function()
-            if ib_auto_like and not findOne("促融共竞_点赞") then
-                tap("促融共竞_点赞")
+        ib_准备就绪 = function()
+            if ib_auto_like and not findOne("ib_点赞") then
+                tap("ib_点赞")
             end
-            tap("促融共竞_准备就绪")
-            disappear("促融共竞_准备就绪", 5)
+            tap("ib_准备就绪")
+            disappear("ib_准备就绪", 5)
         end,
-        促融共竞_干员协调页面 = function()
-            tap("促融共竞_干员拿取")
+        ib_干员协调页面 = function()
+            tap("ib_干员拿取")
             ssleep(1)
         end,
-        促融共竞_关卡内部顶部标识 = function()
-            if agree_cost_request_automaticlly and findOne("促融共竞_费用请求同意") then
-                tap("促融共竞_费用请求同意")
-                disappear("促融共竞_比赛结束下一步", 5)
+        ib_关卡内部顶部标识 = function()
+            if agree_cost_request_automaticlly and findOne("ib_费用请求同意") then
+                tap("ib_费用请求同意")
+                disappear("ib_比赛结束下一步", 5)
             end
-            if findOne("促融共竞_二倍速开启") then return end
+            if findOne("ib_二倍速开启") then return end
             if not wait(function()
-                    if findOne("促融共竞_二倍速开启") then return end
-                    tap("促融共竞_二倍速")
+                    if findOne("ib_二倍速开启") then return end
+                    tap("ib_二倍速")
                     ssleep(1)
                 end, 5) then
             end
@@ -10668,56 +10668,56 @@ end
 
 path.促融共竞房主开始 = function()
     local 促融共竞 = {
-        促融共竞_选择项目 = function()
-            tap("促融共竞_选择项目")
-            appear("促融共竞_选择项目页面", 5)
+        ib_选择项目 = function()
+            tap("ib_选择项目")
+            appear("ib_选择项目页面", 5)
             if not wait(function()
-                    tap("促融共竞_高级赛")
-                    if getColor(point["促融共竞_高级赛"][1], point["促融共竞_高级赛"][2]) == "EEEEEE" then
-                        tap("促融共竞_IGEX5")
-                        appear("促融共竞_等待选择地图")
+                    tap("ib_高级赛")
+                    if getColor(point["ib_高级赛"][1], point["ib_高级赛"][2]) == "EEEEEE" then
+                        tap("ib_IGEX5")
+                        appear("ib_等待选择地图")
                     end
                 end, 5) then
             end
         end,
-        促融共竞_前往比赛 = function()
-            tap("促融共竞_前往比赛")
-            disappear("促融共竞_前往比赛", 5)
+        ib_前往比赛 = function()
+            tap("ib_前往比赛")
+            disappear("ib_前往比赛", 5)
         end,
-        促融共竞_准备参赛 = function()
-            tap("促融共竞_准备参赛")
-            disappear("促融共竞_准备参赛", 5)
+        ib_准备参赛 = function()
+            tap("ib_准备参赛")
+            disappear("ib_准备参赛", 5)
         end,
-        促融共竞_确认参赛 = function()
-            tap("促融共竞_确认参赛")
-            disappear("促融共竞_确认参赛", 5)
+        ib_确认参赛 = function()
+            tap("ib_确认参赛")
+            disappear("ib_确认参赛", 5)
         end,
-        促融共竞_下一步 = function()
-            tap("促融共竞_下一步")
-            disappear("促融共竞_下一步", 5)
+        ib_下一步 = function()
+            tap("ib_下一步")
+            disappear("ib_下一步", 5)
         end,
-        促融共竞_准备就绪 = function()
-            tap("促融共竞_准备就绪")
-            disappear("促融共竞_准备就绪", 5)
+        ib_准备就绪 = function()
+            tap("ib_准备就绪")
+            disappear("ib_准备就绪", 5)
         end,
-        促融共竞_比赛结束页面 = function()
+        ib_比赛结束页面 = function()
             ssleep(1)
-            tap("促融共竞_比赛再来一局")
-            appear("促融共竞_等待选择地图", 10)
+            tap("ib_比赛再来一局")
+            appear("ib_等待选择地图", 10)
         end,
-        促融共竞_比赛结束下一步 = function()
-            tap("促融共竞_比赛结束下一步")
-            disappear("促融共竞_比赛结束下一步", 5)
+        ib_比赛结束下一步 = function()
+            tap("ib_比赛结束下一步")
+            disappear("ib_比赛结束下一步", 5)
         end,
-        促融共竞_关卡内部顶部标识 = function()
-            if agree_cost_request_automaticlly and findOne("促融共竞_费用请求同意") then
-                tap("促融共竞_费用请求同意")
-                disappear("促融共竞_比赛结束下一步", 5)
+        ib_关卡内部顶部标识 = function()
+            if agree_cost_request_automaticlly and findOne("ib_费用请求同意") then
+                tap("ib_费用请求同意")
+                disappear("ib_比赛结束下一步", 5)
             end
-            if findOne("促融共竞_二倍速开启") then return end
+            if findOne("ib_二倍速开启") then return end
             if not wait(function()
-                    if findOne("促融共竞_二倍速开启") then return end
-                    tap("促融共竞_二倍速")
+                    if findOne("ib_二倍速开启") then return end
+                    tap("ib_二倍速")
                     ssleep(1)
                 end, 5) then
             end

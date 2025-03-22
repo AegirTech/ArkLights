@@ -40,6 +40,7 @@ end
 --- 加载作业
 --- @param levelName string 关卡名字
 --- @param isLocal boolean 是否自带
+--- @param 不点赞 boolean 是否不点赞
 loadHomework = function(levelName, isLocal, 不点赞)
     local levelName = levelName or ''
     if isLocal then --自带的作业,比如肉鸽的
