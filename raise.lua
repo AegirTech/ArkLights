@@ -1008,7 +1008,7 @@ char_choose = function(char_name)
                 char_found = true
                 tap({ (ret[i]["l"] + ret[i]["r"]) / 2, ret[i]["t"] - scale(200) })
                 appearTap("角色档案关闭", 1.5)
-                appear("干员档案", 5)
+                appear("干员档案", 10)
                 break
             end
         end
@@ -1022,7 +1022,7 @@ char_choose = function(char_name)
                 char_found = true
                 tap({ (ret[i]["l"] + ret[i]["r"]) / 2, ret[i]["t"] - scale(200) })
                 appearTap("角色档案关闭", 1.5)
-                appear("干员档案", 5)
+                appear("干员档案", 10)
                 break
             end
         end
@@ -1037,7 +1037,7 @@ end
 
 -- 等级拉满一次
 raise.upgrade_char = function()
-    appear("干员档案", 2)
+    if not appear("干员档案", 2) then return end
     if not wait(function()
             tap("进入升级页面")
             ssleep(.1)
@@ -1146,7 +1146,7 @@ raise.elite_one_phase = function(material_need)
     --计算后需要的材料
     --local material_need = {}
     --if materials_need then material_need = raise.calculate_materials_need(materials_need) end
-    appear("干员档案", 2)
+    if not appear("干员档案", 2) then return end
 
     if not wait(function()
             tap("进入精英化页面")
@@ -1337,6 +1337,7 @@ end
 
 -- 技能专精
 raise.master_skill = function(id, skill_numb, start_level, level)
+    if not appear("干员档案", 2) then return end
     local name = char_id2name(id)
     --local level = raise.get_char_skill(id, skill_numb)
     if level[1] < 7 then return false end
