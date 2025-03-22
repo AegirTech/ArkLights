@@ -1703,6 +1703,7 @@ path.副手换人 = function()
     -- toast("副手换人还没修，等5秒提示消失")
     -- ssleep(5)
     -- if 1 then return end
+    if only_change_assistant_at_Monday and tonumber(os.date("%w")) ~= 1 then return end
     path.跳转("基建")
 
     if not wait(function()
