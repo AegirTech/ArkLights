@@ -2196,10 +2196,30 @@ path.制造换班 = function(trading)
         开采协力 = "源石",
         龙门商法 = "贵金属",
     }
+    local station = trading and tradingStation or manufacturingStation
+    local stationLevel = trading and tradingStationLevel or
+        manufacturingStationLevel
+    path.跳转("基建")
+    -- 进入制造站
+    if not wait(function()
+            if not findOne("进驻总览") or not findOne("缩放结束") then
+                return true
+            end
+            tap(station[1])
+        end) then
+        return
+    end
+
+    if not appear({ "进驻信息", "进驻信息选中" }, 5) then return end
+
+    wait(function()
+        if trading and findAny({ "未进驻设施列表1", "贸易站设施列表1" }) then return true end
+        if not trading and findAny({ "未进驻设施列表1", "制造站设施列表1" }) then return true end
+        tap("贸易站进度")
+    end, 5)
 
     local f
     f = function(i, station, stationLevel)
-        path.跳转("基建")
         -- local x, y = table.unpack(point["基建列表" .. i])
         -- -- 检测kernel，因为可能被条纹挡住
         -- if not (compareColor(x, y, station_color, default_findcolor_confidence) or
@@ -2215,28 +2235,17 @@ path.制造换班 = function(trading)
         --   return
         -- end
 
-        -- 进入制造站
         if not wait(function()
-                if not findOne("进驻总览") or not findOne("缩放结束") then
-                    return true
-                end
+                if trading and findOne("贸易站设施列表" .. i, .9) then return true end
+                if not trading and findOne("制造站设施列表" .. i, .9) then return true end
                 tap(station)
             end) then
             return
         end
 
-        if not appear({ "进驻信息", "进驻信息选中" }, 5) then return end
-
         local chip2book_needed = false
         -- 制造站需要确认产品类型
         if not trading then
-            wait(function()
-                if findAny({ "制造站设施列表1", "未进驻设施列表1" }) then
-                    return true
-                end
-                tap("贸易站进度")
-            end, 5)
-
             good = findAny({ "赤金站", "源石站", "芯片站", "经验站" })
             if good == '芯片站' and findOne("芯片站已完成") then
                 good = "赤金站"
@@ -2289,13 +2298,6 @@ path.制造换班 = function(trading)
 
         -- 贸易站需要确认产品类型
         if trading then
-            wait(function()
-                if findAny({ "贸易站设施列表1", "未进驻设施列表1" }) then
-                    return true
-                end
-                tap("贸易站进度")
-            end, 5)
-
             good = findAny({ "龙门商法", "开采协力" }) or "龙门商法"
 
             -- 确认类型
@@ -2342,9 +2344,8 @@ path.制造换班 = function(trading)
 
         wait(function(reset_wait_start_time)
             tap("确认蓝")
-            if findAny({ "制造站设施列表1", "贸易站设施列表1" }) then
-                return true
-            end
+            if trading and findOne("贸易站设施列表" .. i, .9) then return true end
+            if not trading and findOne("制造站设施列表" .. i, .9) then return true end
             if findOne("正在提交反馈至神经") then
                 reset_wait_start_time()
             end
@@ -2408,10 +2409,8 @@ path.制造换班 = function(trading)
     end
 
     -- 找到所有制造站
-    local station = trading and tradingStation or manufacturingStation
-    local stationLevel = trading and tradingStationLevel or
-        manufacturingStationLevel
-    for i = 1, #station do f(i, station[i], stationLevel[i]) end
+
+    for i = 1, #station do f(i, point["制造贸易站左侧列表" .. i], stationLevel[i]) end
 end
 
 path.贸易换班 = function()
