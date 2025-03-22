@@ -272,7 +272,7 @@ ib.自动编队 = function(干员, 群组)
     -- end
 end
 
-选择干员 = function(干员目录, 字典, 是否群组, 群组需要数量)
+local 选择干员 = function(干员目录, 字典, 是否群组, 群组需要数量)
     local 需要干员数 = #干员目录
     local 已选择 = {}
     local selected = 0
@@ -348,7 +348,7 @@ end
     end
 end
 
-swipe_next_page = function(left, nodelay)
+local swipe_next_page = function(left, nodelay)
     local duration
     local finger
     local delay
@@ -386,7 +386,7 @@ swipe_next_page = function(left, nodelay)
     return nodelay and delay or 0
 end
 
-选择技能 = function(a)
+local 选择技能 = function(a)
     --print("选择技能", a)
     if a == 3 then
         gesture({
@@ -785,7 +785,7 @@ ib.部署操作 = function(干员排位, 指令)
     sleep(50)
 end
 
-识别未部署干员数量 = function()
+local 识别未部署干员数量 = function()
     local 干员数 = 0
     local BX = scale(1900)
     坐标列表 = {}
@@ -809,7 +809,7 @@ end
     return 干员数
 end
 
-识别未部署干员 = function()
+local 识别未部署干员 = function()
     local 干员列表 = 获取费用列表()
     releaseCapture()
     -- print("_1378", 干员列表)
@@ -839,7 +839,7 @@ end
     end
 end
 
-更新未部署干员 = function(数量变化)
+local 更新未部署干员 = function(数量变化)
     if math.abs(数量变化) > 1 or 干员列表 == nil or #干员列表 ~= #职业列表 then
         干员列表 = 识别未部署干员()
         return
@@ -918,7 +918,7 @@ end
     end
 end
 
-获取费用列表 = function()
+local 获取费用列表 = function()
     local 干员数 = 0
     local 干员列表 = {}
     local BX = scale(1900)
@@ -988,7 +988,7 @@ end
     return 干员列表
 end
 
-获得敌人数 = function(a)
+local 获得敌人数 = function(a)
     local ret
     if use_local_dictionary then
         ret = TURING.图灵识别({ { 屏幕范围 = point["敌人数范围" .. a] }, { { 二值化 = { "41-166" } } }, { 范围投影 = { 1, 1 } }, { 六十四进制字库数组 = { 杀敌数字库(screen.height) } }, { 0 } }) or
@@ -999,7 +999,7 @@ end
     return ret
 end
 
-获得cost = function()
+local 获得cost = function()
     local ret
     if use_local_dictionary then
         ret = TURING.图灵识别({ { 屏幕范围 = point["cost范围"] }, { { 二值化 = { "0-100" } } }, { 范围投影 = { 2, 1 } }, { 六十四进制字库数组 = { cost字库(screen.height) } }, { 0 } })

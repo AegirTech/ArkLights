@@ -10637,6 +10637,9 @@ path.促融共竞参与者开始 = function()
             disappear("促融共竞_下一步", 5)
         end,
         促融共竞_准备就绪 = function()
+            if ib_auto_like and not findOne("促融共竞_点赞") then
+                tap("促融共竞_点赞")
+            end
             tap("促融共竞_准备就绪")
             disappear("促融共竞_准备就绪", 5)
         end,
@@ -10645,6 +10648,10 @@ path.促融共竞参与者开始 = function()
             ssleep(1)
         end,
         促融共竞_关卡内部顶部标识 = function()
+            if agree_cost_request_automaticlly and findOne("促融共竞_费用请求同意") then
+                tap("促融共竞_费用请求同意")
+                disappear("促融共竞_比赛结束下一步", 5)
+            end
             if findOne("促融共竞_二倍速开启") then return end
             if not wait(function()
                     if findOne("促融共竞_二倍速开启") then return end
@@ -10703,6 +10710,10 @@ path.促融共竞房主开始 = function()
             disappear("促融共竞_比赛结束下一步", 5)
         end,
         促融共竞_关卡内部顶部标识 = function()
+            if agree_cost_request_automaticlly and findOne("促融共竞_费用请求同意") then
+                tap("促融共竞_费用请求同意")
+                disappear("促融共竞_比赛结束下一步", 5)
+            end
             if findOne("促融共竞_二倍速开启") then return end
             if not wait(function()
                     if findOne("促融共竞_二倍速开启") then return end

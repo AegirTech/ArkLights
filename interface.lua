@@ -924,10 +924,6 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_通知, "qqnotify_beforemission",
         "QQ通知显示任务收集前情况", false)
 
-    newRow(debug_layout_通知)
-    ui.addCheckBox(debug_layout_通知, "collect_beforeleaving",
-        "基建离开前加一次基建收获", true)
-
     local debug_layout_基建 = "debug_tab_base"
     ui.addTab("debug_tab", debug_layout_基建, "基建")
 
@@ -945,7 +941,6 @@ show_debug_ui = function()
     newRow(debug_layout_基建)
     addTextView(debug_layout_基建, "基建训练室检测延迟")
     ui.addEditText(debug_layout_基建, "training_check_time", '0.15')
-
     newRow(debug_layout_基建)
     addTextView(debug_layout_基建, "基建换班心情阈值")
     ui.addEditText(debug_layout_基建, "shift_min_mood", '12')
@@ -953,7 +948,6 @@ show_debug_ui = function()
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "disable_dorm_shift", "基建换班禁用宿舍换班",
         false)
-
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "disable_control_shift",
         "基建换班禁用控制中枢换班", false)
@@ -975,6 +969,10 @@ show_debug_ui = function()
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "only_change_assistant_at_Monday",
         "副手换人仅在周一执行", false)
+
+    newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "collect_beforeleaving",
+        "基建离开前加一次基建收获", true)
     newRow(debug_layout_基建)
     addTextView(debug_layout_基建, "多账号仅传递线索账号(线索小号)")
     ui.addEditText(debug_layout_基建, "multi_account_disable_clue_unlock", '')
@@ -1159,7 +1157,11 @@ show_extra_ui = function()
     newRow(layout)
     addTextView(layout, "组队选择")
     ui.addSpinner(layout, "extra_crgj_select", { "参与方" }, 0)
-
+    ui.addCheckBox(layout, "agree_cost_request_automaticlly",
+        "自动同意费用请求", true)
+    --[[newRow(layout)
+     ui.addCheckBox(layout, " ib_auto_like",
+        "自动点赞", true) ]]
     newRow(layout)
     addTextView(layout, "房间号")
     ui.addEditText(layout, "extra_crgj_room", "")
