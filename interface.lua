@@ -788,7 +788,7 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_云控, "apply_remote_config", "接受远程配置更新", false)
 
     local debug_layout_账户 = "debug_tab_account"
-    ui.addTab("debug_tab", debug_layout_账户, "账户设置")
+    ui.addTab("debug_tab", debug_layout_账户, "账户日常")
 
     newRow(debug_layout_账户)
     ui.addCheckBox(debug_layout_账户, "new_change_account_plan", "新版切号方案（测试）", false)
@@ -932,6 +932,11 @@ show_debug_ui = function()
     ui.addTab("debug_tab", debug_layout_基建, "基建")
 
     newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "not_use_ocr", "基建不使用ocr（低配置或基建崩溃建议打开）", false)
+    newRow(debug_layout_基建)
+    addTextView(debug_layout_基建, "      勾选后无法使用红松林、多萝西等标准化组合，无法自动使用菲亚梅塔")
+
+    newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "disable_add_friend", "好友访问不自动添加好友", false)
 
     newRow(debug_layout_基建)
@@ -944,10 +949,6 @@ show_debug_ui = function()
     newRow(debug_layout_基建)
     addTextView(debug_layout_基建, "基建换班心情阈值")
     ui.addEditText(debug_layout_基建, "shift_min_mood", '12')
-
-    newRow(debug_layout_基建)
-    ui.addCheckBox(debug_layout_基建, "shift_prefer_speed", "基建换班禁用高产换班",
-        false)
 
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "disable_dorm_shift", "基建换班禁用宿舍换班",
@@ -971,6 +972,9 @@ show_debug_ui = function()
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "disable_overview_shift",
         "基建换班禁用总览换班", false)
+    newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "only_change_assistant_at_Monday",
+        "副手换人仅在周一执行", false)
     newRow(debug_layout_基建)
     addTextView(debug_layout_基建, "多账号仅传递线索账号(线索小号)")
     ui.addEditText(debug_layout_基建, "multi_account_disable_clue_unlock", '')
@@ -997,9 +1001,9 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_其他, "disable_strick_account_check",
         "多账号允许不填帐密(双号双服玩家)", false)
 
-    newRow(debug_layout_基建)
-    addTextView(debug_layout_基建, "多账号双休日跳过账号")
-    ui.addEditText(debug_layout_基建, "multi_account_choice_weekday_only", '')
+    newRow(debug_layout_其他)
+    addTextView(debug_layout_其他, "多账号双休日跳过账号")
+    ui.addEditText(debug_layout_其他, "multi_account_choice_weekday_only", '')
 
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "restart_on_crontab_timeout",
@@ -1544,10 +1548,7 @@ show_auto_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "enable_raise_func", "启用自动养成", false)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "not_use_ocr", "基建不使用ocr（低配置或基建崩溃建议打开）", false)
-    newRow(layout)
-    addTextView(layout, "勾选后无法使用红松林、多萝西等标准化组合，无法自动使用菲亚梅塔")
+
     newRow(layout)
     newRow(layout)
     addButton(layout, nil, "开始模组任务2",

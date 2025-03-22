@@ -1703,6 +1703,7 @@ path.副手换人 = function()
     -- toast("副手换人还没修，等5秒提示消失")
     -- ssleep(5)
     -- if 1 then return end
+    if only_change_assistant_at_Monday and tonumber(os.date("%w")) ~= 1 then return end
     path.跳转("基建")
 
     if not wait(function()
@@ -1922,76 +1923,70 @@ path.宿舍换班 = function()
         进入宿舍并清空干员()
         local operator
 
-        if shift_prefer_speed then
-            -- 选后5个
-            operator = map(function(x) return "干员选择列表" .. x end,
-                range(6, 10))
-        else
-            -- 根据心情阈值选择
-            operator = {}
-            discoverWithOcr(operator, {}, 1, true)
-            operator = table.filter(operator, function(x)
-                return math.abs(x[3]) < shift_min_mood + 1
-            end)
-            log(819, operator, shift_min_mood)
-            if i < 4 and not not_use_ocr and fiammetta_used == false then
-                local char_after_fiammetta
-                if table.any(operator,
-                        function(x)
-                            if table.includes({ "但书", "清流" }, x[6]) then
-                                char_after_fiammetta = x[4]
-                                return true
-                            end
-                        end) then
-                    tap(char_after_fiammetta)
+        -- 根据心情阈值选择
+        operator = {}
+        discoverWithOcr(operator, {}, 1, true)
+        operator = table.filter(operator, function(x)
+            return math.abs(x[3]) < shift_min_mood + 1
+        end)
+        log(819, operator, shift_min_mood)
+        if i < 4 and not not_use_ocr and fiammetta_used == false then
+            local char_after_fiammetta
+            if table.any(operator,
+                    function(x)
+                        if table.includes({ "但书", "清流" }, x[6]) then
+                            char_after_fiammetta = x[4]
+                            return true
+                        end
+                    end) then
+                tap(char_after_fiammetta)
+                ssleep(.2)
+                if not findOne("基建心情降序", .85) then tap("基建心情降序") end
+                ssleep(.2)
+                -- 取消选择需要被换心情的干员,防止识别错误
+                tap("干员选择列表1")
+                ssleep(.2)
+                if chooseOperator("肥鸭") then
+                    ssleep(.4)
+                    tap("干员选择列表1") -- 这时候是肥鸭,干员,需要把他们换个顺序
                     ssleep(.2)
-                    if not findOne("基建心情降序", .85) then tap("基建心情降序") end
+                    tap("基建心情降序")
                     ssleep(.2)
-                    -- 取消选择需要被换心情的干员,防止识别错误
+                    -- 取消选择
+                    tap("清空选择")
+                    ssleep(.2)
+                    -- 重置顺序为干员,肥鸭
+                    tap("干员选择列表2")
+                    ssleep(.1)
                     tap("干员选择列表1")
+                    ssleep(.1)
+                    确认干员选择()
                     ssleep(.2)
-                    if chooseOperator("肥鸭") then
-                        ssleep(.4)
-                        tap("干员选择列表1") -- 这时候是肥鸭,干员,需要把他们换个顺序
-                        ssleep(.2)
-                        tap("基建心情降序")
-                        ssleep(.2)
-                        -- 取消选择
-                        tap("清空选择")
-                        ssleep(.2)
-                        -- 重置顺序为干员,肥鸭
-                        tap("干员选择列表2")
-                        ssleep(.1)
-                        tap("干员选择列表1")
-                        ssleep(.1)
-                        确认干员选择()
-                        ssleep(.2)
-                        fiammetta_used = true
-                        进入宿舍并清空干员()
-                        operator = {}
-                        discover(operator, {}, 1, true)
-                        log(818, operator, shift_min_mood)
-                        operator = table.filter(operator, function(x)
-                            return math.abs(x[3]) < shift_min_mood + 1
-                        end)
-                    else
-                        log("未找到满心情菲亚梅塔")
-                        if findOne("基建心情降序", .85) then tap("基建心情降序") end
-                        ssleep(.2)
-                    end
+                    fiammetta_used = true
+                    进入宿舍并清空干员()
+                    operator = {}
+                    discover(operator, {}, 1, true)
+                    log(818, operator, shift_min_mood)
+                    operator = table.filter(operator, function(x)
+                        return math.abs(x[3]) < shift_min_mood + 1
+                    end)
+                else
+                    log("未找到满心情菲亚梅塔")
+                    if findOne("基建心情降序", .85) then tap("基建心情降序") end
+                    ssleep(.2)
                 end
             end
-
-            operator = map(function(x) return x[4] end, operator)
-            operator = table.slice(operator, 1, 5)
-
-            -- operator = table.slice(table.extend(operator, map(
-            --                                       function(x)
-            --     return "干员选择列表" .. x
-            --   end, range(1, 5))), 1, 5)
-
-            --log(820, operator)
         end
+
+        operator = map(function(x) return x[4] end, operator)
+        operator = table.slice(operator, 1, 5)
+
+        -- operator = table.slice(table.extend(operator, map(
+        --                                       function(x)
+        --     return "干员选择列表" .. x
+        --   end, range(1, 5))), 1, 5)
+
+        --log(820, operator)
 
         if #operator > 0 and not wait(function()
                 if not findOne("干员未选中") then return true end
@@ -2708,14 +2703,6 @@ end
 
 path.基建换班 = function()
     -- TODO 掉线需要重跑而非继续
-
-    -- 极速模式
-    if shift_prefer_speed then
-        path.宿舍换班()
-        path.总览换班()
-        return
-    end
-
     path.宿舍换班()
     path.基建信息获取()
 
@@ -3143,7 +3130,7 @@ path.贸易站加速 = function()
         tap("贸易站第一订单加速")
         f()
         log(2038)
-        appear({ "贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付" }, 5)
+        appear({ "贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付" }, 2.5)
         ssleep(1)
         if os.time() - start_time > 60 * 2 then
             log("贸易站超时")
@@ -8391,7 +8378,21 @@ path.悖论模拟 = function()
 end
 
 path.自动模组 = function()
-    if not raise.init() then return end
+    if not character_table then
+        -- 解包干员数据
+        character_table = JsonDecode(readFile("char_table.json"))
+    end
+    干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+    if not 干员职业 then
+        干员职业 = JsonDecode(readFile("character_type_list.json"))
+    end
+    if not character_name2id then
+        character_name2id = {}
+        for k, v in pairs(character_table) do
+            local name = v["name"]
+            character_name2id[name] = k
+        end
+    end
     if mz_text == nil then return end
     local names = string.split(mz_text)
     for i, v in ipairs(names) do
@@ -8400,7 +8401,13 @@ path.自动模组 = function()
 end
 
 path.自动合成材料 = function()
-    if not raise.init() then return end
+    if not item_name2id then
+        item_name2id = {}
+        for k, v in pairs(高级材料2低级材料) do
+            local name = v["name"]
+            item_name2id[name] = tostring(k)
+        end
+    end
     raise.材料合成()
     tap("返回")
     exit()
@@ -8408,7 +8415,13 @@ end
 
 path.自动合成模组材料 = function(target_level)
     local target_level = target_level or 3
-    if not raise.init() then return end
+    if not item_name2id then
+        item_name2id = {}
+        for k, v in pairs(高级材料2低级材料) do
+            local name = v["name"]
+            item_name2id[name] = tostring(k)
+        end
+    end
     for i = 0, 2 do
         local current_level = math.min(i, 1)
         log("当前模组等级" .. i)
