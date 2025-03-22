@@ -8391,7 +8391,21 @@ path.悖论模拟 = function()
 end
 
 path.自动模组 = function()
-    if not raise.init() then return end
+    if not character_table then
+        -- 解包干员数据
+        character_table = JsonDecode(readFile("char_table.json"))
+    end
+    干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+    if not 干员职业 then
+        干员职业 = JsonDecode(readFile("character_type_list.json"))
+    end
+    if not character_name2id then
+        character_name2id = {}
+        for k, v in pairs(character_table) do
+            local name = v["name"]
+            character_name2id[name] = k
+        end
+    end
     if mz_text == nil then return end
     local names = string.split(mz_text)
     for i, v in ipairs(names) do
@@ -8400,7 +8414,13 @@ path.自动模组 = function()
 end
 
 path.自动合成材料 = function()
-    if not raise.init() then return end
+    if not item_name2id then
+        item_name2id = {}
+        for k, v in pairs(高级材料2低级材料) do
+            local name = v["name"]
+            item_name2id[name] = tostring(k)
+        end
+    end
     raise.材料合成()
     tap("返回")
     exit()
