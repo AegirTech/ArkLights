@@ -1154,6 +1154,23 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
 
+    newRow(layout)
+    addTextView(layout, "===========促融共竞===========")
+    newRow(layout)
+    addTextView(layout, "组队选择")
+    ui.addSpinner(layout, "extra_crgj_select", { "参与方" }, 0)
+
+    newRow(layout)
+    addTextView(layout, "房间号")
+    ui.addEditText(layout, "extra_crgj_room", "")
+
+    newRow(layout)
+    addTextView(layout, "房主请在进入房间后的页面开始，仅支持组队，不能用于匹配作战")
+    newRow(layout)
+    addButton(layout, nil, "促融共竞开始",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+
     -- newRow(layout)
     -- addTextView(layout, "===========宝石铭刻===========")
     -- newRow(layout)
