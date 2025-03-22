@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "03.15 23:55"
+release_date = "03.22 21:56"
 update_announcement = '最近更新：活动导航/配置恢复/其他功能修复'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -103,6 +103,8 @@ require("func")
 require("roguelike")
 --生息
 require("sand")
+--促融共竞
+require("icebreaker")
 --森空岛
 require("sha2")
 require("skland")
