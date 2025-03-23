@@ -84,7 +84,7 @@ ib.促融共竞循环 = function()
                 return
             end
         end,
-        ib_选择项目 = function()
+        ib_选择项目红 = function()
             if ib_grouping_method == 0 then return end
             wait(function()
                 tap("ib_选择项目")
