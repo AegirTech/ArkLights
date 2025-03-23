@@ -507,20 +507,22 @@ ib.释放坐标技能 = function(坐标)
                 tap({ p[1] - 20, p[2] - 50 })
                 技能未就绪 = 0
                 波数依赖顺序 = 波数依赖顺序 + 1
-                sleep(100)
+                sleep(200)
                 tap("点cost")
+                sleep(100)
                 break
             elseif findOne("开技能") then
                 sleep(30)
                 tap("开技能")
                 技能未就绪 = 0
                 波数依赖顺序 = 波数依赖顺序 + 1
-                sleep(100)
+                sleep(200)
                 tap("点cost")
                 sleep(100)
                 break
             else
                 tap("点cost")
+                sleep(100)
                 技能未就绪 = 技能未就绪 + 1
                 if 技能未就绪 > 25 then
                     技能未就绪 = 0
@@ -721,15 +723,13 @@ ib.抄作业 = function(作业, maptype)
         local number = tonumber(string.sub(wavetxt, -1)) or 1
         if (number - wave) == 1 then
             --转阶段
-            if not wait(function()
-                    if findOne("ib_战斗目标横幅") then
-                        disappear("ib_战斗目标横幅", 5)
-                        ssleep(5)
-                        return true
-                    end
-                end, 10) then
-                return
-            end
+            wait(function()
+                if findOne("ib_战斗目标横幅") then
+                    disappear("ib_战斗目标横幅", 5)
+                    ssleep(2)
+                    return true
+                end
+            end, 8)
             干员列表 = ib.识别未部署干员()
             下排干员数量 = 识别未部署干员数量()
         end
@@ -909,6 +909,9 @@ ib.抄作业 = function(作业, maptype)
         end
         if findOne("ib_费用请求同意") then
             tap("ib_费用请求同意")
+        end
+        if findOne("生命值蓝") then
+            tap("点cost")
         end
         if not (findOne("ib_关卡内部顶部标识") or findOne("暂停中")) then
             sleep(500)
