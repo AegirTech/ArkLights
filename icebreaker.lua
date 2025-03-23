@@ -722,14 +722,9 @@ ib.抄作业 = function(作业, maptype)
         --将wavetxt最后转为数字
         local number = tonumber(string.sub(wavetxt, -1)) or 1
         if (number - wave) == 1 then
-            --转阶段
-            wait(function()
-                if findOne("ib_战斗目标横幅") then
-                    disappear("ib_战斗目标横幅", 5)
-                    ssleep(2)
-                    return true
-                end
-            end, 8)
+            --转阶段,取消二倍速
+            ssleep(2)
+            tap("ib_二倍速")
             干员列表 = ib.识别未部署干员()
             下排干员数量 = 识别未部署干员数量()
         end
