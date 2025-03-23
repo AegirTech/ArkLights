@@ -10650,7 +10650,6 @@ path.促融共竞参与者开始 = function()
         ib_关卡内部顶部标识 = function()
             if agree_cost_request_automaticlly and findOne("ib_费用请求同意") then
                 tap("ib_费用请求同意")
-                disappear("ib_比赛结束下一步", 5)
             end
             if findOne("ib_二倍速开启") then return end
             if not wait(function()
@@ -10663,7 +10662,7 @@ path.促融共竞参与者开始 = function()
         end,
     }
     log("促融共竞参与者开始")
-    auto(促融共竞, nil, 0, 60 * 15, false)
+    auto(促融共竞, nil, 0, nil, false)
 end
 
 path.促融共竞房主开始 = function()
@@ -10700,19 +10699,9 @@ path.促融共竞房主开始 = function()
             tap("ib_准备就绪")
             disappear("ib_准备就绪", 5)
         end,
-        ib_比赛结束页面 = function()
-            ssleep(1)
-            tap("ib_比赛再来一局")
-            appear("ib_等待选择地图", 10)
-        end,
-        ib_比赛结束下一步 = function()
-            tap("ib_比赛结束下一步")
-            disappear("ib_比赛结束下一步", 5)
-        end,
         ib_关卡内部顶部标识 = function()
             if agree_cost_request_automaticlly and findOne("ib_费用请求同意") then
                 tap("ib_费用请求同意")
-                disappear("ib_比赛结束下一步", 5)
             end
             if findOne("ib_二倍速开启") then return end
             if not wait(function()
@@ -10724,6 +10713,6 @@ path.促融共竞房主开始 = function()
             ssleep(3)
         end,
     }
-    log("促融共竞参与者开始")
-    auto(促融共竞, nil, 0, 60 * 15, false)
+    log("促融共竞房主开始")
+    auto(促融共竞, nil, 0, nil, false)
 end
