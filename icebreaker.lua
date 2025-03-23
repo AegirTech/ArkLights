@@ -128,8 +128,8 @@ ib.促融共竞循环 = function()
                         ib.battle(关卡作业[关卡名])
                         return true
                     end
-                    if findOne("ib_关卡内部顶部标识") then return false end
-                end, 40) then
+                    if findOne("ib_下一步") then return false end
+                end, 240) then
                 return
             end
         end,
@@ -913,12 +913,9 @@ ib.抄作业 = function(作业, maptype)
         end
         if not (findOne("ib_关卡内部顶部标识") or findOne("暂停中")) then
             sleep(500)
-            if findAny({ "ib_关卡内部顶部标识", "暂停中" }) then
-            else
-                if findOne("ib_下一步") then
-                    print("结束抄作业")
-                    break
-                end
+            if findOne("ib_下一步") then
+                log("结束抄作业")
+                break
             end
         end
     end
