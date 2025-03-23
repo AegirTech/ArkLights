@@ -128,7 +128,7 @@ ib.促融共竞循环 = function()
                         ib.battle(关卡作业[关卡名])
                         return true
                     end
-                    if findOne("ib_下一步") then return false end
+                    if findOne("ib_下一步") or findOne("ib_返回房间") then return false end
                 end, 240) then
                 return
             end
@@ -479,7 +479,7 @@ ib.识别未部署干员 = function()
             if 干员名字 then
                 干员[1] = 干员名字
             end
-            if 干员数 >= 11 and (序号 == 3 or 序号 == 4) then
+            if (干员数 >= 11 and (序号 == 3 or 序号 == 4)) or (干员数 >= 12 and (序号 == 3 or 序号 == 4 or 序号 == 5 or 序号 == 6)) then
                 -- 因为人太多点开之后会偏移漏掉,点回去
                 tap({ 干员[3], 干员[4] })
                 disappear(生命值蓝, 0.3)
@@ -743,11 +743,6 @@ ib.抄作业 = function(作业, maptype)
                 print("前置延时")
                 sleep_and_do_strategy(部署指令["pre_delay"])
             end
-            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "生息演算剧情上", "生息演算剧情下" }) then
-                tap("剧情中")
-                print("跳过无按钮剧情")
-                appear("ib_关卡内部顶部标识", 2)
-            end
             if wave >= 部署指令["kills"] and cost >= 部署指令["costs"] then
                 if 干员列表 and (部署指令["type"] == "Deploy" or 部署指令["type"] == "deploy" or 部署指令["type"] == "部署") then
                     local 需要cost = {}
@@ -900,6 +895,7 @@ ib.抄作业 = function(作业, maptype)
         end
 
         sleep(75)
+        releaseCapture()
         if findOne("跳过剧情") then
             path.跳过剧情()
             print("跳过剧情")
@@ -911,12 +907,9 @@ ib.抄作业 = function(作业, maptype)
         if findOne("生命值蓝") then
             tap("点cost")
         end
-        if not (findOne("ib_关卡内部顶部标识") or findOne("暂停中")) then
-            sleep(500)
-            if findOne("ib_下一步") then
-                log("结束抄作业")
-                break
-            end
+        if findOne("ib_返回房间") then
+            log("结束抄作业")
+            break
         end
     end
 end
