@@ -64,7 +64,10 @@ ib.促融共竞循环 = function()
             if ib_grouping_method == 1 then return end
             tap("ib_加入")
             if not wait(function()
-                    wait(function() input("ib_输入框", extra_crgj_room) end, 1)
+                    wait(function()
+                        input("ib_输入框", extra_crgj_room)
+                        ssleep(.2)
+                    end, 1)
                     log(110)
                     tap("ib_输入确认")
                     ssleep(0.5)
@@ -479,7 +482,7 @@ ib.识别未部署干员 = function()
             if 干员名字 then
                 干员[1] = 干员名字
             end
-            if (干员数 >= 11 and (序号 == 3 or 序号 == 4)) or (干员数 >= 12 and (序号 == 3 or 序号 == 4 or 序号 == 5 or 序号 == 6)) then
+            if (干员数 >= 11 and (序号 == 3 or 序号 == 4 or 序号 == 5)) or (干员数 >= 12 and (序号 == 5 or 序号 == 6 or 序号 == 7)) then
                 -- 因为人太多点开之后会偏移漏掉,点回去
                 tap({ 干员[3], 干员[4] })
                 disappear(生命值蓝, 0.3)
