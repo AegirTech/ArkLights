@@ -3,15 +3,12 @@ ib = {}
 local 角色编队作业 = { 48985, 48987 }
 local 关卡作业 = {
     ["IG-1"] = 48954,
-    ["IG-2"] = 48955,
-    ["IG-3"] = 48956,
-    ["IG-4"] = 48957,
-    ["IG-5"] = 48958,
-    ["IG-6"] = 48959,
-    ["IG-7"] = 48960,
-    ["IG-8"] = 48961,
-    ["IG-9"] = 48962,
-    ["IG-10"] = 48963,
+    ["IG-2"] = 49044,
+    ["IG-3"] = 49045,
+    ["IG-4"] = 49046,
+    ["IG-5"] = 49047,
+    ["IG-6"] = 49048,
+    ["IG-7"] = 49049,
 }
 
 
@@ -22,7 +19,6 @@ ib.start = function()
         path.跳转("首页")
         tap("面板活动")
         appear("ib_主页", 10)
-        appear("ib_主页", 2)
         if ib_auto_team_format then
             if ib_team_role > 0 then
                 ib.auto_team_formation(角色编队作业[ib_team_role])
@@ -34,7 +30,6 @@ ib.start = function()
             if findOne("ib_加入") then return true end
         end, 10)
     end
-
 
     if ib_grouping_method == 1 then
         wait(function()
@@ -48,7 +43,11 @@ ib.start = function()
             if findOne("ib_随机项目", .9) then return true end
         end, 10)
         wait(function()
-            tap("ib_项目列表1")
+            if ib_object_id == 0 then
+                tap("ib_随机项目")
+            else
+                tap("ib_项目列表" .. ib_object_id)
+            end
             ssleep(0.3)
             if findOne("ib_进入备赛灰") then return true end
         end, 10)
@@ -90,7 +89,11 @@ ib.促融共竞循环 = function()
                 if findOne("ib_随机项目红", .9) then return true end
             end, 10)
             wait(function()
-                tap("ib_项目列表1")
+                if ib_object_id == 0 then
+                    tap("ib_随机项目")
+                else
+                    tap("ib_项目列表" .. ib_object_id)
+                end
                 ssleep(0.3)
                 if findOne("ib_进入备赛灰") then return true end
             end, 10)

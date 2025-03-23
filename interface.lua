@@ -1170,9 +1170,14 @@ show_extra_ui = function()
     newRow(layout)
     addTextView(layout, "房间号")
     ui.addEditText(layout, "extra_crgj_room", "")
-
     newRow(layout)
-    addTextView(layout, "房主请在进入房间后的页面开始，仅支持组队，不能用于匹配作战")
+    addTextView(layout, "房主选择")
+    addTextView(layout, "难度")
+    ui.addSpinner(layout, "ib_difficulty", { "初级" }, 0)
+    addTextView(layout, "项目")
+    ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "5", "6", "7" }, 1)
+    newRow(layout)
+    addTextView(layout, "仅支持组队，不能用于匹配作战")
     newRow(layout)
     addButton(layout, nil, "促融共竞开始",
         make_jump_ui_command(layout, nil,
