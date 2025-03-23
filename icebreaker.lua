@@ -49,7 +49,7 @@ ib.start = function()
                 tap("ib_项目列表" .. ib_object_id)
             end
             ssleep(0.3)
-            if findOne("ib_进入备赛灰") then return true end
+            if findOne("ib_进入备赛灰") or findOne("ib_进入备赛红") then return true end
         end, 10)
         tap("ib_复制房间号")
         ssleep(1)
@@ -135,6 +135,13 @@ ib.促融共竞循环 = function()
                 end, 240) then
                 return
             end
+        end,
+        ib_返回房间 = function()
+            if ib_auto_like and findOne("ib_点赞") then
+                tap("ib_点赞")
+            end
+            tap("ib_返回房间")
+            ssleep(1)
         end,
         ib_关卡内部顶部标识 = function()
             if agree_cost_request_automaticlly and findOne("ib_费用请求同意") then
@@ -729,8 +736,8 @@ ib.抄作业 = function(作业, maptype)
         local number = tonumber(string.sub(wavetxt, -1)) or 1
         if (number - wave) == 1 then
             --转阶段,取消二倍速
-            ssleep(2)
             tap("ib_二倍速")
+            ssleep(.2)
             干员列表 = ib.识别未部署干员()
             下排干员数量 = 识别未部署干员数量()
         end

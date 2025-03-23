@@ -1164,9 +1164,9 @@ show_extra_ui = function()
     ui.addSpinner(layout, "ib_team_role", { "躺赢狗", "角色A(天有四时+双驭械)", "角色B(ew叔叔+陷阱师)" }, 0)
     ui.addCheckBox(layout, "ib_auto_team_format",
         "自动编队", true)
-    --[[newRow(layout)
-     ui.addCheckBox(layout, " ib_auto_like",
-        "自动点赞", true) ]]
+    newRow(layout)
+    ui.addCheckBox(layout, " ib_auto_like",
+        "自动点赞", true)
     newRow(layout)
     addTextView(layout, "房间号")
     ui.addEditText(layout, "extra_crgj_room", "")
