@@ -89,7 +89,7 @@ ib.促融共竞循环 = function()
             wait(function()
                 tap("ib_选择项目")
                 ssleep(0.3)
-                if findOne("ib_随机项目红", .9) then return true end
+                if findOne("ib_随机项目", .9) then return true end
             end, 10)
             wait(function()
                 if ib_object_id == 0 then
