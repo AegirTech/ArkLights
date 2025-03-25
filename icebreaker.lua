@@ -968,7 +968,7 @@ ib.battle = function(作业名, 是否自带)
     队员技能 = {}
     无限放技能干员 = {}
     技能指定次数干员 = {}
-    作业 = loadHomework(作业名, 是否自带)
+    作业 = loadHomework(作业名, 是否自带, true)
     print(作业)
     print("读取作业成功")
     --local 地图 = 作业["stage_name"]
