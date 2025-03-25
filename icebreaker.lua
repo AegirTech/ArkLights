@@ -9,12 +9,25 @@ local 关卡作业 = {
     ["IG-5"] = 49047,
     ["IG-6"] = 49048,
     ["IG-7"] = 49049,
+
+    ["IG-EX-1"] = 48954,
+    ["IG-EX-2"] = 49044,
+    ["IG-EX-3"] = 49045,
+    ["IG-EX-4"] = 49046,
+    ["IG-EX-5"] = 49047,
+    ["IG-EX-6"] = 49107,
+    ["IG-EX-7"] = 49049,
+
+    ["IG-S-1"] = 48954,
+    ["IG-S-2"] = 49044,
 }
 
 
 ib.start = function()
     if findOne("ib_选择项目红") and ib_grouping_method == 1 then
         log("已经建好房间")
+    elseif findOne("ib_选择项目红") and ib_grouping_method == 1 then
+        log("已经加入房间")
     else
         path.跳转("首页")
         tap("面板活动")
@@ -42,6 +55,13 @@ ib.start = function()
             ssleep(0.3)
             if findOne("ib_随机项目", .9) then return true end
         end, 10)
+        if ib_difficulty == 1 then
+            tap("ib_高级赛")
+            ssleep(0.3)
+        elseif ib_difficulty == 2 then
+            tap("ib_特级赛")
+            ssleep(0.3)
+        end
         wait(function()
             if ib_object_id == 0 then
                 tap("ib_随机项目")
@@ -107,7 +127,7 @@ ib.促融共竞循环 = function()
         end,
         ib_下一步 = function()
             tap("ib_下一步")
-            disappear("ib_下一步", 5)
+            ssleep(1)
         end,
         ib_准备就绪 = function()
             if ib_auto_like and not findOne("ib_点赞") then
@@ -138,6 +158,7 @@ ib.促融共竞循环 = function()
         end,
         ib_返回房间 = function()
             if ib_auto_like and findOne("ib_点赞") then
+                ssleep(.8)
                 tap("ib_点赞")
             end
             tap("ib_返回房间")
@@ -917,7 +938,7 @@ ib.抄作业 = function(作业, maptype)
         if findOne("生命值蓝") then
             tap("点cost")
         end
-        if findOne("ib_返回房间") then
+        if findOne("ib_返回房间") or findOne("ib_下一步") then
             log("结束抄作业")
             break
         end
