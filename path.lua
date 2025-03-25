@@ -8936,7 +8936,8 @@ end
 
 path.自动培养 = function()
     if not enable_raise_func then return end
-    raise.auto_raise()
+    local status, data = pcall(raise.auto_raise)
+    log(data)
 end
 
 path.宝石铭刻活动 = function()

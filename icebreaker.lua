@@ -736,7 +736,7 @@ ib.抄作业 = function(作业, maptype)
                         if 技能指定次数干员[k] then 技能指定次数干员[k][2] = 技能指定次数干员[k][2] + 1 end
 
                         sleep(150)
-                        if skill_name ~= nil and table.includes(延迟消失技能, skill_name) then sleep(400) end
+                        if skill_name ~= nil and table.includes(延迟消失技能, skill_name) then sleep(600) end
                     else
                         tap("点cost")
                         --sleep(50)

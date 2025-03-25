@@ -1173,7 +1173,7 @@ show_extra_ui = function()
     newRow(layout)
     addTextView(layout, "房主选择")
     addTextView(layout, "难度")
-    ui.addSpinner(layout, "ib_difficulty", { "初级", "高级", "特级(没写)" }, 0)
+    ui.addSpinner(layout, "ib_difficulty", { "初级", "高级", "特级" }, 0)
     addTextView(layout, "项目")
     ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5", "6", "7" }, 0)
 

@@ -2543,7 +2543,7 @@ raise.auto_raise = function()
             elseif raise_plan[i]["skills"] and elite >= 1 then
                 toast("升级技能")
                 local skill_level = raise.recognize_char_skill(id, 1)
-                log(skill_level)
+                log("升级技能", skill_level)
                 if skill_level[1] >= (raise_plan[i]["skills"] or 7) then
                     log("技能已达到指定等级")
                 else
