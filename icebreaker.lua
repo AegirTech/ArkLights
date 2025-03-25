@@ -13,20 +13,20 @@ local 关卡作业 = {
     ["IG-EX-1"] = 48954,
     ["IG-EX-2"] = 49044,
     ["IG-EX-3"] = 49045,
-    ["IG-EX-4"] = 49046,
+    ["IG-EX-4"] = 49113,
     ["IG-EX-5"] = 49047,
     ["IG-EX-6"] = 49107,
     ["IG-EX-7"] = 49049,
 
-    ["IG-S-1"] = 48954,
-    ["IG-S-2"] = 49044,
+    ["IG-S-1"] = 49120,
+    ["IG-S-2"] = 49121,
 }
 
 
 ib.start = function()
     if findOne("ib_选择项目红") and ib_grouping_method == 1 then
         log("已经建好房间")
-    elseif findOne("ib_选择项目红") and ib_grouping_method == 1 then
+    elseif findOne("ib_准备就绪") and ib_grouping_method == 1 then
         log("已经加入房间")
     else
         path.跳转("首页")
@@ -56,9 +56,11 @@ ib.start = function()
             if findOne("ib_随机项目", .9) then return true end
         end, 10)
         if ib_difficulty == 1 then
+            ssleep(0.3)
             tap("ib_高级赛")
             ssleep(0.3)
         elseif ib_difficulty == 2 then
+            ssleep(0.3)
             tap("ib_特级赛")
             ssleep(0.3)
         end
@@ -111,6 +113,15 @@ ib.促融共竞循环 = function()
                 ssleep(0.3)
                 if findOne("ib_随机项目", .9) then return true end
             end, 10)
+            if ib_difficulty == 1 then
+                ssleep(0.3)
+                tap("ib_高级赛")
+                ssleep(0.3)
+            elseif ib_difficulty == 2 then
+                ssleep(0.3)
+                tap("ib_特级赛")
+                ssleep(0.3)
+            end
             wait(function()
                 if ib_object_id == 0 then
                     tap("ib_随机项目")
@@ -125,14 +136,11 @@ ib.促融共竞循环 = function()
             tap("ib_准备参赛")
             disappear("ib_准备参赛", 5)
         end,
-        ib_下一步 = function()
-            tap("ib_下一步")
-            ssleep(1)
+        ib_下一步确认配置 = function()
+            tap("ib_下一步确认配置")
+            disappear("ib_准备参赛", 5)
         end,
         ib_准备就绪 = function()
-            if ib_auto_like and not findOne("ib_点赞") then
-                tap("ib_点赞")
-            end
             tap("ib_准备就绪")
             disappear("ib_准备就绪", 5)
         end,
@@ -156,9 +164,13 @@ ib.促融共竞循环 = function()
                 return
             end
         end,
+        ib_下一步 = function()
+            tap("ib_下一步")
+            ssleep(2)
+        end,
         ib_返回房间 = function()
             if ib_auto_like and findOne("ib_点赞") then
-                ssleep(.8)
+                ssleep(.3)
                 tap("ib_点赞")
             end
             tap("ib_返回房间")
