@@ -22,6 +22,14 @@ local 关卡作业 = {
     ["IG-S-2"] = 49121,
 }
 
+import_room_id = function()
+    local data = getClipboard():trim()
+    if not data or #data == 0 then return end
+    if not string.finds(data, { "房间编号" }) then return end
+    toast("已自动填写房间编号")
+    extra_crgj_room = data
+    ui.setEditText("extra_crgj_room", extra_crgj_room)
+end
 
 ib.start = function()
     if findOne("ib_选择项目红") and ib_grouping_method == 1 then

@@ -1167,6 +1167,7 @@ show_extra_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, " ib_auto_like",
         "自动点赞", true)
+    addButton(layout, randomString(32), "粘贴房间号", "import_room_id()")
     newRow(layout)
     addTextView(layout, "房间号")
     ui.addEditText(layout, "extra_crgj_room", "", 700)
@@ -1467,6 +1468,8 @@ show_extra_ui = function()
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
+
+    import_room_id()
 end
 
 sync_ui_config = function(layout)
