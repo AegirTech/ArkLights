@@ -349,8 +349,8 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 end
             elseif icon == 'bskill_tra_spd_bd2' then --黑键2
                 base = base + 0.005 * dormitoryCapacity
-                if isCharExsit["迷迭香"] then
-                    base = base + 0.4
+                if isCharExsit["迷迭香"] or isCharExsit["絮雨"] then
+                    base = base + 0.44
                 end
             elseif icon == 'bskill_tra_spd&limit4' then --崖心2
                 base = base + 0.15
@@ -1703,7 +1703,7 @@ dormitoryOperatorBest = function(operator, goodType, virtralPowerStationNum)
     local all = {}
     local single = {}
 
-    if isCharExsit["迷迭香"] then
+    if isCharExsit["迷迭香"] or isCharExsit["絮雨"] then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1_2") and table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1_n3") then   --车尔尼
                 table.insert(best, o)
