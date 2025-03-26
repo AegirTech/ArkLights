@@ -4093,6 +4093,7 @@ update_state_from_debugui = function()
         _G[k] = str2int(_G[k], 0)
     end
     shift_min_mood = str2int(shift_min_mood, 12)
+    manu_shift_short_circuit_threshold = tonumber(manu_shift_short_circuit_threshold, 0.38)
     if shift_min_mood <= 0 or shift_min_mood >= 24 then shift_min_mood = 12 end
     if enable_native_tap then clickPoint = _tap end
     max_fight_failed_times = str2int(max_fight_failed_times, 2)

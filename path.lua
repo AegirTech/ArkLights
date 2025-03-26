@@ -2243,6 +2243,26 @@ path.制造换班 = function(trading)
             return
         end
 
+        local 制造站换班短路 = function()
+            ssleep(.3)
+            for i = 1, stationLevel do
+                if findOne("制造站缺人列表" .. i) then return end
+            end
+            local text = ocro("制造站效率ocr范围")
+            log("制造站效率", text)
+            local value = tonumber(string.sub(text, 2))
+            if not value then return end
+            log(value / stationLevel, manu_shift_short_circuit_threshold)
+            if value / stationLevel > manu_shift_short_circuit_threshold then
+                log("当前制造站满员并且效率高于阈值，跳过换班")
+                return true
+            end
+        end
+
+        if manu_shift_short_circuit and not not_use_ocr then
+            if 制造站换班短路() then return end
+        end
+
         local chip2book_needed = false
         -- 制造站需要确认产品类型
         if not trading then
@@ -2251,18 +2271,6 @@ path.制造换班 = function(trading)
                 good = "赤金站"
                 chip2book_needed = true
             end
-
-            -- -- 收起进驻信息
-            -- if not wait(function()
-            --   if findOne("进驻信息") and not disappear("进驻信息", 1) then
-            --     return true
-            --   end
-            --   if findOne("进驻信息选中") then
-            --     tap("进驻信息选中")
-            --     disappear("进驻信息选中")
-            --   end
-            -- end, 10) then return end
-
             -- 确认类型
             -- 计算赤金站数量，用于贸易站技能计算
             if good == "赤金站" then goldStationNum = goldStationNum + 1 end
@@ -2282,18 +2290,6 @@ path.制造换班 = function(trading)
                 end, 5) then
                 return
             end
-
-            -- -- 制造站进入干员列表
-            -- if not wait(function()
-            --   if findOne("确认蓝") then return true end
-            --   if findOne("进驻信息选中") and
-            --     not disappear("进驻信息选中", .5) then
-            --     tap("进驻第一人左")
-            --   elseif findOne("进驻信息") then
-            --     tap("进驻信息")
-            --     disappear("进驻信息", .5)
-            --   end
-            -- end, 5) then return end
         end
 
         -- 贸易站需要确认产品类型
@@ -2674,7 +2670,7 @@ path.总览换班 = function()
             table.insert(qqmessage, "总览换班失败2")
             return
         end
-        if i == 4 and (isCharExsit["迷迭香"] or isCharExsit["鸿雪"]) then
+        if i == 4 and (isCharExsit["迷迭香"] or isCharExsit["絮雨"] or isCharExsit["鸿雪"]) then
             f2()
         else
             if findOne("宿舍未满员列表" .. i) then
