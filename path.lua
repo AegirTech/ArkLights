@@ -2265,7 +2265,7 @@ path.制造换班 = function(trading)
             end
         end
 
-        if manu_shift_short_circuit and not not_use_ocr then
+        if manu_shift_short_circuit and not not_use_ocr and not trading then
             if 制造站换班短路() then return end
         end
 
