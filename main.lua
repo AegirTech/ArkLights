@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "03.27 03:18"
+release_date = "03.27 04:18"
 update_announcement = '最近更新：促融共竞'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -147,12 +147,8 @@ if use_local_dictionary then
     --自动战斗本地字库ocr
     require("turing")
 end
-debug_mode = true
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug mode")
-    isCharExsit = {}
-    path.总览换班()
-    exit()
 end
 
 load(before_account_hook or '')()
