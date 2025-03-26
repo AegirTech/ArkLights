@@ -9,6 +9,13 @@ local 关卡作业 = {
     ["IG-5"] = 49047,
     ["IG-6"] = 49048,
     ["IG-7"] = 49049,
+    ["IG-8"] = 49140,
+    ["IG-9"] = 49141,
+    ["IG-10"] = 49142,
+    ["IG-11"] = 49143,
+    ["IG-12"] = 49144,
+    ["IG-13"] = 49145,
+    ["IG-14"] = 49146,
 
     ["IG-EX-1"] = 48954,
     ["IG-EX-2"] = 49044,
@@ -17,9 +24,17 @@ local 关卡作业 = {
     ["IG-EX-5"] = 49047,
     ["IG-EX-6"] = 49107,
     ["IG-EX-7"] = 49049,
+    ["IG-EX-8"] = 49140,
+    ["IG-EX-9"] = 49141,
+    ["IG-EX-10"] = 49142,
+    ["IG-EX-11"] = 49143,
+    ["IG-EX-12"] = 49144,
+    ["IG-EX-13"] = 49145,
+    ["IG-EX-14"] = 49146,
 
     ["IG-S-1"] = 49120,
     ["IG-S-2"] = 49121,
+    ["IG-S-3"] = 49147,
 }
 
 import_room_id = function()
@@ -177,8 +192,8 @@ ib.促融共竞循环 = function()
             ssleep(2)
         end,
         ib_返回房间 = function()
-            if ib_auto_like and findOne("ib_点赞") then
-                ssleep(.3)
+            if ib_auto_like then
+                ssleep(.8)
                 tap("ib_点赞")
             end
             tap("ib_返回房间")
@@ -976,7 +991,7 @@ ib.battle = function(作业名, 是否自带)
     队员技能 = {}
     无限放技能干员 = {}
     技能指定次数干员 = {}
-    作业 = loadHomework(作业名, 是否自带, true)
+    作业 = loadHomework(作业名, 是否自带)
     print(作业)
     print("读取作业成功")
     --local 地图 = 作业["stage_name"]
