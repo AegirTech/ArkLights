@@ -1963,6 +1963,12 @@ path.宿舍换班 = function()
                     确认干员选择()
                     ssleep(.2)
                     fiammetta_used = true
+                    if not wait(function()
+                            if findOne("筛选") then return true end
+                            tap("宿舍列表" .. i)
+                        end) then
+                        return
+                    end
                     进入宿舍并清空干员()
                     operator = {}
                     discover(operator, {}, 1, true)
@@ -2466,7 +2472,7 @@ path.总览换班 = function()
         return
     end
 
-    local f2 = function()
+    local f2 = function() -- 迷迭香配套换班,换上塑心爱丽丝车尔尼
         -- 进入最后一间宿舍
         if not wait(function()
                 if findOne("确认蓝") then return true end
@@ -2596,14 +2602,6 @@ path.总览换班 = function()
 
         if not findOne("确认蓝") then return true end
 
-        if not wait(function()
-                if findOne("干员未选中") and findOne("第一干员未选中") then
-                    return true
-                end
-                tap("清空选择")
-            end, 5) then
-            return
-        end
         tap("基建换班筛选")
         wait(function()
             if findOne("基建换班筛选弹出窗口") then
