@@ -2186,7 +2186,7 @@ path.基建信息获取 = function(retry)
     end
 end
 
--- trading 是否是贸易站
+---@param trading any 是否是贸易站
 path.制造换班 = function(trading)
     if disable_manu_shift and not trading then return end
 
