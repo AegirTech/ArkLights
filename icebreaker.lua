@@ -90,7 +90,17 @@ ib.start = function()
         wait(function()
             if ib_object_id == 0 then
                 tap("ib_随机项目")
+            elseif ib_object_id <= 9 then
+                tap("ib_项目列表" .. ib_object_id)
             else
+                gesture({
+                    {
+                        point = { { scale(990), scale(907) }, { scale(990), scale(100) } },
+                        start = 0,
+                        duration = 500,
+                    },
+                })
+                sleep(1000)
                 tap("ib_项目列表" .. ib_object_id)
             end
             ssleep(0.3)
@@ -148,7 +158,17 @@ ib.促融共竞循环 = function()
             wait(function()
                 if ib_object_id == 0 then
                     tap("ib_随机项目")
+                elseif ib_object_id <= 9 then
+                    tap("ib_项目列表" .. ib_object_id)
                 else
+                    gesture({
+                        {
+                            point = { { scale(990), scale(907) }, { scale(990), scale(100) } },
+                            start = 0,
+                            duration = 500,
+                        },
+                    })
+                    sleep(1000)
                     tap("ib_项目列表" .. ib_object_id)
                 end
                 ssleep(0.3)
@@ -793,7 +813,7 @@ ib.抄作业 = function(作业, maptype)
         if (number - wave) == 1 then
             --转阶段,取消二倍速
             tap("ib_二倍速")
-            ssleep(.2)
+            ssleep(.8)
             干员列表 = ib.识别未部署干员()
             下排干员数量 = 识别未部署干员数量()
         end

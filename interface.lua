@@ -1181,7 +1181,8 @@ show_extra_ui = function()
     addTextView(layout, "难度")
     ui.addSpinner(layout, "ib_difficulty", { "初级", "高级", "特级" }, 0)
     addTextView(layout, "项目")
-    ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5", "6", "7" }, 0)
+    ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5",
+        "6", "7", "8", "9", "10", "11", "12", "13", "14" }, 0)
 
     newRow(layout)
     addButton(layout, nil, "促融共竞开始",
