@@ -28,7 +28,7 @@ local 关卡作业 = {
     ["IG-EX-9"] = 49258,
     ["IG-EX-10"] = 49142,
     ["IG-EX-11"] = 49143,
-    ["IG-EX-12"] = 49144,
+    ["IG-EX-12"] = 49268,
     ["IG-EX-13"] = 49145,
     ["IG-EX-14"] = 49259,
 
@@ -232,6 +232,9 @@ ib.促融共竞循环 = function()
             end
             ssleep(3)
         end,
+        start黄框 = function()
+            ib.start()
+        end
     }
     log("促融共竞循环开始")
     auto(looping, nil, 0, nil, false)
