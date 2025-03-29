@@ -3536,6 +3536,20 @@ path.线索布置 = function()
                     tapCard(p)
                 end, 2)
                 if not wait(function()
+                        tap("线索接收库")
+                        if not findOne(p) then return true end
+                        if findOne("线索接收库空") then
+                            tap("线索库全部")
+                            appear("线索库全部")
+                            return true
+                        end
+                        tap("线索库列表1")
+                        tap("线索库列表1")
+                        ssleep(.5)
+                    end, 20) then
+                    return
+                end
+                if not wait(function()
                         if not findOne(p) then return true end
                         tap("线索库列表1")
                         tap("线索库列表1")
