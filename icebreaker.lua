@@ -9,6 +9,13 @@ local 关卡作业 = {
     ["IG-5"] = 49047,
     ["IG-6"] = 49048,
     ["IG-7"] = 49049,
+    ["IG-8"] = 49140,
+    ["IG-9"] = 49141,
+    ["IG-10"] = 49142,
+    ["IG-11"] = 49143,
+    ["IG-12"] = 49144,
+    ["IG-13"] = 49145,
+    ["IG-14"] = 49146,
 
     ["IG-EX-1"] = 48954,
     ["IG-EX-2"] = 49044,
@@ -17,9 +24,17 @@ local 关卡作业 = {
     ["IG-EX-5"] = 49047,
     ["IG-EX-6"] = 49107,
     ["IG-EX-7"] = 49049,
+    ["IG-EX-8"] = 49140,
+    ["IG-EX-9"] = 49258,
+    ["IG-EX-10"] = 49142,
+    ["IG-EX-11"] = 49143,
+    ["IG-EX-12"] = 49268,
+    ["IG-EX-13"] = 49145,
+    ["IG-EX-14"] = 49259,
 
     ["IG-S-1"] = 49120,
     ["IG-S-2"] = 49121,
+    ["IG-S-3"] = 49147,
 }
 
 import_room_id = function()
@@ -75,7 +90,17 @@ ib.start = function()
         wait(function()
             if ib_object_id == 0 then
                 tap("ib_随机项目")
+            elseif ib_object_id <= 9 then
+                tap("ib_项目列表" .. ib_object_id)
             else
+                gesture({
+                    {
+                        point = { { scale(990), scale(907) }, { scale(990), scale(100) } },
+                        start = 0,
+                        duration = 500,
+                    },
+                })
+                sleep(1000)
                 tap("ib_项目列表" .. ib_object_id)
             end
             ssleep(0.3)
@@ -133,7 +158,17 @@ ib.促融共竞循环 = function()
             wait(function()
                 if ib_object_id == 0 then
                     tap("ib_随机项目")
+                elseif ib_object_id <= 9 then
+                    tap("ib_项目列表" .. ib_object_id)
                 else
+                    gesture({
+                        {
+                            point = { { scale(990), scale(907) }, { scale(990), scale(100) } },
+                            start = 0,
+                            duration = 500,
+                        },
+                    })
+                    sleep(1000)
                     tap("ib_项目列表" .. ib_object_id)
                 end
                 ssleep(0.3)
@@ -177,8 +212,8 @@ ib.促融共竞循环 = function()
             ssleep(2)
         end,
         ib_返回房间 = function()
-            if ib_auto_like and findOne("ib_点赞") then
-                ssleep(.3)
+            if ib_auto_like then
+                ssleep(.8)
                 tap("ib_点赞")
             end
             tap("ib_返回房间")
@@ -197,6 +232,9 @@ ib.促融共竞循环 = function()
             end
             ssleep(3)
         end,
+        start黄框 = function()
+            ib.start()
+        end
     }
     log("促融共竞循环开始")
     auto(looping, nil, 0, nil, false)
@@ -778,7 +816,7 @@ ib.抄作业 = function(作业, maptype)
         if (number - wave) == 1 then
             --转阶段,取消二倍速
             tap("ib_二倍速")
-            ssleep(.2)
+            ssleep(.8)
             干员列表 = ib.识别未部署干员()
             下排干员数量 = 识别未部署干员数量()
         end
@@ -976,7 +1014,7 @@ ib.battle = function(作业名, 是否自带)
     队员技能 = {}
     无限放技能干员 = {}
     技能指定次数干员 = {}
-    作业 = loadHomework(作业名, 是否自带, true)
+    作业 = loadHomework(作业名, 是否自带)
     print(作业)
     print("读取作业成功")
     --local 地图 = 作业["stage_name"]

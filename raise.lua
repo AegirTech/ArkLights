@@ -1189,13 +1189,7 @@ raise.elite_one_phase = function(material_need)
 
                     tap("芯片制造" .. k)
                     appear("芯片站", 3)
-                    --使用森空岛接口数据
-                    --local numb_32001 = player_inventory_info["32001"] or 0
-                    --[[先点击v下加号看看
-                    for i = 1, v - 1 do
-                        tap("制造站加")
-                        ssleep(.2)
-                    end]]
+
                     local numb_32001 = tonumber(ocro("胶水数量识别范围") or 0)
                     local numb_32001_2 = tonumber(ocro("胶水库存识别范围") or 0)
                     if numb_32001 + numb_32001_2 < v then
@@ -1231,6 +1225,51 @@ raise.elite_one_phase = function(material_need)
                     appear("制造站设施列表1", 2)
                     ssleep(6) --最多一次造4个，等待要超过4s
                     tap("制造站收取")
+                    appearTap("获得物资", 10)
+                    ssleep(.2)
+                    local chip2book = function()
+                        if not wait(function()
+                                tap("芯片站")
+                                if not findOne("制造站设施列表1") then return true end
+                            end, 5) then
+                            return
+                        end
+
+                        if not wait(function()
+                                tap("芯片站选赤金类")
+                                if findOne("芯片站选赤金") then return true end
+                            end, 5) then
+                            return
+                        end
+
+                        if not wait(function()
+                                tap("芯片站选赤金")
+                                if findOne("制造站执行更改") then return true end
+                            end, 5) then
+                            return
+                        end
+
+                        if not wait(function()
+                                tap("制造站最多")
+                                tap("制造站执行更改")
+                                if not findOne("制造站设施列表1") then return true end
+                            end, 5) then
+                            return
+                        end
+
+                        if not wait(function(reset_wait_start_time)
+                                tap("右确认")
+                                if appear("制造站设施列表1", 1) then return true end
+                                if findOne("正在提交反馈至神经") then
+                                    reset_wait_start_time()
+                                end
+                            end, 5) then
+                            return
+                        end
+
+                        return true
+                    end
+                    chip2book()
                     break
                 end
             end
@@ -2314,7 +2353,7 @@ end
     异客 = 28190,
     赤冬 = 20860,
     歌蕾蒂娅 = 25760,
-    歌蕾蒂娅 = 38297,
+    --歌蕾蒂娅 = 38297,
     凯尔希 = 27823,
     凯尔希 = 27823,
     浊心斯卡蒂 = 42223,

@@ -961,6 +961,11 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_基建, "disable_manu_shift",
         "基建换班禁用制造站换班", false)
     newRow(debug_layout_基建)
+    ui.addCheckBox(debug_layout_基建, "manu_shift_short_circuit",
+        "制造站单个干员平均效率大于", false)
+    ui.addEditText(debug_layout_基建, "manu_shift_short_circuit_threshold", '0.38')
+    addTextView(debug_layout_基建, "时跳过")
+    newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "disable_trading_shift",
         "基建换班禁用贸易站换班", false)
     newRow(debug_layout_基建)
@@ -1176,7 +1181,8 @@ show_extra_ui = function()
     addTextView(layout, "难度")
     ui.addSpinner(layout, "ib_difficulty", { "初级", "高级", "特级" }, 0)
     addTextView(layout, "项目")
-    ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5", "6", "7" }, 0)
+    ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5",
+        "6", "7", "8", "9", "10", "11", "12", "13", "14" }, 0)
 
     newRow(layout)
     addButton(layout, nil, "促融共竞开始",

@@ -1975,6 +1975,12 @@ path.宿舍换班 = function()
                     确认干员选择()
                     ssleep(.2)
                     fiammetta_used = true
+                    if not wait(function()
+                            if findOne("筛选") then return true end
+                            tap("宿舍列表" .. i)
+                        end) then
+                        return
+                    end
                     进入宿舍并清空干员()
                     operator = {}
                     discover(operator, {}, 1, true)
@@ -2192,7 +2198,7 @@ path.基建信息获取 = function(retry)
     end
 end
 
--- trading 是否是贸易站
+---@param trading any 是否是贸易站
 path.制造换班 = function(trading)
     if disable_manu_shift and not trading then return end
 
@@ -2255,6 +2261,26 @@ path.制造换班 = function(trading)
             return
         end
 
+        local 制造站换班短路 = function()
+            ssleep(.3)
+            for i = 1, stationLevel do
+                if findOne("制造站缺人列表" .. i) then return end
+            end
+            local text = ocro("制造站效率ocr范围")
+            log("制造站效率", text)
+            local value = tonumber(string.sub(text, 2))
+            if not value then return end
+            log(value / stationLevel, manu_shift_short_circuit_threshold)
+            if value / stationLevel > manu_shift_short_circuit_threshold then
+                log("当前制造站满员并且效率高于阈值，跳过换班")
+                return true
+            end
+        end
+
+        if manu_shift_short_circuit and not not_use_ocr and not trading then
+            if 制造站换班短路() then return end
+        end
+
         local chip2book_needed = false
         -- 制造站需要确认产品类型
         if not trading then
@@ -2263,18 +2289,6 @@ path.制造换班 = function(trading)
                 good = "赤金站"
                 chip2book_needed = true
             end
-
-            -- -- 收起进驻信息
-            -- if not wait(function()
-            --   if findOne("进驻信息") and not disappear("进驻信息", 1) then
-            --     return true
-            --   end
-            --   if findOne("进驻信息选中") then
-            --     tap("进驻信息选中")
-            --     disappear("进驻信息选中")
-            --   end
-            -- end, 10) then return end
-
             -- 确认类型
             -- 计算赤金站数量，用于贸易站技能计算
             if good == "赤金站" then goldStationNum = goldStationNum + 1 end
@@ -2294,18 +2308,6 @@ path.制造换班 = function(trading)
                 end, 5) then
                 return
             end
-
-            -- -- 制造站进入干员列表
-            -- if not wait(function()
-            --   if findOne("确认蓝") then return true end
-            --   if findOne("进驻信息选中") and
-            --     not disappear("进驻信息选中", .5) then
-            --     tap("进驻第一人左")
-            --   elseif findOne("进驻信息") then
-            --     tap("进驻信息")
-            --     disappear("进驻信息", .5)
-            --   end
-            -- end, 5) then return end
         end
 
         -- 贸易站需要确认产品类型
@@ -2482,7 +2484,7 @@ path.总览换班 = function()
         return
     end
 
-    local f2 = function()
+    local f2 = function() -- 迷迭香配套换班,换上塑心爱丽丝车尔尼
         -- 进入最后一间宿舍
         if not wait(function()
                 if findOne("确认蓝") then return true end
@@ -2612,14 +2614,6 @@ path.总览换班 = function()
 
         if not findOne("确认蓝") then return true end
 
-        if not wait(function()
-                if findOne("干员未选中") and findOne("第一干员未选中") then
-                    return true
-                end
-                tap("清空选择")
-            end, 5) then
-            return
-        end
         tap("基建换班筛选")
         wait(function()
             if findOne("基建换班筛选弹出窗口") then
@@ -2686,7 +2680,7 @@ path.总览换班 = function()
             table.insert(qqmessage, "总览换班失败2")
             return
         end
-        if i == 4 and (isCharExsit["迷迭香"] or isCharExsit["鸿雪"]) then
+        if i == 4 and (isCharExsit["迷迭香"] or isCharExsit["絮雨"] or isCharExsit["鸿雪"]) then
             f2()
         else
             if findOne("宿舍未满员列表" .. i) then
@@ -3553,6 +3547,20 @@ path.线索布置 = function()
                     if findOne("线索布置白列表" .. i) then return true end
                     tapCard(p)
                 end, 2)
+                if not wait(function()
+                        tap("线索接收库")
+                        if not findOne(p) then return true end
+                        if findOne("线索接收库空") then
+                            tap("线索库全部")
+                            appear("线索库全部")
+                            return true
+                        end
+                        tap("线索库列表1")
+                        tap("线索库列表1")
+                        ssleep(.5)
+                    end, 20) then
+                    return
+                end
                 if not wait(function()
                         if not findOne(p) then return true end
                         tap("线索库列表1")
