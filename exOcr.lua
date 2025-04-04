@@ -6,8 +6,8 @@ import("com.nx.assist.lua.LuaEngine")
 
 -- 优先使用新ocr
 if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
-    extractAssets("main.rc", work, "yoloppv4.apk")
-    extractAssets("main.rc", work, "ppocrv4.zip")
+    extractAssets("main.rc", "mnt/sdcard/Pictures/", "yoloppv4.apk")
+    extractAssets("main.rc", "mnt/sdcard/Pictures/", "ppocrv4.zip")
 end
 
 if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then

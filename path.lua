@@ -2235,6 +2235,7 @@ path.制造换班 = function(trading)
         if not trading and findAny({ "未进驻设施列表1", "制造站设施列表1" }) then return true end
         tap("贸易站进度")
     end, 5)
+    ssleep(.2)
 
     local f
     f = function(i, station, stationLevel)
