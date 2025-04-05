@@ -1821,15 +1821,21 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    for i = 1, 5 - #best do
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_sp') then       --异格者
-                table.insert(best, o)
-            elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') then --笑脸
-                table.insert(best, o)
+    if #best < 5 then
+        for i = 1, 5 - #best do
+            for _, o in pairs(operator) do
+                if table.includes({ o[1], o[2] }, 'bskill_ctrl_sp') then       --异格者
+                    table.insert(best, o)
+                elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') then --笑脸
+                    table.insert(best, o)
+                end
+                if #best >= 5 then
+                    break
+                end
             end
         end
     end
+
     --best = table.slice(table.extend(best, remain), 1, 5)
     return best, best_score
 end
