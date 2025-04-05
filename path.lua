@@ -1989,9 +1989,10 @@ path.宿舍换班 = function()
                         return math.abs(x[3]) < shift_min_mood + 1
                     end)
                 else
+                    ssleep(.1)
                     log("未找到满心情菲亚梅塔")
                     if findOne("基建心情降序", .85) then tap("基建心情降序") end
-                    ssleep(.2)
+                    ssleep(.3)
                 end
             end
         end
@@ -2278,7 +2279,7 @@ path.制造换班 = function(trading)
             end
         end
 
-        if manu_shift_short_circuit and not not_use_ocr and not trading then
+        if manu_shift_short_circuit and not not_use_ocr and not trading and not isCharExsit["歌蕾蒂娅"] then
             if 制造站换班短路() then return end
         end
 
@@ -2477,7 +2478,10 @@ path.总览换班 = function()
 
     appear("基建总览非工作区")
     if not wait(function()
-            if findOne("基建干员休整灰") and findOne("基建总览非工作区") then return true end
+            if findOne("基建干员休整灰") and findOne("基建总览非工作区") then
+                ssleep(.5) -- 稍微等banner消失
+                return true
+            end
             tap("基建干员休整")
             ssleep(.2)
             disappear("正在释放神经递质", 5)

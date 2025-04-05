@@ -890,7 +890,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 local name = icons[operatoridx][3]
                 abyssal_hunter = abyssal_hunter + 1
                 if abyssal_hunter < 3 and not isCharExsit[name] then
-                    base = base + 0.4 + 0.001 -- 加一点使优先级比至简和槐琥高
+                    base = base + 0.4 - 0.0001
                 end
             elseif icon == 'empty' then
                 log('empty')
@@ -1712,6 +1712,16 @@ controlStationOperatorBest = function(operator)
         end
     end
 
+    if #best < 5 and isCharExsit["桑葚"] then
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1&bd2') then --令
+                table.insert(best, o)
+                isCharExsit["令"] = true
+                break
+            end
+        end
+    end
+
     if #best < 5 and not not_use_ocr and use_abyssal_hunter then         --不使用ocr时无法选择深海
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') then -- 精二歌蕾蒂娅
@@ -1722,14 +1732,12 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best < 5 and isCharExsit["桑葚"] then
+    if #best < 5 and isCharExsit["重岳"] then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1&bd2') then --令
-                table.insert(best, o)
-                isCharExsit["令"] = true
-            elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd2') then --夕
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then --夕
                 table.insert(best, o)
                 isCharExsit["夕"] = true
+                break
             end
         end
     end
