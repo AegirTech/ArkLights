@@ -44,15 +44,16 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
     log(114, card)
     local empty1_num = 0
     for idx, v in pairs(card) do
-        -- 技能判断
+        -- 技能图标1坐标
         local icon1 = {
             v[1] + scale(7), v[2] + scale(18), v[1] + scale(60), v[2] + scale(70),
         }
+        -- 技能图标2坐标
         local icon2 = {
             v[1] + scale(70), v[2] + scale(18), v[1] + scale(123), v[2] + scale(70),
         }
         --log("icon1", icon1, v[1], v[2])
-        local name = "干员名未识别"
+        local name = "干员名未进行识别"
         if dev_mode or (not not_use_ocr and not mood_only and
                 table.findv({ "制造站", "发电站", "宿舍" }, stationType)) then
             local status, charName = pcall(ocro, {
@@ -61,7 +62,7 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
             if status then
                 name = correctCharName(charName)
             else
-                toast("OCR错误：请在测试功能内勾选不使用OCR")
+                toast("OCR错误：请在 高级设置-基建 内勾选不使用OCR")
             end
         end
 
@@ -634,7 +635,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
     -- 1. 只考虑8小时平均收益，非实际换班间隔
     -- 2. 12心情以下干员不考虑，也忽略心情消耗
     local base, disable_moon_effect, storage, storages, standard, all, station,
-    station_only, only_need, robot
+    station_only, only_need, robot, abyssal_hunter
 
 
     ---@param icons table [[技能1,技能2,name1],[技能1,技能2,name2],[技能1,技能2,name3]]
@@ -643,9 +644,10 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
         robot = 0            -- 工程机器人
         storage = {}         -- 容量效果
         standard = 0         -- 标准化技能数量
-        rhine = 0            --莱茵科技数量
-        metallics = 0        --金属工艺数量
+        rhine = 0            -- 莱茵科技数量
+        metallics = 0        -- 金属工艺数量
         station = 0          -- 根据设施加成
+        abyssal_hunter = 0   -- 深海猎人数量
         station_only = false -- 是否只根据设施加成
         all = {}
         only_need = {}
@@ -713,19 +715,17 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                     end
                 end
             elseif icon == 'bskill_man_spd_bd_n1' then
-                -- 迷迭香不考虑
+                -- 迷迭香1不考虑
             elseif icon == 'bskill_man_spd_bd1' then
-                -- 迷迭香不考虑
+                -- 迷迭香1不考虑
             elseif icon == 'bskill_man_spd_bd2' then --迷迭香2
                 if isCharExsit["絮雨"] then
                     base = base + 0.45
                 end
-            elseif icon == "bskill_man_gold&blacksteel" then
-                -- 排除杏仁
             elseif icon == "bskill_man_cost_room1" then
-                -- 排除黍
+                -- 排除黍1
             elseif icon == "bskill_man_spd_bd5" then
-                -- 排除截云
+                -- 排除截云1
             elseif icon == "bskill_man_spd_bd6" then -- 截云2
                 if isCharExsit["桑葚"] then
                     base = base + 0.4 / 2.5
@@ -876,6 +876,12 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 if goodType == '源石' then base = base + 0.3001 end
             elseif icon == 'bskill_man_constrlv' then
                 robot = min(64, robot + totalStationLevel)
+            elseif icon == 'abyssal_hunter' then
+                local name = icons[operatoridx][3]
+                abyssal_hunter = abyssal_hunter + 1
+                if abyssal_hunter < 3 and not isCharExsit[name] then
+                    base = base + 0.4 + 0.001 -- 加一点使优先级比至简和槐琥高
+                end
             elseif icon == 'empty' then
                 log('empty')
             end
@@ -903,7 +909,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
         if all['bskill_man_spd_variable21'] then
             -- 槐虎
             base = base + min(0.4, base // 0.05 * 0.05) *
-                all['bskill_man_spd_variable21']
+                all['bskill_man_spd_variable21'] - abyssal_hunter * 0.2
         end
 
         -- 发电站数
@@ -1199,6 +1205,102 @@ initPngdata = function()
     log("基建图标数据初始化完成")
 end
 
+local 选择干员1 = function(干员目录)
+    local 需要干员数 = #干员目录
+    local 已选择 = {}
+    local selected = 0
+
+    local 找干员 = function(识别结果)
+        for i = 1, 需要干员数 do
+            -- print "需要干员", i, 干员组[i]
+            if 已选择[i] == nil then
+                for _, 结果 in ipairs(识别结果) do
+                    --print(结果)
+                    if 结果["text"] == 干员目录[i] then
+                        tap({ 结果["r"] - scale(100), 结果["b"] - scale(200) }) --肉鸽?
+                        --加一个appear出现角色选择的蓝框
+                        sleep(300)
+                        已选择[i] = 1
+                        selected = selected + 1
+                        break
+                    end
+                end
+            end
+        end
+    end
+    keepCapture()
+    for i = 1, 18 do
+        local 识别结果 = 干员名ocr校正(ocrex("基建上排干员范围"))
+        找干员(识别结果)
+        识别结果 = 干员名ocr校正(ocrex("基建下排干员范围"))
+        找干员(识别结果)
+        if selected < 需要干员数 then
+            swipo()
+            keepCapture()
+        else
+            return { 0 }
+        end
+    end
+end
+
+-- 基建按照名字选择干员
+chooseOperatorByOcr = function(干员)
+    local 编入数量 = 0
+    local 未编入数量 = 0
+
+    if appear("筛选") then
+        tap("职业选择")
+        appear("职业选择", 2)
+    end
+    local choseChar = function(干员)
+        local 记录未编入数量
+        --8个职业
+        for i = 1, 8 do
+            local 干员名字字符串 = ""
+            local 干员目录 = {}
+            for _, item in ipairs(干员) do
+                if 干员职业[item] == 干员类别[i] then
+                    干员名字字符串 = 干员名字字符串 .. item
+                    table.insert(干员目录, item)
+                end
+            end
+            if 干员名字字符串 ~= "" then
+                if not findOne("普通作战编队列表" .. i) then
+                    tap("普通作战编队列表" .. i)
+                    appear("普通作战编队列表" .. i)
+                    sleep(200)
+                end
+                未编入 = 选择干员1(干员目录)
+                未编入数量 = 未编入数量 + 未编入[1]
+                if 未编入数量 == 1 and 未编入干员[1] == nil then
+                    未编入干员 = { i, 未编入[2] }
+                end
+            end
+            --print("编入数量", 编入数量)
+        end
+    end
+    choseChar(干员)
+    releaseCapture()
+    if not findOne("职业选择") then
+        tap("职业选择")
+        ssleep(.2)
+        appear("职业选择", 2)
+    end
+    if findOne("职业选择") then
+        tap("职业选择")
+        appear("筛选", 2)
+    end
+
+    --[[ if not wait(function()
+            if findOne("筛选") then return true end
+            tap("筛选")
+            ssleep(.5)
+        end, 10) then
+        return
+    end ]]
+    return true
+end
+
 -- 是否是贸易站，商品类别
 chooseOperator = function(stationType, goodType, stationLevel,
                           tradingStationNum, powerStationNum, dormitoryCapacity,
@@ -1243,6 +1345,22 @@ chooseOperator = function(stationType, goodType, stationLevel,
             if not findOne(state) then break end
         end
     end
+    if not not_use_ocr and isCharExsit["歌蕾蒂娅"] and stationType == "制造站" then
+        -- 自定义深海猎人技能为"abyssal_hunter"
+        table.insert(operator,
+            { "abyssal_hunter", "empty2", 24, { scale(301), scale(901), scale(301), scale(901) }, 20, "斯卡蒂" })
+        table.insert(operator,
+            { "abyssal_hunter", "empty2", 24, { scale(301), scale(901), scale(301), scale(901) }, 20, "幽灵鲨" })
+        table.insert(operator,
+            { "abyssal_hunter", "empty2", 24, { scale(301), scale(901), scale(301), scale(901) }, 20, "乌尔比安" })
+        table.insert(operator,
+            { "abyssal_hunter", "empty2", 24, { scale(301), scale(901), scale(301), scale(901) }, 20, "安哲拉" })
+
+        干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+        if not 干员职业 then
+            干员职业 = JsonDecode(readFile("character_type_list.json"))
+        end
+    end
     swipo(true, true)
     start_time = time()
 
@@ -1251,6 +1369,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
 
     -- TODO 滑动时就可以开始计算
     -- 计算最优技能
+
     local best, best_score
     if stationType == "制造站" then
         best, best_score = manufacturingStationOperatorBest(operator,
@@ -1263,7 +1382,8 @@ chooseOperator = function(stationType, goodType, stationLevel,
         for i = 1, #best do
             if table.findv(best[i], "bskill_man_spd_bd2") then
                 isCharExsit["迷迭香"] = true
-                break
+            elseif table.findv(best[i], "abyssal_hunter") then
+                isCharExsit[best[i][6]] = true
             end
         end
     elseif stationType == "贸易站" then
@@ -1338,21 +1458,37 @@ chooseOperator = function(stationType, goodType, stationLevel,
     for i = 1, #operator do
         log(i, operator[i])
         while operator[i][5] > pageid do
-            local state = sample("干员第一个")
-            for j = 1, 3 do
-                log("844尝试翻页", j)
-                if findOne("正在提交反馈至神经") then
-                    disappear("正在提交反馈至神经", network_timeout)
-                    ssleep(.5)
+            if not table.findv({ "abyssal_hunter" }, operator[i][1]) then
+                local state = sample("干员第一个")
+                for j = 1, 3 do
+                    log("844尝试翻页", j)
+                    if findOne("正在提交反馈至神经") then
+                        disappear("正在提交反馈至神经", network_timeout)
+                        ssleep(.5)
+                    end
+                    swipo()
+                    if not findOne(state) then break end
                 end
-                swipo()
-                if not findOne(state) then break end
             end
             pageid = pageid + 1
         end
-        local p = operator[i][4]
-        tap({ p[1] + scale(106), p[2] })
-        sleep(50)
+        if not table.findv({ "abyssal_hunter" }, operator[i][1]) then
+            local p = operator[i][4]
+            tap({ p[1] + scale(106), p[2] })
+            sleep(50)
+        end
+    end
+
+    local names = {}
+    for i = 1, #operator do
+        log(1467, i, operator[i])
+        if table.findv({ "abyssal_hunter" }, operator[i][1]) then
+            table.insert(names, operator[i][6])
+        end
+    end
+    log(names)
+    if #names > 0 then
+        chooseOperatorByOcr(names)
     end
     swipo(true, true)
     return true
@@ -1520,12 +1656,22 @@ controlStationOperatorBest = function(operator)
 
     if #best <= 3 then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_spd') then
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_spd') then -- 阿米娅/诗怀雅
                 if not trading_acc then
                     trading_acc = true
                     table.insert(best, o)
                     break
                 end
+            end
+        end
+    end
+
+    if #best <= 2 and not not_use_ocr and use_abyssal_hunter then        --不使用ocr时无法选择深海
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') then -- 精二歌蕾蒂娅
+                table.insert(best, o)
+                isCharExsit["歌蕾蒂娅"] = true
+                break
             end
         end
     end
@@ -1606,8 +1752,6 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-
-
     if #best < 5 and not (isCharExsit["絮雨"] or isCharExsit["桑葚"]) then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_limit&spd') then --灵知
@@ -1668,7 +1812,7 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best < 5 then
+    if #best < 5 and not isCharExsit["歌蕾蒂娅"] then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_ela') then --艾拉
                 table.insert(best, o)
@@ -1679,12 +1823,10 @@ controlStationOperatorBest = function(operator)
 
     for i = 1, 5 - #best do
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_sp') then --异格者
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_sp') then       --异格者
                 table.insert(best, o)
-                break
             elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') then --笑脸
                 table.insert(best, o)
-                break
             end
         end
     end
@@ -1922,7 +2064,7 @@ trainingOperatorBest = function(operator, charType, targetLevel)
                 s = s + 0.45
             elseif icon == "bskill_train_all" then
                 s = s + 0.25
-            elseif icon == "bskill_train_reducetime" then
+            elseif icon == "bskill_train_reducetime" and targetLevel < 3 then
                 s = s + 0.7
             elseif icon == "bskill_train_fighter" and charType == "WARRIOR" then
                 s = s + 0.3

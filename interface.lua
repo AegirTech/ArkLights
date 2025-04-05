@@ -981,6 +981,9 @@ show_debug_ui = function()
     newRow(debug_layout_基建)
     addTextView(debug_layout_基建, "多账号仅传递线索账号(线索小号)")
     ui.addEditText(debug_layout_基建, "multi_account_disable_clue_unlock", '')
+    newRow(debug_layout_基建)
+    addTextView(debug_layout_基建, "换班计算满员深海队账号")
+    ui.addEditText(debug_layout_基建, "multi_account_use_abyssal_hunter", '')
 
     local debug_layout_其他 = "debug_tab_other"
     ui.addTab("debug_tab", debug_layout_其他, "其他")

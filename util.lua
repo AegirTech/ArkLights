@@ -3011,6 +3011,10 @@ update_state_from_ui = function()
         table.includes(multi_account_disable_clue_unlock,
             account_idx)
 
+    use_abyssal_hunter = account_idx and
+        table.includes(multi_account_use_abyssal_hunter,
+            account_idx)
+
     -- 总览换班就按工作状态了，保证高心情
     -- prefer_skill = true
     drug_times = 0
@@ -4058,6 +4062,8 @@ update_state_from_debugui = function()
         multi_account_choice_weekday_only or '')
     multi_account_disable_clue_unlock = expand_number_config(
         multi_account_disable_clue_unlock or '')
+    multi_account_use_abyssal_hunter = expand_number_config(
+        multi_account_use_abyssal_hunter or '')
 
     max_jmfight_times = str2int(max_jmfight_times, 1)
     findOne_interval = str2int(findOne_interval, -1)
