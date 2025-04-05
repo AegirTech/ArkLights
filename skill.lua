@@ -377,15 +377,25 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 base = base + 0.3
             elseif icon == 'bskill_tra_spd1' then
                 base = base + 0.2
-            elseif icon == "bskill_tra_par&per1" then -- 赫德雷 伊内丝和W加成不考虑
+            elseif icon == "bskill_tra_par&per1" then -- 赫德雷1 伊内丝和W加成不考虑
                 base = base + 0.25
-            elseif icon == "bskill_tra_par&per2" then
+            elseif icon == "bskill_tra_par&per2" then -- 赫德雷2 伊内丝和W加成不考虑
                 base = base + 0.30
-            elseif icon == "trade_ord_spd&par1" then -- 维娜·维多利亚 道格拉斯帮加成不考虑
+            elseif icon == "trade_ord_spd&par1" then  -- 维娜·维多利亚 道格拉斯帮加成不考虑
                 base = base + 0.30
-            elseif icon == "trade_ord_spd&par2" then
+            elseif icon == "trade_ord_spd&par2" then  -- 维娜·维多利亚 道格拉斯帮加成不考虑
                 base = base + 0.30
                 -- 道格拉斯帮加成0.1
+            elseif icon == "bskill_tra_ord_spd_ext0" then -- 深巡1
+                base = base + 0.25
+                if isCharExsit["乌尔比安"] then
+                    base = base + 0.05
+                end
+            elseif icon == "bskill_tra_ord_spd_ext1" then -- 深巡2
+                base = base + 0.30
+                if isCharExsit["乌尔比安"] then
+                    base = base + 0.10
+                end
             elseif icon == "bskill_tra_spd&limit_down1" then -- 锏
                 base = base + 0.20
                 storage = storage - 2
@@ -430,7 +440,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
             elseif icon == 'bskill_tra_limit&cost' then
                 storage = storage + 5
             elseif icon == 'bskill_tra_limit&trade2' then -- 瑰盐0
-                storage = storage + 1
+                storage = storage + level
             elseif icon == 'bskill_tra_wt&cost2' and goodType == '贵金属' then
                 -- 认为裁缝B单独用效果极小
                 base = base + 0.02
@@ -1548,6 +1558,10 @@ officeStationOperatorBest = function(operator)
         for _, icon in pairs({ o[1], o[2] }) do
             if icon == "bskill_hire_skgoat2" then --斥罪
                 s = s + 0.5
+            if icon == "bskill_hire_skgoat3" then --水灯心
+                s = s + 0.3
+            if icon == "bskill_hire_skgoat4" then --水灯心
+                s = s + 0.45
             elseif icon == "bskill_hire_skgoat" then
                 s = s + 0.45
             elseif icon == "bskill_hire_spd5" then
@@ -1666,16 +1680,6 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best <= 2 and not not_use_ocr and use_abyssal_hunter then        --不使用ocr时无法选择深海
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') then -- 精二歌蕾蒂娅
-                table.insert(best, o)
-                isCharExsit["歌蕾蒂娅"] = true
-                break
-            end
-        end
-    end
-
     if #best <= 4 and not not_use_ocr then                            --不使用ocr时无法区分松鼠团和标准化
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_psk') then -- 焰尾
@@ -1704,6 +1708,16 @@ controlStationOperatorBest = function(operator)
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then --夕
                 table.insert(best, o)
+            end
+        end
+    end
+
+    if #best < 5 and not not_use_ocr and use_abyssal_hunter then         --不使用ocr时无法选择深海
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') then -- 精二歌蕾蒂娅
+                table.insert(best, o)
+                isCharExsit["歌蕾蒂娅"] = true
+                break
             end
         end
     end
@@ -2154,6 +2168,11 @@ trainingOperatorBest = function(operator, charType, targetLevel)
                 s = s + 0.3
                 if targetLevel == 2 then
                     s = s + 0.45
+                end
+            elseif icon == "bskill_train3_caster2" and charType == "CASTER" then
+                s = s + 0.3
+                if targetLevel == 3 then
+                    s = s + 0.65
                 end
             elseif icon == "bskill_train_caster&supporter1" and (charType == "SUPPORT" or charType == "CASTER") then
                 s = s + 0.3
