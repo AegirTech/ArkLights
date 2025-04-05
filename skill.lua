@@ -1556,11 +1556,11 @@ officeStationOperatorBest = function(operator)
     for _, o in pairs(operator) do
         local s = 0
         for _, icon in pairs({ o[1], o[2] }) do
-            if icon == "bskill_hire_skgoat2" then --斥罪
+            if icon == "bskill_hire_skgoat2" then     --斥罪
                 s = s + 0.5
-            if icon == "bskill_hire_skgoat3" then --水灯心
+            elseif icon == "bskill_hire_skgoat3" then --水灯心
                 s = s + 0.3
-            if icon == "bskill_hire_skgoat4" then --水灯心
+            elseif icon == "bskill_hire_skgoat4" then --水灯心
                 s = s + 0.45
             elseif icon == "bskill_hire_skgoat" then
                 s = s + 0.45
