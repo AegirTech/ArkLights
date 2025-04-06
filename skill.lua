@@ -1692,17 +1692,7 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best < 5 and isCharExsit["桑葚"] then
-        log("寻找重岳")
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, "bskill_ctrl_cost_bd3") then --重岳
-                table.insert(best, o)
-                mood_reduce = true
-                isCharExsit["重岳"] = true
-                break
-            end
-        end
-    end
+
 
     if #best < 5 and isCharExsit["絮雨"] then
         for _, o in pairs(operator) do
@@ -1727,6 +1717,18 @@ controlStationOperatorBest = function(operator)
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') and o[3] > 21 then -- 精二歌蕾蒂娅,高心情才使用
                 table.insert(best, o)
                 isCharExsit["歌蕾蒂娅"] = true
+                break
+            end
+        end
+    end
+
+    if #best < 5 and isCharExsit["桑葚"] then
+        log("寻找重岳")
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, "bskill_ctrl_cost_bd3") then --重岳
+                table.insert(best, o)
+                mood_reduce = true
+                isCharExsit["重岳"] = true
                 break
             end
         end
