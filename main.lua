@@ -161,7 +161,7 @@ saveConfig("continue_extra_mode", extra_mode or '')
 -- 清理download文件夹
 if delete_download_floder == true then delele_download_file() end
 
-if auto_update_gameclient == true then auto_update_game() end
+-- if auto_update_gameclient == true then auto_update_game() end
 
 -- log("100",cloud.enabled(),cloud_task)
 if cloud.getTaskEnabled() and not cloud_task then
