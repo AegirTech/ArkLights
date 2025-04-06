@@ -53,7 +53,7 @@ ib.start = function()
         log("已经加入房间")
     else
         path.跳转("首页")
-        tap("面板活动")
+        tap("面板活动2")
         appear("ib_主页", 10)
         if ib_auto_team_format then
             if ib_team_role > 0 then
@@ -284,7 +284,7 @@ ib.auto_team_formation = function(作业名, 是否自带)
     log("读取群组成功")
     if not findOne("ib_主页") then
         path.跳转("首页")
-        tap("面板活动")
+        tap("面板活动2")
         appear("ib_主页", 10)
     end
     if ib.自动编队(作业["opers"], 群组) == false then return false end
