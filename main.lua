@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "04.06 09:49"
+release_date = "04.06 11:35"
 update_announcement = '最近更新：促融共竞'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -161,7 +161,7 @@ saveConfig("continue_extra_mode", extra_mode or '')
 -- 清理download文件夹
 if delete_download_floder == true then delele_download_file() end
 
-if auto_update_gameclient == true then auto_update_game() end
+-- if auto_update_gameclient == true then auto_update_game() end
 
 -- log("100",cloud.enabled(),cloud_task)
 if cloud.getTaskEnabled() and not cloud_task then

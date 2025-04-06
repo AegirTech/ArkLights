@@ -29,6 +29,8 @@ path.base = {
             ssleep(0.3)
             tap("start黄框")
             ssleep(0.3)
+            local ttp = find_color("选择语音确认范围", "1B6789", nil, 0.95)
+            if ttp then tap(ttp) end
         end)
     end,
     start黄框暗 = function() return path.base["start黄框"]() end,
