@@ -890,7 +890,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 local name = icons[operatoridx][3]
                 abyssal_hunter = abyssal_hunter + 1
                 if abyssal_hunter < 3 and not isCharExsit[name] then
-                    base = base + 0.4 - 0.0001
+                    base = base + 0.4 + 0.0001
                 end
             elseif icon == 'empty' then
                 log('empty')
@@ -1355,7 +1355,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
             if not findOne(state) then break end
         end
     end
-    if not not_use_ocr and isCharExsit["歌蕾蒂娅"] and stationType == "制造站" then
+    if not not_use_ocr and stationType == "制造站" and isCharExsit["歌蕾蒂娅"] then
         -- 自定义深海猎人技能为"abyssal_hunter"
         table.insert(operator,
             { "abyssal_hunter", "empty2", 24, { scale(301), scale(901), scale(301), scale(901) }, 20, "斯卡蒂" })
@@ -1722,9 +1722,9 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best < 5 and not not_use_ocr and use_abyssal_hunter then         --不使用ocr时无法选择深海
+    if #best < 5 and not not_use_ocr and use_abyssal_hunter then                       -- 不使用ocr时无法选择深海
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') then -- 精二歌蕾蒂娅
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') and o[3] > 21 then -- 精二歌蕾蒂娅,高心情才使用
                 table.insert(best, o)
                 isCharExsit["歌蕾蒂娅"] = true
                 break
