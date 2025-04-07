@@ -5,11 +5,11 @@ import requests
 import json
 
 # 泰迪解包库
-url = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/character_table.json"
-url2 = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/uniequip_table.json"
+# url = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/character_table.json"
+# url2 = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/uniequip_table.json"
 # k佬解包库
-# url = "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json"
-# url2 = "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/uniequip_table.json"
+url = "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json"
+url2 = "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/uniequip_table.json"
 
 
 def filter_fields(json_obj, fields):

@@ -379,11 +379,20 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 base = base + 0.2
             elseif icon == "bskill_tra_par&per1" then -- 赫德雷1 伊内丝和W加成不考虑
                 base = base + 0.25
-            elseif icon == "bskill_tra_par&per2" then -- 赫德雷2 伊内丝和W加成不考虑
+                if isCharExsit["伊内丝"] then
+                    base = base + 0.05
+                end
+            elseif icon == "bskill_tra_par&per2" then -- 赫德雷2
                 base = base + 0.30
-            elseif icon == "trade_ord_spd&par1" then  -- 维娜·维多利亚 道格拉斯帮加成不考虑
+                if isCharExsit["维什戴尔"] then
+                    storage = storage + 2
+                end
+                if isCharExsit["伊内丝"] then
+                    base = base + 0.05
+                end
+            elseif icon == "trade_ord_spd&par1" then -- 维娜·维多利亚 道格拉斯帮加成不考虑
                 base = base + 0.30
-            elseif icon == "trade_ord_spd&par2" then  -- 维娜·维多利亚 道格拉斯帮加成不考虑
+            elseif icon == "trade_ord_spd&par2" then -- 维娜·维多利亚 道格拉斯帮加成不考虑
                 base = base + 0.30
                 -- 道格拉斯帮加成0.1
             elseif icon == "bskill_tra_ord_spd_ext0" then -- 深巡1
@@ -1410,6 +1419,9 @@ chooseOperator = function(stationType, goodType, stationLevel,
         end
     elseif stationType == "会客厅" then
         best, best_score = meetingStationOperatorBest(operator)
+        if table.findv(best[1], "bskill_meet_spd_hast1") then
+            isCharExsit["伊内丝"] = true
+        end
     elseif stationType == "发电站" then
         best, best_score = powerStationOperatorBest(operator)
         log("发电站选", best)
@@ -1613,26 +1625,6 @@ controlStationOperatorBest = function(operator)
         function(x) return x[3] >= minAllowedMood end)
     local best = {}
     local best_score = -1
-    --[[
-    local remain = {}
-    local goodicon = {
-        'bskill_ctrl_t_spd',        -- +贸易7%
-        'bskill_ctrl_p_spd',        -- +制造2%
-        'bskill_ctrl_c_spd',        -- +线索25%
-        'bskill_ctrl_cost_bd1&bd2', -- 令 进驻控制中枢时，当自身心情大于12时，人间烟火+15；当自身心情处于12以下时，感知信息+10
-        'bskill_ctrl_cost_bd1',     -- 夕 进驻控制中枢时，控制中枢内所有干员的心情每小时恢复+0.05；当自身心情处于12以下时，人间烟火+15
-        'bskill_ctrl_cost_bd2',     -- 夕 进驻控制中枢时，自身心情每小时消耗+0.5；当自身心情大于12时，感知信息+10
-        -- 'bskill_ctrl_p_bot', -- +小车,加发电站数
-        -- 'bskill_ctrl_token_p_spd', -- +小车,+制造2%
-        -- 'bskill_ctrl_h_spd', -- 进驻控制中枢时，人力办公室联络速度小于30%时（其中包含基础联络速度5%），则联络速度额外+20%（该加成全局效果唯一，不受其它加成影响）
-        'bskill_ctrl_psk',             -- 焰尾 进驻控制中枢时，每个进驻在制造站的红松骑士团干员，作战记录类配方的生产力+10%，贵金属类配方的生产力-10%
-        'bskill_ctrl_t_limit&spd',     -- 灵知 进驻控制中枢时，每个进驻在贸易站的喀兰贸易干员，订单获取效率-15%，订单上限+6
-        'bskill_ctrl_fraction_knight', -- 薇薇安娜 进驻控制中枢时，每个进驻在制造站的骑士干员生产力 +7%
-        'bskill_ctrl_lonely',          --玛恩纳
-        'bskill_ctrl_ash',             -- ash
-        'bskill_ctrl_tachanka',        -- 机枪
-    }
-    ]]
 
     local manu_acc = false    -- 制造加速
     local trading_acc = false -- 贸易加速
@@ -1826,7 +1818,7 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best < 5 and not office_acc then
+    if #best < 5 and not office_acc and isCharExsit["维什戴尔"] then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_c_spd1') then -- 魔王
                 office_acc = true
@@ -1848,9 +1840,10 @@ controlStationOperatorBest = function(operator)
     if #best < 5 then
         for i = 1, 5 - #best do
             for _, o in pairs(operator) do
-                if table.includes({ o[1], o[2] }, 'bskill_ctrl_sp') then       --异格者
+                if table.includes({ o[1], o[2] }, 'bskill_ctrl_sp') then          --异格者
                     table.insert(best, o)
-                elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') then --笑脸
+                elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') and     --笑脸
+                    not table.includes({ o[1], o[2] }, "bskill_ctrl_lonely") then --不要重复添加玛恩纳
                     table.insert(best, o)
                 end
                 if #best >= 5 then
