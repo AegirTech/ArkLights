@@ -4919,24 +4919,24 @@ path.主线 = function(x)
         --   return true
         -- end,
     }
-    if chapter_index <= 4 then -- chapter 0 to 3
-        switch_start = 1
-        switch_end = 4
-    elseif chapter_index <= 9 then -- chapter 4 to 8
-        switch_start = 5
-        switch_end = 9
-    elseif chapter_index <= 15 then -- chapter 9 to ?
-        switch_start = 10
-        switch_end = 15
-    end
-    for i = switch_start, switch_end do
-        if chapter_index ~= i then
-            p[state_with_home("当前进度列表" .. i)] =
-                "当前进度列表" .. (i > chapter_index and "左" or "右")
-            -- p[state_with_home("按下当前进度列表" .. i)] =
-            --   "当前进度列表" .. (i > chapter_index and "左" or "右")
-        end
-    end
+    -- if chapter_index <= 4 then -- chapter 0 to 3
+    --     switch_start = 1
+    --     switch_end = 4
+    -- elseif chapter_index <= 9 then -- chapter 4 to 8
+    --     switch_start = 5
+    --     switch_end = 9
+    -- elseif chapter_index <= 15 then -- chapter 9 to ?
+    --     switch_start = 10
+    --     switch_end = 15
+    -- end
+    -- for i = switch_start, switch_end do
+    --     if chapter_index ~= i then
+    --         p[state_with_home("当前进度列表" .. i)] =
+    --             "当前进度列表" .. (i > chapter_index and "左" or "右")
+    --         -- p[state_with_home("按下当前进度列表" .. i)] =
+    --         --   "当前进度列表" .. (i > chapter_index and "左" or "右")
+    --     end
+    -- end
     -- log("chapter",chapter)
     -- exit()
 
@@ -4953,42 +4953,71 @@ path.主线 = function(x)
             return
         end
 
-        if chapter_index <= 4 then
-            -- 从上到下，命中第一篇, 专为还没过3-8的玩家
-            ssleep(.5)
-            tap("觉醒")
-            ssleep(.5)
-            tap("觉醒")
-            ssleep(.5)
-            -- tap("幻灭")
-            -- ssleep(.5)
-        elseif chapter_index <= 9 then
-            -- 只打到3-8，第9章也会解锁，无需特殊处理
-            ssleep(.5)
-            tap("幻灭")
-            ssleep(.5)
+        ssleep(.3)
+        appearTap("乐章收录按钮")
+        ssleep(.4)
+        appear("主题曲白色圆点", 1)
+        if not wait(function()
+                if appear("主题曲白色圆点", 1) then return true end
+                -- tap("乐章收录")
+                -- ssleep(.1)
+                -- tap("乐章收录")
+                swip_formula(true)
+            end, 10) then
+            log("跳转失败3")
+            return
         end
+
+        local samp = sample("商店")
+        local wa_x, wa_y = point["主线第零章点击位置"][1] + chapter % 5 * scale(315),
+            point["主线第零章点击位置"][2] + math.floor((chapter - 1) / 5) * scale(310)
+        log("wa_x", wa_x, "wa_y", wa_y)
+        log("1046", chapter, chapter_index, chapter_index % 5, (chapter_index - 1) / 5)
+        if not wait(function()
+                if not findOne(samp) then return true end
+                tap({ wa_x, wa_y })
+                ssleep(.5)
+            end) then
+            log("跳转失败4")
+            return
+        end
+
+        -- if chapter_index <= 4 then
+        --     -- 从上到下，命中第一篇, 专为还没过3-8的玩家
+        --     ssleep(.5)
+        --     tap("觉醒")
+        --     ssleep(.5)
+        --     tap("觉醒")
+        --     ssleep(.5)
+        --     -- tap("幻灭")
+        --     -- ssleep(.5)
+        -- elseif chapter_index <= 9 then
+        --     -- 只打到3-8，第9章也会解锁，无需特殊处理
+        --     ssleep(.5)
+        --     tap("幻灭")
+        --     ssleep(.5)
+        -- end
         -- 新章节开启后,怒号光明这个点位恰好适配所有新开的章节,否则新章节导航这里将失败
         -- 如果后续在"残阳"之后加新的篇章,这里的导航可能都会失败,如点两次觉醒无法导航到第一篇
-        if not appear("怒号光明") then return end
+        -- if not appear("怒号光明") then return end
 
-        log("1046", chapter)
+
         -- ssleep(3)
         -- if distance['' .. chapter] then swipc() end
         -- tap("作战主线章节列表" .. chapter)
 
-        if not wait(function()
-                if not findOne("怒号光明") then return true end
-                tap("作战主线章节列表" .. 8)
-            end, 3) and not wait(function()
-                if not findOne("怒号光明") then return true end
-                tap("作战主线章节列表" .. 7)
-            end, 3) then
-            return
-        end
-        if appear("不连续章节进入", 1) then
-            tap("不连续章节进入")
-        end
+        -- if not wait(function()
+        --         if not findOne("怒号光明") then return true end
+        --         tap("作战主线章节列表" .. 8)
+        --     end, 3) and not wait(function()
+        --         if not findOne("怒号光明") then return true end
+        --         tap("作战主线章节列表" .. 7)
+        --     end, 3) then
+        --     return
+        -- end
+        -- if appear("不连续章节进入", 1) then
+        --     tap("不连续章节进入")
+        -- end
         if not appear(table.keys(p), 5) then
             log("无法确认是第几章")
             return
