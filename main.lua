@@ -52,7 +52,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "04.07 19:29"
+release_date = "04.07 22:20"
 update_announcement = '最近更新：促融共竞'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -148,14 +148,37 @@ if use_local_dictionary then
     require("turing")
 end
 
-
+debug_mode = true
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug mode")
     -- ssleep(1)
     -- local tx = appear("作战列表SK-0")
-
-    -- -- swip_test(false)
-    -- exit()
+    if appear("代理指挥开", .5) then
+        ssleep(.8)
+        if (not copy_homework_only) and copy_homework and homework[x] then
+            tap("代理指挥开1")
+            need_copy_homework = true
+            disappear("代理指挥开", .5)
+        elseif not findOne("连战次数面板") and findOne("连战按钮") and continuous_battle then
+            appearTap("连战按钮")
+            ssleep(.2)
+            appear("连战次数面板", 4)
+            -- 出现面板后给一点时间等待展开
+            ssleep(.6)
+            local battle_times = 1
+            for i = 2, 6 do
+                battle_times = i
+                if findOne("连战次数列表" .. i) then
+                    battle_times = i - 1
+                    break
+                end
+            end
+            rfg["连战次数白"][2] = (876 - 92 * battle_times) * hscale
+            print(findOne("连战次数白"))
+            tap(findOne("连战次数白"))
+        end
+    end
+    exit()
 end
 
 load(before_account_hook or '')()
