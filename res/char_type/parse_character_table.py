@@ -105,9 +105,9 @@ with open('./character_table.json', 'r', encoding='utf-8') as f:
 
     for character_name in character_table_dict.keys():
         character_data = character_table_dict[character_name]
-        if (
-            character_data["name"] in character_type_list
-            and character_data["profession"] == "TRAP"
+        if character_data["name"] in character_type_list and (
+            character_data["profession"] == "TRAP"
+            or character_data["profession"] == "TOKEN"
         ):
             continue
         character_type_list[character_data["name"]] = character_data["profession"]

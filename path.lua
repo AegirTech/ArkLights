@@ -4956,7 +4956,7 @@ path.主线 = function(x)
     -- log("chapter",chapter)
     -- exit()
 
-    log(1040)
+    log(1040, chapter_index)
     if not findAny(table.keys(p)) then
         log(1041)
         path.跳转("首页")
@@ -5000,6 +5000,22 @@ path.主线 = function(x)
             end) then
             log("跳转失败4")
             return
+        end
+        --小号有可能前面章节没解锁
+        local cur_chapter = chapter_index
+        for i = chapter_index, 16 do
+            if findOne("当前进度列表" .. i) then
+                cur_chapter = i
+                log("1047", cur_chapter)
+                if i - chapter_index > 0 then
+                    for j = 1, i - chapter_index do
+                        ssleep(.5)
+                        tap("当前进度列表左")
+                        ssleep(1.5)
+                    end
+                end
+                break
+            end
         end
 
         -- if chapter_index <= 4 then
