@@ -2091,7 +2091,10 @@ raise.材料合成 = function()
 
     local 是否为低级材料 = false
     local 待合成数量 = 获取材料数量()
-    if 待合成数量 == nil then return end
+    if 待合成数量 == nil then
+        log("未识别到需要合成数量")
+        return
+    end
     if findOne("加工站返回上级材料") then
         是否为低级材料 = true
     end
