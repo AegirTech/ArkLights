@@ -4967,10 +4967,14 @@ path.主线 = function(x)
             log("跳转失败3")
             return
         end
-
+        local tap_chat_index = chapter
+        if tap_chat_index > 14 then
+            tap_chat_index = tap_chat_index - 15
+            swip_formula(false, 315 * 3, 105)
+        end
         local samp = sample("商店")
-        local wa_x, wa_y = point["主线第零章点击位置"][1] + chapter % 5 * scale(315),
-            point["主线第零章点击位置"][2] + math.floor((chapter - 1) / 5) * scale(310)
+        local wa_x, wa_y = point["主线第零章点击位置"][1] + tap_chat_index % 5 * scale(315),
+            point["主线第零章点击位置"][2] + math.floor((tap_chat_index - 1) / 5) * scale(310)
         log("wa_x", wa_x, "wa_y", wa_y)
         log("1046", chapter, chapter_index, chapter_index % 5, (chapter_index - 1) / 5)
         if not wait(function()
@@ -5277,9 +5281,9 @@ path.物资芯片 = function(x)
         else
             tap("资源收集列表" .. index)
         end
-        appear(fight_notation)
+        appear("资源收集背景页面")
     end
-    if findOne(fight_notation) then
+    if findOne("资源收集背景页面") then
         ssleep(.5)
         tap("作战列表" .. x)
         appear("开始行动")
