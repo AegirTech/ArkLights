@@ -890,7 +890,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 local name = icons[operatoridx][3]
                 abyssal_hunter = abyssal_hunter + 1
                 if abyssal_hunter < 3 and not isCharExsit[name] then
-                    base = base + 0.4 + 0.0001
+                    base = base + 0.40 + 0.001 --加一点超过槐琥之类
                 end
             elseif icon == 'empty' then
                 log('empty')
@@ -1714,7 +1714,7 @@ controlStationOperatorBest = function(operator)
 
     if #best < 5 and not not_use_ocr and use_abyssal_hunter then                       -- 不使用ocr时无法选择深海
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') and o[3] > 21 then -- 精二歌蕾蒂娅,高心情才使用
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') and o[3] > 22 then -- 精二歌蕾蒂娅,高心情才使用
                 table.insert(best, o)
                 isCharExsit["歌蕾蒂娅"] = true
                 break

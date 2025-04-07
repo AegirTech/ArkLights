@@ -2111,9 +2111,11 @@ raise.材料合成 = function()
                     last_click_time = os.time()
                 end
             end, 10)
-
             ssleep(1)
             raise.材料合成() -- 3个加工都得单独合成一遍
+        elseif findOne("加工站不可加工列表" .. i) then
+            -- todo:记录缺的材料
+            return
         end
     end
 
