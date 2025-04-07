@@ -700,6 +700,22 @@ path.login_change = update(path.login, {
 }, nil, true)
 
 path.fallback = {
+    阿米娅大头照左上角 = function()
+        -- 全屏点一遍
+        for w = 150, screen.width - 50, 50 do
+            if findAny(known) then return true end
+            for h = 50, screen.height - 50, 50 do
+                tap({ w, h })
+                back()
+            end
+        end
+        if appear({ "阿米娅大头照左上角", "阿米娅大头照左下角" }, 2) then
+            return path.fallback.阿米娅大头照左上角()
+        end
+    end,
+    阿米娅大头照左下角 = function()
+        return path.fallback.阿米娅大头照左上角()
+    end,
     同意协议 = function()
         -- findTap({text = "下一步"})
 
@@ -4967,16 +4983,16 @@ path.主线 = function(x)
             log("跳转失败3")
             return
         end
-        local tap_chat_index = chapter
+        local tap_chat_index = chapter_index - 1
         if tap_chat_index > 14 then
             tap_chat_index = tap_chat_index - 15
             swip_formula(false, 315 * 3, 105)
         end
         local samp = sample("商店")
         local wa_x, wa_y = point["主线第零章点击位置"][1] + tap_chat_index % 5 * scale(315),
-            point["主线第零章点击位置"][2] + math.floor((tap_chat_index - 1) / 5) * scale(310)
+            point["主线第零章点击位置"][2] + math.floor(tap_chat_index / 5) * scale(310)
         log("wa_x", wa_x, "wa_y", wa_y)
-        log("1046", chapter, chapter_index, chapter_index % 5, (chapter_index - 1) / 5)
+        log("1046", chapter, chapter_index, tap_chat_index % 5, math.floor(tap_chat_index / 5))
         if not wait(function()
                 if not findOne(samp) then return true end
                 tap({ wa_x, wa_y })
