@@ -4896,8 +4896,8 @@ path.主线 = function(x)
         hard_mode_switch()
         log(928, x)
         swip(x)
-        --手动取点时取消注释
-        --exit()
+
+        --exit() -- 主线手动取点时取消注释
         --教学关/剧情关和剿灭关只打一遍
         if x:includes({ "TR-", "14-10", "14-13", "14-22", "14-23", }) or x == "14-1" then
             log("剧情关教学关")
@@ -5502,7 +5502,7 @@ path.活动 = function(x)
     if not skip_guide then
         path.跳转("首页")
         --tap("面板活动2")
-        path.活动页面寻找(2)
+        path.活动页面寻找(1)
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -5831,7 +5831,7 @@ path.活动 = function(x)
     swip(x)
     log(626)
     ssleep(.5)
-    --exit() --手动取点时取消注释
+    --exit() --活动手动取点时取消注释
     if x:includes({ "ST-", "TR-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
         --剧情关/教学观/剿灭关只打一遍
         log("剧情关/教学观/剿灭关")

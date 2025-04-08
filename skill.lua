@@ -926,9 +926,9 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 all['bskill_man_spd_variable11']
         end
         if all['bskill_man_spd_variable21'] then
-            -- 槐虎
-            base = base + min(0.4, base // 0.05 * 0.05) *
-                all['bskill_man_spd_variable21'] - abyssal_hunter * 0.2
+            -- 槐琥
+            base = base + min(0.4, base // 0.05 * 0.05 - abyssal_hunter * 0.4) *
+                all['bskill_man_spd_variable21']
         end
 
         -- 发电站数
