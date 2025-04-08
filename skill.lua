@@ -1838,18 +1838,16 @@ controlStationOperatorBest = function(operator)
     end
 
     if #best < 5 then
-        for i = 1, 5 - #best do
-            for _, o in pairs(operator) do
-                if table.includes({ o[1], o[2] }, 'bskill_ctrl_sp') then         -- 异格者
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) then                                -- 不要重复添加
+                if table.includes({ o[1], o[2] }, 'bskill_ctrl_sp') then       -- 异格者
                     table.insert(best, o)
-                elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') and    -- 笑脸
-                    not table.includes({ o[1], o[2] }, "bskill_ctrl_lonely") and -- 不要重复添加玛恩纳
-                    not table.includes({ o[1], o[2] }, "bskill_ctrl_p_spd") then -- 不要重复添加m3
+                elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') then -- 笑脸
                     table.insert(best, o)
                 end
-                if #best >= 5 then
-                    break
-                end
+            end
+            if #best >= 5 then
+                break
             end
         end
     end
