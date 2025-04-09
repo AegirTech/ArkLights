@@ -387,13 +387,12 @@ getCaptchaBox = function()
         box.b = bx[2] - 3
         local notb = false
         for y = box.b, box.t, -1 do
-            local pixel = getPixelColor(bx[1], y)
-            if pixel == "ffffffff" then
+            if cmpColor(bx[1], y, "FFFFFF", 0.96) == 1 then
                 notb = true
             end
             -- log(bx[1], y, pixel, notb)
             if notb then
-                if pixel ~= "ffffffff" then
+                if cmpColor(bx[1], y, "FFFFFF", 0.96) == 0 then
                     box.b = y
                     box.t = y - max(scale(351), 300)
                     box.l = box.l + scale(35)
@@ -419,7 +418,6 @@ end
 
 trySolveSlipCaptcha = function(retry)
     local retry = retry or 0
-    -- if not use_jfbym and not use_free_server_captcha then trySolveCapture() end
     if not findOne("captcha") then return end
     ssleep(1) -- 等待验证码出图
     if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
@@ -428,8 +426,38 @@ trySolveSlipCaptcha = function(retry)
         if not disappear("captcha", 5) then
             pcall(trySolveCaptureFreeServer, getCaptchaBox()) -- 第二次使用免费打码
         end
-    elseif findOne("官服点选验证720") or findOne("官服点选验证720") then
-
+    elseif findOne("官服点选验证720") then
+        local box = { l = 0, t = 0, r = 0, b = 0 }
+        local bx = find_color(nil, "4E79ED", 0, 0.95)
+        if not bx then return end
+        box.l = bx[1]
+        box.t = bx[2]
+        bx = find_color(nil, "4E79ED", 4, 0.95)
+        if not bx then return end
+        box.r = bx[1]
+        bx = find_color(nil, "5381FD", 3, 0.95)
+        if not bx then return end
+        box.b = bx[2] - 3
+        local notb = false
+        for y = box.b, box.t, -1 do
+            if cmpColor(bx[1], y, "EFEFEF", 0.96) == 1 then
+                notb = true
+            end
+            if notb then
+                if cmpColor(bx[1], y, "EFEFEF", 0.96) == 0 then
+                    box.b = y
+                    box.t = y - max(scale(351), 300)
+                    box.l = box.l + scale(35)
+                    box.r = box.r - scale(35)
+                    break
+                end
+            end
+        end
+        trySolvePointSelectionCapture(box)
+        wait(function()
+            if findOne("realgame") then return true end
+            appearTap("官服点选验证确认720", 1)
+        end, 5)
     end
     if not appear("realgame", 5) then
         jfbym_report()
@@ -515,7 +543,7 @@ jfbym_report = function()
     unique_code = nil
 end
 
--- b服选点验证码打码
+-- 官服/b服选点验证码打码
 trySolvePointSelectionCapture = function(rect)
     if cloud.captcha(rect) then return true end
     if cloud.captchaSecond(rect) then return true end
@@ -549,70 +577,9 @@ trySolvePointSelectionCapture = function(rect)
         if not jfbym_token or #jfbym_token < 5 then return end
         local data = {
             token = jfbym_token,
-            type = "88888",
+            type = "30112",
             image = img_base64,
-        }
-
-        local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
-            30, "Content-Type: application/json;charset=UTF-8")
-
-        local status, data = pcall(JsonDecode, res)
-        log("识别结果", data)
-        data = data or {}
-        if get(data, "code") ~= 10000 then
-            log("识别失败")
-            return
-        end
-        unique_code = get(data, "data", "unique_code") or ""
-
-        ans = get(data, "data", "data") or ""
-    end
-    if not ans then return end
-    for coord in string.gmatch(ans, "%d+,%d+") do
-        local x, y = string.match(coord, "(%d+),(%d+)")
-        x = x or 0
-        y = y or 0
-        local ans_p = { rect.l + x, rect.t + y }
-        tap(ans_p)
-        ssleep(0.2)
-    end
-    return true
-end
-
--- 官服点选验证码
-trySolvePointOfficial = function(rect)
-    if not rect then return end
-    local img = getWorkPath() .. "/capture.jpg"
-    snapShot(img, rect.l, rect.t, rect.r, rect.b)
-    local img_base64 = base64(img)
-    local ans = nil
-    if use_captcha then
-        -- 图鉴
-        if not captcha_username or not captcha_password then return end
-        local data = {
-            username = captcha_username,
-            password = captcha_password,
-            typeid = "27",
-            image = img_base64,
-        }
-        local res, code = httpPost("http://api.ttshitu.com/predict", JsonEncode(data),
-            30, "Content-Type: application/json;charset=UTF-8")
-        log("识别结果", res)
-        if code == 200 then
-            local status, data = pcall(JsonDecode, res)
-            data = data or {}
-            ttshitu_last_id = get(data, "data", "id") or ""
-            local success = get(data, "success") or false
-            if not success then return end
-            ans = get(data, "data", "result") or ""
-        end
-    elseif use_jfbym_dx then
-        -- 云码
-        if not jfbym_token or #jfbym_token < 5 then return end
-        local data = {
-            token = jfbym_token,
-            type = "88888",
-            image = img_base64,
+            extra = "je4_click",
         }
 
         local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
