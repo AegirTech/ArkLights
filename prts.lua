@@ -229,21 +229,14 @@ auto_prts = function(作业名, 需要编队, 是否自带)
     local homework = 作业名
     print("prts作战开始", homework)
     local 干员名单 = ""
-    --print(作业路径)
-    --local 职业 = { "先锋", "近卫", "重装", "医疗", "术师", "狙击", "特种", "辅助", "召唤物", "all" }
     群组 = {}
-
     部署 = {}
-
     队员技能 = {}
     无限放技能干员 = {}
     技能指定次数干员 = {}
     作业 = loadHomework(作业名, 是否自带)
     print(作业)
     print("读取作业成功")
-    --local 地图 = 作业["stage_name"]
-
-    --构建技能相关数据
     local processSkillData = function(oper)
         if table.findk(oper, "skill_usage") then
             if oper["skill_usage"] == 1 then
@@ -276,14 +269,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
     for _, oper in ipairs(作业["opers"]) do
         processSkillData(oper)
     end
-    --text = string.sub(text, 1, -2) .. "}"
-    --print(text)
-
     log("读取群组成功")
-
-    --print("无限放技能干员", 无限放技能干员)
-    --print("技能指定次数干员", 技能指定次数干员)
-
     --print(地图)
     log(作业["stage_name"])
     local status, 地图数据 = pcall(loadMap, 作业["stage_name"])
@@ -295,7 +281,22 @@ auto_prts = function(作业名, 需要编队, 是否自带)
     地图类型 = 地图数据[3] --地图类型,主要用来区别杀敌数位置:1普通，2剿灭, 3保全, 4肉鸽, 5悖论模拟
     训练地图 = 地图数据[4] --是否是教学关0否,1是
     log("读取地图数据成功", "地图类型", 地图类型, "训练地图", 训练地图)
-
+    if findOne("沙盘推演确定") then
+        log("沙盘推演选择界面")
+        log(作业["sandtable"])
+        ssleep(.2)
+        tap("沙盘推演1级列表" .. 作业["sandtable"][1])
+        appear("沙盘推演2级红")
+        ssleep(.2)
+        tap("沙盘推演2级列表" .. 作业["sandtable"][2])
+        ssleep(.2)
+        tap("沙盘推演确定")
+        if not appear("开始险地作战") then
+            log("沙盘推演选择错误")
+        end
+        tap("开始险地作战")
+        appear("快捷编队", 3)
+    end
     if 需要编队 == true and 训练地图 == 0 then
         if 地图类型 == 5 then
             tap("悖论模拟界面")
@@ -1215,7 +1216,7 @@ end
 
     while true do
         点战斗()
-        cost = tonumber(获得cost() or cost) or cost
+        cost = tonumber(获得cost(cost) or cost) or cost
         wavetxt = 获得敌人数(是否剿灭图) or 0
         --print("当前波次", wavetxt)
         local number = tonumber(string.match(wavetxt, "%d+")) or 0
@@ -1545,7 +1546,7 @@ end
 
     while true do
         点战斗()
-        cost = tonumber(获得cost() or cost) or cost
+        cost = tonumber(获得cost(cost) or cost) or cost
 
         wavetxt = 获得敌人数(是否剿灭图) or 0
         --print("当前波次", wavetxt)
@@ -2084,8 +2085,8 @@ end
     return ret
 end
 
-获得cost = function()
-    local ret
+获得cost = function(cost)
+    local ret = cost
     if use_local_dictionary then
         ret = TURING.图灵识别({ { 屏幕范围 = point["cost范围"] }, { { 二值化 = { "0-100" } } }, { 范围投影 = { 2, 1 } }, { 六十四进制字库数组 = { cost字库(screen.height) } }, { 0 } })
     else

@@ -808,7 +808,7 @@ ib.抄作业 = function(作业, maptype)
     end
 
     while true do
-        cost = tonumber(获得cost() or cost) or cost
+        cost = tonumber(获得cost(cost) or cost) or cost
         wavetxt = ib.当前阶段() or 1
         print("当前阶段", wavetxt)
         --将wavetxt最后转为数字

@@ -4562,19 +4562,26 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 return true
             end
         elseif copy_homework and findOne("切换到险地作战") then
+            log("切换险地作战")
             tap("切换到险地作战")
             appear("切换到常规作战", 3)
             if findOne("险地作战星未打") or not copy_homework_only then
                 tap("开始险地作战")
                 appear("开始行动红", 3)
                 goto wait_for_maa
-            elseif findOne("险地作战星未打") and findOne("沙盘推演星未打满") then
+            elseif findOne("险地作战星已打") and findOne("沙盘推演星未打满") then
+                log("沙盘推演")
                 --选择沙盘推演
                 tap("沙盘推演")
                 appear("沙盘推演选择按钮", 2)
                 tap("沙盘推演选择按钮")
                 appear("沙盘推演选择面板", 2)
-                --读取沙盘推演数据
+                --读取沙盘推演数据然后点击，先全部点左边
+                tap("沙盘推演1级列表" .. 1)
+                ssleep(.1)
+                tap("沙盘推演2级列表" .. 1)
+                ssleep(.1)
+                ---------
                 tap("沙盘推演确定")
                 appear("开始险地作战", 2)
                 tap("开始险地作战")
@@ -4613,7 +4620,17 @@ path.开始游戏 = function(x, disable_ptrs_check)
     end
     if appear("代理指挥开", .5) then
         ssleep(.8)
-        if (not copy_homework_only) and copy_homework and homework[x] then
+        if copy_homework and findOne("险地作战星已打") and
+            findOne("沙盘推演星未打满") then
+            log("沙盘推演")
+            --选择沙盘推演
+            tap("沙盘推演")
+            appear("沙盘推演选择按钮", 2)
+            ssleep(.8)
+            tap("沙盘推演选择按钮")
+            appear("沙盘推演选择面板", 2)
+            ssleep(.5)
+        elseif (not copy_homework_only) and copy_homework and homework[x] then
             tap("代理指挥开1")
             need_copy_homework = true
             disappear("代理指挥开", .5)
@@ -4656,22 +4673,22 @@ path.开始游戏 = function(x, disable_ptrs_check)
             state = findAny({
                 "开始行动突袭", "开始行动红", "源石恢复理智取消", "药剂恢复理智取消",
                 "单选确认框", "源石恢复理智不足", "当期委托侧边栏",
-                "行动结束", "开始行动故事集S",
+                "行动结束", "开始行动故事集S", "开始险地作战", "沙盘推演确定",
             })
             -- 剿灭后一直按开始行动导致开始行动界面消失，可能出现下面的界面
             if state == "当前委托侧边栏" then
                 path.跳转("首页")
                 return true
             end
-
+            -- 找到以下按钮直接短路，否则返回主页
             if state == "单选确认框" then return true end
             if state == "开始行动红" then return true end
-            if state == "开始行动突袭" or state == "开始行动故事集S" then return true end --我也没看懂这是干嘛的,先加着
+            if state == "开始行动突袭" or state == "开始行动故事集S" or state == "沙盘推演确定" then return true end
             if state == "行动结束" then return true end
             if state and not disappear(state, .5) then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
 
-            local p = findAny({ "开始行动", "全权委托确认使用", "开始突袭" })
+            local p = findAny({ "开始行动", "全权委托确认使用", "开始突袭", "开始险地作战" })
             if p then
                 tap("开始行动蓝")
                 -- TODO 2秒太慢 => 一开始就用0秒, 2秒内增加至2秒
@@ -4727,7 +4744,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             if findOne("单选确认框") then return end
         end
         return path.base.接管作战()
-    elseif state == "开始行动突袭" or state == "开始行动故事集S" then
+    elseif state == "开始行动突袭" or state == "开始行动故事集S" or state == "沙盘推演确定" then
         no_success_one_loop = 0
         ssleep(0.5)
         auto_prts(homework[x], true)
