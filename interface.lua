@@ -753,12 +753,9 @@ show_debug_ui = function()
     addTextView(debug_layout_验证码, "图鉴密码")
     ui.addEditText(debug_layout_验证码, "captcha_password", "")
 
+    newRow(debug_layout_验证码)
+    ui.addCheckBox(debug_layout_验证码, "use_jfbym_dx", "使用云码处理点选", false)
 
-    -- newRow(debug_layout_验证码)
-    -- ui.addCheckBox(debug_layout_验证码, "use_jfbym_dx", "使用云码处理点选", false)
-
-    -- newRow(debug_layout_验证码)
-    -- ui.addCheckBox(debug_layout_验证码, "use_free_server_captcha", "使用免费服务器解决官服滑块验证码", false)
 
     -- newRow(debug_layout_验证码)
     -- addTextView(debug_layout_验证码, "自定义打码地址")
