@@ -12,11 +12,44 @@ import numpy as np
 
 import requests
 
+# 定义全局变量
+height_type_map = {
+    "LOWLAND": 0,
+    "HIGHLAND": 1,
+}
+
+buildable_type_map = {
+    "NONE": 0,
+    "MELEE": 1,
+    "RANGED": 2,
+    "ALL": 3,
+}
+
 
 @dataclass
 class Tile:
     heightType: int
     buildableType: int
+
+    @classmethod
+    def from_json(cls, json_data: dict) -> "Tile":
+        # 使用全局变量
+        height_type = height_type_map.get(json_data["heightType"], 0)
+        buildable_type = buildable_type_map.get(json_data["buildableType"], 0)
+        return cls(heightType=height_type, buildableType=buildable_type)
+
+
+@dataclass
+class Tile:
+    heightType: int
+    buildableType: int
+
+    @classmethod
+    def from_json(cls, json_data: dict) -> "Tile":
+        # 将字符串类型映射为数字类型
+        height_type = height_type_map.get(json_data["heightType"], 0)
+        buildable_type = buildable_type_map.get(json_data["buildableType"], 0)
+        return cls(heightType=height_type, buildableType=buildable_type)
 
 
 @dataclass
@@ -37,7 +70,7 @@ class Level:
         for row in raw_tiles:
             row_tiles = []
             for tile in row:
-                row_tiles.append(Tile(tile["heightType"], tile["buildableType"]))
+                row_tiles.append(Tile.from_json(tile))
             tiles.append(row_tiles)
 
         return cls(
@@ -156,7 +189,10 @@ class Calc:
             tmp: List[Tuple[Tile, Tuple[int, int]]] = []
             for x in range(w):
                 tile = level.get_tile(y, x)
-                np.array([x, y, z, 1])
+                if tile is None:
+                    continue
+
+                # 计算坐标
                 p_x, p_y, p_z, p_w = np.dot(
                     matrix,
                     np.array(
