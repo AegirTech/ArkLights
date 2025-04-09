@@ -285,11 +285,13 @@ auto_prts = function(作业名, 需要编队, 是否自带)
         log("沙盘推演选择界面")
         log(作业["sandtable"])
         ssleep(.2)
-        tap("沙盘推演1级列表" .. 作业["sandtable"][1])
-        appear("沙盘推演2级红")
-        ssleep(.2)
-        tap("沙盘推演2级列表" .. 作业["sandtable"][2])
-        ssleep(.2)
+        if 作业["sandtable"] then --没有就不打
+            tap("沙盘推演1级列表" .. 作业["sandtable"][1])
+            appear("沙盘推演2级红")
+            ssleep(.2)
+            tap("沙盘推演2级列表" .. 作业["sandtable"][2])
+            ssleep(.2)
+        end
         tap("沙盘推演确定")
         if not appear("开始险地作战") then
             log("沙盘推演选择错误")
@@ -2351,6 +2353,8 @@ end
         ["1"] = "山",
         ["T"] = "山",
         ["任"] = "山",
+        ["正"] = "山",
+        ["在"] = "山",
         ["灰"] = "灰烬",
         ["灰烟"] = "灰烬",
         ["委"] = "黍",
