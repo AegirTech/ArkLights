@@ -387,13 +387,12 @@ getCaptchaBox = function()
         box.b = bx[2] - 3
         local notb = false
         for y = box.b, box.t, -1 do
-            local pixel = getPixelColor(bx[1], y)
-            if pixel == "ffffffff" then
+            if cmpColor(bx[1], y, "FFFFFF", 0.96) == 1 then
                 notb = true
             end
             -- log(bx[1], y, pixel, notb)
             if notb then
-                if pixel ~= "ffffffff" then
+                if cmpColor(bx[1], y, "FFFFFF", 0.96) == 0 then
                     box.b = y
                     box.t = y - max(scale(351), 300)
                     box.l = box.l + scale(35)
@@ -419,15 +418,46 @@ end
 
 trySolveSlipCaptcha = function(retry)
     local retry = retry or 0
-    -- if not use_jfbym and not use_free_server_captcha then trySolveCapture() end
     if not findOne("captcha") then return end
-    if use_local_captcha then
-        -- solveCapture_new(getCaptchaBox())
-    else
-        trySolveCaptureFreeServer(getCaptchaBox()) -- 使用免费打码
-    end
-    if not disappear("captcha", 5) then
-        trySolveCaptureFreeServer(getCaptchaBox()) -- 第二次使用免费打码
+    ssleep(1) -- 等待验证码出图
+    if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
+        pcall(trySolveCaptureFreeServer, getCaptchaBox())
+        SolveSlipCaptcha(getCaptchaBox())
+        if not disappear("captcha", 5) then
+            pcall(trySolveCaptureFreeServer, getCaptchaBox()) -- 第二次使用免费打码
+        end
+    elseif findOne("官服点选验证720") then
+        local box = { l = 0, t = 0, r = 0, b = 0 }
+        local bx = find_color(nil, "4E79ED", 0, 0.95)
+        if not bx then return end
+        box.l = bx[1]
+        box.t = bx[2]
+        bx = find_color(nil, "4E79ED", 4, 0.95)
+        if not bx then return end
+        box.r = bx[1]
+        bx = find_color(nil, "5381FD", 3, 0.95)
+        if not bx then return end
+        box.b = bx[2] - 3
+        local notb = false
+        for y = box.b, box.t, -1 do
+            if cmpColor(bx[1], y, "EFEFEF", 0.96) == 1 then
+                notb = true
+            end
+            if notb then
+                if cmpColor(bx[1], y, "EFEFEF", 0.96) == 0 then
+                    box.b = y
+                    box.t = y - max(scale(351), 300)
+                    box.l = box.l + scale(35)
+                    box.r = box.r - scale(35)
+                    break
+                end
+            end
+        end
+        trySolvePointSelectionCapture(box)
+        wait(function()
+            if findOne("realgame") then return true end
+            appearTap("官服点选验证确认720", 1)
+        end, 5)
     end
     if not appear("realgame", 5) then
         jfbym_report()
@@ -449,9 +479,11 @@ trySolveSlipCaptcha = function(retry)
     end
 end
 
-SolveSlipCaptcha = function(token, rect)
+-- 云码->滑块验证码
+SolveSlipCaptcha = function(rect)
     if not rect then return end
-    if not token then return end
+    if not jfbym_token then return end
+    local token = jfbym_token
     local img = getWorkPath() .. "/Captcha.jpg"
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local img_base64 = base64(img)
@@ -473,9 +505,9 @@ SolveSlipCaptcha = function(token, rect)
     distance = tonumber(get(data, "data", "data")) or 0
     log(distance)
     if distance == 0 then return end
-    local sx, sy = scale(702), scale(686)
+    local sx, sy = scale(750), scale(740)
     --  修正偏移
-    distance = distance + scale(5)
+    distance = distance - scale(12)
     log(sx, sy)
     -- 用于模拟滑动轨迹
     gesture({
@@ -511,7 +543,7 @@ jfbym_report = function()
     unique_code = nil
 end
 
--- b服选点验证码打码
+-- 官服/b服选点验证码打码
 trySolvePointSelectionCapture = function(rect)
     if cloud.captcha(rect) then return true end
     if cloud.captchaSecond(rect) then return true end
@@ -545,8 +577,9 @@ trySolvePointSelectionCapture = function(rect)
         if not jfbym_token or #jfbym_token < 5 then return end
         local data = {
             token = jfbym_token,
-            type = "88888",
+            type = "30112",
             image = img_base64,
+            extra = "je4_click",
         }
 
         local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
@@ -574,6 +607,7 @@ trySolvePointSelectionCapture = function(rect)
     end
     return true
 end
+
 
 ttshitu_report = function()
     if not ttshitu_last_id then return end
@@ -603,7 +637,7 @@ trySolveCaptureFreeServer = function(rect)
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
 
     local img_base64 = base64(img)
-    local url = "http://175.178.58.160:8899/yolo_new/"
+    local url = "http://175.178.58.160:8899/yolo_save/"
     local param = "img=" .. encodeUrl(img_base64)
 
     log("图鉴准备发送")
@@ -630,7 +664,7 @@ trySolveCaptureFreeServer = function(rect)
         return
     end
     log("准备开始滑动")
-    local sx, sy = scale(702), scale(686)
+    local sx, sy = scale(750), scale(740)
     --  修正偏移
     distance = distance + scale(5)
     log(sx, sy)
@@ -800,129 +834,129 @@ end
     end, 10)
 end
 
-solveCapture_new = function(rect, is_retry)
-    local is_retry = is_retry or false
-    if not rect then return end
-    wait(function()
-        local b, g, r = colorToRGB(getPixelColor())
-        if cmpColor(scale(1083), scale(401), "FFFFFF", 1) == 0 then
-            return true
-        end
-    end, 5)
-    -- 等待验证码加载
-    ssleep(0.2)
-    keepCapture()
-    -- rect.l, rect.t, rect.r, rect.b
-    -- rect = {}
-    -- rect.l = 636
-    -- rect.t = 207
-    -- rect.r = 1287
-    -- rect.b = 605
-    local exp_y = find_color({ rect.l, rect.t, rect.l + (rect.r - rect.l) * 0.0573888, rect.b }, "FCF9BA", 0, 0.95)
-    local exp_y2 = find_color({ rect.l, rect.t, rect.l + (rect.r - rect.l) * 0.0573888, rect.b }, "EFE568", 3, 0.95)
-    if exp_y then
-        if exp_y2 and exp_y2[2] - exp_y[2] > scale(110) then
-            exp_y = nil
-        else
-            exp_y = exp_y[2]
-        end
-    else
-        exp_y = nil
-    end
-    log("exp_y", exp_y)
+-- solveCapture_new = function(rect, is_retry)
+--     local is_retry = is_retry or false
+--     if not rect then return end
+--     wait(function()
+--         local b, g, r = colorToRGB(getPixelColor())
+--         if cmpColor(scale(1083), scale(401), "FFFFFF", 1) == 0 then
+--             return true
+--         end
+--     end, 5)
+--     -- 等待验证码加载
+--     ssleep(0.2)
+--     keepCapture()
+--     -- rect.l, rect.t, rect.r, rect.b
+--     -- rect = {}
+--     -- rect.l = 636
+--     -- rect.t = 207
+--     -- rect.r = 1287
+--     -- rect.b = 605
+--     local exp_y = find_color({ rect.l, rect.t, rect.l + (rect.r - rect.l) * 0.0573888, rect.b }, "FCF9BA", 0, 0.95)
+--     local exp_y2 = find_color({ rect.l, rect.t, rect.l + (rect.r - rect.l) * 0.0573888, rect.b }, "EFE568", 3, 0.95)
+--     if exp_y then
+--         if exp_y2 and exp_y2[2] - exp_y[2] > scale(110) then
+--             exp_y = nil
+--         else
+--             exp_y = exp_y[2]
+--         end
+--     else
+--         exp_y = nil
+--     end
+--     log("exp_y", exp_y)
 
-    -- 11,11,11 50
-    -- 理论上可以用getScreenPixel一次性获取全部的像素点，但是后面取有点麻烦。
-    local bb_socre, max_count, max_c = 150, 0, 60
-    local best_x = 0
-    local mabs = math.abs
-    for y = rect.t, rect.b do
-        for x = rect.l, rect.r do
-            local pixel = getPixelColor(x, y)
-            local b, g, r = colorToRGB(pixel)
-            local rx, gx, bx = math.abs(r - 11), math.abs(g - 11), math.abs(b - 11)
-            if rx < max_c and gx < max_c and bx < max_c and rx + gx + bx < max_c then
-                if not (exp_y and mabs(y - exp_y) > scale(20)) then
-                    local socre, count = 0, 0
+--     -- 11,11,11 50
+--     -- 理论上可以用getScreenPixel一次性获取全部的像素点，但是后面取有点麻烦。
+--     local bb_socre, max_count, max_c = 150, 0, 60
+--     local best_x = 0
+--     local mabs = math.abs
+--     for y = rect.t, rect.b do
+--         for x = rect.l, rect.r do
+--             local pixel = getPixelColor(x, y)
+--             local b, g, r = colorToRGB(pixel)
+--             local rx, gx, bx = math.abs(r - 11), math.abs(g - 11), math.abs(b - 11)
+--             if rx < max_c and gx < max_c and bx < max_c and rx + gx + bx < max_c then
+--                 if not (exp_y and mabs(y - exp_y) > scale(20)) then
+--                     local socre, count = 0, 0
 
-                    local cal_cp = function(pixel_c)
-                        b, g, r = colorToRGB(pixel)
-                        if b == 76 and g == 76 and r == 76 then
-                            socre = socre - 1000
-                        else
-                            rx, gx, bx = math.abs(r - 11), math.abs(g - 11), math.abs(b - 11)
-                            if rx < max_c and gx < max_c and bx < max_c then
-                                socre = socre + rx + gx + bx
-                                count = count + 1
-                            end
-                        end
-                    end
-                    for y2 = y, y + scale(100) do
-                        pixel = getPixelColor(x, y2)
-                        cal_cp(pixel)
-                    end
+--                     local cal_cp = function(pixel_c)
+--                         b, g, r = colorToRGB(pixel)
+--                         if b == 76 and g == 76 and r == 76 then
+--                             socre = socre - 1000
+--                         else
+--                             rx, gx, bx = math.abs(r - 11), math.abs(g - 11), math.abs(b - 11)
+--                             if rx < max_c and gx < max_c and bx < max_c then
+--                                 socre = socre + rx + gx + bx
+--                                 count = count + 1
+--                             end
+--                         end
+--                     end
+--                     for y2 = y, y + scale(100) do
+--                         pixel = getPixelColor(x, y2)
+--                         cal_cp(pixel)
+--                     end
 
-                    for x2 = x, x + scale(100) do
-                        pixel = getPixelColor(x2, y)
-                        cal_cp(pixel)
-                    end
+--                     for x2 = x, x + scale(100) do
+--                         pixel = getPixelColor(x2, y)
+--                         cal_cp(pixel)
+--                     end
 
-                    socre = socre / count
-                    if socre > 0 and math.abs(socre - bb_socre) < 200 and count > max_count then
-                        bb_socre, max_count = socre, count
-                        -- log(x, y, socre, count)
-                        best_x = x
-                    end
-                end
-            end
-        end
-    end
-    log(3399, best_x, bb_socre, max_count)
-    log("滑块验证码位置", best_x)
-    releaseCapture()
-    if best_x == 0 and not is_retry then
-        log("失败")
-        -- solveCapture_new(rect, true)
-        return false
-    end
+--                     socre = socre / count
+--                     if socre > 0 and math.abs(socre - bb_socre) < 200 and count > max_count then
+--                         bb_socre, max_count = socre, count
+--                         -- log(x, y, socre, count)
+--                         best_x = x
+--                     end
+--                 end
+--             end
+--         end
+--     end
+--     log(3399, best_x, bb_socre, max_count)
+--     log("滑块验证码位置", best_x)
+--     releaseCapture()
+--     if best_x == 0 and not is_retry then
+--         log("失败")
+--         -- solveCapture_new(rect, true)
+--         return false
+--     end
 
-    -- exit()
+--     -- exit()
 
-    -- log(table.slice(best, 1, 10))
-    -- exit()
-    -- log(w, h, best, best_score, best + point.captcha_area[1])
+--     -- log(table.slice(best, 1, 10))
+--     -- exit()
+--     -- log(w, h, best, best_score, best + point.captcha_area[1])
 
-    -- for i = 1, #maxgrad do log(i, maxgrad[i]) end
-    -- log(point.captcha_area)
-    --
-    local sx, sy = scale(702), scale(686)
-    --  修正偏移
-    local distance = best_x - rect.l
-    log(sx, sy, distance)
-    -- 用于模拟滑动轨迹
-    gesture({
-        {
-            point = {
-                { sx,                                        sy }, { sx + distance, sy },
-                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance + scale(math.random(5, 20)), sy },
-                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance + scale(math.random(5, 20)), sy },
-                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance - scale(math.random(5, 20)), sy },
-                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance - scale(math.random(5, 20)), sy }, { sx + distance, sy - scale(math.random(80, 150)) },
-                { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
-                { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
-                { sx + distance, sy },
-            },
-            start = 0,
-            duration = 800,
-        },
-    })
-    ssleep(1.2) -- 等待验证码关闭或者重试
-    return true
-end
+--     -- for i = 1, #maxgrad do log(i, maxgrad[i]) end
+--     -- log(point.captcha_area)
+--     --
+--     local sx, sy = scale(702), scale(686)
+--     --  修正偏移
+--     local distance = best_x - rect.l
+--     log(sx, sy, distance)
+--     -- 用于模拟滑动轨迹
+--     gesture({
+--         {
+--             point = {
+--                 { sx,                                        sy }, { sx + distance, sy },
+--                 { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+--                 { sx + distance + scale(math.random(5, 20)), sy },
+--                 { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+--                 { sx + distance + scale(math.random(5, 20)), sy },
+--                 { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+--                 { sx + distance - scale(math.random(5, 20)), sy },
+--                 { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
+--                 { sx + distance - scale(math.random(5, 20)), sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+--                 { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+--                 { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+--                 { sx + distance, sy },
+--             },
+--             start = 0,
+--             duration = 800,
+--         },
+--     })
+--     ssleep(1.2) -- 等待验证码关闭或者重试
+--     return true
+-- end
 
 detect_simulators = function()
     local simulators_list = {
