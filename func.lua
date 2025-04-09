@@ -492,6 +492,7 @@ SolveSlipCaptcha = function(rect)
         token = token,
         type = "22222",
         image = img_base64,
+        developer_tag = "1fd49a52277365a95b785710e9fb54c9",
     }
     local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
         30, "Content-Type: application/json;charset=UTF-8")
@@ -580,6 +581,7 @@ trySolvePointSelectionCapture = function(rect)
             type = "30112",
             image = img_base64,
             extra = "je4_click",
+            developer_tag = "1fd49a52277365a95b785710e9fb54c9",
         }
 
         local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),

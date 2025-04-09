@@ -1158,37 +1158,37 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
 
-    -- newRow(layout)
-    -- addTextView(layout, "===========促融共竞===========")
-    -- newRow(layout)
-    -- addTextView(layout, "组队选择")
-    -- ui.addSpinner(layout, "ib_grouping_method", { "参与方", "房主" }, 0)
-    -- ui.addCheckBox(layout, "agree_cost_request_automaticlly",
-    --     "自动同意费用请求", true)
-    -- newRow(layout)
-    -- addTextView(layout, "角色")
-    -- ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)", "角色B(ew叔叔+陷阱师)" }, 0)
-    -- ui.addCheckBox(layout, "ib_auto_team_format",
-    --     "自动编队", true)
-    -- newRow(layout)
-    -- ui.addCheckBox(layout, " ib_auto_like",
-    --     "自动点赞", true)
-    -- addButton(layout, randomString(32), "粘贴房间号", "import_room_id()")
-    -- newRow(layout)
-    -- addTextView(layout, "房间号")
-    -- ui.addEditText(layout, "extra_crgj_room", "", 700)
-    -- newRow(layout)
-    -- addTextView(layout, "房主选择")
-    -- addTextView(layout, "难度")
-    -- ui.addSpinner(layout, "ib_difficulty", { "初级", "高级", "特级" }, 0)
-    -- addTextView(layout, "项目")
-    -- ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5",
-    --     "6", "7", "8", "9", "10", "11", "12", "13", "14" }, 0)
+    newRow(layout)
+    addTextView(layout, "===========促融共竞===========")
+    newRow(layout)
+    addTextView(layout, "组队选择")
+    ui.addSpinner(layout, "ib_grouping_method", { "参与方", "房主" }, 0)
+    ui.addCheckBox(layout, "agree_cost_request_automaticlly",
+        "自动同意费用请求", true)
+    newRow(layout)
+    addTextView(layout, "角色")
+    ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)", "角色B(ew叔叔+陷阱师)" }, 0)
+    ui.addCheckBox(layout, "ib_auto_team_format",
+        "自动编队", true)
+    newRow(layout)
+    ui.addCheckBox(layout, " ib_auto_like",
+        "自动点赞", true)
+    addButton(layout, randomString(32), "粘贴房间号", "import_room_id()")
+    newRow(layout)
+    addTextView(layout, "房间号")
+    ui.addEditText(layout, "extra_crgj_room", "", 700)
+    newRow(layout)
+    addTextView(layout, "房主选择")
+    addTextView(layout, "难度")
+    ui.addSpinner(layout, "ib_difficulty", { "初级", "高级", "特级" }, 0)
+    addTextView(layout, "项目")
+    ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5",
+        "6", "7", "8", "9", "10", "11", "12", "13", "14" }, 0)
 
-    -- newRow(layout)
-    -- addButton(layout, nil, "促融共竞开始",
-    --     make_jump_ui_command(layout, nil,
-    --         "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addButton(layout, nil, "促融共竞开始",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     -- newRow(layout)
     -- addTextView(layout, "===========宝石铭刻===========")
