@@ -5837,6 +5837,9 @@ path.活动 = function(x)
                     ssleep(.5)
                     if disappear("活动导航0", 1) then
                         ssleep(.5)
+                        if findOne("跳过章节开启旅途") then
+                            tap("跳过章节开启旅途")
+                        end
                         return true
                     end
                 end, 5) then
