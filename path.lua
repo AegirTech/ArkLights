@@ -4561,12 +4561,38 @@ path.开始游戏 = function(x, disable_ptrs_check)
             else
                 return true
             end
+        elseif copy_homework and findOne("切换到险地作战") then
+            tap("切换到险地作战")
+            appear("切换到常规作战", 3)
+            if findOne("险地作战星未打") or not copy_homework_only then
+                tap("开始险地作战")
+                appear("开始行动红", 3)
+                goto wait_for_maa
+            elseif findOne("险地作战星未打") and findOne("沙盘推演星未打满") then
+                --选择沙盘推演
+                tap("沙盘推演")
+                appear("沙盘推演选择按钮", 2)
+                tap("沙盘推演选择按钮")
+                appear("沙盘推演选择面板", 2)
+                --读取沙盘推演数据
+                tap("沙盘推演确定")
+                appear("开始险地作战", 2)
+                tap("开始险地作战")
+                appear("开始行动红", 3)
+                goto wait_for_maa
+            else
+                return true
+            end
         end
         tap("代理指挥开1")
         if not appear("代理指挥开", .5) then
             if copy_homework and homework[x] then
                 need_copy_homework = true
                 --ssleep (6)--等待右上角提示消失
+            elseif findOne("切换到险地作战") then
+                tap("切换到险地作战")
+                appear("切换到常规作战", 3)
+                tap("代理指挥开1")
             else
                 -- clean_fight(x)
                 fight_failed_times[cur_fight] = max_fight_failed_times
