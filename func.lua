@@ -373,20 +373,48 @@ curl_custom = function(command)
 end
 
 getCaptchaBox = function()
-    if findOne("滑块验证节点") then
-        local box = findOne("滑块验证节点")
-        log("box", box)
-        if not box then return end
-        box = box.bounds
+    if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
+        local box = { l = 0, t = 0, r = 0, b = 0 }
+        local bx = find_color(nil, "5381FD", 0, 0.95)
+        if not bx then return end
+        box.l = bx[1]
+        box.t = bx[2]
+        bx = find_color(nil, "5381FD", 4, 0.95)
+        if not bx then return end
+        box.r = bx[1]
+        bx = find_color(nil, "5381FD", 3, 0.95)
+        if not bx then return end
+        box.b = bx[2] - 3
+        local notb = false
+        for y = box.b, box.t, -1 do
+            local pixel = getPixelColor(bx[1], y)
+            if pixel == "ffffffff" then
+                notb = true
+            end
+            -- log(bx[1], y, pixel, notb)
+            if notb then
+                if pixel ~= "ffffffff" then
+                    box.b = y
+                    box.t = y - max(scale(351), 300)
+                    box.l = box.l + scale(35)
+                    box.r = box.r - scale(35)
+                    break
+                end
+            end
+        end
+        -- local box = findOne("滑块验证节点新")
+        -- log("box", box)
+        -- if not box then return end
+        -- box = box.bounds
         return box
     end
-    if findOne("captcha") then
-        local box = findOne("captcha")
-        log("box", box)
-        if not box then return end
-        box = box.bounds
-        return box
-    end
+    -- if findOne("captcha") then
+    --     local box = findOne("captcha")
+    --     log("box", box)
+    --     if not box then return end
+    --     box = box.bounds
+    --     return box
+    -- end
 end
 
 trySolveSlipCaptcha = function(retry)
@@ -394,7 +422,7 @@ trySolveSlipCaptcha = function(retry)
     -- if not use_jfbym and not use_free_server_captcha then trySolveCapture() end
     if not findOne("captcha") then return end
     if use_local_captcha then
-        solveCapture_new(getCaptchaBox())
+        -- solveCapture_new(getCaptchaBox())
     else
         trySolveCaptureFreeServer(getCaptchaBox()) -- 使用免费打码
     end
