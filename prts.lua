@@ -286,11 +286,18 @@ auto_prts = function(作业名, 需要编队, 是否自带)
         log(作业["sandtable"])
         ssleep(.2)
         if 作业["sandtable"] then --没有就不打
-            tap("沙盘推演1级列表" .. 作业["sandtable"][1])
+            if not appear("沙盘推演1级列表" .. 作业["sandtable"][1], 2) then
+                tap("沙盘推演1级列表" .. 作业["sandtable"][1])
+            end
             appear("沙盘推演2级红")
             ssleep(.2)
-            tap("沙盘推演2级列表" .. 作业["sandtable"][2])
+            if not appear("沙盘推演2级列表" .. 作业["sandtable"][2], 2) then
+                tap("沙盘推演2级列表" .. 作业["sandtable"][2])
+            end
             ssleep(.2)
+        else
+            tap("返回")
+            return
         end
         tap("沙盘推演确定")
         if not appear("开始险地作战") then
@@ -1242,7 +1249,8 @@ end
                 print("前置延时")
                 sleep_and_do_strategy(部署指令["pre_delay"])
             end
-            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "生息演算剧情上", "生息演算剧情下" }) then
+
+            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "生息演算剧情上" }) then
                 tap("剧情中")
                 print("跳过无按钮剧情")
                 appear("作战中", 2)
@@ -1406,7 +1414,7 @@ end
 
         if not (findOne("作战中") or findOne("暂停中") or findOne("作战中2")) then
             sleep(500)
-            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "生息演算剧情上", "生息演算剧情下" }) then
+            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "生息演算剧情上" }) then
                 tap("剧情中")
                 --迷宫饭适配
                 tap({ scale(1040), scale(384) })
@@ -1584,7 +1592,7 @@ end
                 print("前置延时")
                 sleep_and_do_strategy(部署指令["pre_delay"])
             end
-            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "生息演算剧情上", "生息演算剧情下" }) then
+            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "生息演算剧情上" }) then
                 tap("剧情中")
                 print("跳过无按钮剧情")
                 appear("作战中", 2)
@@ -1798,7 +1806,7 @@ end
 
         if not (findOne("作战中") or findOne("暂停中") or findOne("作战中2")) then
             sleep(500)
-            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "生息演算剧情上", "生息演算剧情下" }) then
+            if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "生息演算剧情上" }) then
                 tap("剧情中")
                 --迷宫饭适配
                 tap({ scale(1040), scale(384) })
