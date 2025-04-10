@@ -5,6 +5,9 @@ actions:
   - text: 立即使用
     link: /guide.html
     type: primary
+  - text: 赞助开发者
+    link: https://afdian.com/a/arklights
+    type: primary
 
 features:
   - title: 多设备兼容
