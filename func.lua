@@ -372,7 +372,9 @@ curl_custom = function(command)
     return exec2(curlCommand)
 end
 
-getCaptchaBox = function()
+getCaptchaBox = function(retry)
+    local retry = retry or 0
+    if retry > 3 then return end
     if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
         local box = { l = 0, t = 0, r = 0, b = 0 }
         local bx = find_color(nil, "5381FD", 0, 0.95)
@@ -401,32 +403,18 @@ getCaptchaBox = function()
                 end
             end
         end
-        -- local box = findOne("滑块验证节点新")
-        -- log("box", box)
-        -- if not box then return end
-        -- box = box.bounds
+        if box.t - box.b < max(scale(351), 300) then
+            ssleep(0.5)
+            return getCaptchaBox(retry + 1)
+        end
         return box
     end
-    -- if findOne("captcha") then
-    --     local box = findOne("captcha")
-    --     log("box", box)
-    --     if not box then return end
-    --     box = box.bounds
-    --     return box
-    -- end
 end
 
-trySolveSlipCaptcha = function(retry)
+getChoiceBox = function(retry)
     local retry = retry or 0
-    if not findOne("captcha") then return end
-    ssleep(1) -- 等待验证码出图
-    if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
-        pcall(trySolveCaptureFreeServer, getCaptchaBox())
-        SolveSlipCaptcha(getCaptchaBox())
-        if not disappear("captcha", 5) then
-            pcall(trySolveCaptureFreeServer, getCaptchaBox()) -- 第二次使用免费打码
-        end
-    elseif findOne("官服点选验证720") then
+    if retry > 3 then return end
+    if findOne("官服点选验证720") then
         local box = { l = 0, t = 0, r = 0, b = 0 }
         local bx = find_color(nil, "4E79ED", 0, 0.95)
         if not bx then return end
@@ -453,7 +441,26 @@ trySolveSlipCaptcha = function(retry)
                 end
             end
         end
-        trySolvePointSelectionCapture(box)
+        if box.t - box.b < max(scale(351), 300) then
+            ssleep(0.5)
+            return getChoiceBox(retry + 1)
+        end
+        return box
+    end
+end
+
+trySolveSlipCaptcha = function(retry)
+    local retry = retry or 0
+    if not findOne("captcha") then return end
+    ssleep(1) -- 等待验证码出图
+    if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
+        pcall(trySolveCaptureFreeServer, getCaptchaBox())
+        SolveSlipCaptcha(getCaptchaBox())
+        if not disappear("captcha", 5) then
+            pcall(trySolveCaptureFreeServer, getCaptchaBox()) -- 第二次使用免费打码
+        end
+    elseif findOne("官服点选验证720") then
+        trySolvePointSelectionCapture(getChoiceBox())
         wait(function()
             if findOne("realgame") then return true end
             appearTap("官服点选验证确认720", 1)
