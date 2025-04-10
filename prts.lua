@@ -229,21 +229,14 @@ auto_prts = function(作业名, 需要编队, 是否自带)
     local homework = 作业名
     print("prts作战开始", homework)
     local 干员名单 = ""
-    --print(作业路径)
-    --local 职业 = { "先锋", "近卫", "重装", "医疗", "术师", "狙击", "特种", "辅助", "召唤物", "all" }
     群组 = {}
-
     部署 = {}
-
     队员技能 = {}
     无限放技能干员 = {}
     技能指定次数干员 = {}
     作业 = loadHomework(作业名, 是否自带)
     print(作业)
     print("读取作业成功")
-    --local 地图 = 作业["stage_name"]
-
-    --构建技能相关数据
     local processSkillData = function(oper)
         if table.findk(oper, "skill_usage") then
             if oper["skill_usage"] == 1 then
@@ -276,14 +269,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
     for _, oper in ipairs(作业["opers"]) do
         processSkillData(oper)
     end
-    --text = string.sub(text, 1, -2) .. "}"
-    --print(text)
-
     log("读取群组成功")
-
-    --print("无限放技能干员", 无限放技能干员)
-    --print("技能指定次数干员", 技能指定次数干员)
-
     --print(地图)
     log(作业["stage_name"])
     local status, 地图数据 = pcall(loadMap, 作业["stage_name"])
@@ -295,7 +281,24 @@ auto_prts = function(作业名, 需要编队, 是否自带)
     地图类型 = 地图数据[3] --地图类型,主要用来区别杀敌数位置:1普通，2剿灭, 3保全, 4肉鸽, 5悖论模拟
     训练地图 = 地图数据[4] --是否是教学关0否,1是
     log("读取地图数据成功", "地图类型", 地图类型, "训练地图", 训练地图)
-
+    if findOne("沙盘推演确定") then
+        log("沙盘推演选择界面")
+        log(作业["sandtable"])
+        ssleep(.2)
+        if 作业["sandtable"] then --没有就不打
+            tap("沙盘推演1级列表" .. 作业["sandtable"][1])
+            appear("沙盘推演2级红")
+            ssleep(.2)
+            tap("沙盘推演2级列表" .. 作业["sandtable"][2])
+            ssleep(.2)
+        end
+        tap("沙盘推演确定")
+        if not appear("开始险地作战") then
+            log("沙盘推演选择错误")
+        end
+        tap("开始险地作战")
+        appear("快捷编队", 3)
+    end
     if 需要编队 == true and 训练地图 == 0 then
         if 地图类型 == 5 then
             tap("悖论模拟界面")
@@ -1163,9 +1166,17 @@ end
                 地图坐标 = 地图数据0[v[2] + 1][v[1] + 1]
                 print("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                 local intX, intY = findMultiColor(scale(地图坐标[1] - 10), scale(地图坐标[2] - 180), scale(地图坐标[1] + 10),
-                    scale(地图坐标[2] - 80), "EBA22F-101010", scale(-21) .. "|" .. scale(-21) ..
-                    "|F6A516-101010|" .. scale(5) .. "|" .. scale(-10) .. "|280500-101010|" .. scale(21) .. "|"
-                    .. scale(-21) .. "|E4932E-101010|" .. scale(-6) .. "|" .. scale(-8) .. "|2E1501-101010",
+                    scale(地图坐标[2] - 80), "F29F02-101010",
+                    scale(-21) ..
+                    "|" ..
+                    scale(-21) ..
+                    "|F0A102-101010|" ..
+                    scale(5) ..
+                    "|" ..
+                    scale(-11) ..
+                    "|280500-101010|" ..
+                    scale(21) ..
+                    "|" .. scale(-21) .. "|F3A901-101010|" .. scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
                     0, 0.87)
                 if intX > -1 then
                     print("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
@@ -1215,7 +1226,7 @@ end
 
     while true do
         点战斗()
-        cost = tonumber(获得cost() or cost) or cost
+        cost = tonumber(获得cost(cost) or cost) or cost
         wavetxt = 获得敌人数(是否剿灭图) or 0
         --print("当前波次", wavetxt)
         local number = tonumber(string.match(wavetxt, "%d+")) or 0
@@ -1492,9 +1503,17 @@ end
                 地图坐标 = 地图数据0[v[2] + 1][v[1] + 1]
                 print("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                 local intX, intY = findMultiColor(scale(地图坐标[1] - 10), scale(地图坐标[2] - 180), scale(地图坐标[1] + 10),
-                    scale(地图坐标[2] - 80), "EBA22F-101010", scale(-21) .. "|" .. scale(-21) ..
-                    "|F6A516-101010|" .. scale(5) .. "|" .. scale(-10) .. "|280500-101010|" .. scale(21) .. "|"
-                    .. scale(-21) .. "|E4932E-101010|" .. scale(-6) .. "|" .. scale(-8) .. "|2E1501-101010",
+                    scale(地图坐标[2] - 80), "F29F02-101010",
+                    scale(-21) ..
+                    "|" ..
+                    scale(-21) ..
+                    "|F0A102-101010|" ..
+                    scale(5) ..
+                    "|" ..
+                    scale(-11) ..
+                    "|280500-101010|" ..
+                    scale(21) ..
+                    "|" .. scale(-21) .. "|F3A901-101010|" .. scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
                     0, 0.87)
                 if intX > -1 then
                     print("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
@@ -1545,7 +1564,7 @@ end
 
     while true do
         点战斗()
-        cost = tonumber(获得cost() or cost) or cost
+        cost = tonumber(获得cost(cost) or cost) or cost
 
         wavetxt = 获得敌人数(是否剿灭图) or 0
         --print("当前波次", wavetxt)
@@ -2084,8 +2103,8 @@ end
     return ret
 end
 
-获得cost = function()
-    local ret
+获得cost = function(cost)
+    local ret = cost
     if use_local_dictionary then
         ret = TURING.图灵识别({ { 屏幕范围 = point["cost范围"] }, { { 二值化 = { "0-100" } } }, { 范围投影 = { 2, 1 } }, { 六十四进制字库数组 = { cost字库(screen.height) } }, { 0 } })
     else
@@ -2107,7 +2126,7 @@ end
 local 技能表 = {}
 local t
 
-技能表 = Image.FindMultiColor(182, 167, 1080, 1740, "EBA22F-101010","-21|-21|F6A516-101010|5|-10|280500-101010|21|-21|E4932E-101010|-6|-8|2E1501-101010", 0, 0.9)
+技能表 = Image.FindMultiColor(182, 167, 1080, 1740, "F29F02-101010","-21|-21|F6A516-101010|5|-10|280500-101010|21|-21|E4932E-101010|-6|-8|2E1501-101010", 0, 0.9)
 local 下标 = #技能表
 print("找到", 下标, "就绪技能")
 点战斗()
@@ -2135,7 +2154,7 @@ end]===]
     local t
     ---还没改
 
-    --[===[技能表 = Image.FindMultiColor(167,182, 1740,1080, "EBA22F-101010","-21|-21|F6A516-101010|5|-10|280500-101010|21|-21|E4932E-101010|-6|-8|2E1501-101010", 0, 0.9)
+    --[===[技能表 = Image.FindMultiColor(167,182, 1740,1080, "F29F02-101010","-21|-21|F6A516-101010|5|-10|280500-101010|21|-21|E4932E-101010|-6|-8|2E1501-101010", 0, 0.9)
 	local 下标 = #技能表
 	print(下标 + 1 .. "个技能准备好了")
 	if 下标 > -1 then
@@ -2234,16 +2253,16 @@ end
         for i = 1, 6 do
             keepCapture()
             local intX, intY = findMultiColor(scale(地图坐标[1] - 10), scale(地图坐标[2] - 180), scale(地图坐标[1] + 10),
-                scale(地图坐标[2] - 80), "EBA22F-101010",
+                scale(地图坐标[2] - 80), "F29F02-101010",
                 scale(-21) ..
                 "|" ..
                 scale(-21) ..
-                "|F6A516-101010|" ..
+                "|F0A102-101010|" ..
                 scale(5) ..
                 "|" ..
-                scale(-10) ..
+                scale(-11) ..
                 "|280500-101010|" ..
-                scale(21) .. "|" .. scale(-21) .. "|E4932E-101010|" .. scale(-6) .. "|" .. scale(-8) .. "|2E1501-101010",
+                scale(21) .. "|" .. scale(-21) .. "|F3A901-101010|" .. scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
                 0, 0.87)
             print(intX, intY)
             if intX > -1 then
@@ -2350,6 +2369,8 @@ end
         ["1"] = "山",
         ["T"] = "山",
         ["任"] = "山",
+        ["正"] = "山",
+        ["在"] = "山",
         ["灰"] = "灰烬",
         ["灰烟"] = "灰烬",
         ["委"] = "黍",

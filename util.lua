@@ -1607,7 +1607,7 @@ end
 
 -- wait until see node / point / list of node and point
 appear = function(target, timeout, interval, disappear)
-    log((disappear and "dis" or '') .. "appear", target)
+    --log((disappear and "dis" or '') .. "appear", target)
     if not (type(target) == 'table' and #target > 0) then target = { target } end
     return wait(function()
         for _, v in pairs(target) do
