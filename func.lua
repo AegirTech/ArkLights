@@ -373,44 +373,37 @@ curl_custom = function(command)
 end
 
 getCaptchaBox = function(retry)
-    local retry = retry or 0
+    retry = retry or 0
     if retry > 3 then return end
-    if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
-        local box = { l = 0, t = 0, r = 0, b = 0 }
-        local bx = find_color(nil, "5381FD", 0, 0.95)
-        if not bx then return end
-        box.l = bx[1]
-        box.t = bx[2]
-        bx = find_color(nil, "5381FD", 4, 0.95)
-        if not bx then return end
-        box.r = bx[1]
-        bx = find_color(nil, "5381FD", 3, 0.95)
-        if not bx then return end
-        box.b = bx[2] - 3
-        local notb = false
-        for y = box.b, box.t, -1 do
-            if cmpColor(bx[1], y, "FFFFFF", 0.96) == 1 then
-                notb = true
-            end
-            -- log(bx[1], y, pixel, notb)
-            if notb then
-                if cmpColor(bx[1], y, "FFFFFF", 0.96) == 0 then
-                    box.b = y
-                    box.t = y - max(scale(351), 300)
-                    box.l = box.l + scale(35)
-                    box.r = box.r - scale(35)
-                    break
-                end
-            end
+    local box = { l = 0, t = 0, r = 0, b = 0 }
+    local bx = find_color(nil, "5381FD", 0, 0.95)
+    if not bx then return end
+    box.l, box.t = bx[1], bx[2]
+    bx = find_color(nil, "5381FD", 4, 0.95)
+    if not bx then return end
+    box.r = bx[1]
+    bx = find_color(nil, "5381FD", 3, 0.95)
+    if not bx then return end
+    box.b = bx[2] - 3
+    local notb = false
+    for y = box.b, box.t, -1 do
+        if cmpColor(bx[1], y, "FFFFFF", 0.96) == 1 then
+            notb = true
         end
-        if box.b - box.t < max(scale(351), 300) - 20 then
-            log("box find failed", box)
-            ssleep(0.5)
-            return getChoiceBox(retry + 1)
+        if notb and cmpColor(bx[1], y, "FFFFFF", 0.96) == 0 then
+            box.b = y
+            box.t = y - max(scale(351), 300)
+            box.l, box.r = box.l + scale(35), box.r - scale(35)
+            break
         end
-        log("cap box", box)
-        return box
     end
+    if box.b - box.t < max(scale(351), 300) - 20 then
+        log("box find failed", box)
+        ssleep(0.5)
+        return getCaptchaBox(retry + 1)
+    end
+    log("cap box", box)
+    return box
 end
 
 getChoiceBox = function(retry)
@@ -444,11 +437,11 @@ getChoiceBox = function(retry)
             end
         end
         if box.t - box.b < max(scale(351), 300) - 10 then
-            log("box find failed", box)
+            log("点选验证框 failed", box)
             ssleep(0.5)
             return getChoiceBox(retry + 1)
         end
-        log("cap box", box)
+        log("点选验证框", box)
         return box
     end
 end
@@ -534,6 +527,7 @@ SolveSlipCaptcha = function(rect, type)
     end
 
     if distance == 0 then return end
+    tap({ scale(964), scale(805) })
     local sx, sy = scale(750), scale(740)
     log(sx, sy)
     -- 用于模拟滑动轨迹
