@@ -418,7 +418,7 @@ getChoiceBox = function(retry)
         bx = find_color(nil, "4E79ED", 4, 0.95)
         if not bx then return end
         box.r = bx[1]
-        bx = find_color(nil, "5381FD", 3, 0.95)
+        bx = find_color(nil, "B5C4EE", 3, 0.95)
         if not bx then return end
         box.b = bx[2] - 3
         local notb = false

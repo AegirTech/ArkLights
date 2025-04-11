@@ -701,7 +701,7 @@ show_debug_ui = function()
     ui.addTabView(layout, "debug_tab")
 
     local debug_layout_验证码 = "debug_tab_yzm"
-    ui.addTab("debug_tab", debug_layout_验证码, "验证码--打码流程自上而下")
+    ui.addTab("debug_tab", debug_layout_验证码, "验证码")
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "Aunly打码平台，平台注册&购买地址(打码每次0.012元)")
