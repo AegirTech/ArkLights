@@ -403,10 +403,12 @@ getCaptchaBox = function(retry)
                 end
             end
         end
-        if box.t - box.b < max(scale(351), 300) then
+        if box.b - box.t < max(scale(351), 300) - 20 then
+            log("box find failed", box)
             ssleep(0.5)
-            return getCaptchaBox(retry + 1)
+            return getChoiceBox(retry + 1)
         end
+        log("cap box", box)
         return box
     end
 end
@@ -441,10 +443,12 @@ getChoiceBox = function(retry)
                 end
             end
         end
-        if box.t - box.b < max(scale(351), 300) then
+        if box.t - box.b < max(scale(351), 300) - 10 then
+            log("box find failed", box)
             ssleep(0.5)
             return getChoiceBox(retry + 1)
         end
+        log("cap box", box)
         return box
     end
 end
@@ -454,11 +458,8 @@ trySolveSlipCaptcha = function(retry)
     if not findOne("captcha") then return end
     ssleep(1) -- 等待验证码出图
     if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
-        pcall(trySolveCaptureFreeServer, getCaptchaBox())
-        SolveSlipCaptcha(getCaptchaBox())
-        if not disappear("captcha", 5) then
-            pcall(trySolveCaptureFreeServer, getCaptchaBox()) -- 第二次使用免费打码
-        end
+        pcall(SolveSlipCaptcha, getCaptchaBox(), 1)
+        SolveSlipCaptcha(getCaptchaBox(), 2)
     elseif findOne("官服点选验证720") then
         trySolvePointSelectionCapture(getChoiceBox())
         wait(function()
@@ -486,36 +487,54 @@ trySolveSlipCaptcha = function(retry)
     end
 end
 
--- 云码->滑块验证码
-SolveSlipCaptcha = function(rect)
+-- 滑块验证码统一处理
+SolveSlipCaptcha = function(rect, type)
     if not rect then return end
-    if not jfbym_token then return end
-    local token = jfbym_token
-    local img = getWorkPath() .. "/Captcha.jpg"
-    snapShot(img, rect.l, rect.t, rect.r, rect.b)
-    local img_base64 = base64(img)
-    local data = {
-        extra = false,
-        token = token,
-        type = "22222",
-        image = img_base64,
-        developer_tag = "1fd49a52277365a95b785710e9fb54c9",
-    }
-    local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
-        30, "Content-Type: application/json;charset=UTF-8")
     local distance = 0
-    local status, data = pcall(JsonDecode, res)
-    data = data or {}
-    if get(data, "code") ~= 10000 then
-        return
+    if type == 1 then -- 免费服务器
+        if not use_free_server_captcha then return end
+        log("free solve")
+        local img = getWorkPath() .. "/captcha_free.jpg"
+        snapShot(img, rect.l, rect.t, rect.r, rect.b)
+        local url = "http://175.178.58.160:8899/yolo_new/"
+        local param = "img=" .. encodeUrl(base64(img))
+        log("免费服务器准备发送")
+        local ret, code = httpPost(url, param)
+        local status, ret = pcall(JsonDecode, ret)
+        --ret数据出问题时候
+        if not status then return end
+        log(ret)
+        distance = ret.target[1].distance
+        distance = str2int(distance, 0)
+        log("distance:", distance)
+        if distance < 1 then return false end
+        --  修正偏移
+        distance = distance - scale(12)
+    elseif type == 2 then -- 云码
+        if not jfbym_token then return end
+        local img = getWorkPath() .. "/captcha_jfbym.jpg"
+        snapShot(img, rect.l, rect.t, rect.r, rect.b)
+        local data = {
+            token = jfbym_token,
+            type = "22222",
+            image = base64(img),
+            developer_tag = "1fd49a52277365a95b785710e9fb54c9",
+        }
+        local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
+            30, "Content-Type: application/json;charset=UTF-8")
+        local status, data = pcall(JsonDecode, res)
+        data = data or {}
+        if get(data, "code") ~= 10000 then
+            return
+        end
+        unique_code = get(data, "data", "unique_code") or ""
+        distance = tonumber(get(data, "data", "data")) or 0
+        log("云码", distance)
+        distance = distance - scale(12)
     end
-    unique_code = get(data, "data", "unique_code") or ""
-    distance = tonumber(get(data, "data", "data")) or 0
-    log(distance)
+
     if distance == 0 then return end
     local sx, sy = scale(750), scale(740)
-    --  修正偏移
-    distance = distance - scale(12)
     log(sx, sy)
     -- 用于模拟滑动轨迹
     gesture({
@@ -539,16 +558,6 @@ SolveSlipCaptcha = function(rect)
         },
     })
     ssleep(1.5) -- 等待验证码关闭或者重试
-end
-
-jfbym_report = function()
-    if not unique_code then return end
-    local data = { uniqueCode = unique_code, token = jfbym_token }
-    local ret, code = httpPost("http://api.jfbym.com/api/YmServer/refundApi",
-        JsonEncode(data), 30,
-        "Content-Type: application/json;charset=UTF-8")
-    log(ret, code)
-    unique_code = nil
 end
 
 -- 官服/b服选点验证码打码
@@ -627,79 +636,14 @@ ttshitu_report = function()
     ttshitu_last_id = nil
 end
 
---使用部署的客户端免费打码官服滑块验证码
-trySolveCaptureFreeServer = function(rect)
-    if not use_free_server_captcha then
-        return
-    end
-    log("free solve")
-    keepCapture()
-    local node = findOne("captcha")
-    if not node then
-        log('3576 not found captcha')
-        return
-    end
-
-    if not rect then return end
-    local img = getWorkPath() .. "/Captcha.jpg"
-    snapShot(img, rect.l, rect.t, rect.r, rect.b)
-
-    local img_base64 = base64(img)
-    local url = "http://175.178.58.160:8899/yolo_new/"
-    local param = "img=" .. encodeUrl(img_base64)
-
-    log("图鉴准备发送")
-    local ret, code = httpPost(url, param)
-    local status, ret = pcall(JsonDecode, ret)
-    --ret数据出问题时候
-    if not status then return end
-    log(ret)
-    local distance = ret.target[1].distance
-    local distance = str2int(distance, 0)
-    log("distance:", distance)
-    if distance < 1 then
-        log(distance, "图片信息错误")
-        releaseCapture() -- 释放捕获状态
-        return false
-    end
-    log("滑动前检测")
-
-    keepCapture()
-    local node = findOne("captcha")
-    if not node then
-        log('图片寻找失败，不执行任何操作')
-        releaseCapture() -- 释放捕获状态
-        return
-    end
-    log("准备开始滑动")
-    local sx, sy = scale(750), scale(740)
-    --  修正偏移
-    distance = distance + scale(5)
-    log(sx, sy)
-    -- 用于模拟滑动轨迹
-    gesture({
-        {
-            point = {
-                { sx,                                        sy }, { sx + distance, sy },
-                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance + scale(math.random(5, 20)), sy },
-                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance + scale(math.random(5, 20)), sy },
-                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance - scale(math.random(5, 20)), sy },
-                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance - scale(math.random(5, 20)), sy }, { sx + distance, sy - scale(math.random(80, 150)) },
-                { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
-                { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
-                { sx + distance, sy },
-            },
-            start = 0,
-            duration = 1000,
-        },
-    })
-    log("滑动结束")
-    ssleep(1.5)      -- 等待验证码关闭或者重试
-    releaseCapture() -- 释放捕获状态
+jfbym_report = function()
+    if not unique_code then return end
+    local data = { uniqueCode = unique_code, token = jfbym_token }
+    local ret, code = httpPost("http://api.jfbym.com/api/YmServer/refundApi",
+        JsonEncode(data), 30,
+        "Content-Type: application/json;charset=UTF-8")
+    log(ret, code)
+    unique_code = nil
 end
 
 -- 去除sb懒人新版广告
@@ -917,7 +861,6 @@ upload_log = function()
     end
 end
 
-
 copy_file_s = function(src, dest)
     local src_file = io.open(src, "rb")
     if not src_file then
@@ -949,7 +892,6 @@ clear_cache = function()
     delfile("/storage/emulated/0/" .. package)
     toast("清除缓存成功")
 end
-
 
 backup_config = function()
     local backup_path = "/sdcard/" .. getPackageName() .. "/backup/"
