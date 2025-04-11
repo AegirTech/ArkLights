@@ -704,7 +704,7 @@ show_debug_ui = function()
     ui.addTab("debug_tab", debug_layout_验证码, "验证码--打码流程自上而下")
 
     newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "Aunly打码用于点选验证码，平台注册&购买地址(打码每次0.012元)")
+    addTextView(debug_layout_验证码, "Aunly打码平台，平台注册&购买地址(打码每次0.012元)")
 
     newRow(debug_layout_验证码)
     addButton(debug_layout_验证码, nil, "Aunly打码平台官网",
@@ -725,9 +725,12 @@ show_debug_ui = function()
     -- newRow(debug_layout_验证码)
     -- ui.addCheckBox(debug_layout_验证码, "use_local_captcha", "使用速通本地打码服务", true)
     newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "use_free_server_captcha", "使用免费打码服务(仅滑块验证码)", false)
+    ui.addCheckBox(debug_layout_验证码, "use_free_server_captcha", "1.使用免费打码服务", true)
     newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "use_jfbym", "使用云码API处理滑块验证码", false)
+    ui.addCheckBox(debug_layout_验证码, "use_jfbym", "2.使用云码API处理滑块验证码", false)
+    addButton(debug_layout_验证码, nil, "云码官网",
+        make_jump_ui_command(layout, nil, [[jump_address("https://www.jfbym.com/")]]))
+
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "云码Token")
     ui.addEditText(debug_layout_验证码, "jfbym_token", "")
@@ -736,10 +739,21 @@ show_debug_ui = function()
     addTextView(debug_layout_验证码, "==================================")
 
     newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "-->点选验证码(只要填写自定义打码地址则会优先使用)")
+    addTextView(debug_layout_验证码, "-->点选验证码")
 
     newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "use_captcha", "使用图鉴打码", true)
+    ui.addCheckBox(debug_layout_验证码, "use_captcha", "1.使用Aunly打码", true)
+    ui.setEnable("use_captcha", false)
+
+    newRow(debug_layout_验证码)
+    ui.addCheckBox(debug_layout_验证码, "use_cus_cap", "2.使用自定义打码服务", true)
+    ui.setEnable("use_cus_cap", false)
+    newRow(debug_layout_验证码)
+    addTextView(debug_layout_验证码, "自定义打码地址②")
+    ui.addEditText(debug_layout_验证码, "cloud_captcha_server2", "")
+
+    newRow(debug_layout_验证码)
+    ui.addCheckBox(debug_layout_验证码, "use_captcha", "3.使用图鉴打码", true)
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "图鉴用户名")
     ui.addEditText(debug_layout_验证码, "captcha_username", "")
@@ -748,16 +762,11 @@ show_debug_ui = function()
     ui.addEditText(debug_layout_验证码, "captcha_password", "")
 
     newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "use_jfbym_dx", "使用云码处理点选", false)
-
+    ui.addCheckBox(debug_layout_验证码, "use_jfbym_dx", "4.使用云码处理点选", false)
 
     -- newRow(debug_layout_验证码)
     -- addTextView(debug_layout_验证码, "自定义打码地址")
     -- ui.addEditText(debug_layout_验证码, "cloud_captcha_server", "")
-
-    newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "自定义打码地址②")
-    ui.addEditText(debug_layout_验证码, "cloud_captcha_server2", "")
 
     local debug_layout_云控 = "debug_tab_yk"
     ui.addTab("debug_tab", debug_layout_云控, "云控")
