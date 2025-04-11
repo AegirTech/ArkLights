@@ -535,33 +535,38 @@ path.bilibili_login = {
 
         ssleep(.5)
         log("b服打码")
-        next_cap_type = 1 or next_cap_type
-        if trySolvePointSelectionCapture(box, next_cap_type) then
-            ssleep(0.3)
-            if not findTap("B服安全验证提交") then
-                findTap("B服安全验证提交320DPI")
-                tapIfCheckedColor({ 823, 605, "539FFE" }, { 823, 605, "539FFE" })
-            end
-            if appear({ "B服安全验证失败", "B服安全验证失败320DPI" }) then
-                cloud.captcha_report()
-                jfbym_report()
-                ttshitu_report()
-                ssleep(1.0)
-                back()
-                next_cap_type = next_cap_type + 1
-            end
 
-            wait(function()
-                if not findAny({
-                        "B服安全验证提交", "B服安全验证提交320DPI",
-                    }) then
-                    log("B服安全验证提交失败2")
-                    return true
-                end
-                ssleep(2)
-                back()
-            end, 5)
+        local choices = { 3, 4, 1, 2 }
+        for _, choice in ipairs(choices) do
+            if trySolvePointSelectionCapture(box, choices) then
+                break
+            end
         end
+        ssleep(0.3)
+        if not findTap("B服安全验证提交") then
+            findTap("B服安全验证提交320DPI")
+            tapIfCheckedColor({ 823, 605, "539FFE" }, { 823, 605, "539FFE" })
+        end
+        if appear({ "B服安全验证失败", "B服安全验证失败320DPI" }) then
+            cloud.captcha_report()
+            jfbym_report()
+            ttshitu_report()
+            ssleep(1.0)
+            back()
+            next_cap_type = next_cap_type + 1
+        end
+
+        wait(function()
+            if not findAny({
+                    "B服安全验证提交", "B服安全验证提交320DPI",
+                }) then
+                log("B服安全验证提交失败2")
+                return true
+            end
+            ssleep(2)
+            back()
+        end, 5)
+
         log(7)
     end),
 }
