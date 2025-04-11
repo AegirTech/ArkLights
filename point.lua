@@ -115,6 +115,16 @@ point = {
     产业合作洽谈会 = "175|114|1FBCB4,1788|139|FFFFFF",
     产业合作洽谈会策略 = { 1674, 945 },
     -- 滑块验证节点 = { text = "请通过以下验证" },
+
+    -- 验证码
+    captcha = function()
+        if findOne({ id = 'captcha' }) then
+            return findOne({ class = "android.webkit.WebView" })
+        end
+    end,
+    captcha_area = { 652, 150, 1255, 591 },
+    captcha_left_area = { 576, 150, 670, 591 },
+    captcha_area_btn = { 642, 712 },
     滑块验证节点新 = "724|715|618AFD,814|721|5F89FD",
     滑块验证节点新720 = "663|756|618AFD,750|759|5F89FD",
     官服点选验证720 = "628|36|4E79ED,680|797|B4C4EE",
@@ -147,6 +157,8 @@ point = {
         level = "17",
         package = "com.hypergryph.arknights.bilibili",
     },
+
+
     b服年度报告 = { package = "com.hypergryph.arknights.bilibili", text = "该内容不再展示" },
     b服年度报告关闭 = { class = "android.widget.ImageView", id = "com.hypergryph.arknights.bilibili:id/iv_gs_announcement_close", level = "5", package = "com.hypergryph.arknights.bilibili" },
     月饼确认 = "1012|967|FF6411",
@@ -555,9 +567,6 @@ point = {
     -- 2位 789,1098,1407,1714
 
     副手第七干员选中 = "1219|361|0098DC",
-    captcha_area = { 652, 150, 1255, 591 },
-    captcha_left_area = { 576, 150, 670, 591 },
-    captcha_area_btn = { 642, 712 },
     bilibili_account_switch = "1416|88|4FBDEA,1602|42|FFFFFF,1593|150|FFFFFF",
     制造站最多 = "1446|307|404040",
     制造站执行更改 = "1420|847|00A5EF",
@@ -678,18 +687,6 @@ point = {
     保全调配干员 = "1798|697|EC680D",
     保全增调干员 = "1719|546|FFFFFF,162|174|232323",
     保全放弃调用 = { 1810, 883 },
-    -- captcha = {id = 'com.hypergryph.arknights:id/gt3_wait_tv2'},
-    -- captcha = {
-    --   class = "android.webkit.WebView",
-    --   package = "com.hypergryph.arknights",
-    -- },
-    captcha = function()
-        if findOne({ id = 'captcha' }) then
-            return findOne({ class = "android.webkit.WebView" })
-        end
-    end,
-    -- captcha = "604|721|00D266,612|721|F9F9F9,594|721|F9F9F9",
-    -- captcha = "604|721|66D200,612|721|F9F9F9,594|721|F9F9F9",
     -- 技能ready = "1181|687|CBEC47,1191|697|FFFFFF,1203|708|CBEC47",
     -- 技能ready = "1192|699|FFFFFF,1314|691|CBEC47,1180|689|CBEC47",
     -- 技能ready = "1192|699|FFFFFF,1314|691|CBEC47,1180|689|CBEC47,1182|710|CBEC47",

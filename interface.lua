@@ -570,7 +570,6 @@ show_main_ui = function()
     if appid_need_user_select then
         newRow(layout)
         addTextView(layout, "服务器选")
-        -- ui.addRadioGroup(layout, "server", {"官服", "B服"}, 0, -2, -2, true)
 
         ui.addSpinner(layout, "server", { "官服", "B服" }, 0)
     end
@@ -579,8 +578,6 @@ show_main_ui = function()
 
     make_afterjob_ui(layout)
 
-    -- 无法实现
-    -- ui.addCheckBox(layout, "end_poweroff", "关机")
 
     -- newRow(layout)
     -- addTextView(layout,
@@ -642,8 +639,6 @@ show_ad_ui = function()
     newRow(layout)
     addButton(layout, nil, "Aunly打码平台官网", [[putClipboard("https://captcha.aunly.cn/");
     toast("已复制到剪贴板")]])
-    -- addButton(layout, nil, "微店购买充值CDK",
-    --     make_jump_ui_command(layout, nil, [[jump_address("https://weidian.com/item.html?itemID=7398821178")]]))
 
     add_text("\r\n \r\n")
     add_text("此广告的收益将用于维护脚本和服务器\r\n")
@@ -706,7 +701,7 @@ show_debug_ui = function()
     ui.addTabView(layout, "debug_tab")
 
     local debug_layout_验证码 = "debug_tab_yzm"
-    ui.addTab("debug_tab", debug_layout_验证码, "验证码")
+    ui.addTab("debug_tab", debug_layout_验证码, "验证码--打码流程自上而下")
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "Aunly打码用于点选验证码，平台注册&购买地址(打码每次0.012元)")

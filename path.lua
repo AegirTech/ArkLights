@@ -455,10 +455,6 @@ path.bilibili_login = {
         tap("bilibili_account_login")
         appear("bilibili_username_inputbox")
     end,
-    -- bilibili_username_inputbox = function()
-    --   if not findOne()
-    --   tap("返回")
-    -- end,
     bilibili_username_inputbox = disable_game_up_check_wrapper(function()
         log(149)
         -- 把输入法关了
@@ -469,8 +465,6 @@ path.bilibili_login = {
         if username and #username > 0 and password and #password > 0 then
             wait(function() input("bilibili_username_inputbox", username) end, 1)
             wait(function() input("bilibili_password_inputbox", password) end, 1)
-            -- input("bilibili_username_inputbox", username)
-            -- input("bilibili_password_inputbox", password)
         else
             stop("账号或密码为空", account_idx and 'next' or '')
         end
@@ -541,7 +535,8 @@ path.bilibili_login = {
 
         ssleep(.5)
         log("b服打码")
-        if trySolvePointSelectionCapture(box) then
+        next_cap_type = 1 or next_cap_type
+        if trySolvePointSelectionCapture(box, next_cap_type) then
             ssleep(0.3)
             if not findTap("B服安全验证提交") then
                 findTap("B服安全验证提交320DPI")
@@ -553,6 +548,7 @@ path.bilibili_login = {
                 ttshitu_report()
                 ssleep(1.0)
                 back()
+                next_cap_type = next_cap_type + 1
             end
 
             wait(function()

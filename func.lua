@@ -454,7 +454,14 @@ trySolveSlipCaptcha = function(retry)
         pcall(SolveSlipCaptcha, getCaptchaBox(), 1)
         SolveSlipCaptcha(getCaptchaBox(), 2)
     elseif findOne("官服点选验证720") then
-        trySolvePointSelectionCapture(getChoiceBox())
+        local choices = { 3, 4, 1, 2 }
+        for _, choice in ipairs(choices) do
+            trySolvePointSelectionCapture(getChoiceBox(), choice)
+            ssleep(0.5)
+            if findOne("官服点选验证确认720") then
+                break
+            end
+        end
         wait(function()
             if findOne("realgame") then return true end
             appearTap("官服点选验证确认720", 1)
@@ -483,6 +490,7 @@ end
 -- 滑块验证码统一处理
 SolveSlipCaptcha = function(rect, type)
     if not rect then return end
+    local type = type or 1
     local distance = 0
     if type == 1 then -- 免费服务器
         if not use_free_server_captcha then return end
@@ -555,22 +563,26 @@ SolveSlipCaptcha = function(rect, type)
 end
 
 -- 官服/b服选点验证码打码
-trySolvePointSelectionCapture = function(rect)
-    if cloud.captcha(rect) then return true end
-    if cloud.captchaSecond(rect) then return true end
+trySolvePointSelectionCapture = function(rect, type)
+    local type = type or 1
+    if type == 3 then
+        if cloud.captcha(rect) then return true end
+    elseif type == 4 then
+        if cloud.captchaSecond(rect) then return true end
+    end
     if not rect then return end
     local img = getWorkPath() .. "/capture.jpg"
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
-    local img_base64 = base64(img)
     local ans = nil
-    if use_captcha then
-        -- 图鉴
+
+    if type == 1 then -- 图鉴
+        if not use_captcha then return end
         if not captcha_username or not captcha_password then return end
         local data = {
             username = captcha_username,
             password = captcha_password,
             typeid = "27",
-            image = img_base64,
+            image = base64(img),
         }
         local res, code = httpPost("http://api.ttshitu.com/predict", JsonEncode(data),
             30, "Content-Type: application/json;charset=UTF-8")
@@ -583,8 +595,8 @@ trySolvePointSelectionCapture = function(rect)
             if not success then return end
             ans = get(data, "data", "result") or ""
         end
-    elseif use_jfbym_dx then
-        -- 云码
+    elseif type == 2 then -- 云码
+        if not use_jfbym_dx then return end
         if not jfbym_token or #jfbym_token < 5 then return end
         local data = {
             token = jfbym_token,
@@ -593,10 +605,8 @@ trySolvePointSelectionCapture = function(rect)
             extra = "je4_click",
             developer_tag = "1fd49a52277365a95b785710e9fb54c9",
         }
-
         local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
             30, "Content-Type: application/json;charset=UTF-8")
-
         local status, data = pcall(JsonDecode, res)
         log("识别结果", data)
         data = data or {}
@@ -605,7 +615,6 @@ trySolvePointSelectionCapture = function(rect)
             return
         end
         unique_code = get(data, "data", "unique_code") or ""
-
         ans = get(data, "data", "data") or ""
     end
     if not ans then return end
