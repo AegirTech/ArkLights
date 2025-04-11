@@ -65,10 +65,12 @@ auto_update_game = function()
     if (auto_update_game_select ~= 2) and game_check_version("com.hypergryph.arknights") == false then
         toast("官服更新开始")
         local url = "https://ak.hypergryph.com/downloads/android_lastest"
+        local red1 = parse_download_url(url)
+        local red2 = parse_download_url(red1)
         if auto_update_mode == 0 then
-            install_game(parse_download_url(url))  --使用curl下载并安装
+            install_game(red2)  --使用curl下载并安装
         else
-            install_game2(parse_download_url(url)) --用自带的更新
+            install_game2(red2) --用自带的更新
         end
     end
     if (auto_update_game_select ~= 1) and game_check_version("com.hypergryph.arknights.bilibili") == false then
@@ -152,9 +154,11 @@ parse_download_url = function(url)
         method = "GET",
         redirect = false -- 禁用自动重定向 防止直接开始下载
     }
-    if code == 302 then
+    if code == 302 or code == 301 then
         local redirect = headers.location
         return redirect
+    else
+        return url
     end
 end
 

@@ -1016,11 +1016,11 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_其他, "restart_on_crontab_timeout",
         "跨定时点结束后重启", true)
 
-    -- newRow(debug_layout_其他)
-    -- ui.addCheckBox(debug_layout_其他, "auto_update_gameclient",
-    --     "自动更新游戏客户端", false)
-    -- ui.addSpinner(debug_layout_其他, "auto_update_mode", { "方式一", "方式二" }, 1)
-    -- ui.addSpinner(debug_layout_其他, "auto_update_game_select", { "官服和B服", "只更新官服", "只更新B服" }, 0)
+    newRow(debug_layout_其他)
+    ui.addCheckBox(debug_layout_其他, "auto_update_gameclient",
+        "自动更新游戏客户端", false)
+    ui.addSpinner(debug_layout_其他, "auto_update_mode", { "方式一", "方式二" }, 1)
+    ui.addSpinner(debug_layout_其他, "auto_update_game_select", { "官服和B服", "只更新官服", "只更新B服" }, 0)
 
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "delete_download_floder",
@@ -1104,6 +1104,7 @@ show_debug_ui = function()
     newRow(debug_layout_调试)
     addTextView(debug_layout_调试, "关卡导航最大滑动距离(屏幕比例,小于1)")
     ui.addEditText(debug_layout_调试, "swipp_max_len", [[]])
+    newRow(debug_layout_调试)
     addTextView(debug_layout_调试, "关卡导航每次等待时间(ms)")
     ui.addEditText(debug_layout_调试, "swipp_wait_time", [[]])
 
