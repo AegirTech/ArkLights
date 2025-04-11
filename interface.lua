@@ -727,13 +727,15 @@ show_debug_ui = function()
     newRow(debug_layout_验证码)
     ui.addCheckBox(debug_layout_验证码, "use_free_server_captcha", "1.使用免费打码服务", true)
     newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "use_jfbym", "2.使用云码API处理滑块验证码", false)
+    ui.addCheckBox(debug_layout_验证码, "use_jfbym", "2.使用云码API", false)
     addButton(debug_layout_验证码, nil, "云码官网",
         make_jump_ui_command(layout, nil, [[jump_address("https://www.jfbym.com/")]]))
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "云码Token")
     ui.addEditText(debug_layout_验证码, "jfbym_token", "")
+    newRow(debug_layout_验证码)
+    ui.addCheckBox(debug_layout_验证码, "use_tt_slip", "3.使用图鉴", false)
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "==================================")

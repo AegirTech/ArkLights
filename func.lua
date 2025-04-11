@@ -537,6 +537,29 @@ SolveSlipCaptcha = function(rect, type)
         distance = tonumber(get(data, "data", "data")) or 0
         log("云码", distance)
         distance = distance - scale(12)
+    elseif type == 3 then -- 图鉴
+        if not use_tt_slip then return end
+        if not captcha_username or not captcha_password then return end
+        local img = getWorkPath() .. "/captcha_tujian.jpg"
+        snapShot(img, rect.l, rect.t, rect.r, rect.b)
+        local data = {
+            username = captcha_username,
+            password = captcha_password,
+            typeid = "33",
+            image = base64(img),
+        }
+        local res, code = httpPost("http://api.ttshitu.com/predict", JsonEncode(data),
+            30, "Content-Type: application/json;charset=UTF-8")
+        log("识别结果", res)
+        if code == 200 then
+            local status, data = pcall(JsonDecode, res)
+            data = data or {}
+            ttshitu_last_id = get(data, "data", "id") or ""
+            local success = get(data, "success") or false
+            if not success then return end
+            distance = get(data, "data", "result") or 0
+            distance = tonumber(distance) - scale(12)
+        end
     end
 
     if distance == 0 then return end
@@ -570,16 +593,16 @@ end
 -- 官服/b服选点验证码打码
 trySolvePointSelectionCapture = function(rect, type)
     local type = type or 1
+    log("choice", type, rect)
+    if not rect then return end
     if type == 3 then
         if cloud.captcha(rect) then return true end
     elseif type == 4 then
         if cloud.captchaSecond(rect) then return true end
     end
-    if not rect then return end
     local img = getWorkPath() .. "/capture.jpg"
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local ans = nil
-
     if type == 1 then -- 图鉴
         if not use_captcha then return end
         if not captcha_username or not captcha_password then return end

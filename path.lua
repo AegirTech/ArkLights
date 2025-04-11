@@ -539,6 +539,7 @@ path.bilibili_login = {
         local choices = { 3, 4, 1, 2 }
         for _, choice in ipairs(choices) do
             if trySolvePointSelectionCapture(box, choices) then
+                log(choices, "success")
                 break
             end
         end
@@ -2069,6 +2070,64 @@ path.宿舍换班 = function()
         return
     end
     for i = 1, 4 do f(i) end
+end
+
+path.基建信息获取new = function()
+    dormitoryCapacity = 0
+    dormitoryLevelSum = 0
+    dormitoryNum = 0
+    goldStationNum = 0
+    tradingStationNum = 0
+    powerStationNum = 0
+    virtralPowerStationNum = powerStationNum
+    totalStationLevel = 0
+
+    dormitoryStation = {}
+    dormitoryLevel = {}
+    powerStation = {}
+    powerStationLevel = {}
+    tradingStation = {}
+    tradingStationLevel = {}
+    manufacturingStation = {}
+    manufacturingStationLevel = {}
+
+    isCharExsit = {}
+    path.跳转("基建")
+    if not wait(function()
+            if findOne("基建总览工作区") then return true end
+            tap("进驻总览")
+            ssleep(.2)
+            if findOne("教程关闭") then
+                tap("教程关闭")
+                ssleep(.2)
+            end
+        end, 10) then
+        return
+    end
+    ssleep(.2)
+    path.基建总览翻页()
+end
+
+path.基建总览翻页_new = function()
+    local flipd = 150
+    local flips = 50
+    local duration = flipd + flips + 50
+    local x1 = screen.width - scale(1280 - 500)
+    local x2 = x1 + scale(100)
+    local x3 = screen.width - 1
+    local y1 = scale(150)
+    local y2 = screen.height * 0.9
+    local paths = {
+        { point = { { x1, y1 }, { x3, y1 } }, duration = duration },
+        { point = { { x1, y2 }, { x2, y2 } }, duration = flipd,   start = flips },
+    }
+    -- sleep(100)
+    gesture(paths)
+    sleep(duration + 50)
+    -- 可能还是需要按下
+    tap("入驻干员右侧")
+    -- 不用的话，大分辨率还是有可能出现错过加号
+    sleep(100)
 end
 
 -- 各站数量与等级，直接全局变量
