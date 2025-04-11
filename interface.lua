@@ -974,7 +974,7 @@ show_debug_ui = function()
         "基建换班禁用总览换班", false)
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "only_change_assistant_at_Monday",
-        "副手换人仅在周一执行", false)
+        "副手换人仅在周一执行", true)
 
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "collect_beforeleaving",
@@ -1100,6 +1100,12 @@ show_debug_ui = function()
     ui.addEditText(debug_layout_调试, "force_width", [[]])
     addTextView(debug_layout_调试, "x")
     ui.addEditText(debug_layout_调试, "force_height", [[]])
+
+    newRow(debug_layout_调试)
+    addTextView(debug_layout_调试, "关卡导航最大滑动距离(屏幕比例,小于1)")
+    ui.addEditText(debug_layout_调试, "swipp_max_len", [[]])
+    addTextView(debug_layout_调试, "关卡导航每次等待时间(ms)")
+    ui.addEditText(debug_layout_调试, "swipp_wait_time", [[]])
 
     newRow(debug_layout_调试)
     addTextView(debug_layout_调试, "点击后等待(ms)")

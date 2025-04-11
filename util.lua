@@ -1002,6 +1002,9 @@ swipu = function(dis)
     local freey = scale(180)              -- 避开14章右上角
     local freex = scale(360 / 720 * 1080) -- 第12章左上角
     local max_once_dis = screen.width - scale(300) - freex
+    if type(swipp_max_len) == "string" and swipp_max_len ~= "" then
+        max_once_dis = math.min(max_once_dis, screen.width * tonumber(swipp_max_len))
+    end
 
     for _, d in pairs(dis) do
         local sign = d > 0 and 1 or -1
@@ -1050,6 +1053,9 @@ swipu = function(dis)
             finger[1].duration = last_finger.start + last_finger.duration + end_delay
             log("finger", finger)
             gesture(finger)
+            if type(swipp_wait_time) == "string" and swipp_wait_time ~= "" then
+                sleep(tonumber(swipp_wait_time))
+            end
             sleep(finger[1].duration + 50)
         end
     end

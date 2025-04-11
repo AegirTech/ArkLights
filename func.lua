@@ -446,6 +446,7 @@ getChoiceBox = function(retry)
     end
 end
 
+-- 滑块验证码/官服点选 处理判断
 trySolveSlipCaptcha = function(retry)
     local retry = retry or 0
     if not findOne("captcha") then return end
@@ -487,7 +488,7 @@ trySolveSlipCaptcha = function(retry)
     end
 end
 
--- 滑块验证码统一处理
+-- 滑块验证码打码
 SolveSlipCaptcha = function(rect, type)
     if not rect then return end
     local type = type or 1
