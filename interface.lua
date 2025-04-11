@@ -529,7 +529,6 @@ make_jump_ui = function(layout)
         { "join_qq", "加入QQ群", make_jump_ui_command(layout, nil, "jump_qq_qun()") },
         { "join_channel", "QQ频道", make_jump_ui_command(layout, nil, "jump_qq_channel()") },
         { "readme_btn", "使用文档", make_jump_ui_command(layout, nil, "saveConfig('readme_already_read','1');jump_readme()") },
-        { "close_app", "完全关闭脚本并禁止自启动", make_jump_ui_command(layout, nil, "close_app_r()") },
     }
 
     for k, v in pairs(buttons) do
