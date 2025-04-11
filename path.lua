@@ -538,7 +538,8 @@ path.bilibili_login = {
 
         local choices = { 3, 4, 1, 2 }
         for _, choice in ipairs(choices) do
-            if trySolvePointSelectionCapture(box, choices) then
+            log(choice, "尝试", box)
+            if trySolvePointSelectionCapture(box, choice) then
                 log(choices, "success")
                 break
             end

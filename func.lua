@@ -493,11 +493,11 @@ trySolveSlipCaptcha = function(retry)
 end
 
 -- 滑块验证码打码
-SolveSlipCaptcha = function(rect, type)
+SolveSlipCaptcha = function(rect, p_type)
     if not rect then return end
-    local type = type or 1
+    local p_type = p_type or 1
     local distance = 0
-    if type == 1 then -- 免费服务器
+    if p_type == 1 then -- 免费服务器
         if not use_free_server_captcha then return end
         log("free solve")
         local img = getWorkPath() .. "/captcha_free.jpg"
@@ -516,7 +516,7 @@ SolveSlipCaptcha = function(rect, type)
         if distance < 1 then return false end
         --  修正偏移
         distance = distance - scale(12)
-    elseif type == 2 then -- 云码
+    elseif p_type == 2 then -- 云码
         if not jfbym_token then return end
         local img = getWorkPath() .. "/captcha_jfbym.jpg"
         snapShot(img, rect.l, rect.t, rect.r, rect.b)
@@ -537,7 +537,7 @@ SolveSlipCaptcha = function(rect, type)
         distance = tonumber(get(data, "data", "data")) or 0
         log("云码", distance)
         distance = distance - scale(12)
-    elseif type == 3 then -- 图鉴
+    elseif p_type == 3 then -- 图鉴
         if not use_tt_slip then return end
         if not captcha_username or not captcha_password then return end
         local img = getWorkPath() .. "/captcha_tujian.jpg"
@@ -591,19 +591,15 @@ SolveSlipCaptcha = function(rect, type)
 end
 
 -- 官服/b服选点验证码打码
-trySolvePointSelectionCapture = function(rect, type)
-    local type = type or 1
+trySolvePointSelectionCapture = function(rect, p_type)
+    local p_type = p_type or 1
     log("choice", type, rect)
     if not rect then return end
-    if type == 3 then
-        if cloud.captcha(rect) then return true end
-    elseif type == 4 then
-        if cloud.captchaSecond(rect) then return true end
-    end
     local img = getWorkPath() .. "/capture.jpg"
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local ans = nil
-    if type == 1 then -- 图鉴
+    if p_type == 1 then -- 图鉴
+        log("图鉴")
         if not use_captcha then return end
         if not captcha_username or not captcha_password then return end
         local data = {
@@ -623,13 +619,14 @@ trySolvePointSelectionCapture = function(rect, type)
             if not success then return end
             ans = get(data, "data", "result") or ""
         end
-    elseif type == 2 then -- 云码
+    elseif p_type == 2 then -- 云码
+        log("云码")
         if not use_jfbym_dx then return end
         if not jfbym_token or #jfbym_token < 5 then return end
         local data = {
             token = jfbym_token,
             type = "30112",
-            image = img_base64,
+            image = base64(img),
             extra = "je4_click",
             developer_tag = "1fd49a52277365a95b785710e9fb54c9",
         }
@@ -644,7 +641,22 @@ trySolvePointSelectionCapture = function(rect, type)
         end
         unique_code = get(data, "data", "unique_code") or ""
         ans = get(data, "data", "data") or ""
+    elseif p_type == 3 then
+        log("cloud1")
+        if cloud.captcha(rect) then
+            return true
+        else
+            return false
+        end
+    elseif p_type == 4 then
+        log("cloud2")
+        if cloud.captchaSecond(rect) then
+            return true
+        else
+            return false
+        end
     end
+    log("ans", ans)
     if not ans then return end
     for coord in string.gmatch(ans, "%d+,%d+") do
         local x, y = string.match(coord, "(%d+),(%d+)")
