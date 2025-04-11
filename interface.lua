@@ -736,7 +736,7 @@ show_debug_ui = function()
     ui.addEditText(debug_layout_验证码, "jfbym_token", "")
 
     newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "use_tt_slip", "3.使用图鉴", false)
+    ui.addCheckBox(debug_layout_验证码, "use_tt_slip", "3.使用图鉴（效果差）", false)
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "==================================")

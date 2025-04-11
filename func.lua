@@ -558,7 +558,7 @@ SolveSlipCaptcha = function(rect, p_type)
             local success = get(data, "success") or false
             if not success then return end
             distance = get(data, "data", "result") or 0
-            distance = tonumber(distance) - scale(12)
+            distance = tonumber(distance) + scale(12)
         end
     end
 
