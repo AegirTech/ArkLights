@@ -703,22 +703,22 @@ path.login_change = update(path.login, {
 }, nil, true)
 
 path.fallback = {
-    阿米娅大头照左上角 = function()
-        -- 全屏点一遍
-        for w = 150, screen.width - 50, 50 do
-            if findAny(known) then return true end
-            for h = 50, screen.height - 50, 50 do
-                tap({ w, h })
-                back()
-            end
-        end
-        if appear({ "阿米娅大头照左上角", "阿米娅大头照左下角" }, 2) then
-            return path.fallback.阿米娅大头照左上角()
-        end
-    end,
-    阿米娅大头照左下角 = function()
-        return path.fallback.阿米娅大头照左上角()
-    end,
+    -- 阿米娅大头照左上角 = function()
+    --     -- 全屏点一遍
+    --     for w = 150, screen.width - 50, 50 do
+    --         if findAny(known) then return true end
+    --         for h = 50, screen.height - 50, 50 do
+    --             tap({ w, h })
+    --             back()
+    --         end
+    --     end
+    --     if appear({ "阿米娅大头照左上角", "阿米娅大头照左下角" }, 2) then
+    --         return path.fallback.阿米娅大头照左上角()
+    --     end
+    -- end,
+    -- 阿米娅大头照左下角 = function()
+    --     return path.fallback.阿米娅大头照左上角()
+    -- end,
     同意协议 = function()
         -- findTap({text = "下一步"})
 
@@ -2106,7 +2106,8 @@ path.基建信息获取new = function()
         return
     end
     ssleep(.2)
-    path.基建总览翻页()
+
+    -- path.基建总览翻页()
 end
 
 path.基建总览翻页_new = function()
@@ -2117,7 +2118,7 @@ path.基建总览翻页_new = function()
     local x2 = x1 + scale(100)
     local x3 = screen.width - 1
     local y1 = scale(150)
-    local y2 = screen.height * 0.9
+    local y2 = screen.height * 0.82
     local paths = {
         { point = { { x1, y1 }, { x3, y1 } }, duration = duration },
         { point = { { x1, y2 }, { x2, y2 } }, duration = flipd,   start = flips },
@@ -2164,7 +2165,7 @@ path.基建信息获取 = function(retry)
     local f
     keepCapture()
     f = function(i)
-        local x, y = table.unpack(point["基建列表" .. i])
+        local x, y = table.unpack(point["基建列表" ..ss i])
         local station, stationLevel
         for type, color in pairs(type2color) do
             if type == "制造站" then
