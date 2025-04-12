@@ -168,13 +168,13 @@ m.captcha = function(box)
             box.l + x_size * 0.577249 // 1,
             box.t + y_size * 0.0565217 // 1,
             box.r,
-            box.t + y_size * 0.19565 // 1
+            box.t + y_size * 0.19565 // 1,
         }
         image_pos = {
-            box.l
+            box.l,
             box.t + y_size * 0.232104 // 1,
-            box.l
-            box.t
+            box.l,
+            box.t,
         }
         log("官服新版滑块")
     else

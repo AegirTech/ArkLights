@@ -497,15 +497,20 @@ trySolveSlipCaptcha = function(retry)
             trySolvePointSelectionCapture(getChoiceBox(), choice)
             ssleep(0.5)
             if findOne("官服点选验证确认720") then
+                log("点选确认按钮 find")
                 break
             end
         end
         official_choice = false
         wait(function()
-            if findOne("realgame") then return true end
+            if not findAny({ "captcha", "官服点选验证确认720", "官服点选验证720" }) then return true end
             appearTap("官服点选验证确认720", 1)
         end, 10)
     elseif findOne("滑块验证节点") then -- 旧版滑块->b服
+        if findOne("滑块验证节点新720") then
+            ssleep(0.5)
+            return
+        end
         local box = findOne("滑块验证节点")
         log("find 旧版滑块box", box)
         is_old_slip = true
@@ -677,6 +682,9 @@ trySolvePointSelectionCapture = function(rect, p_type)
         local ans_p = { rect.l + x, rect.t + y }
         tap(ans_p)
         ssleep(0.2)
+        if official_choice then
+            ssleep(0.5)
+        end
     end
     return true
 end
