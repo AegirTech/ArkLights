@@ -2183,18 +2183,28 @@ path.水月与深蓝之树前瞻投资 = function()
                 end
                 tap("诡意行商离开")
             end, 10)
-            local tt = time()
             wait(function()
-                if findOne("战略返回") then return true end
-                if time() - tt > 1.5 * 1000 then
-                    tap("水月_骰子确认")
-                    tt = time()
+                if findOne("战略返回") then
+                    tap("战略返回")
+                    ssleep(1)
+                    if findOne("水月_常规行动") then return true end
                 end
-                tap("诡意行商离开")
-            end, 10)
-            appear('战略返回')
-            findTap('战略返回')
-            appear('水月_常规行动', 5)
+                tap("水月_骰子确认")
+                tap("水月_进入第二层中间点击位置")
+            end, 15, .1)
+
+            -- local tt = time()
+            -- wait(function()
+            --     if findOne("战略返回") then return true end
+            --     if time() - tt > 1.5 * 1000 then
+            --         tap("水月_骰子确认")
+            --         tt = time()
+            --     end
+            --     tap("诡意行商离开")
+            -- end, 10)
+            -- appear('战略返回')
+            -- findTap('战略返回')
+            -- appear('水月_常规行动', 5)
         end
 
         -- 商店

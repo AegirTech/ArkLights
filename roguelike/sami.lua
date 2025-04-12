@@ -7,7 +7,7 @@ sami = {}
 path.探索者的银淞止境前瞻投资 = function(lighter)
     --ssleep(.1)
     log('start 探索')
-    if findOne("萨米_风雪蔽目") then
+    if findAny({ "萨米_风雪蔽目", "萨米_风雪蔽目2" }) then
         wait(function()
             if findAny({ "萨米_常规行动", "面板" }) then return true end
             tap("战略确认")
