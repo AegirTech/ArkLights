@@ -455,6 +455,7 @@ trySolveSlipCaptcha = function(retry)
     local retry = retry or 0
     if not findOne("captcha") then return end
     ssleep(1) -- 等待验证码出图
+    is_old_slip = false
     if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
         pcall(SolveSlipCaptcha, getCaptchaBox(), 1)
         SolveSlipCaptcha(getCaptchaBox(), 2)
@@ -471,6 +472,14 @@ trySolveSlipCaptcha = function(retry)
             if findOne("realgame") then return true end
             appearTap("官服点选验证确认720", 1)
         end, 5)
+    elseif findOne("滑块验证节点") then -- 旧版滑块->b服
+        local box = findOne("滑块验证节点")
+        log("旧版滑块box", box)
+        is_old_slip = true
+        if not box then return end
+        box = box.bounds
+        pcall(SolveSlipCaptcha, getCaptchaBox(), 1)
+        SolveSlipCaptcha(getCaptchaBox(), 2)
     end
     if not appear("realgame", 5) then
         jfbym_report()
@@ -563,8 +572,14 @@ SolveSlipCaptcha = function(rect, p_type)
     end
 
     if distance == 0 then return end
-    tap({ scale(964), scale(805) })
-    local sx, sy = scale(750), scale(740)
+    local sx, sy
+    if is_old_slip then
+        sx, sy = scale(702), scale(686)
+    else
+        tap({ scale(964), scale(805) })
+        sx, sy = scale(750), scale(740)
+    end
+
     log(sx, sy)
     -- 用于模拟滑动轨迹
     gesture({

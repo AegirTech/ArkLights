@@ -114,9 +114,9 @@ point = {
     艺术评论 = "1591|930|FC5715",
     产业合作洽谈会 = "175|114|1FBCB4,1788|139|FFFFFF",
     产业合作洽谈会策略 = { 1674, 945 },
-    -- 滑块验证节点 = { text = "请通过以下验证" },
 
     -- 验证码
+    滑块验证节点 = { text = "请通过以下验证" },
     captcha = function()
         if findOne({ id = 'captcha' }) then
             return findOne({ class = "android.webkit.WebView" })
