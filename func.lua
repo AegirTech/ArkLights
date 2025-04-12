@@ -440,7 +440,7 @@ getChoiceBox = function(retry)
                 end
             end
         end
-        if box.t - box.b < max(scale(351), 300) - 10 then
+        if box.b - box.t < max(scale(351), 300) - 10 then
             log("点选验证框 failed", box)
             ssleep(0.5)
             return getChoiceBox(retry + 1)
