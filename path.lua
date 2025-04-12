@@ -2165,7 +2165,7 @@ path.基建信息获取 = function(retry)
     local f
     keepCapture()
     f = function(i)
-        local x, y = table.unpack(point["基建列表" ..ss i])
+        local x, y = table.unpack(point["基建列表" .. i])
         local station, stationLevel
         for type, color in pairs(type2color) do
             if type == "制造站" then
