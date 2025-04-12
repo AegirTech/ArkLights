@@ -453,13 +453,16 @@ end
 -- 滑块验证码/官服点选 处理判断
 trySolveSlipCaptcha = function(retry)
     local retry = retry or 0
-    if not findOne("captcha") then return end
+    if not findAny({ "captcha", "滑块验证节点", "官服点选验证确认720", "滑块验证节点新720" }) then return end
+    log("等待验证码出图")
     ssleep(1) -- 等待验证码出图
     is_old_slip = false
     if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
+        log("find 滑块验证节点新")
         pcall(SolveSlipCaptcha, getCaptchaBox(), 1)
         SolveSlipCaptcha(getCaptchaBox(), 2)
     elseif findOne("官服点选验证720") then
+        log("find 官服点选验证720")
         local choices = { 3, 4, 1, 2 }
         for _, choice in ipairs(choices) do
             trySolvePointSelectionCapture(getChoiceBox(), choice)
@@ -474,13 +477,22 @@ trySolveSlipCaptcha = function(retry)
         end, 5)
     elseif findOne("滑块验证节点") then -- 旧版滑块->b服
         local box = findOne("滑块验证节点")
-        log("旧版滑块box", box)
+        log("find 旧版滑块box", box)
+        is_old_slip = true
+        if not box then return end
+        box = box.bounds
+        pcall(SolveSlipCaptcha, getCaptchaBox(), 1)
+        SolveSlipCaptcha(getCaptchaBox(), 2)
+    elseif findOne("captcha") then
+        local box = findOne("captcha")
+        log("find 旧版box", box)
         is_old_slip = true
         if not box then return end
         box = box.bounds
         pcall(SolveSlipCaptcha, getCaptchaBox(), 1)
         SolveSlipCaptcha(getCaptchaBox(), 2)
     end
+    log("验证码处理完毕，等待游戏")
     if not appear("realgame", 5) then
         jfbym_report()
         if retry < 4 then
