@@ -481,16 +481,16 @@ trySolveSlipCaptcha = function(retry)
         is_old_slip = true
         if not box then return end
         box = box.bounds
-        pcall(SolveSlipCaptcha, getCaptchaBox(), 1)
-        SolveSlipCaptcha(getCaptchaBox(), 2)
+        pcall(SolveSlipCaptcha, box, 1)
+        SolveSlipCaptcha(box, 2)
     elseif findOne("captcha") then
         local box = findOne("captcha")
         log("find 旧版box", box)
         is_old_slip = true
         if not box then return end
         box = box.bounds
-        pcall(SolveSlipCaptcha, getCaptchaBox(), 1)
-        SolveSlipCaptcha(getCaptchaBox(), 2)
+        pcall(SolveSlipCaptcha, box, 1)
+        SolveSlipCaptcha(box, 2)
     end
     log("验证码处理完毕，等待游戏")
     if not appear("realgame", 5) then
