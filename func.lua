@@ -451,7 +451,7 @@ getChoiceBox = function(retry)
         bx = find_color(nil, "4E79ED", 4, 0.95)
         if not bx then return end
         box.r = bx[1]
-        bx = find_color(nil, "B5C4EE", 3, 0.95)
+        bx = find_color(nil, "EFC4B5", 3, 0.95)
         if not bx then return end
         box.b = bx[2] - 3
         local notb = false
@@ -462,7 +462,6 @@ getChoiceBox = function(retry)
             if notb then
                 if cmpColor(bx[1], y, "EFEFEF", 0.96) == 0 then
                     box.b = y
-                    box.t = box.t + scale(5)
                     box.l = box.l + scale(35)
                     box.r = box.r - scale(35)
                     break
@@ -492,6 +491,7 @@ trySolveSlipCaptcha = function(retry)
         SolveSlipCaptcha(getCaptchaBox(), 2)
     elseif findOne("官服点选验证720") then
         log("find 官服点选验证720")
+        official_choice = true
         local choices = { 3, 4, 1 }
         for _, choice in ipairs(choices) do
             trySolvePointSelectionCapture(getChoiceBox(), choice)
@@ -500,10 +500,11 @@ trySolveSlipCaptcha = function(retry)
                 break
             end
         end
+        official_choice = false
         wait(function()
             if findOne("realgame") then return true end
             appearTap("官服点选验证确认720", 1)
-        end, 5)
+        end, 10)
     elseif findOne("滑块验证节点") then -- 旧版滑块->b服
         local box = findOne("滑块验证节点")
         log("find 旧版滑块box", box)
