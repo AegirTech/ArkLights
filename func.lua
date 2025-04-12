@@ -406,6 +406,35 @@ getCaptchaBox = function(retry)
         ssleep(0.5)
         return getCaptchaBox(retry + 1)
     end
+
+    local half_x = (box.r - box.l) / 2
+    local hava_white = false
+
+    for i = 1, 5 do
+        local x = box.l + math.random(0, half_x)
+        local y = box.t + math.random(0, box.b - box.t)
+        if cmpColor(x, y, "FFFFFF", 0.95) == 1 then
+            hava_white = true
+            break
+        end
+    end
+    if hava_white then
+        local total_pixels = (box.r - box.l) * (box.b - box.t)
+        local white_pixels = 0
+        for x = box.l, box.r do
+            for y = box.t, box.b do
+                if cmpColor(x, y, "FFFFFF", 0.96) == 1 then
+                    white_pixels = white_pixels + 1
+                end
+            end
+        end
+        local white_ratio = white_pixels / total_pixels
+        if white_ratio > 0.2 then
+            ssleep(1.5)
+            return getCaptchaBox(retry + 1)
+        end
+    end
+
     log("cap box", box)
     return box
 end
@@ -422,7 +451,7 @@ getChoiceBox = function(retry)
         bx = find_color(nil, "4E79ED", 4, 0.95)
         if not bx then return end
         box.r = bx[1]
-        bx = find_color(nil, "B5C4EE", 3, 0.95)
+        bx = find_color(nil, "EFC4B5", 3, 0.95)
         if not bx then return end
         box.b = bx[2] - 3
         local notb = false
@@ -433,14 +462,13 @@ getChoiceBox = function(retry)
             if notb then
                 if cmpColor(bx[1], y, "EFEFEF", 0.96) == 0 then
                     box.b = y
-                    box.t = y - max(scale(351), 300)
                     box.l = box.l + scale(35)
                     box.r = box.r - scale(35)
                     break
                 end
             end
         end
-        if box.t - box.b < max(scale(351), 300) - 10 then
+        if box.b - box.t < max(scale(351), 300) - 10 then
             log("点选验证框 failed", box)
             ssleep(0.5)
             return getChoiceBox(retry + 1)
@@ -463,7 +491,8 @@ trySolveSlipCaptcha = function(retry)
         SolveSlipCaptcha(getCaptchaBox(), 2)
     elseif findOne("官服点选验证720") then
         log("find 官服点选验证720")
-        local choices = { 3, 4, 1, 2 }
+        official_choice = true
+        local choices = { 3, 4, 1 }
         for _, choice in ipairs(choices) do
             trySolvePointSelectionCapture(getChoiceBox(), choice)
             ssleep(0.5)
@@ -471,10 +500,11 @@ trySolveSlipCaptcha = function(retry)
                 break
             end
         end
+        official_choice = false
         wait(function()
             if findOne("realgame") then return true end
             appearTap("官服点选验证确认720", 1)
-        end, 5)
+        end, 10)
     elseif findOne("滑块验证节点") then -- 旧版滑块->b服
         local box = findOne("滑块验证节点")
         log("find 旧版滑块box", box)
@@ -558,29 +588,6 @@ SolveSlipCaptcha = function(rect, p_type)
         distance = tonumber(get(data, "data", "data")) or 0
         log("云码", distance)
         distance = distance - scale(12)
-    elseif p_type == 3 then -- 图鉴
-        if not use_tt_slip then return end
-        if not captcha_username or not captcha_password then return end
-        local img = getWorkPath() .. "/captcha_tujian.jpg"
-        snapShot(img, rect.l, rect.t, rect.r, rect.b)
-        local data = {
-            username = captcha_username,
-            password = captcha_password,
-            typeid = "33",
-            image = base64(img),
-        }
-        local res, code = httpPost("http://api.ttshitu.com/predict", JsonEncode(data),
-            30, "Content-Type: application/json;charset=UTF-8")
-        log("识别结果", res)
-        if code == 200 then
-            local status, data = pcall(JsonDecode, res)
-            data = data or {}
-            ttshitu_last_id = get(data, "data", "id") or ""
-            local success = get(data, "success") or false
-            if not success then return end
-            distance = get(data, "data", "result") or 0
-            distance = tonumber(distance) + scale(12)
-        end
     end
 
     if distance == 0 then return end
@@ -646,28 +653,6 @@ trySolvePointSelectionCapture = function(rect, p_type)
             if not success then return end
             ans = get(data, "data", "result") or ""
         end
-    elseif p_type == 2 then -- 云码
-        log("云码")
-        if not use_jfbym_dx then return end
-        if not jfbym_token or #jfbym_token < 5 then return end
-        local data = {
-            token = jfbym_token,
-            type = "30112",
-            image = base64(img),
-            extra = "je4_click",
-            developer_tag = "1fd49a52277365a95b785710e9fb54c9",
-        }
-        local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
-            30, "Content-Type: application/json;charset=UTF-8")
-        local status, data = pcall(JsonDecode, res)
-        log("识别结果", data)
-        data = data or {}
-        if get(data, "code") ~= 10000 then
-            log("识别失败")
-            return
-        end
-        unique_code = get(data, "data", "unique_code") or ""
-        ans = get(data, "data", "data") or ""
     elseif p_type == 3 then
         log("cloud1")
         if cloud.captcha(rect) then

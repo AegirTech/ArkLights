@@ -736,9 +736,6 @@ show_debug_ui = function()
     ui.addEditText(debug_layout_验证码, "jfbym_token", "")
 
     newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "use_tt_slip", "3.使用图鉴（效果差）", false)
-
-    newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "==================================")
 
     newRow(debug_layout_验证码)
@@ -763,9 +760,6 @@ show_debug_ui = function()
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "图鉴密码")
     ui.addEditText(debug_layout_验证码, "captcha_password", "")
-
-    newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "use_jfbym_dx", "4.使用云码处理点选（效果差）", false)
 
     -- newRow(debug_layout_验证码)
     -- addTextView(debug_layout_验证码, "自定义打码地址")

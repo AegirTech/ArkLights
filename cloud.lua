@@ -161,18 +161,37 @@ m.captcha = function(box)
     -- ssleep(1)
     local x_size = box.r - box.l
     local y_size = box.b - box.t
-    local text_pos = {
-        box.l + x_size * 0.49375 // 1,
-        box.t + y_size * 0.13958 // 1,
-        box.r,
-        box.t + y_size * 0.27708 // 1
-    }
-    local image_pos = {
-        box.l + x_size * 0.22708 // 1,
-        box.t + y_size * 0.27916 // 1,
-        box.l + x_size * 0.79583 // 1,
-        box.t + y_size * 0.85 // 1
-    }
+    local text_pos, image_pos
+    if official_choice then
+        -- l t r b
+        text_pos = {
+            box.l + x_size * 0.577249 // 1,
+            box.t + y_size * 0.0565217 // 1,
+            box.r,
+            box.t + y_size * 0.19565 // 1
+        }
+        image_pos = {
+            box.l
+            box.t + y_size * 0.232104 // 1,
+            box.l
+            box.t
+        }
+        log("官服新版滑块")
+    else
+        text_pos = {
+            box.l + x_size * 0.49375 // 1,
+            box.t + y_size * 0.13958 // 1,
+            box.r,
+            box.t + y_size * 0.27708 // 1
+        }
+        image_pos = {
+            box.l + x_size * 0.22708 // 1,
+            box.t + y_size * 0.27916 // 1,
+            box.l + x_size * 0.79583 // 1,
+            box.t + y_size * 0.85 // 1
+        }
+    end
+
     local node_count = 0
     -- 验证码加载目标切片有上移动作，需要多次查找直到返回不变化才能确保节点稳定
     -- local text_box = findOne("B服安全验证目标字符")

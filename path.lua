@@ -536,7 +536,7 @@ path.bilibili_login = {
         ssleep(.5)
         log("b服打码")
 
-        local choices = { 3, 4, 1, 2 }
+        local choices = { 3, 4, 1 }
         for _, choice in ipairs(choices) do
             log(choice, "尝试", box)
             if trySolvePointSelectionCapture(box, choice) then
