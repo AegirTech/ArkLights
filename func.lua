@@ -442,31 +442,31 @@ getChoiceBox = function(retry)
     local retry = retry or 0
     if retry > 3 then return end
     local box = { l = 0, t = 0, r = 0, b = 0 }
-    local bx = find_color(nil, "4E79ED", 0, 0.95)
+    local bx = find_color(nil, "4E79ED", 0)
     if not bx then return end
     box.l = bx[1]
     box.t = bx[2]
-    bx = find_color(nil, "4E79ED", 4, 0.95)
+    bx = find_color(nil, "4E79ED", 4)
     if not bx then return end
     box.r = bx[1]
-    bx = find_color(nil, "B2C2EE", 3, 0.95)
+    bx = find_color(nil, "B2C2EE", 3)
     if not bx then return end
-    box.b = bx[2] - 3
+    box.b = bx[2] - 5
     local notb = false
     for y = box.b, box.t, -1 do
-        if cmpColor(bx[1], y, "EFEFEF", 0.96) == 1 then
+        if cmpColor(bx[1] + 4, y, "EFEFEF", 0.9) == 1 then
             notb = true
         end
         if notb then
-            if cmpColor(bx[1], y, "EFEFEF", 0.96) == 0 then
+            if cmpColor(bx[1] + 4, y, "EFEFEF", 0.9) == 0 then
                 box.b = y
-                box.t = y - max(scale(351), 300)
                 box.l = box.l + scale(35)
                 box.r = box.r - scale(35)
                 break
             end
         end
     end
+    log("点选验证框2", box)
     if box.b - box.t < scale(200) then
         log("点选验证框 failed", box)
         ssleep(0.5)
