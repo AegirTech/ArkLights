@@ -1,7 +1,3 @@
---- 识别时请根据训练时图片的方向 选择截图模式 或者训练 4角度的模型
---- 公共模型与APK插件都在ZIP压缩包里
---- 由于插件体积过大 建议把插件以及模型打成压缩包 释放后再进行解压
-
 import("com.nx.assist.lua.LuaEngine")
 local PaddLeOCR = {}
 local PluGinObject

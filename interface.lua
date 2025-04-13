@@ -521,7 +521,7 @@ make_jump_ui = function(layout)
 
     local buttons = {
         { nil, "多账户", make_jump_ui_command(layout, 'multi_account') },
-        { nil, "测试功能", make_jump_ui_command(layout, "auto") },
+        { nil, "小工具", make_jump_ui_command(layout, "auto") },
         { nil, "肉鸽/生息", make_jump_ui_command(layout, "extra") },
         { "quit_script", "退出", make_jump_ui_command(layout, nil, "saveConfig('Not_Restart','true');peaceExit()") },
         { nil, "保全派驻", make_jump_ui_command(layout, "sss_fight") },
@@ -1165,8 +1165,8 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
 
-    newRow(layout)
-    addTextView(layout, "===========促融共竞===========")
+    --[[ newRow(layout)
+    addTextView(layout, "===========促融共竞(1080p)===========")
     newRow(layout)
     addTextView(layout, "组队选择")
     ui.addSpinner(layout, "ib_grouping_method", { "参与方", "房主" }, 0)
@@ -1196,7 +1196,7 @@ show_extra_ui = function()
     addButton(layout, nil, "促融共竞开始",
         make_jump_ui_command(layout, nil,
             "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-
+ ]]
     -- newRow(layout)
     -- addTextView(layout, "===========宝石铭刻===========")
     -- newRow(layout)
@@ -1382,7 +1382,7 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "skip_make", "跳过合成种植箱", false)
 
     newRow(layout)
-    addTextView(layout, "=================隐秘战线=================")
+    addTextView(layout, "=================隐秘战线(1080p)=================")
     newRow(layout)
     addButton(layout, nil, "隐秘战线——慈悲灯塔",
         make_jump_ui_command(layout, nil,
@@ -1514,13 +1514,13 @@ show_auto_ui = function()
     local layout = "auto"
     saveConfig('last_layout', layout)
     ui.newLayout(layout, ui_page_width, -2)
-    ui.setTitleText(layout, "测试功能")
+    ui.setTitleText(layout, "小工具")
 
     newRow(layout)
-    addTextView(layout, "以下功能均为测试功能，如果有bug请在GitHub上提交issue反馈")
+    addTextView(layout, "以下功能均为单账号功能，如果有bug请录屏在频道内提交反馈")
 
     newRow(layout)
-    addTextView(layout, "仓库地址 https://github.com/AegirTech/ArkLights")
+    addTextView(layout, "频道地址 https://pd.qq.com/s/b4e5yvzx9")
 
     newRow(layout)
     addButton(layout, nil, "返回",
