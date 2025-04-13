@@ -407,12 +407,11 @@ getCaptchaBox = function(retry)
         return getCaptchaBox(retry + 1)
     end
 
-    local half_x = (box.r - box.l) / 2
     local hava_white = false
 
-    for i = 1, 5 do
-        local x = box.l + math.random(0, half_x)
-        local y = box.t + math.random(0, box.b - box.t)
+    for i = 1, 10 do
+        local x = box.l + math.random(0, math.floor((box.r - box.l) / 2))
+        local y = box.t + math.random(0, math.floor(box.b - box.t))
         if cmpColor(x, y, "FFFFFF", 0.95) == 1 then
             hava_white = true
             break
@@ -480,25 +479,32 @@ end
 
 -- 滑块验证码/官服点选 处理判断
 trySolveSlipCaptcha = function(retry)
-    local retry = retry or 0
+    local retry = retry or 1
     if not findAny({ "captcha", "滑块验证节点", "官服点选验证确认720", "滑块验证节点新720" }) then return end
     log("等待验证码出图")
     ssleep(1) -- 等待验证码出图
     is_old_slip = false
     if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
         log("find 滑块验证节点新")
-        pcall(SolveSlipCaptcha, getCaptchaBox(), 1)
-        SolveSlipCaptcha(getCaptchaBox(), 2)
+        if retry > 1 then
+            SolveSlipCaptcha(getCaptchaBox(), 2)
+        else
+            SolveSlipCaptcha(getCaptchaBox(), 1)
+        end
     elseif findOne("官服点选验证720") then
         log("find 官服点选验证720")
         official_choice = true
         local choices = { 3, 4, 1 }
         for _, choice in ipairs(choices) do
-            trySolvePointSelectionCapture(getChoiceBox(), choice)
+            local ret = trySolvePointSelectionCapture(getChoiceBox(), choice)
             ssleep(0.5)
             if findOne("官服点选验证确认720") then
                 log("点选确认按钮 find")
                 break
+            end
+            if ret and findOne("B服刷新验证") then
+                tap("B服刷新验证")
+                ssleep(1.5)
             end
         end
         official_choice = false
@@ -516,16 +522,11 @@ trySolveSlipCaptcha = function(retry)
         is_old_slip = true
         if not box then return end
         box = box.bounds
-        pcall(SolveSlipCaptcha, box, 1)
-        SolveSlipCaptcha(box, 2)
-    elseif findOne("captcha") then
-        local box = findOne("captcha")
-        log("find 旧版box", box)
-        is_old_slip = true
-        if not box then return end
-        box = box.bounds
-        pcall(SolveSlipCaptcha, box, 1)
-        SolveSlipCaptcha(box, 2)
+        if retry > 1 then
+            SolveSlipCaptcha(box, 2)
+        else
+            SolveSlipCaptcha(box, 1)
+        end
     end
     log("验证码处理完毕，等待游戏")
     if not appear("realgame", 5) then
@@ -627,6 +628,7 @@ SolveSlipCaptcha = function(rect, p_type)
         },
     })
     ssleep(1.5) -- 等待验证码关闭或者重试
+    return true
 end
 
 -- 官服/b服选点验证码打码
