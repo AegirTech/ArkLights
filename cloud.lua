@@ -166,17 +166,19 @@ m.captcha = function(box)
         -- l t r b
         text_pos = {
             box.l + x_size * 0.577249 // 1,
-            box.t + y_size * 0.0565217 // 1,
+            box.t + y_size * 0.012 // 1,
             box.r,
-            box.t + y_size * 0.19565 // 1,
+            box.t + y_size * 0.20565 // 1,
         }
         image_pos = {
             box.l,
-            box.t + y_size * 0.232104 // 1,
-            box.l,
-            box.t,
+            box.t + y_size * 0.20565 // 1,
+            box.r,
+            box.b,
         }
         log("官服新版滑块")
+        log("图像坐标", image_pos)
+        log("目标字符坐标", text_pos)
     else
         text_pos = {
             box.l + x_size * 0.49375 // 1,
@@ -251,25 +253,21 @@ m.captcha = function(box)
             Type: cloud
             Cloud_url: {SERVER}
             User-Agent: {UA}
-            Authorization: Bearer {CAPTCHATOKEN}
-            Account: {ACCOUNT}]]
+            Authorization: Bearer {CAPTCHATOKEN}]]
         headers = string.gsub(headers, "{SERVER}", cloud_server)
     elseif multi_account_enable then
         headers = [[Content-Type: application/json
             Type: multi_account
             User-Agent: {UA}
-            Authorization: Bearer {CAPTCHATOKEN}
-            Account: {ACCOUNT}]]
+            Authorization: Bearer {CAPTCHATOKEN}]]
     else
         headers = [[Content-Type: application/json
             Type: single
             User-Agent: {UA}
-            Authorization: Bearer {CAPTCHATOKEN}
-            Account: {ACCOUNT}]]
+            Authorization: Bearer {CAPTCHATOKEN}]]
     end
     headers = string.gsub(headers, "{APKVERSION}", getApkVerInt())
     headers = string.gsub(headers, "{CAPTCHATOKEN}", m.captchaToken)
-    headers = string.gsub(headers, "{ACCOUNT}", username)
     headers = string.gsub(headers, "{UA}", UA)
     local res, code = httpPost(m.captchaServer .. "/captcha/geetest_v3/select/base64", postdata, 30, headers)
     log(res, code)
@@ -277,17 +275,20 @@ m.captcha = function(box)
         status, data = pcall(JsonDecode, res)
         if data.code == 0 then
             cloud_captcha_id = data.data.captcha_id or nil
-            -- log("云控打码数量", #data.data.result.point)
-            -- toast("B服云控打码数量" .. #data.data.result.point)
-            -- log("云控打码坐标", data.data.result.point)
             -- 计算缩放比例 返回图片344x344
             local x_scale = (image_pos[3] - image_pos[1]) / 344 or 1
             local y_scale = (image_pos[4] - image_pos[2]) / 344 or 1
+            if official_choice then
+                y_scale = y_scale + 0.25 -- 官服不知道为什么y轴偏移严重
+            end
             for _, coord in pairs(data.data.result.point) do
                 x = (coord[1] or 0) * x_scale
                 y = (coord[2] or 0) * y_scale
                 tap({ image_pos[1] + x, image_pos[2] + y })
                 ssleep(0.3)
+                if official_choice then
+                    ssleep(0.3)
+                end
             end
             ssleep(0.3)
             return true

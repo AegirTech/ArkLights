@@ -937,9 +937,6 @@ show_debug_ui = function()
         false)
 
     newRow(debug_layout_通知)
-    ui.addCheckBox(debug_layout_通知, "qqnotify_bar", "QQ通知显示悬浮按钮", false)
-
-    newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_beforemail",
         "QQ通知显示邮件收取前情况", false)
 
@@ -950,10 +947,6 @@ show_debug_ui = function()
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_beforeleaving",
         "QQ通知显示基建退出前情况", false)
-
-    newRow(debug_layout_通知)
-    ui.addCheckBox(debug_layout_通知, "qqnotify_beforemission",
-        "QQ通知显示任务收集前情况", false)
 
     local debug_layout_基建 = "debug_tab_base"
     ui.addTab("debug_tab", debug_layout_基建, "基建")
@@ -1248,7 +1241,7 @@ show_extra_ui = function()
     --     make_jump_ui_command(layout, nil,
     --         "extra_mode='宝石铭刻活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     -- newRow(layout)
-    -- addTextView(layout, [[放牌延迟(ms)]])
+    -- addTextView(layout, [[放牌延迟(ms)]]
     -- ui.addEditText(layout, "宝石铭刻_放牌延迟", [[100]])
     -- newRow(layout)
     ---------------------------------------------------------------------

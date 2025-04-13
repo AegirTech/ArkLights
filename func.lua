@@ -407,12 +407,11 @@ getCaptchaBox = function(retry)
         return getCaptchaBox(retry + 1)
     end
 
-    local half_x = (box.r - box.l) / 2
     local hava_white = false
 
-    for i = 1, 5 do
-        local x = box.l + math.random(0, half_x)
-        local y = box.t + math.random(0, box.b - box.t)
+    for i = 1, 10 do
+        local x = box.l + math.random(0, math.floor((box.r - box.l) / 2))
+        local y = box.t + math.random(0, math.floor(box.b - box.t))
         if cmpColor(x, y, "FFFFFF", 0.95) == 1 then
             hava_white = true
             break
@@ -442,72 +441,78 @@ end
 getChoiceBox = function(retry)
     local retry = retry or 0
     if retry > 3 then return end
-    if findOne("官服点选验证720") then
-        local box = { l = 0, t = 0, r = 0, b = 0 }
-        local bx = find_color(nil, "4E79ED", 0, 0.95)
-        if not bx then return end
-        box.l = bx[1]
-        box.t = bx[2]
-        bx = find_color(nil, "4E79ED", 4, 0.95)
-        if not bx then return end
-        box.r = bx[1]
-        bx = find_color(nil, "EFC4B5", 3, 0.95)
-        if not bx then return end
-        box.b = bx[2] - 3
-        local notb = false
-        for y = box.b, box.t, -1 do
-            if cmpColor(bx[1], y, "EFEFEF", 0.96) == 1 then
-                notb = true
-            end
-            if notb then
-                if cmpColor(bx[1], y, "EFEFEF", 0.96) == 0 then
-                    box.b = y
-                    box.l = box.l + scale(35)
-                    box.r = box.r - scale(35)
-                    break
-                end
+    local box = { l = 0, t = 0, r = 0, b = 0 }
+    local bx = find_color(nil, "4E79ED", 0)
+    if not bx then return end
+    box.l = bx[1]
+    box.t = bx[2]
+    bx = find_color(nil, "4E79ED", 4)
+    if not bx then return end
+    box.r = bx[1]
+    bx = find_color(nil, "B2C2EE", 3)
+    if not bx then return end
+    box.b = bx[2] - 5
+    local notb = false
+    for y = box.b, box.t, -1 do
+        if cmpColor(bx[1] + 4, y, "EFEFEF", 0.9) == 1 then
+            notb = true
+        end
+        if notb then
+            if cmpColor(bx[1] + 4, y, "EFEFEF", 0.9) == 0 then
+                box.b = y
+                box.l = box.l + scale(35)
+                box.r = box.r - scale(35)
+                break
             end
         end
-        if box.b - box.t < max(scale(351), 300) - 10 then
-            log("点选验证框 failed", box)
-            ssleep(0.5)
-            return getChoiceBox(retry + 1)
-        end
-        log("点选验证框", box)
-        return box
     end
+    log("点选验证框2", box)
+    if box.b - box.t < scale(200) then
+        log("点选验证框 failed", box)
+        ssleep(0.5)
+        return getChoiceBox(retry + 1)
+    end
+    log("点选验证框", box)
+    return box
 end
 
 -- 滑块验证码/官服点选 处理判断
 trySolveSlipCaptcha = function(retry)
-    local retry = retry or 0
-    if not findAny({ "captcha", "滑块验证节点", "官服点选验证确认720", "滑块验证节点新720" }) then return end
+    local retry = retry or 1
+    if not findAny({ "captcha", "滑块验证节点", "官服点选验证节点", "滑块验证节点新720" }) then return end
     log("等待验证码出图")
     ssleep(1) -- 等待验证码出图
     is_old_slip = false
     if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
         log("find 滑块验证节点新")
-        pcall(SolveSlipCaptcha, getCaptchaBox(), 1)
-        SolveSlipCaptcha(getCaptchaBox(), 2)
-    elseif findOne("官服点选验证720") then
-        log("find 官服点选验证720")
+        if retry > 1 then
+            SolveSlipCaptcha(getCaptchaBox(), 2)
+        else
+            SolveSlipCaptcha(getCaptchaBox(), 1)
+        end
+    elseif findOne("官服点选验证节点") then
+        log("find 官服点选验证节点")
         official_choice = true
         local choices = { 3, 4, 1 }
         for _, choice in ipairs(choices) do
-            trySolvePointSelectionCapture(getChoiceBox(), choice)
+            local ret = trySolvePointSelectionCapture(getChoiceBox(), choice)
             ssleep(0.5)
             if findOne("官服点选验证确认720") then
                 log("点选确认按钮 find")
                 break
             end
+            if ret and findOne("B服刷新验证") then
+                tap("B服刷新验证")
+                ssleep(1.5)
+            end
         end
         official_choice = false
         wait(function()
-            if not findAny({ "captcha", "官服点选验证确认720", "官服点选验证720" }) then return true end
+            if not findAny({ "captcha", "官服点选验证确认720", "官服点选验证节点" }) then return true end
             appearTap("官服点选验证确认720", 1)
         end, 10)
     elseif findOne("滑块验证节点") then -- 旧版滑块->b服
-        if findOne("滑块验证节点新720") then
+        if findOne("官服点选验证节点") then
             ssleep(0.5)
             return
         end
@@ -516,16 +521,11 @@ trySolveSlipCaptcha = function(retry)
         is_old_slip = true
         if not box then return end
         box = box.bounds
-        pcall(SolveSlipCaptcha, box, 1)
-        SolveSlipCaptcha(box, 2)
-    elseif findOne("captcha") then
-        local box = findOne("captcha")
-        log("find 旧版box", box)
-        is_old_slip = true
-        if not box then return end
-        box = box.bounds
-        pcall(SolveSlipCaptcha, box, 1)
-        SolveSlipCaptcha(box, 2)
+        if retry > 1 then
+            SolveSlipCaptcha(box, 2)
+        else
+            SolveSlipCaptcha(box, 1)
+        end
     end
     log("验证码处理完毕，等待游戏")
     if not appear("realgame", 5) then
@@ -627,6 +627,7 @@ SolveSlipCaptcha = function(rect, p_type)
         },
     })
     ssleep(1.5) -- 等待验证码关闭或者重试
+    return true
 end
 
 -- 官服/b服选点验证码打码
