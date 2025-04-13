@@ -68,7 +68,7 @@ setNewRowGid = function(gid) default_row_gid = gid end
 newRow = function(layout, id, align, w, h)
     -- log(173,default_row_gid)
     id = id or randomString(32)
-    ui.newRow(layout, id, w or -2, h or -2)
+    ui.newRow(layout, id, w or -2, h or -2, default_row_gid)
     align = align or 'left'
     if align == 'center' then ui.setGravity(id, 17) end
 end
@@ -1018,7 +1018,7 @@ show_debug_ui = function()
         "完全禁用飞浆OCR", false)
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "enable_raise_func", "禁用自动养成", true)
-    addInfo(debug_layout_其他, "可能会报错停止，需要手动启用")
+    addInfo(debug_layout_其他, [[可能会报错停止，需要手动启用]])
 
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "disable_free_draw",
@@ -1594,7 +1594,8 @@ show_auto_ui = function()
 
     newRow(layout)
     addTextView(layout, "频道地址 https://pd.qq.com/s/b4e5yvzx9")
-
+    addButton(layout, nil, "QQ频道",
+        make_jump_ui_command(layout, nil, "jump_qq_channel()"))
     addTitle(layout, "单账户设置", "setting.png")
     addInfo(layout, "此账户用于单账户模式下的森空岛及其他需要账密的API请求使用")
 
@@ -1610,7 +1611,7 @@ show_auto_ui = function()
     ui.addEditText(layout, "single_password", "")
 
     ---------------------------------------------------------------------
-    addTitle(layout, "自动合成材料")
+    addTitle(layout, "材料合成相关")
 
     --[[
     newRow(layout)
@@ -1630,13 +1631,17 @@ show_auto_ui = function()
 
     --ui.addCheckBox(layout, "raise_material", "材料合成（未完成）", false)
     ]]
+    newRow(layout)
+    addButton(layout, nil, "培养计划生成导出",
+        make_jump_ui_command(layout, nil, "jump_arkntools()"))
+    addInfo(layout, [[用明日方舟工具箱生成计划后点导出到明日方舟速通，
+返回速通后粘贴到 主页-培养计划]])
 
     newRow(layout)
     addButton(layout, nil, "自动合成材料",
         make_jump_ui_command(layout, nil,
             "extra_mode='自动合成材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
     addInfo(layout, [[从干员精英化/专精/开模组页面缺材料跳转到加工站后启动
-即要带数量的加工站界面
 自动合成下级材料和选择加工干员]])
     newRow(layout)
     addButton(layout, nil, "将当前模组升到满级",
@@ -1699,7 +1704,20 @@ show_auto_fight_ui = function()
     addButton(layout, nil, "返回",
         make_jump_ui_command(layout, "main"),
         nil, nil)
-    addTitle(layout, "自动作战相关")
+    newRow(layout)
+    addTextView(layout, [[自动作战功能基于飞桨ocr，对性能要求较高
+推荐使用2核4g以上模拟器，分辨率设置为1080×1920平板版
+720p做了简单适配但是不保证一定能用
+
+要对4个字以上的干员取消特别关注，否则可能会导致无法识别干员
+如果依然无法识别干员，请取消所有特别关注
+
+日常活动作业代码可以去 qq频道-抄作业代码 复制]])
+    newRow(layout)
+    addButton(layout, nil, "QQ频道",
+        make_jump_ui_command(layout, nil, "jump_qq_channel()"))
+    -----------------------------------------------------------
+    addTitle(layout, "自动作战设置", "setting.png")
 
     newRow(layout)
     ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", false)
@@ -1710,7 +1728,21 @@ show_auto_fight_ui = function()
     addButton(layout, nil, "本地更新地图包", "fetchLocalMaps()")
     newRow(layout)
     addInfo(layout, "本地更新请在频道下载maps.zip放在/sdcard/Pictures下")
+    -----------------------------------------------------------
+    addTitle(layout, "使用方法")
+    newRow(layout)
+    addTextView(layout, [[速通导航+&+maa神秘代码
+如：HD-EX-2&maa://114514 hd-EX-X&maa://36056...
 
+如果开始作战界面来回乱点，则为缺少干员请尝试更换作业
+
+由于实现方法不同，不是所有作业都能适配，
+如果多次失败请尝试耿冠作业
+]])
+
+    newRow(layout)
+    addButton(layout, nil, "maa作业站",
+        make_jump_ui_command(layout, nil, "jump_maa_copliot()"))
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
@@ -1744,6 +1776,28 @@ jump_qq_channel = function()
     }
     runIntent(intent)
     toast("频道号h800n9f23g或搜索【明日方舟速通】")
+    while true do ssleep(1) end
+    peaceExit()
+end
+
+jump_arkntools = function()
+    local intent = {
+        action = "android.intent.action.VIEW",
+        uri = "https://arkntools.app/#/material",
+    }
+    runIntent(intent)
+    toast("跳转失败搜索【明日方舟工具箱】")
+    while true do ssleep(1) end
+    peaceExit()
+end
+
+jump_maa_copliot = function()
+    local intent = {
+        action = "android.intent.action.VIEW",
+        uri = "https://prts.plus/",
+    }
+    runIntent(intent)
+    toast("跳转失败请浏览器打开prts.plus")
     while true do ssleep(1) end
     peaceExit()
 end
