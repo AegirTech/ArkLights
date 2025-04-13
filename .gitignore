@@ -12,6 +12,9 @@ tmp*
 /*/
 !/roguelike/
 !/docs/
+!/res/
+/res/maps/
+!/res/ui/*
 node_modules/
 dist/
 .temp/
