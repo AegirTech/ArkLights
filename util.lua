@@ -2580,6 +2580,7 @@ end
 all_apps = getInstalledApk()
 isAppInstalled = function(package) return table.includes(all_apps, package) end
 
+--随机生成指定长度字符串
 randomString = function(length)
     length = length or 8
     local res = ""
@@ -3059,10 +3060,11 @@ update_state_from_ui = function()
         during_crisis_contract = true
     end
 
-    -- 用于自定义换班，已弃用
+    --[[ -- 用于自定义换班，已弃用
     startup_time = parse_time()
     facility2operator = {}
     facility2nexthour = {}
+    log(dorm)
 
     for _, v in pairs(string.split(dorm, '\n')) do
         v = string.split(v)
@@ -3079,7 +3081,7 @@ update_state_from_ui = function()
         end
     end
     -- log(facility2nexthour)
-    -- log(facility2operator)
+    -- log(facility2operator) ]]
 end
 
 apply_multi_account_setting = function(i, visited)
