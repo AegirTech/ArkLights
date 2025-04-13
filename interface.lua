@@ -1181,7 +1181,7 @@ show_extra_ui = function()
         nil)
 
     newRow(layout)
-    addTextView(layout, "以下功能将沿用脚本主页设置")
+    addTextView(layout, "关于特殊模式或玩法的功能\n以下功能将沿用脚本主页设置")
 
     -- newRow(layout)
     -- addButton(layout, nil, "生息演算(仅720p)",
@@ -1731,8 +1731,8 @@ show_auto_fight_ui = function()
     -----------------------------------------------------------
     addTitle(layout, "使用方法")
     newRow(layout)
-    addTextView(layout, [[速通导航+&+maa神秘代码
-如：HD-EX-2&maa://114514 hd-EX-X&maa://36056...
+    addTextView(layout, [[主页作战关卡内填写:速通导航+&+maa神秘代码
+如：HD-EX-2&maa://114514 1-7&maa://36056...
 
 如果开始作战界面来回乱点，则为缺少干员请尝试更换作业
 
