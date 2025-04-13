@@ -6373,7 +6373,7 @@ path.活动商店购买 = function()
         ssleep(.5)
         path.swip_hd_shop()
         ssleep(.5)
-        if findOne("活动商店无限池") then
+        if findAny({ "活动商店无限池", "活动商店无限池2" }) then
             log("滑动到底")
             break
         end
