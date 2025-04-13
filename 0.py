@@ -190,8 +190,7 @@ def release(type):
         print(
             """
 1.请验证文件大小,在1.5m左右或以内
-2.请运行res/char_type/parse_character_table.py,
-  并将生成的char_table.json,character_type_list.json和equip_table.json放在懒人脚本资源/main.rc里面"""
+2.请将res/char_type/里的json和res/ui/里的png放在懒人脚本资源/main.rc里面"""
         )
         newLrMD5 = input("请输入md5值: ")
         # 输出pkgPath的文件的md5
@@ -292,7 +291,12 @@ def point_check():
         for line in lines:
             if point_start or center_start:
                 # 不是很好的判断方式，但是管用
-                if " = " in line and str.startswith(line, "    ") and (not str.startswith(line, "        ")) and (not str.startswith(line, "    --")):
+                if (
+                    " = " in line
+                    and str.startswith(line, "    ")
+                    and (not str.startswith(line, "        "))
+                    and (not str.startswith(line, "    --"))
+                ):
                     pp = line.split(" = ")[0].strip()
                     if point_start:
                         all_point.append(pp)
