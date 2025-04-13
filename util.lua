@@ -1961,14 +1961,10 @@ captureqqimagedeliver = function(log_level, log_title, log_detail, important)
     local img = getWorkPath() .. "/tmp.jpg"
     local img_src = img
 
-    if not qqnotify_bar then
-        hideControlBar()
-        ssleep(.5)
-        snapShot(img)
-        setControlBar()
-    else
-        snapShot(img)
-    end
+    hideControlBar()
+    ssleep(.5)
+    snapShot(img)
+    setControlBar()
 
     info = log_title .. ' ' .. log_detail
 

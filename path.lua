@@ -3775,10 +3775,6 @@ end
 path.任务收集 = function()
     path.跳转("任务")
     appear({ "任务未选中列表2", "任务有列表2", "任务无列表2" })
-    if qqnotify_beforemission then
-        captureqqimagedeliver("INFO", "任务收集前",
-            table.join(qqmessage, ' ') .. " 任务收集前")
-    end
 
     if speedrun then
         -- 只保留日常任务
