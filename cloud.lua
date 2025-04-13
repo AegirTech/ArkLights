@@ -253,15 +253,13 @@ m.captcha = function(box)
             Type: cloud
             Cloud_url: {SERVER}
             User-Agent: {UA}
-            Authorization: Bearer {CAPTCHATOKEN}
-            Account: {ACCOUNT}]]
+            Authorization: Bearer {CAPTCHATOKEN}]]
         headers = string.gsub(headers, "{SERVER}", cloud_server)
     elseif multi_account_enable then
         headers = [[Content-Type: application/json
             Type: multi_account
             User-Agent: {UA}
-            Authorization: Bearer {CAPTCHATOKEN}
-            Account: {ACCOUNT}]]
+            Authorization: Bearer {CAPTCHATOKEN}]]
     else
         headers = [[Content-Type: application/json
             Type: single
@@ -277,12 +275,12 @@ m.captcha = function(box)
         status, data = pcall(JsonDecode, res)
         if data.code == 0 then
             cloud_captcha_id = data.data.captcha_id or nil
-            -- log("云控打码数量", #data.data.result.point)
-            -- toast("B服云控打码数量" .. #data.data.result.point)
-            -- log("云控打码坐标", data.data.result.point)
             -- 计算缩放比例 返回图片344x344
             local x_scale = (image_pos[3] - image_pos[1]) / 344 or 1
             local y_scale = (image_pos[4] - image_pos[2]) / 344 or 1
+            if official_choice then
+                y_scale = y_scale + 0.25 -- 官服不知道为什么y轴偏移严重
+            end
             for _, coord in pairs(data.data.result.point) do
                 x = (coord[1] or 0) * x_scale
                 y = (coord[2] or 0) * y_scale
