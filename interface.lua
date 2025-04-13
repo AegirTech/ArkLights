@@ -8,7 +8,7 @@ all_job = {
     "限时活动", "商店搬空", "故事解锁", "森空岛签到",
 }
 
-script_layouts = { "multi_account", "gesture_capture", "extra", "debug", "main", "auto", "sss_fight" }
+script_layouts = { "multi_account", "gesture_capture", "extra", "debug", "main", "auto", "auto_fight" }
 
 now_job = table.filter(all_job, function(x) return x ~= "副手换人" end)
 now_job = table.filter(all_job, function(x) return true end)
@@ -68,13 +68,46 @@ setNewRowGid = function(gid) default_row_gid = gid end
 newRow = function(layout, id, align, w, h)
     -- log(173,default_row_gid)
     id = id or randomString(32)
-    ui.newRow(layout, id, w or -2, h or -2, default_row_gid)
+    ui.newRow(layout, id, w or -2, h or -2)
     align = align or 'left'
     if align == 'center' then ui.setGravity(id, 17) end
 end
 
 addTextView = function(layout, text, id)
     ui.addTextView(layout, id or randomString(32), text)
+end
+
+---@param png string 不填默认标题png,设置填"setting.png"
+---@param noline any 是否不画横线,不填画
+---@param alignment any 对齐方式,不填居中,填靠左
+addTitle = function(layout, text, png, noline, alignment, id)
+    local path = "sdcard/pictures/" .. (png or "title.png")
+    if not fileExist(path) then
+        extractAssets("main.rc", "mnt/sdcard/Pictures/", png or "title.png")
+    end
+    local id = "title" .. (id or text)
+
+    newRow(layout)
+    if not noline then ui.addLine(layout, "line", 750, 1) end
+    newRow(layout, text)
+    ui.addImageView(layout, "img" .. id, path, 32, 32)
+    ui.addTextView(layout, id, text)
+    ui.setTextSize(id, 18)
+    ui.setTextColor(id, "#" .. 'ff13227a')
+    ui.setGravity(text, alignment and 3 or 17) --3靠左,5靠右,17居中
+end
+
+addInfo = function(layout, text, png, id)
+    local path = "sdcard/pictures/info.png"
+    if not fileExist(path) then
+        extractAssets("main.rc", "mnt/sdcard/Pictures/", "info.png")
+    end
+    local id = "info" .. (id or text)
+    newRow(layout)
+    ui.addImageView(layout, "img" .. id, path, 24, 20)
+    ui.addTextView(layout, id, text)
+    ui.setTextSize(id, 12)
+    ui.setTextColor(id, "#" .. 'FF6C6C6C')
 end
 
 make_account_ui = function(layout, prefix)
@@ -524,7 +557,7 @@ make_jump_ui = function(layout)
         { nil, "小工具", make_jump_ui_command(layout, "auto") },
         { nil, "肉鸽/生息", make_jump_ui_command(layout, "extra") },
         { "quit_script", "退出", make_jump_ui_command(layout, nil, "saveConfig('Not_Restart','true');peaceExit()") },
-        { nil, "保全派驻", make_jump_ui_command(layout, "sss_fight") },
+        { nil, "自动作战", make_jump_ui_command(layout, "auto_fight") },
         { nil, "高级设置", make_jump_ui_command(layout, "debug") },
         { "join_qq", "加入QQ群", make_jump_ui_command(layout, nil, "jump_qq_qun()") },
         { "join_channel", "QQ频道", make_jump_ui_command(layout, nil, "jump_qq_channel()") },
@@ -716,11 +749,7 @@ show_debug_ui = function()
     addTextView(debug_layout_验证码, "Aunly打码服务Token")
     ui.addEditText(debug_layout_验证码, "cloud_captcha_token", "")
 
-    newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "==================================")
-
-    newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "-->滑块验证码(至少勾选一个!)")
+    addTitle(debug_layout_验证码, "滑块验证码", "setting.png", 1, 1)
 
     -- newRow(debug_layout_验证码)
     -- ui.addCheckBox(debug_layout_验证码, "use_local_captcha", "使用速通本地打码服务", true)
@@ -735,11 +764,7 @@ show_debug_ui = function()
     addTextView(debug_layout_验证码, "云码Token")
     ui.addEditText(debug_layout_验证码, "jfbym_token", "")
 
-    newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "==================================")
-
-    newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "-->点选验证码")
+    addTitle(debug_layout_验证码, "点选验证码", "setting.png", 1, 1)
 
     newRow(debug_layout_验证码)
     ui.addCheckBox(debug_layout_验证码, "use_captcha_aunly", "1.使用Aunly打码", true)
@@ -784,6 +809,14 @@ show_debug_ui = function()
 
     newRow(debug_layout_云控)
     ui.addCheckBox(debug_layout_云控, "apply_remote_config", "接受远程配置更新", false)
+
+    newRow(debug_layout_云控)
+    ui.addCheckBox(debug_layout_云控, "skland_use_cloud", "森空岛签到使用云端接口", false)
+
+    addInfo(debug_layout_云控, [[勾选使用云端接口请求时候会附带账户密码
+不勾选此选项则所有的请求全在本地完成
+部分设备（如光速虚拟机）内无法使用curl，故本地签到会失败]])
+
 
     local debug_layout_账户 = "debug_tab_account"
     ui.addTab("debug_tab", debug_layout_账户, "账户日常")
@@ -927,8 +960,8 @@ show_debug_ui = function()
 
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "not_use_ocr", "基建不使用ocr（低配置或基建崩溃建议打开）", false)
-    newRow(debug_layout_基建)
-    addTextView(debug_layout_基建, "      勾选后无法使用红松林、多萝西等标准化组合，无法自动使用菲亚梅塔")
+
+    addInfo(debug_layout_基建, "勾选后无法使用红松林、多萝西等标准化组合，无法自动使用菲亚梅塔")
 
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "disable_add_friend", "好友访问不自动添加好友", false)
@@ -982,6 +1015,7 @@ show_debug_ui = function()
     newRow(debug_layout_基建)
     addTextView(debug_layout_基建, "换班计算满员深海队账号")
     ui.addEditText(debug_layout_基建, "multi_account_use_abyssal_hunter", '')
+    addInfo(debug_layout_基建, "基于ocr，没有满员深海队时会报错停止")
 
     local debug_layout_其他 = "debug_tab_other"
     ui.addTab("debug_tab", debug_layout_其他, "其他")
@@ -989,17 +1023,27 @@ show_debug_ui = function()
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "disable_paddleocr",
         "完全禁用飞浆OCR", false)
+    newRow(debug_layout_其他)
+    ui.addCheckBox(debug_layout_其他, "enable_raise_func", "禁用自动养成", true)
+    addInfo(debug_layout_其他, "可能会报错停止，需要手动启用")
 
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "disable_free_draw",
         "限时活动禁用赠送寻访(每日单抽)", false)
+    ------------------------------------------------------------
+    addTitle(debug_layout_其他, "保全设置", "setting.png", 1, 1)
+    addInfo(debug_layout_其他, [[默认在每周日打剿灭之后扫荡保全,仅在写jm/wt时候有效
+保全关卡代号: 保全 保全派驻 BQ BQPZ
+作战使用保全关卡代号则无视每周扫荡选项]])
 
     newRow(debug_layout_其他)
-    ui.addCheckBox(debug_layout_其他, "zl_disable_lighter",
-        "前瞻投资禁用升级幕后筹备", false)
+    ui.addCheckBox(debug_layout_其他, "sss_weekend_auto", "每周末自动扫荡", true)
     newRow(debug_layout_其他)
-    ui.addCheckBox(debug_layout_其他, "zl_disable_inspect_level",
-        "前瞻投资禁用检测等级源石锭", false) --有些手机cpu不能使用ocr插件
+    ui.addCheckBox(debug_layout_其他, "sss_only_complete", "仅在完成6层后扫荡", true)
+
+    newRow(debug_layout_其他)
+    ui.addCheckBox(debug_layout_其他, "sss_try_complete", "未完成6层则尝试抄作业", false)
+    newRow(debug_layout_其他)
 
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "disable_strick_account_check",
@@ -1033,6 +1077,7 @@ show_debug_ui = function()
     newRow(debug_layout_其他)
     addTextView(debug_layout_其他, "无障碍模式关闭app方式")
     ui.addSpinner(debug_layout_其他, "app_close_way", { "不关闭", "节点强退", "懒人自带", "首页退出" }, 1)
+    addInfo(debug_layout_其他, "雷电云请选择节点强退")
 
     local debug_layout_调试 = "debug_tab_setting"
     ui.addTab("debug_tab", debug_layout_调试, "调试")
@@ -1143,7 +1188,7 @@ show_extra_ui = function()
         nil)
 
     newRow(layout)
-    addTextView(layout, [[以下功能将沿用脚本主页设置]])
+    addTextView(layout, "以下功能将沿用脚本主页设置")
 
     -- newRow(layout)
     -- addButton(layout, nil, "生息演算(仅720p)",
@@ -1151,8 +1196,7 @@ show_extra_ui = function()
     --         "extra_mode='生息演算沙中之火';lock:remove(main_ui_lock)"))
     -- ui.addCheckBox(layout, "sand_fire_unstop", "打满也不结束", false)
 
-    newRow(layout)
-    addTextView(layout, "=================账户设置(同步)=================")
+    addTitle(layout, "账户设置(同步)", "setting.png")
 
     newRow(layout)
     ui.addCheckBox(layout, "extra_multi_account_enable", "启用多账号", false)
@@ -1196,7 +1240,7 @@ show_extra_ui = function()
     addButton(layout, nil, "促融共竞开始",
         make_jump_ui_command(layout, nil,
             "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-
+    ]]
     -- newRow(layout)
     -- addTextView(layout, "===========宝石铭刻===========")
     -- newRow(layout)
@@ -1207,10 +1251,21 @@ show_extra_ui = function()
     -- addTextView(layout, [[放牌延迟(ms)]])
     -- ui.addEditText(layout, "宝石铭刻_放牌延迟", [[100]])
     -- newRow(layout)
-
+    ---------------------------------------------------------------------
+    addTitle(layout, "集成战略")
+    addInfo(layout, "重复刷第一层以获得源石锭和经验。最好单选主题，多选未测试")
     newRow(layout)
-    addTextView(layout, "=================肉鸽相关=================")
-
+    ui.addCheckBox(layout, "zl_ky", "【傀影】", false)
+    ui.addCheckBox(layout, "zl_mizuki", "【水月】", false)
+    addTextView(layout, "| 已经勉强可以刷")
+    newRow(layout)
+    ui.addCheckBox(layout, "zl_sami", "【萨米】", false)
+    addTextView(layout, "| 已经勉强可以刷")
+    ui.addCheckBox(layout, "zl_skz", "【萨卡兹】", false)
+    newRow(layout)
+    addButton(layout, nil, "肉鸽任务开始",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='肉鸽任务';lock:remove(main_ui_lock)"))
     newRow(layout)
     addTextView(layout, "通用选项")
     addTextView(layout, [[选第]])
@@ -1220,22 +1275,25 @@ show_extra_ui = function()
     addTextView(layout, [[次]])
     ui.addEditText(layout, "zl_skill_idx", [[1]])
     addTextView(layout, [[技能]])
-
+    addInfo(layout, "第几个可不填。为从左往右从上往下数，即第5个是第2列第一个")
     newRow(layout)
     ui.addCheckBox(layout, "zl_no_waste", "每8小时日常", false)
-    addButton(layout, nil, "肉鸽任务开始",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='肉鸽任务';lock:remove(main_ui_lock)"))
+    ui.addCheckBox(layout, "zl_disable_lighter",
+        "禁用升级幕后筹备", false)
+    newRow(layout)
+    ui.addCheckBox(layout, "zl_disable_inspect_level",
+        "禁用检测等级源石锭(崩溃请打开)", false) --有些手机cpu不能使用ocr插件
+
     newRow(layout)
     addTextView(layout, "需要刷哪个肉鸽，去勾选启用，然后点击上面的【肉鸽任务开始】")
-    newRow(layout)
 
     newRow(layout)
     ui.addTabView(layout, "extra_tab")
+    ------------------------------------------------------------
     local rouge_layout_傀影 = "extra_tab_zl1"
     ui.addTab("extra_tab", rouge_layout_傀影, "傀影")
     newRow(rouge_layout_傀影)
-    ui.addCheckBox(rouge_layout_傀影, "zl_ky", "启用【傀影与猩红孤钻】", false)
+
     -- addButton(rouge_layout_傀影, nil, "傀影与猩红孤钻",
     --     make_jump_ui_command(rouge_layout_傀影, nil,
     --         "extra_mode='战略前瞻投资';lock:remove(main_ui_lock)"))
@@ -1261,12 +1319,10 @@ show_extra_ui = function()
     ui.addEditText(rouge_layout_傀影, "zl_max_level_ky", [[max]])
     addTextView(rouge_layout_傀影, [[源石锭]])
     ui.addEditText(rouge_layout_傀影, "zl_max_coin_ky", [[]])
-
+    ------------------------------------------------------------
     local rouge_layout_水月 = "extra_tab_zl2"
     ui.addTab("extra_tab", rouge_layout_水月, "水月")
-    newRow(rouge_layout_水月)
-    ui.addCheckBox(rouge_layout_水月, "zl_mizuki", "启用【水月与深蓝之树】", false)
-    addTextView(rouge_layout_水月, "| 已经勉强可以刷")
+
 
     newRow(rouge_layout_水月)
     ui.addCheckBox(rouge_layout_水月, "zl_skip_coin_mizuki", "跳过投币", false)
@@ -1282,10 +1338,8 @@ show_extra_ui = function()
 
     local rouge_layout_萨米 = "extra_tab_zl3"
     ui.addTab("extra_tab", rouge_layout_萨米, "萨米")
-    newRow(rouge_layout_萨米)
-    ui.addCheckBox(rouge_layout_萨米, "zl_sami", "启用【探索者的银淞止境】", false)
-    addTextView(rouge_layout_萨米, "| 已经勉强可以刷")
 
+    ------------------------------------------------------------
     newRow(rouge_layout_萨米)
     ui.addCheckBox(rouge_layout_萨米, "zl_skip_coin_sami", "跳过投币", false)
     ui.addCheckBox(rouge_layout_萨米, "zl_only_coin_sami", "只是投币", false)
@@ -1301,9 +1355,7 @@ show_extra_ui = function()
     local rouge_layout_萨卡兹 = "extra_tab_zl4"
     ui.addTab("extra_tab", rouge_layout_萨卡兹, "萨卡兹")
 
-    newRow(rouge_layout_萨卡兹)
-    ui.addCheckBox(rouge_layout_萨卡兹, "zl_skz", "启用【萨卡兹的无终奇语】", false)
-
+    ------------------------------------------------------------
     newRow(rouge_layout_萨卡兹)
     ui.addCheckBox(rouge_layout_萨卡兹, "zl_skip_coin_skz", "跳过投币", false)
     ui.addCheckBox(rouge_layout_萨卡兹, "zl_only_coin_skz", "只是投币", false)
@@ -1354,9 +1406,8 @@ show_extra_ui = function()
     --               [[999源石锭刷取耗时与难度、幕后筹备无关，与是否通关三结局、网络延迟有关，双结局耗时10时14分(97个/时)，三结局耗时8时10分(122个/时)，低网络延迟+三结局耗时7时21分(135个/时)。]] ..
     --               [[如需刷等级(蜡烛)，应选普通难度，勾“多点蜡烛”与“跳过投币”。]] ..
     --               [[商品需求可填商品名称关键字，用空格隔开(如填“玩 金 骑士”)，则刷到其中任一商品就会停止并通知QQ]])
-
-    newRow(layout)
-    addTextView(layout, "=================生息演算=================")
+    ---------------------------------------------------------------------
+    addTitle(layout, "生息演算")
 
     newRow(layout)
     addButton(layout, nil, "沙洲遗闻刷点数启动",
@@ -1380,9 +1431,9 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "sand_noincrease_stop", "代币不增加则停止", true)
     newRow(layout)
     ui.addCheckBox(layout, "skip_make", "跳过合成种植箱", false)
-
-    newRow(layout)
-    addTextView(layout, "=================隐秘战线(1080p)=================")
+    ---------------------------------------------------------------------
+    addTitle(layout, "隐秘战线(1080p)")
+    addInfo(layout, "十四章小游戏")
     newRow(layout)
     addButton(layout, nil, "隐秘战线——慈悲灯塔",
         make_jump_ui_command(layout, nil,
@@ -1393,20 +1444,46 @@ show_extra_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "hidden_front_award", "隐秘战线打完领取奖励", true)
 
-    newRow(layout)
-    addTextView(layout, "=================连续公招=================")
-    newRow(layout)
-    addButton(layout, layout .. "_recruit", "公开招募加急",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='公开招募加急';lock:remove(main_ui_lock)"))
-    addTextView(layout, [[保留标签]])
-    ui.addEditText(layout, layout .. "_recruit_important_tag", [[]])
+
     -- newRow(layout)
     -- addTextView(layout,
     --             [[用于刷黄绿票，或刷出指定标签。使用加急券在第一个公招位反复执行“公开招募”任务，沿用脚本主页的“自动招募”设置。“自动招募”只勾“其他”时，刷出保底标签就停；只勾“其他”、“4”时，刷出保底小车、保底5星、资深就停；其余同理。如果想刷到指定标签就停，则“保留标签”填期望标签（例如填“削弱 快速复活”）。]])
+    ---------------------------------------------------------------------
+    addTitle(layout, "批量自动战斗(1080p)")
+    --[[
+    newRow(layout)
+    addTextView(layout, "悖论作业")
+    ui.addEditText(layout, "bl_text", "", -2, -1)
+    ]]
+    newRow(layout)
+    addButton(layout, nil, "悖论模拟(测试)",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='悖论模拟';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    addInfo(layout, "干员界面筛选未打的悖论模拟并尝试作战")
+    newRow(layout)
+    addButton(layout, nil, "开始模组任务2",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='自动模组';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    addTextView(layout, "干员名字,用空格分开")
+    ui.addEditText(layout, "mz_text", "", -2, -1)
+    addInfo(layout, "批量做第二个模组任务，只支持仅有一个模组的干员\n如果干员有多个模组，只会进入第一个模组，并且可能应用作业出错")
+
+    ---------------------------------------------------------------------
+    addTitle(layout, "其他一次性批量功能")
+    newRow(layout)
+    addButton(layout, nil, "自动升级潜能红点",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='自动升级潜能';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    addInfo(layout, "自动升级干员潜能")
 
     newRow(layout)
-    addTextView(layout, "=================采购中心=================")
+    addButton(layout, nil, "活动商店购买(测试)",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='活动商店购买';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    addInfo(layout, "不会买无限池")
+
+    -------------------------------------------------------------------
+    addTitle(layout, "每月采购中心")
 
     newRow(layout)
     addButton(layout, nil, "执行采购中心商店购买",
@@ -1515,23 +1592,18 @@ show_auto_ui = function()
     saveConfig('last_layout', layout)
     ui.newLayout(layout, ui_page_width, -2)
     ui.setTitleText(layout, "小工具")
-
+    newRow(layout)
+    addButton(layout, nil, "返回",
+        make_jump_ui_command(layout, "main"),
+        nil, nil)
     newRow(layout)
     addTextView(layout, "以下功能均为单账号功能，如果有bug请录屏在频道内提交反馈")
 
     newRow(layout)
     addTextView(layout, "频道地址 https://pd.qq.com/s/b4e5yvzx9")
 
-    newRow(layout)
-    addButton(layout, nil, "返回",
-        make_jump_ui_command(layout, "main"),
-        nil, nil)
-
-    newRow(layout)
-    addTextView(layout, "--------------------单账户设置--------------------")
-
-    newRow(layout)
-    addTextView(layout, "此账户用于单账户模式下的森空岛及其他需要账密的API请求使用")
+    addTitle(layout, "单账户设置", "setting.png")
+    addInfo(layout, "此账户用于单账户模式下的森空岛及其他需要账密的API请求使用")
 
     newRow(layout)
     ui.addCheckBox(layout, "single_account_login", "启用此账户登录", false)
@@ -1544,15 +1616,8 @@ show_auto_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "single_password", "")
 
-    newRow(layout)
-    ui.addCheckBox(layout, "skland_use_cloud", "森空岛签到使用云端接口", false)
-    newRow(layout)
-    addTextView(layout, [[勾选使用云端接口请求时候会附带账户密码
-不勾选此选项则所有的请求全在本地完成
-部分设备（如光速虚拟机）内无法使用curl，故本地签到会失败]])
-
-    newRow(layout)
-    addTextView(layout, "--------------------自动养成相关--------------------")
+    ---------------------------------------------------------------------
+    addTitle(layout, "自动合成材料")
 
     --[[
     newRow(layout)
@@ -1574,49 +1639,23 @@ show_auto_ui = function()
     ]]
 
     newRow(layout)
-    ui.addCheckBox(layout, "enable_raise_func", "启用自动养成", false)
-
-
-    newRow(layout)
-    newRow(layout)
-    addButton(layout, nil, "开始模组任务2",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='自动模组';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    addTextView(layout, "干员名字,用空格分开")
-    ui.addEditText(layout, "mz_text", "", -2, -1)
-
-    newRow(layout)
-    addButton(layout, nil, "自动合成材料(跳转加工站后启动)",
+    addButton(layout, nil, "自动合成材料",
         make_jump_ui_command(layout, nil,
             "extra_mode='自动合成材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
+    addInfo(layout, [[从干员精英化/专精/开模组页面缺材料跳转到加工站后启动
+即要带数量的加工站界面
+自动合成下级材料和选择加工干员]])
     newRow(layout)
     addButton(layout, nil, "将当前模组升到满级",
         make_jump_ui_command(layout, nil,
             "extra_mode='自动合成模组材料';extra_mode_multi=false;lock:remove(main_ui_lock)"))
+    addInfo(layout, [[选择好模组进入开通或升级页面后启动
+多模组干员1级升2级可能会卡,多启动一次]])
     --[[
     newRow(layout)
     ui.addCheckBox(layout, "raise_fight_plan", "作战计划(未完成)", true)
     newRow(layout)
     addButton(layout, nil, "仓库识别(未完成)", "raise_storage_dentify")]]
-    newRow(layout)
-    addButton(layout, nil, "自动升级潜能红点(测试)",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='自动升级潜能';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    newRow(layout)
-    addButton(layout, nil, "活动商店购买(测试)",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='活动商店购买';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    newRow(layout)
-    addTextView(layout, "--------------------悖论模拟相关--------------------")
-    --[[
-    newRow(layout)
-    addTextView(layout, "悖论作业")
-    ui.addEditText(layout, "bl_text", "", -2, -1)
-    ]]
-    newRow(layout)
-    addButton(layout, nil, "悖论模拟(测试)",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='悖论模拟';extra_mode_multi=true;lock:remove(main_ui_lock)"))
 
     --[[
     newRow(layout)
@@ -1632,22 +1671,20 @@ show_auto_ui = function()
         make_jump_ui_command(layout, nil,
             "extra_mode='重复卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     ]]
+    ---------------------------------------------------------------------
 
+    ---------------------------------------------------------------------
+    addTitle(layout, "连续公招")
     newRow(layout)
-    addTextView(layout, "--------------------自动作战相关--------------------")
+    addButton(layout, layout .. "_recruit", "刷公招",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='加急公开招募';lock:remove(main_ui_lock)"))
+    addTextView(layout, "保留标签")
+    ui.addEditText(layout, layout .. "_recruit_important_tag", "")
 
-    newRow(layout)
-    ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", false)
-    newRow(layout)
-    ui.addCheckBox(layout, "use_local_dictionary", "抄作业数字识别使用本地字库", false)
-    newRow(layout)
-    addButton(layout, "map_online", "联网更新地图包", "fetchMaps()")
-    addButton(layout, nil, "本地更新地图包", "fetchLocalMaps()")
-    newRow(layout)
-    addTextView(layout, "将maps.zip放在/sdcard/Pictures下")
-
-    newRow(layout)
-    addTextView(layout, "--------------------辅助作战--------------------")
+    ---------------------------------------------------------------------
+    addTitle(layout, "辅助作战")
+    addInfo(layout, "放好干员,启动后自动开技能,可能会抢操作")
     newRow(layout)
     addButton(layout, nil, "辅助作战-专注失调",
         make_jump_ui_command(layout, nil,
@@ -1659,35 +1696,28 @@ show_auto_ui = function()
     ui.setButton("map_online", "联网更新地图包")
 end
 
-show_sss_fight_ui = function()
-    local layout = "sss_fight"
+show_auto_fight_ui = function()
+    local layout = "auto_fight"
     saveConfig('last_layout', layout)
     ui.newLayout(layout, ui_page_width, -2)
-    ui.setTitleText(layout, "保全派驻")
+    ui.setTitleText(layout, "自动作战")
 
     newRow(layout)
     addButton(layout, nil, "返回",
         make_jump_ui_command(layout, "main"),
         nil, nil)
+    addTitle(layout, "自动作战相关")
 
     newRow(layout)
-    addTextView(layout, "--------------------基础设置--------------------")
+    ui.addCheckBox(layout, "copy_homework_only", "只抄作业不打已三星关卡", false)
+    newRow(layout)
+    ui.addCheckBox(layout, "use_local_dictionary", "抄作业数字识别使用本地字库", false)
+    newRow(layout)
+    addButton(layout, "map_online", "联网更新地图包", "fetchMaps()")
+    addButton(layout, nil, "本地更新地图包", "fetchLocalMaps()")
+    newRow(layout)
+    addInfo(layout, "本地更新请在频道下载maps.zip放在/sdcard/Pictures下")
 
-    newRow(layout)
-    addTextView(layout, "默认在每周日打剿灭之后扫荡保全,仅在写jm/wt时候有效")
-    newRow(layout)
-    addTextView(layout, "保全关卡代号: 保全 保全派驻 BQ BQPZ")
-    newRow(layout)
-    addTextView(layout, "作战使用保全关卡代号则无视每周扫荡选项")
-
-    newRow(layout)
-    ui.addCheckBox(layout, "sss_weekend_auto", "每周末自动扫荡", true)
-
-    newRow(layout)
-    ui.addCheckBox(layout, "sss_only_complete", "仅在完成6层后扫荡", true)
-
-    newRow(layout)
-    ui.addCheckBox(layout, "sss_try_complete", "未完成6层则尝试抄作业", false)
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
