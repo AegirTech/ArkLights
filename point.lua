@@ -117,6 +117,7 @@ point = {
 
     -- 验证码
     滑块验证节点 = { text = "请通过以下验证" },
+    官服点选验证节点 = { text = "请在下图依次点击" },
     captcha = function()
         if findOne({ id = 'captcha' }) then
             return findOne({ class = "android.webkit.WebView" })
@@ -127,7 +128,6 @@ point = {
     captcha_area_btn = { 642, 712 },
     滑块验证节点新 = "724|715|618AFD,814|721|5F89FD",
     滑块验证节点新720 = "663|756|618AFD,750|759|5F89FD",
-    官服点选验证720 = "628|36|4E79ED,680|797|B4C4EE",
     官服点选验证确认720 = "769|792|5685F0", -- 465,529
     B服刷新验证 = { text = "刷新验证" },
     B服安全验证框 = { class = "android.widget.RelativeLayout" },

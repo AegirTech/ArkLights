@@ -166,17 +166,19 @@ m.captcha = function(box)
         -- l t r b
         text_pos = {
             box.l + x_size * 0.577249 // 1,
-            box.t + y_size,
+            box.t + y_size * 0.012 // 1,
             box.r,
-            box.t + y_size * 0.15565 // 1,
+            box.t + y_size * 0.20565 // 1,
         }
         image_pos = {
             box.l,
-            box.t + y_size * 0.15565 // 1,
+            box.t + y_size * 0.20565 // 1,
             box.r,
             box.b,
         }
         log("官服新版滑块")
+        log("图像坐标", image_pos)
+        log("目标字符坐标", text_pos)
     else
         text_pos = {
             box.l + x_size * 0.49375 // 1,
@@ -264,12 +266,10 @@ m.captcha = function(box)
         headers = [[Content-Type: application/json
             Type: single
             User-Agent: {UA}
-            Authorization: Bearer {CAPTCHATOKEN}
-            Account: {ACCOUNT}]]
+            Authorization: Bearer {CAPTCHATOKEN}]]
     end
     headers = string.gsub(headers, "{APKVERSION}", getApkVerInt())
     headers = string.gsub(headers, "{CAPTCHATOKEN}", m.captchaToken)
-    headers = string.gsub(headers, "{ACCOUNT}", username)
     headers = string.gsub(headers, "{UA}", UA)
     local res, code = httpPost(m.captchaServer .. "/captcha/geetest_v3/select/base64", postdata, 30, headers)
     log(res, code)
@@ -288,6 +288,9 @@ m.captcha = function(box)
                 y = (coord[2] or 0) * y_scale
                 tap({ image_pos[1] + x, image_pos[2] + y })
                 ssleep(0.3)
+                if official_choice then
+                    ssleep(0.3)
+                end
             end
             ssleep(0.3)
             return true
