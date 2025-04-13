@@ -460,11 +460,14 @@ getChoiceBox = function(retry)
         if notb then
             if cmpColor(bx[1] + 4, y, "EFEFEF", 0.9) == 0 then
                 box.b = y
-                box.l = box.l + scale(35)
-                box.r = box.r - scale(35)
                 break
             end
         end
+    end
+    box.l = box.l + scale(37)
+    box.r = box.r - scale(37)
+    if not notb then
+        box.b = box.b - scale(50)
     end
     log("点选验证框2", box)
     if box.b - box.t < scale(200) then
