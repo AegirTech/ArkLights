@@ -1017,7 +1017,7 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_其他, "disable_paddleocr",
         "完全禁用飞浆OCR", false)
     newRow(debug_layout_其他)
-    ui.addCheckBox(debug_layout_其他, "enable_raise_func", "禁用自动养成", true)
+    ui.addCheckBox(debug_layout_其他, "enable_raise_func", "启用自动养成", false)
     addInfo(debug_layout_其他, [[可能会报错停止，需要手动启用]])
 
     newRow(debug_layout_其他)
