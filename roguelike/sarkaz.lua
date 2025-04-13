@@ -1395,7 +1395,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
         return
     end
     log('start skz')
-    if findOne("萨卡兹_戛然而止") then
+    if findAny({ "萨卡兹_戛然而止", "萨卡兹_戛然而止2" }) then
         log('萨卡兹_戛然而止')
         wait(function()
             if findAny({ "萨卡兹_常规行动", "面板" }) then return true end
