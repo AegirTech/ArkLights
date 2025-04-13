@@ -1196,7 +1196,7 @@ show_extra_ui = function()
     addButton(layout, nil, "促融共竞开始",
         make_jump_ui_command(layout, nil,
             "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
- ]]
+
     -- newRow(layout)
     -- addTextView(layout, "===========宝石铭刻===========")
     -- newRow(layout)
