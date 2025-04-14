@@ -74,7 +74,6 @@ sarkaz.不期而遇处理 = function()
     if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
     if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
 
-
     if string.finds(str, { "虫", '故事', '之店', "是而", "似是" }) then
         return zl_event_solve(3, "萨卡兹_战略帮助")
     elseif string.finds(str, { '高空', '不散' }) then
@@ -355,7 +354,6 @@ sarkaz.肉鸽选路 = function()
 
     toast("到达第" .. 到达层数 .. "层,选择节点" .. 节点(arr[0]))
 
-
     for i = 0, 6 do
         if arr1[i] == arr[0] then
             tap(scale(541 + 675 * 选路位置), 838 - 102 * i)
@@ -415,8 +413,6 @@ sarkaz.保持黄负荷 = function()
     end
 end
 
-
-
 sarkaz.识别地图 = function()
 
 end
@@ -448,7 +444,6 @@ sarkaz.蓝图速通 = function()
     肉鸽白名单 = { "维什戴尔", "古米", "卡达", "玛恩纳", "澄闪", "荒芜拉普兰德", "苏苏洛", "承曦格雷伊" }
     肉鸽队员 = {}
     sarkaz.跳转()
-
 
     -- 开始探索 一路按到 招募干员
     -- local first_time_see_first_card = 0
@@ -936,7 +931,6 @@ sarkaz.蓝图分队 = function()
     if jumpout then return end
     log(2650)
 
-
     -- 开始探索 一路按到 招募干员
     -- local first_time_see_first_card = 0
 
@@ -1051,7 +1045,6 @@ sarkaz.蓝图分队 = function()
         end, 10) then
         return
     end
-
 
     if not appear("萨卡兹_初始招募") then return end
     log(2698)
@@ -1388,7 +1381,6 @@ sarkaz.加载种子 = function()
     end
 end
 
-
 path.萨卡兹的无终奇语前瞻投资 = function()
     if zl_blueprint then
         sarkaz.蓝图分队()
@@ -1646,7 +1638,6 @@ path.萨卡兹的无终奇语前瞻投资 = function()
         return
     end
 
-
     if not appear("萨卡兹_初始招募") then return end
     log(2698)
     -- 进入探索 必须分为两段，否则产生位移
@@ -1763,7 +1754,6 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     end
 
     if not appear("快捷编队") then return end
-
 
     ::fight_trusteeship::
     -- 开始游戏

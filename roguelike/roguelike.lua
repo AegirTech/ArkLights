@@ -1,9 +1,6 @@
 -- 肉鸽通用函数
 zl = {}
 
-
-
-
 --开始之前检测一下，有没有其他肉鸽未结束探索
 zl.放弃未结束的肉鸽探索 = function()
     path.跳转("首页")
@@ -46,7 +43,6 @@ zl.放弃未结束的肉鸽探索 = function()
     zl_abandon_explore(pp)
     path.跳转("首页")
 end
-
 
 zl.招募干员 = function(干员, 肉鸽白名单)
     log("肉鸽招募干员", 干员)
@@ -168,7 +164,6 @@ zl.map_swipe = function(left)
         sleep(250)
     end
 end
-
 
 zl.shop_get_coin = function()
     if not wait(function()
@@ -495,7 +490,6 @@ zl.selection_node = function(select_number, rogueType)
         if not zl_repos_path(rogueType .. '_放弃本次探索') then return end
         return zl.selection_node(select_number + 1, rogueType)
     end
-
 
     --print(paths)
     local findMaxCoordinate = function(coords) --五个坐标里面取出权重最大的那个
@@ -899,8 +893,6 @@ zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检�
         log("等级已满")
         return true
     end
-
-
 
     local zl_coin = zl_number_check(源石锭检测范围) or -1
     if zl_coin == 999 then zl_skip_coin = true end --源石锭999的话跳过投币，避免浪费时间

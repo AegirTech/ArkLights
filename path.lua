@@ -3010,8 +3010,6 @@ path.发电站换班 = function()
 
     local stationLevel = powerStationLevel
 
-
-
     local f2
 
     for i = 1, #station do f(i, station[i], stationLevel[i]) end
@@ -4178,7 +4176,6 @@ path.采购中心商店 = function()
     end
     log(red_ticket_shop_good_need)
 
-
     local 指定商店购买 = function(good_need)
         if #good_need == 0 then
             return
@@ -4222,7 +4219,6 @@ path.采购中心商店 = function()
             ::continue::
         end
     end
-
 
     local 黄票商店购买 = function()
         if not yellow_ticket_shop then return end
@@ -4383,7 +4379,6 @@ same_page_fight = function(pre, cur)
         return true
     end
 
-
     -- pattern before last - should be same
     -- PR-A-1 == PR-A-2, PR-A-1 != PR-A-2
     if pre:gsub("(.*)-.*$", "%1") == cur:gsub("(.*)-.*$", "%1") then
@@ -4428,7 +4423,6 @@ path.轮次作战 = function()
 
         -- 导航/代理失败3次就删除
         fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) + 1
-
 
         if fight_failed_times[cur_fight] >= max_fight_failed_times then
             -- 有磨难关卡，切换至磨难再试
@@ -4575,7 +4569,6 @@ XinPian = {
     环烃聚质 = { "13-15" },
     ["RMA70-12"] = { "9-19", "7-10", "R8-9", "2-10" }
 }
-
 
 通用ocr导航 = function(关卡名)
     -- 只能导航已经三星的蓝色六边形关卡
@@ -5137,7 +5130,6 @@ path.主线 = function(x)
         -- 新章节开启后,怒号光明这个点位恰好适配所有新开的章节,否则新章节导航这里将失败
         -- 如果后续在"残阳"之后加新的篇章,这里的导航可能都会失败,如点两次觉醒无法导航到第一篇
         -- if not appear("怒号光明") then return end
-
 
         -- ssleep(3)
         -- if distance['' .. chapter] then swipc() end
@@ -5723,7 +5715,6 @@ path.活动 = function(x)
 
             if findOne("例行查访完成") then return true end
 
-
             --第一步，ocr识别所需要的查访对象名字和坐标,
             --有时候识别出问题，放这里进行多次循环
             for _, v in pairs(ocr查访) do
@@ -5784,7 +5775,6 @@ path.活动 = function(x)
                 if not findOne("选择心扉之乐界面") then return false end
                 ssleep(.5)
 
-
                 --点击到相应的"X之章",
                 local X之章 = 情绪 .. "之章"
                 tap(X之章)
@@ -5816,7 +5806,6 @@ path.活动 = function(x)
                             ssleep(.2)
                         end, 3) then
                     end
-
 
                     if findOne("心绪相符") then
                         --心绪相符的时候，点击完会有一个奖励箱子出现，
@@ -8816,7 +8805,6 @@ path.自动升级潜能 = function()
         end
     end
 
-
     for i = 1, 红点干员数量 do
         auto_upgrade_potentiality()
         gesture({
@@ -8939,7 +8927,6 @@ path.隐秘战线 = function()
                     end
                 end
             end
-
 
             if i < 3 then
                 tap("隐秘战线右翻页")
@@ -10293,7 +10280,6 @@ path.卫戍协议 = function(不判断每日)
         --进图后强退app,到主页放弃上一把
     end
 
-
     if not wait(function()
             tap("卫戍协议开始模拟")
             ssleep(1.5)
@@ -10679,7 +10665,6 @@ path.保全 = function()
         auto_sss(homework[cur_fight], true, nil, 继续打)
         return
     end
-
 
     if not appear("保全派驻首页", 10) then
         back()

@@ -252,7 +252,6 @@ skland.cultivate = function(uid)
     end
 end
 
-
 -- 刷新token
 skland.get_refresh_token = function()
     url = API .. "/auth/refresh"
@@ -282,7 +281,6 @@ skland_sign_cloud = function(account, password)
     local res, code = httpPost(url, JsonEncode(data), 30, "Content-Type: application/json")
     log("cloud sign", res, code)
 end
-
 
 -- 森空岛每日签到
 skland_daily_checkin = function(account, password)

@@ -23,7 +23,6 @@ mizuki_navigation = function()
             return false
         end
 
-
         if not wait(function()
                 if checkPointColor(mizuki_point.等待开始页面标题) then
                     return true
@@ -1182,7 +1181,6 @@ mizuki_start_from_select = function()
     return true
 end
 
-
 path.水月与深蓝之树前瞻投资_旧 = function()
     mizuki_fight_time = mizuki_fight_time or 10
     log("开始水月肉鸽")
@@ -1922,7 +1920,6 @@ path.水月与深蓝之树前瞻投资 = function()
     end
     if jumpout then return end
 
-
     local first_time_see_first_card = 0
     if not wait(function(reset_wait_start_time)
             if findOne("水月_初始招募") then
@@ -1962,7 +1959,6 @@ path.水月与深蓝之树前瞻投资 = function()
     --招募医疗
     if not zl.招募医疗('水月') then return end
 
-
     if not appear("水月_初始招募") then return end
     log(2698)
 
@@ -1997,7 +1993,6 @@ path.水月与深蓝之树前瞻投资 = function()
     --目前默认选择上面的线路
     ssleep(1)
 
-
     if not wait(function()
             tap("水月_第一次作战上")
             if appear("水月_战斗进入前界面", 1) then
@@ -2007,7 +2002,6 @@ path.水月与深蓝之树前瞻投资 = function()
         in_fight_return = "无法进入第一次作战"
         return restart(in_fight_return)
     end
-
 
     --检查作战关卡名字
     if not zl.fight_name_ocr('水月') then return end

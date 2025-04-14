@@ -373,7 +373,6 @@ m.captchaSecond = function(box)
     return true
 end
 
-
 m.FAILTASK_LINEBUSY = 'lineBusy'
 m.FAILTASK_ACCOUNTERROR = 'accountError'
 

@@ -2303,7 +2303,6 @@ unpacking_library = function()
             sqlite3path = "/sdcard/Pictures/sqlite3"
         end
 
-
         local curl_file = "curl_" .. get_cpu_arch()
         curl_file = curl_file:map({
             ["\n"] = "",
@@ -3546,7 +3545,6 @@ restart_mode_hook = function()
     -- load(loadConfig("restart_mode_hook", ''))()
     -- saveConfig("restart_mode_hook", '')
     local f = loadConfig("restart_mode_hook", '')
-
 
     saveConfig("restart_mode_hook", '')
     load(f)()

@@ -114,7 +114,6 @@ auto_skill = function()
         end
     end
 
-
     while true do
         --skillFind1 = findOne("技能亮",0.93)
         skillFindAll = findOnes("技能亮", 0.93)
@@ -691,7 +690,6 @@ end
         printChar(group)
         choseChar(group, 1)
     end
-
 
     if 编入数量 < 10 and 添加低信赖 then
         if not findOne("普通作战编队自定义排序") then
@@ -1709,7 +1707,6 @@ end
                     --     操作时间戳1 = 波数依赖顺序
                     -- End If
 
-
                     if wave依赖指令["type"] == "Skill" or wave依赖指令["type"] == "skill" or wave依赖指令["type"] == "技能" then
                         if wave依赖指令["location"] then
                             wave依赖指令 = 释放坐标技能(wave依赖指令["location"])
@@ -1802,7 +1799,6 @@ end
             appear("作战中", 3)
             加速()
         end
-
 
         if not (findOne("作战中") or findOne("暂停中") or findOne("作战中2")) then
             sleep(500)
@@ -2014,7 +2010,6 @@ end
 
     local number = tonumber(string.match(获得敌人数(1), "%d+"))
 
-
     -- 还没转场的时候
     if number ~= 0 then
         wait_until_end(false)
@@ -2028,7 +2023,6 @@ end
     calc_tiles_info(m_stage_name, -m_camera_shift[1], m_camera_shift[2])
     return update_deployment(true)
 end
-
 
 获取费用列表 = function()
     local 干员数 = 0

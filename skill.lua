@@ -287,7 +287,6 @@ end)
     log(217, operators)
 end) ]]
 
-
 -- 贸易站干员选择
 -- operator: 列表，每个元素包含两个技能图标
 -- dormitoryCapacity: 宿舍可容纳人数
@@ -655,7 +654,6 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
     -- 2. 12心情以下干员不考虑，也忽略心情消耗
     local base, disable_moon_effect, storage, storages, standard, all, station,
     station_only, only_need, robot, abyssal_hunter
-
 
     ---@param icons table [[技能1,技能2,name1],[技能1,技能2,name2],[技能1,技能2,name3]]
     local score = function(icons)
@@ -1684,8 +1682,6 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-
-
     if #best < 5 and isCharExsit["絮雨"] then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then --夕
@@ -1841,7 +1837,7 @@ controlStationOperatorBest = function(operator)
     if #best < 5 then
         for _, o in pairs(operator) do
             if not table.includes(best, o) and isCharExsit["玛恩纳"]
-                and table.includes({ o[1], o[2] }, 'bskill_ctrl_cost')     -- 笑脸
+                and table.includes({ o[1], o[2] }, 'bskill_ctrl_cost')      -- 笑脸
                 and not table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') --排除m3,不要跟凯尔希一起上班
             then
                 table.insert(best, o)
@@ -1869,7 +1865,6 @@ controlStationOperatorBest = function(operator)
     --best = table.slice(table.extend(best, remain), 1, 5)
     return best, best_score
 end
-
 
 --挑选两个宿管
 dormitoryOperatorBest = function(operator, goodType, virtralPowerStationNum)

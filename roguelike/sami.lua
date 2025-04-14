@@ -176,7 +176,6 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
         goto fight_first
     end
 
-
     --检查作战关卡名字
     if not zl.fight_name_ocr('萨米') then return end
     toast(now_fight_name)

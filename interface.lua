@@ -183,7 +183,6 @@ show_multi_account_ui = function()
     }
     ui_cmd = table.join(cmd, ';')
 
-
     -- addButton(layout, nil, "启动", make_jump_ui_command(layout, nil,
     --                                                       "crontab_enable=false;lock:remove(main_ui_lock)"),
     -- ui_small_submit_width)
@@ -611,7 +610,6 @@ show_main_ui = function()
 
     make_afterjob_ui(layout)
 
-
     -- newRow(layout)
     -- addTextView(layout,
     --             [[开基建退出提示，异形屏适配设为0。关游戏模式、全局侧边栏、深色夜间护眼模式、隐藏刘海。关懒人输入法，音量加停止脚本。有问题看必读。]])
@@ -816,7 +814,6 @@ show_debug_ui = function()
     addInfo(debug_layout_云控, [[勾选使用云端接口请求时候会附带账户密码
 不勾选此选项则所有的请求全在本地完成
 部分设备（如光速虚拟机）内无法使用curl，故本地签到会失败]])
-
 
     local debug_layout_账户 = "debug_tab_account"
     ui.addTab("debug_tab", debug_layout_账户, "账户日常")
@@ -1316,7 +1313,6 @@ show_extra_ui = function()
     local rouge_layout_水月 = "extra_tab_zl2"
     ui.addTab("extra_tab", rouge_layout_水月, "水月")
 
-
     newRow(rouge_layout_水月)
     ui.addCheckBox(rouge_layout_水月, "zl_skip_coin_mizuki", "跳过投币", false)
     ui.addCheckBox(rouge_layout_水月, "zl_only_coin_mizuki", "只是投币", false)
@@ -1436,7 +1432,6 @@ show_extra_ui = function()
     addTextView(layout, "(数字)开始")
     newRow(layout)
     ui.addCheckBox(layout, "hidden_front_award", "隐秘战线打完领取奖励", true)
-
 
     -- newRow(layout)
     -- addTextView(layout,
@@ -1627,7 +1622,6 @@ show_auto_ui = function()
     ui.addEditText(layout, "a60_token_offcial", "")
     addTextView(layout, "B服请求Token")
     ui.addEditText(layout, "a60_token_bili", "")
-
 
     --ui.addCheckBox(layout, "raise_material", "材料合成（未完成）", false)
     ]]

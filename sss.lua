@@ -88,7 +88,6 @@ sss.init = function()
     log("作业数据加载成功")
 end
 
-
 sss.load_map = function()
     local stages_data = 当前层作战数据
     local 地图名称 = stages_data["stage_name"]
@@ -108,7 +107,6 @@ sss.load_map = function()
     return true
 end
 
-
 sss.choose_oper = function()
     -- 选择干员
     if not appear("保全作战开始按钮") then return end
@@ -122,7 +120,6 @@ sss.choose_oper = function()
     end
     tap("保全导能原件" .. 导能原件位置)
     if not appearTap("保全蓝色下一步选择") then return end
-
 
     local 装备位置x, 装备位置y = point["保全战术装备"][1], point["保全战术装备"][2]
     for i, v in ipairs(作业数据["equipment"]) do
@@ -172,7 +169,6 @@ sss.choose_oper = function()
         appear("等级降序", 2)
     end
 
-
     local choseChar = function()
         local 干员 = 作业数据["opers"]
         local 工具人 = 作业数据["tool_men"]
@@ -195,7 +191,6 @@ sss.choose_oper = function()
                 end
                 --print(干员目录)
                 local 编入结果 = 选择干员(干员目录, "待编队干员", false)
-
 
                 未编入.count = 未编入.count + 编入结果[1]
 
@@ -232,7 +227,6 @@ end
 sss.start_fight = function()
     -- 作战数据
 end
-
 
 sss.finish_fight = function()
     -- 结束作战/切换下一层

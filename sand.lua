@@ -830,7 +830,6 @@ Tales_within_the_sand.生息关卡进入 = function(关卡, 剧情)
         end
     end
 
-
     -- 退出关卡
     if not wait(function()
             if findOne("生息底栏烹饪按钮") then return true end

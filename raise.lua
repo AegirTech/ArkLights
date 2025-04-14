@@ -2,7 +2,6 @@
 --               自动化练干员
 -- ===========================================
 
-
 --[[培养计划json举例
 [                                   -- 数组
     {
@@ -20,8 +19,6 @@
     }
 ]
 ]]
-
-
 
 raise = {}
 
@@ -299,7 +296,6 @@ raise.char_skill_upgrade_material = function(id, skill_id_index)
 
 end
 
-
 ---计算角色技能升级所需材料总量
 ---@param id number 干员ID
 ---@param skill_id_index number 几技能
@@ -417,7 +413,6 @@ raise.generate_fight_plan = function(待养成干员, 养成计划)
     end
 end
 
-
 ---计算刷图计划与合成计划
 ---@param material_need table {id:count}
 ---@return table table 刷图计划
@@ -447,8 +442,6 @@ raise.get_fight_plan = function(material_need)
     -- 案例表示返回了两个材料对应的两组刷图副本,如果前面的没有代理,可尝试后面的,每个材料尝试分组内的关卡
     return calc_fight_plan(final_materials_result), final_synthesis_materials_result
 end
-
-
 
 ---需要刷图的材料集合fight_materials_result
 --  final_synthesis_materials_result
@@ -988,7 +981,6 @@ char_choose = function(char_name)
         appear("干员等级降序", 2)
     end
 
-
     for i = 1, 8 do
         if 干员职业[char_name] == 干员类别[i] then
             if not findOne("普通作战编队列表" .. i) then
@@ -1142,7 +1134,6 @@ raise.buy_32001 = function(numb)
     appear("红票商店面板", 5)
     tap("返回")
 end
-
 
 -- 精英化操作一次
 raise.elite_one_phase = function(material_need)
@@ -1520,7 +1511,6 @@ raise.choose_char_be_trained = function(干员)
     end
     return true
 end
-
 
 -- 仓库识别 测试
 raise.test = function()
