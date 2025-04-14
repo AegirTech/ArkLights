@@ -407,6 +407,12 @@ getCaptchaBox = function(retry)
         return getCaptchaBox(retry + 1)
     end
 
+    if box.r - box.l > scale(1600) then
+        log("滑块验证框 failed2", box)
+        ssleep(2)
+        return getCaptchaBox(retry + 1)
+    end
+
     local hava_white = false
 
     for i = 1, 10 do
@@ -473,6 +479,11 @@ getChoiceBox = function(retry)
     if box.b - box.t < scale(200) then
         log("点选验证框 failed", box)
         ssleep(1)
+        return getChoiceBox(retry + 1)
+    end
+    if box.r - box.l > scale(1600) then
+        log("点选验证框 failed2", box)
+        ssleep(2)
         return getChoiceBox(retry + 1)
     end
     log("点选验证框", box)
