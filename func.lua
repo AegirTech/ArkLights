@@ -472,7 +472,7 @@ getChoiceBox = function(retry)
     log("点选验证框2", box)
     if box.b - box.t < scale(200) then
         log("点选验证框 failed", box)
-        ssleep(0.5)
+        ssleep(1)
         return getChoiceBox(retry + 1)
     end
     log("点选验证框", box)
@@ -554,6 +554,14 @@ end
 -- 滑块验证码打码
 SolveSlipCaptcha = function(rect, p_type)
     if not rect then return end
+
+    local img = getWorkPath() .. "/capture_cloud_upload.jpg"
+    snapShot(img, rect.l, rect.t, rect.r, rect.b)
+    local upload_img = base64(img)
+    local postdata = [[{"image": "]] .. upload_img .. [["}]]
+    local res, code = httpPost(m.captchaServer .. "/image/upload_image", postdata, 30, "Content-Type: application/json")
+    log("云控打码图片上传-滑块", res, code)
+
     local p_type = p_type or 1
     local distance = 0
     if p_type == 1 then -- 免费服务器

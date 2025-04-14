@@ -154,11 +154,19 @@ m.check_captcha_token = function()
 end
 
 m.captcha = function(box)
+    local img = getWorkPath() .. "/capture_cloud_upload.jpg"
+    snapShot(img, box.l, box.t, box.r, box.b)
+    local upload_img = base64(img)
+    local postdata = [[{"image": "]] .. upload_img .. [["}]]
+    local res, code = httpPost(m.captchaServer .. "/image/upload_image", postdata, 30, "Content-Type: application/json")
+    log("云控打码图片上传", res, code)
+
     if m.captchaToken == '' then
         return false
     end
     log("使用云控打码")
     -- ssleep(1)
+
     local x_size = box.r - box.l
     local y_size = box.b - box.t
     local text_pos, image_pos
@@ -230,22 +238,7 @@ m.captcha = function(box)
     snapShot(img, image_pos[1], image_pos[2], image_pos[3], image_pos[4])
     local image_img_base64 = base64(img)
 
-    -- local data = {
-    --     text_base64 = text_img_base64,
-    --     image_base64 = image_img_base64,
-    -- }
     local postdata = [[{"image_base64": "]] .. image_img_base64 .. [[", "text_base64": "]] .. text_img_base64 .. [["}]]
-    -- log(postdata)
-
-    -- local headers = [[Content-Type: application/json;]]
-    -- if cloud_get_task then
-    --     headers = headers .. [[
-    --     Type: cloud;
-    --     Cloud_url: ]] .. m.server .. ";"
-    -- elseif multi_account_enable then
-    --     headers = headers .. [[
-    --     Type: multi_account;]]
-    -- end
     local UA = "Arklights/" .. getApkVerInt() .. " " .. release_date
 
     if cloud_get_task then
