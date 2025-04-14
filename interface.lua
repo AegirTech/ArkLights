@@ -1674,11 +1674,11 @@ show_auto_ui = function()
     ---------------------------------------------------------------------
     addTitle(layout, "连续公招")
     newRow(layout)
-    addButton(layout, layout .. "_recruit", "刷公招",
+    addButton(layout, "extra_recruit", "刷公招",
         make_jump_ui_command(layout, nil,
-            "extra_mode='加急公开招募';lock:remove(main_ui_lock)"))
+            "extra_mode='公开招募加急';lock:remove(main_ui_lock)"))
     addTextView(layout, "保留标签")
-    ui.addEditText(layout, layout .. "_recruit_important_tag", "")
+    ui.addEditText(layout, "extra_recruit_important_tag", "")
 
     ---------------------------------------------------------------------
     addTitle(layout, "辅助作战")
