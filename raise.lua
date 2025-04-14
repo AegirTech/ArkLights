@@ -1381,13 +1381,7 @@ end
 raise.master_skill = function(id, skill_numb, start_level, level)
     if not appear("干员档案", 2) then return end
     local name = char_id2name(id)
-    --local level = raise.get_char_skill(id, skill_numb)
     if level[1] < 7 then return false end
-    --[[if not char_choose(name) then
-        log("未找到干员", name, ",跳过")
-        path.跳转("首页")
-        return ture
-    end]]
     if not wait(function()
             tap("进入技能升级页面")
             if not findOne("干员档案") then return true end
@@ -1404,26 +1398,6 @@ raise.master_skill = function(id, skill_numb, start_level, level)
         log("无法升级技能")
         return false
     end
-    --[[
-    --计算start_level+1的材料需求
-    local material_need = raise.char_skill_master_material(id, skill_numb, start_level + 1)
-    log("需要材料", material_need)
-    --local materials_need = raise.calculate_materials_need(material_need)
-    --log("缺少材料", materials_need)
-
-    local m_need = {}
-    local fight_plan, synthesis_plan
-    if material_need ~= {} then
-        for k, v in pairs(material_need) do
-            if #k == 5 then --去除技能书
-                m_need[k] = v
-            end
-        end
-        log("缺少非技能书材料:", m_need)
-        fight_plan, synthesis_plan = raise.get_fight_plan(m_need)
-        log("合成计划:", synthesis_plan)
-    end
-    ]]
     --用prts自动编队逻辑选择要的干员和技能
     if not raise.choose_char_be_trained({
             {
@@ -1432,11 +1406,15 @@ raise.master_skill = function(id, skill_numb, start_level, level)
             } }) then
         return
     end
+    ssleep(.1)
     appear("干员技能专精页面", 3)
     if not wait(function()
             tap("专精技能列表" .. skill_numb)
-            if not findOne("干员技能专精页面") then return true end
-            if findOne("干员技能升级页面") then return false end
+            if not findOne("干员技能专精页面") then
+                return true
+            elseif findOne("干员技能升级页面") then
+                return false
+            end
         end, 5) then
         log("无法升级技能")
         return true
@@ -1536,7 +1514,6 @@ raise.choose_char_be_trained = function(干员)
     tap("编队确认")
     releaseCapture()
     appear("干员技能专精页面", 3)
-    print(未编入干员)
     if 未编入数量 >= 1 then
         log("未能识别到待训练干员")
         return false
@@ -2067,6 +2044,7 @@ raise.jump_to_workshop = function(actionType, sequence)
     ssleep(.2)
     tap("返回")
     if appear("干员" .. actionType .. "材料白" .. sequence, 3) then
+        ssleep(.2)
         tap("干员" .. actionType .. "材料" .. sequence)
         disappear("干员" .. actionType .. "材料白" .. sequence, 1)
         ssleep(.8)

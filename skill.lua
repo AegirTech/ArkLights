@@ -1840,8 +1840,10 @@ controlStationOperatorBest = function(operator)
 
     if #best < 5 then
         for _, o in pairs(operator) do
-            if not table.includes(best, o) and isCharExsit["玛恩纳"] and
-                table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') then -- 笑脸
+            if not table.includes(best, o) and isCharExsit["玛恩纳"]
+                and table.includes({ o[1], o[2] }, 'bskill_ctrl_cost')     -- 笑脸
+                and not table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') --排除m3,不要跟凯尔希一起上班
+            then
                 table.insert(best, o)
             end
             if #best >= 5 then

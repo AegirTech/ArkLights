@@ -1634,7 +1634,8 @@ show_auto_ui = function()
     newRow(layout)
     addButton(layout, nil, "培养计划生成导出",
         make_jump_ui_command(layout, nil, "jump_arkntools()"))
-    addInfo(layout, [[用明日方舟工具箱生成计划后点导出到明日方舟速通，
+    addTextView(layout, "跳转明日方舟工具箱")
+    addInfo(layout, [[生成计划后点【导出到明日方舟速通】，
 返回速通后粘贴到 主页-培养计划]])
 
     newRow(layout)
@@ -1741,7 +1742,7 @@ show_auto_fight_ui = function()
 ]])
 
     newRow(layout)
-    addButton(layout, nil, "maa作业站",
+    addButton(layout, nil, "打开maa作业站",
         make_jump_ui_command(layout, nil, "jump_maa_copliot()"))
 
     ui.loadProfile(getUIConfigPath(layout))

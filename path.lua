@@ -3026,6 +3026,7 @@ path.办公室换班 = function(stationType)
         for i = 1, 2 do
             path.基建总览翻页()
         end
+        ssleep(.3) --加点延时防止回弹不充分
         p = "基建总览办公室"
     else
         path.跳转("基建")
