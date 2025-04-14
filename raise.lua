@@ -1397,8 +1397,8 @@ raise.master_skill = function(id, skill_numb, start_level, level)
             } }) then
         return
     end
-    ssleep(.1)
     appear("干员技能专精页面", 3)
+    ssleep(.2) --可能转圈?
     if not wait(function()
             tap("专精技能列表" .. skill_numb)
             if not findOne("干员技能专精页面") then
