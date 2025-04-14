@@ -147,12 +147,8 @@ if use_local_dictionary then
     --自动战斗本地字库ocr
     require("turing")
 end
-debug_mode = true
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug mode")
-    ssleep(1)
-    print(findOne("干员技能专精页面"))
-    exit()
 end
 
 load(before_account_hook or '')()
