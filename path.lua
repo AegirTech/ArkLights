@@ -2792,7 +2792,8 @@ path.总览换班 = function()
 end
 
 path.重置控制中枢位置 = function()
-    if findAny({ "基建总览非工作区", "基建总览工作区" }) then
+    if appear({ "基建总览非工作区", "基建总览工作区" }, 2) then
+        ssleep(.15)
         tap("返回")
         if not appear("进驻总览", 5) then return end
         if not wait(function()
