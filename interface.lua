@@ -1686,7 +1686,6 @@ show_auto_ui = function()
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
-    ui.setButton("map_online", "联网更新地图包")
 end
 
 show_auto_fight_ui = function()
@@ -1719,7 +1718,7 @@ show_auto_fight_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "use_local_dictionary", "抄作业数字识别使用本地字库", false)
     newRow(layout)
-    addButton(layout, "map_online", "联网更新地图包", "fetchMaps()")
+    -- addButton(layout, "map_online", "联网更新地图包", "fetchMaps()")
     addButton(layout, nil, "本地更新地图包", "fetchLocalMaps()")
     newRow(layout)
     addInfo(layout, "本地更新请在频道下载maps.zip放在/sdcard/Pictures下")
@@ -1741,6 +1740,7 @@ show_auto_fight_ui = function()
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
+    ui.setButton("map_online", "联网更新地图包")
 end
 
 jump_readme = function()

@@ -94,7 +94,7 @@ sss.load_map = function()
     log("加载地图数据", 地图名称)
     local status, 地图数据 = pcall(loadMap, 地图名称)
     if not status then
-        stop("地图数据读取失败,请去测试功能内更新地图包", '', true, true)
+        stop("地图数据读取失败,请去【自动作战】页内更新地图包", '', true, true)
     end
     关卡地图数据 = 地图数据[1] --放技能坐标
     关卡地图放置数据 = 地图数据[2] --放置干员坐标

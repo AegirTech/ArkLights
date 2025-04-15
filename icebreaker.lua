@@ -1059,7 +1059,7 @@ ib.battle = function(作业名, 是否自带)
     log(作业["stage_name"])
     local status, 地图数据 = pcall(loadMap, 作业["stage_name"])
     if not status then
-        stop("地图数据读取失败,请去测试功能内更新地图包", '', true, true)
+        stop("地图数据读取失败,请去【自动作战】页内更新地图包", '', true, true)
     end
     地图数据0 = 地图数据[1] --放技能坐标
     地图数据1 = 地图数据[2] --放置干员坐标
