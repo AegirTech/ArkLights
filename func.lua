@@ -407,7 +407,7 @@ getCaptchaBox = function(retry)
         return getCaptchaBox(retry + 1)
     end
 
-    if box.r - box.l > scale(1600) then
+    if box.r - box.l > scale(1600) or box.r - box.l < scale(200) then
         log("滑块验证框 failed2", box)
         ssleep(2)
         return getCaptchaBox(retry + 1)
@@ -481,7 +481,7 @@ getChoiceBox = function(retry)
         ssleep(1)
         return getChoiceBox(retry + 1)
     end
-    if box.r - box.l > scale(1600) then
+    if box.r - box.l > scale(1600) or box.r - box.l < scale(200) then
         log("点选验证框 failed2", box)
         ssleep(2)
         return getChoiceBox(retry + 1)
