@@ -4646,12 +4646,33 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 need_copy_homework = true
                 log("准备抄作业")
                 --ssleep (6)--等待右上角提示消失
-            elseif findOne("切换到险地作战") then
-                tap("切换到险地作战")
-                appear("切换到常规作战", 3)
-                tap("代理指挥开1")
+            elseif get_fight_type(cur_fight) == "活动" or get_fight_type(cur_fight) == "主线" then
+                local chapter = x:find("-")
+                chapter = x:sub(1, chapter - 1)
+                chapter = chapter:sub(chapter:find("%d+"))
+                if chapter == "15" or chapter == "HD" then
+                    log("15章难度切换")
+                    appear({ "切换到险地作战", "切换到常规作战", }, 3)
+                    local st = findAny({ "切换到险地作战", "切换到常规作战" })
+                    if not st then
+                        log("切换到作战失败")
+                        if not appear("主页") then back() end
+                        return path.跳转("首页")
+                    end
+                    if not wait(function()
+                            tap(st)
+                            ssleep(.5)
+                            tap("代理指挥开1")
+                            if appear("代理指挥开", .5) then
+                                return true
+                            end
+                        end, 5) then
+                        log("切换到作战失败")
+                        if not appear("主页") then back() end
+                        return path.跳转("首页")
+                    end
+                end
             else
-                -- clean_fight(x)
                 fight_failed_times[cur_fight] = max_fight_failed_times
                 if not appear("主页") then back() end
                 return path.跳转("首页")
