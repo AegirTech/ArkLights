@@ -3560,7 +3560,7 @@ end
 path.会客室信用收集 = function()
     -- 每周4/7 做
     local dayOfWeek = tonumber(os.date("%w"))
-    if dayOfWeek ~= 4 and dayOfWeek ~= 7 then return end
+    if dayOfWeek ~= 2 and dayOfWeek ~= 6 then return end
 
     log("会客室信用收集")
     path.跳转("基建")
