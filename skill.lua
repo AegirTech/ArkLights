@@ -426,7 +426,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 gold = gold + (gold // 4) * 2
             elseif icon == 'bskill_tra_flow_durin' then --鸿雪2
                 --默认桃金娘和杜林在宿舍
-                gold = gold + 2
+                -- gold = gold + 2
             elseif icon == 'bskill_tra_spd&limit_felyne' then --泰拉大陆调查团
                 base = base + 0.05
                 storage = storage + 2
