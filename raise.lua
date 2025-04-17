@@ -1395,6 +1395,7 @@ raise.master_skill = function(id, skill_numb, start_level, level)
                 name = char_id2name(id),
                 skill = skill_numb,
             } }) then
+        log("未找到干员" .. id)
         return
     end
     appear("干员技能专精页面", 3)
@@ -1411,10 +1412,11 @@ raise.master_skill = function(id, skill_numb, start_level, level)
         return true
     end
     appear("专精技能确认", 5)
+    ssleep(.5) --可能有动画?
     -- 森空岛接口有延迟,这里用判断有没有红点来决定要不要合材料
     if findOne("干员技能专精红") then
+        log("需要合成材料")
         local p0 = findOne("干员专精材料0红") --技能书
-        log(1402, p0)
         local p1 = findOne("干员专精材料1红")
         local p2 = findOne("干员专精材料2红")
         if p0 then
@@ -1427,7 +1429,7 @@ raise.master_skill = function(id, skill_numb, start_level, level)
             raise.jump_to_workshop("专精", 2)
         end
     end
-    if appear("干员技能专精红", 1) then return false end
+    if appear("干员技能专精红", 2) then return false end
     if not wait(function()
             tap("专精技能确认")
             ssleep(.2)
