@@ -2010,6 +2010,7 @@ path.宿舍换班 = function()
                         return math.abs(x[3]) < shift_min_mood + 1
                     end)
                 else
+                    fiammetta_used = true -- 找不到也当做用过了
                     ssleep(.1)
                     log("未找到满心情菲亚梅塔")
                     if findOne("基建心情降序", .85) then tap("基建心情降序") end
