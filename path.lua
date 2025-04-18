@@ -4672,6 +4672,10 @@ path.开始游戏 = function(x, disable_ptrs_check)
                         if not appear("主页") then back() end
                         return path.跳转("首页")
                     end
+                else
+                    fight_failed_times[cur_fight] = max_fight_failed_times
+                    if not appear("主页") then back() end
+                    return path.跳转("首页")
                 end
             else
                 fight_failed_times[cur_fight] = max_fight_failed_times
