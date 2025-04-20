@@ -23,7 +23,6 @@ if getPackageName() == "com.nx.nxproj.assist" then
     debug_mode = true
 end
 zl_enable_tap_before_drag = true
-zero_wait_click = true
 check_after_tap = true
 crontab_enable = true
 -- enable_simultaneous_tap = true
@@ -52,7 +51,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "04.18 00:39"
+release_date = "04.18 18:17"
 update_announcement = '最近更新：十五章导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"

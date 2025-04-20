@@ -131,9 +131,7 @@ clickPoint = function(x, y)
     gesture:dispatch()
 end
 _tap = tap
-if not zero_wait_click then clickPoint = tap end
 
-getDir = getWorkPath
 base64 = getFileBase64
 putClipboard = writePasteboard
 getClipboard = readPasteboard
