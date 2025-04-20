@@ -1165,7 +1165,3 @@ end
 require("mizuki")
 require("sarkaz")
 require("sami")
-
--- path.探索者的银淞止境 = never_end_wrapper(path.探索者的银淞止境前瞻投资)
--- path.水月与深蓝之树 = never_end_wrapper(path.水月与深蓝之树前瞻投资)
--- path.萨卡兹的无终奇语 = never_end_wrapper(path.萨卡兹的无终奇语前瞻投资)

@@ -3747,7 +3747,6 @@ path.线索传递 = function()
         end
         if idx then
             log("线索传递", idx, point.传递列表[idx])
-            if fake_transfer then exit() end
 
             tap(point.传递列表[idx])
 
@@ -5359,9 +5358,7 @@ path.物资芯片 = function(x)
     local cur_time = tonumber(os.date("%w", os.time() - 4 * 3600))
     if cur_time == 0 then cur_time = 7 end
     if not table.includes(open_time, cur_time) then
-        -- log(open_time, cur_time)
         log(x, "未开启")
-        -- if auto_clean_fight then
         log("before fight clean", fight, fight_tick)
         local unavailable_fight = type == "pr" and x:sub(1, 4) or x:sub(1, 2)
         log("unavailable_fight", unavailable_fight)
@@ -5394,20 +5391,10 @@ path.物资芯片 = function(x)
             return
         end
 
-        -- if not wait(function()
-        --   if findOne("资源收集", 90) and not findOne("主题曲", 90) and
-        --     not findOne("每周部署", 90) then return true end
         wait(function()
             if not findOne("主题曲界面") then return true end
             tap("资源收集")
         end)
-        -- end) then return end
-        -- if not wait(function()
-        --   if findOne("资源收集", 90) then return true end
-        --   tap("资源收集")
-        -- end) then return end
-        -- ssleep(.5)
-        -- tap("资源收集")
         ssleep(.2)
         log("资源收集", index, point["资源收集列表" .. index])
         local p = point["资源收集列表" .. index][1]
@@ -5431,7 +5418,6 @@ path.物资芯片 = function(x)
 end
 
 clean_jmfight = function()
-    -- if auto_clean_fight then
     log("before jmfight clean", fight, fight_tick)
     -- local unavailable_fight = type == "pr" and x:sub(1, 4) or x:sub(1, 2)
     -- log("unavailable_fight", unavailable_fight)
@@ -5571,7 +5557,6 @@ end
 
 clean_hdfight = function()
     -- TODO
-    -- if auto_clean_fight then
     log("before hdfight clean", fight, fight_tick)
     -- local unavailable_fight = type == "pr" and x:sub(1, 4) or x:sub(1, 2)
     -- log("unavailable_fight", unavailable_fight)
@@ -5912,31 +5897,7 @@ path.活动 = function(x)
         ssleep(.5)
     end
 
-    log(625)
-    --[[end
-    ssleep(2)
     swip(x)
-    ssleep(.5)]]
-    -- local 迷宫饭导航 = function(x)
-    --     local hdx = tonumber(x:sub(-1))
-    --     if hdx == nil or hdx < 1 then hdx = 1 end
-    --     wait(function()
-    --         swipe("right")
-    --         ssleep(.3)
-    --         if findOne("迷宫饭_上一关不可点击") then return true end
-    --     end, 5)
-    --     hdx = hdx - 1
-    --     appear("迷宫饭_下一关", 2)
-    --     for i = 1, hdx do
-    --         tap("迷宫饭_下一关")
-    --         ssleep(.1)
-    --     end
-    -- end
-    -- if not (utf8.left(x, 5) == "HD-EX") then
-    --     迷宫饭导航(x)
-    -- end
-    swip(x)
-    log(626)
     ssleep(.5)
     --exit() --活动手动取点时取消注释
     if x:includes({ "ST-", "TR-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then

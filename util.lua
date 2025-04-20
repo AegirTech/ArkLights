@@ -838,12 +838,11 @@ end
 findColorAbsolute = function(color, confidence)
     -- print(286, confidence)
     confidence = confidence or 100
-    -- keepScreen(true)
     for x, y, c in color:gmatch("(%d+),(%d+),(#[^|]+)") do
         -- log(x, y, c)
         if not compareColor(tonumber(x), tonumber(y), c, confidence) then
             -- if getColor(tonumber(x), tonumber(y)).hex ~= c then
-            if verbose_fca then log(x, y, c) end
+            -- log(x, y, c)
             -- keepScreen(false)
             return
         end
