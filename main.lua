@@ -1,6 +1,4 @@
 -- predebug = true
--- always_enable_log = true
--- fake_fight = true
 -- prefer_bapp = true
 -- zl_disable_log = true
 -- enable_drug_24hour = true
@@ -11,7 +9,6 @@
 -- disable_root_mode = true
 -- no_background_after_run = true
 -- during_crisis_contract =true
--- disable_communication_check=true
 -- speedrun=true
 -- debug = true
 -- disable_log = true

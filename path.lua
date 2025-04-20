@@ -4740,8 +4740,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
         tap("开始行动蓝")
     end, 1)
 
-    if fake_fight then return end
-
     ::wait_for_maa::
 
     local state = nil
@@ -4788,17 +4786,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
             ssleep(0.5)
             auto_prts(homework[x], true)
         else
-            if fake_fight then
-                log("debug0415", x)
-                if not wait(function()
-                        if not findOne(state) and not appear(state, 1) then return true end
-                        tap("返回")
-                        disappear(state, 1)
-                    end, 5) then
-                    return
-                end
-                return path.base.接管作战()
-            end
             if not wait(function()
                     if not findOne(state) then return true end
                     tap("开始行动红按钮")
@@ -6587,14 +6574,12 @@ path.访问好友 = function()
     end
 
     if not wait(function(reset_wait_start_time)
-            if not disable_communication_check and
                 findOne("今日参与交流已达上限") then
                 log("今日参与交流已达上限")
                 disappear("正在提交反馈至神经", network_timeout)
                 appear("主页", 5)
                 communication_enough = true
                 return true
-            end
             if findOne("访问下位灰") then
                 log("访问下位灰")
                 return true
@@ -6948,7 +6933,6 @@ end
 
 path.前瞻投资 = function(lighter)
     -- 防止日志占用资源过多把脚本挤掉
-    -- if zl_disable_log then disable_log = true end
     -- 防止无障碍节点获取失效，而反复重启游戏（在7时42分记录中浪费了2分多钟）
     -- if zl_disable_game_up_check then disable_game_up_check = true end
     -- 3.6.0发现当节点获取失效时，点击、找色其实都出问题了
