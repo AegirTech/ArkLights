@@ -566,50 +566,35 @@ end
 SolveSlipCaptcha = function(rect, p_type)
     if not rect then return end
     local p_type = p_type or 1
-    local distance = 0
-    if p_type == 1 then -- 免费服务器
-        if not use_free_server_captcha then return end
-        log("free solve")
-        local img = getWorkPath() .. "/captcha_free.jpg"
-        snapShot(img, rect.l, rect.t, rect.r, rect.b)
-        local url = "http://175.178.58.160:8899/yolo_new/"
+    if (p_type == 1 and not use_free_server_captcha) or (p_type == 2 and not jfbym_token) then return end
+    local img = getWorkPath() .. "/captcha_slip.jpg"
+    snapShot(img, rect.l, rect.t, rect.r, rect.b)
+    local ret, distance
+    if p_type == 1 then
         local param = "img=" .. encodeUrl(base64(img))
         log("免费服务器准备发送")
-        local ret, code = httpPost(url, param)
-        local status, ret = pcall(JsonDecode, ret)
-        --ret数据出问题时候
+        ret = httpPost("http://175.178.58.160:8899/yolo_new/", param)
+        local status, data = pcall(JsonDecode, ret)
         if not status then return end
-        log(ret)
-        distance = ret.target[1].distance
-        distance = str2int(distance, 0)
-        log("distance:", distance)
-        if distance < 1 then return false end
-        --  修正偏移
-        distance = distance - scale(12)
-    elseif p_type == 2 then -- 云码
-        if not jfbym_token then return end
-        local img = getWorkPath() .. "/captcha_jfbym.jpg"
-        snapShot(img, rect.l, rect.t, rect.r, rect.b)
+        distance = str2int(data.target[1].distance, 0)
+    else
         local data = {
             token = jfbym_token,
             type = "22222",
             image = base64(img),
             developer_tag = "1fd49a52277365a95b785710e9fb54c9",
         }
-        local res, code = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data),
-            30, "Content-Type: application/json;charset=UTF-8")
-        local status, data = pcall(JsonDecode, res)
+        ret = httpPost("http://api.jfbym.com/api/YmServer/customApi", JsonEncode(data), 30,
+            "Content-Type: application/json;charset=UTF-8")
+        local status, data = pcall(JsonDecode, ret)
         data = data or {}
-        if get(data, "code") ~= 10000 then
-            return
-        end
-        unique_code = get(data, "data", "unique_code") or ""
+        if get(data, "code") ~= 10000 then return end
         distance = tonumber(get(data, "data", "data")) or 0
-        log("云码", distance)
-        distance = distance - scale(12)
     end
+    log(p_type == 1 and "free solve" or "云码", distance)
+    if distance < 1 then return false end
+    distance = distance - scale(12)
 
-    if distance == 0 then return end
     local sx, sy
     if is_old_slip then
         sx, sy = scale(702), scale(686)
@@ -617,8 +602,6 @@ SolveSlipCaptcha = function(rect, p_type)
         tap({ scale(964), scale(805) })
         sx, sy = scale(750), scale(740)
     end
-
-    log(sx, sy)
     -- 用于模拟滑动轨迹
     gesture({
         {
