@@ -154,18 +154,10 @@ m.check_captcha_token = function()
 end
 
 m.captcha = function(box)
-    local img = getWorkPath() .. "/capture_cloud_upload.jpg"
-    snapShot(img, box.l, box.t, box.r, box.b)
-    local upload_img = base64(img)
-    local postdata = [[{"image": "]] .. upload_img .. [["}]]
-    local res, code = httpPost(m.captchaServer .. "/image/upload_image", postdata, 30, "Content-Type: application/json")
-    log("云控打码图片上传", res, code)
-
     if m.captchaToken == '' then
         return false
     end
     log("使用云控打码")
-    -- ssleep(1)
 
     local x_size = box.r - box.l
     local y_size = box.b - box.t
