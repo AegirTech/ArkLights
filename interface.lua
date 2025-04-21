@@ -909,9 +909,9 @@ show_debug_ui = function()
     addTextView(debug_layout_通知, "企业微信 webhook地址")
     ui.addEditText(debug_layout_通知, "wechat_webhook_url", "")
 
-    newRow(debug_layout_通知)
-    ui.addCheckBox(debug_layout_通知, "qqnotify_save",
-        "QQ通知保存到/sdcard/包名/ (保留一周)", true)
+    -- newRow(debug_layout_通知)
+    -- ui.addCheckBox(debug_layout_通知, "qqnotify_save",
+    --     "QQ通知保存到/sdcard/包名/ (保留一周)", true)
 
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_quiet",

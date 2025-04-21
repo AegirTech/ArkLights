@@ -4044,19 +4044,6 @@ update_state_from_debugui = function()
     sss_only_complete = (sss_only_complete == nil) and true or sss_only_complete
 end
 
--- 基建心情阈值与QQ号
-main_ui_config_transfer = function()
-    local main_config = loadOneUIConfig("main")
-    local debug_config = loadOneUIConfig("debug")
-    if main_config["QQ"] and #main_config["QQ"] > 0 then
-        debug_config["QQ"] = main_config["QQ"]
-    end
-    if main_config["shift_min_mood"] and #main_config["shift_min_mood"] > 0 then
-        debug_config["shift_min_mood"] = main_config["shift_min_mood"]
-    end
-    saveOneUIConfig("debug", debug_config)
-end
-
 hy_exec = function(x)
     return _exec('echo "' .. x:gsub('%$', '\\$') .. '"|nc localhost 49876')
 end
