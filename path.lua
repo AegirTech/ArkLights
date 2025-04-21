@@ -3776,11 +3776,6 @@ path.任务收集 = function()
     path.跳转("任务")
     appear({ "任务未选中列表2", "任务有列表2", "任务无列表2" })
 
-    if speedrun then
-        -- 只保留日常任务
-        point.任务有列表2 = nil
-        point.任务有列表4 = nil
-    end
 
     for _ = 1, #point.任务有列表 do
         local p = appear(point.任务有列表, 0.5)
@@ -3948,8 +3943,6 @@ path.信用购买 = function()
             return
         end
     end
-
-    -- if speedrun then return f(2) end
 
     -- 按优先级排
     if type(low_priority_goods) == 'string' and type(high_priority_goods) ==
@@ -6475,8 +6468,6 @@ path.会客厅跳转好友 = function()
         end, 10) then
         return
     end
-
-    -- if speedrun then return appear("主页", 10) end
 end
 
 path.添加好友 = function()
@@ -6528,19 +6519,13 @@ path.访问好友 = function()
         return
     end -- 无好友或网络超时10秒
     log(2256)
-    if speedrun then
-        disappear("正在提交反馈至神经", network_timeout)
-        appear("主页", 5)
-        return
-    end
 
     if not wait(function(reset_wait_start_time)
-                findOne("今日参与交流已达上限") then
-                log("今日参与交流已达上限")
-                disappear("正在提交反馈至神经", network_timeout)
-                appear("主页", 5)
-                communication_enough = true
-                return true
+            log("今日参与交流已达上限")
+            disappear("正在提交反馈至神经", network_timeout)
+            appear("主页", 5)
+            communication_enough = true
+            return true
             if findOne("访问下位灰") then
                 log("访问下位灰")
                 return true
@@ -6567,15 +6552,11 @@ path.公开招募 = function()
         if not appear("公开招募箭头", 1) then return end
         log(1287)
         local see
-        if speedrun then
-            see = "公开招募列表" .. i
-        else
-            -- 有灰，等待检测所有状态
-            see = appear({
-                "聘用候选人列表" .. i, "公开招募列表" .. i,
-                "立即招募列表" .. i,
-            })
-        end
+        -- 有灰，等待检测所有状态
+        see = appear({
+            "聘用候选人列表" .. i, "公开招募列表" .. i,
+            "立即招募列表" .. i,
+        })
         log(1288)
         if see == "立即招募列表" .. i and recruit_accelerate_mode then
             log(2236)
@@ -6624,25 +6605,6 @@ path.公开招募 = function()
         end
 
         if see == "公开招募列表" .. i then
-            if speedrun then
-                if not wait(function()
-                        if not findOne("公开招募箭头") then return true end
-                        tap("公开招募点击列表" .. i)
-                    end, 10) then
-                    return
-                end
-                if not appear("公开招募时间减") then return true end
-                if not wait(function()
-                        if not findOne("公开招募时间减") then return true end
-                        tap("公开招募确认蓝")
-                    end, 10) then
-                    return
-                end
-                if not appear("公开招募箭头") then return end
-                success = success + 1
-                return
-            end
-
             if not wait(function()
                     if not findOne("公开招募箭头") then return true end
                     if findOne("立即招募列表" .. i) then return true end
@@ -6819,7 +6781,6 @@ path.公开招募 = function()
     -- for i = 1, #point.公开招募列表 do
     for _, i in pairs(table.slice({ 1, 3, 4, 2 }, 1, #point.公开招募列表)) do
         f(i)
-        if speedrun and i >= 3 then break end
     end
     appear("主页", .5)
 end

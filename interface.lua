@@ -1522,25 +1522,6 @@ show_extra_ui = function()
         ui.addCheckBox(shop_layout_red, "red_ticket_shop_" .. k, v, false)
     end
 
-    -- newRow(layout)
-    -- addButton(layout, layout .. "_speedrun", "每日任务速通（待修）",
-    --           make_jump_ui_command(layout, nil,
-    --                                "extra_mode='每日任务速通';lock:remove(main_ui_lock)"))
-
-    -- ui.setOnClick(layout .. "_speedrun", )
-    -- addButton(layout, layout .. "jump_qq_btn", "需加机器人好友",
-    --           make_jump_ui_command(layout, nil, 'jump_qq()'))
-    -- newRow(layout)
-    -- ui.addButton(layout, layout .. "_speedrun", "每日任务速通（别用）")
-    -- ui.setOnClick(layout .. "_speedrun", make_jump_ui_command(layout, nil,
-    --                                                           "extra_mode='每日任务速通';lock:remove(main_ui_lock)"))
-    --
-
-    -- newRow(layout)
-    -- ui.addButton(layout, layout .. "_1-12", "克洛丝单人1-12（没写）")
-    -- ui.setOnClick(layout .. "_1-12", make_jump_ui_command(layout, nil,
-    --                                                       "extra_mode='克洛丝单人1-12';lock:remove(main_ui_lock)"))
-
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
 

@@ -9,7 +9,6 @@
 -- disable_root_mode = true
 -- no_background_after_run = true
 -- during_crisis_contract =true
--- speedrun=true
 -- debug = true
 -- disable_log = true
 -- unsafe_tap = true
@@ -45,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "04.18 18:17"
+release_date = "04.21 12:48"
 update_announcement = '最近更新：十五章导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
