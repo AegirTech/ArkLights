@@ -6173,13 +6173,20 @@ path.商店搬空 = function()
                         tap("商店最多")
                         ssleep(0.2)
                         tap(tap_x)
-                        ssleep(0.5)
+                        if appear("货币不足提示框", 0.7) then
+                            log("没钱了，终止任务2")
+                            return true
+                        end
                         if not findOne(商店购买前采样) then
                             log(999)
                             return true
                         end
                     end, 5) then
                     log("没钱了，终止任务")
+                    return
+                end
+                if findOne("货币不足提示框") then
+                    log("没钱了，终止任务2")
                     return
                 end
 
