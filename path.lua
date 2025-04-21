@@ -4639,11 +4639,11 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 need_copy_homework = true
                 log("准备抄作业")
                 --ssleep (6)--等待右上角提示消失
-            elseif get_fight_type(cur_fight) == "活动" or get_fight_type(cur_fight) == "主线" then
+            elseif get_fight_type(cur_fight) == "主线" then
                 local chapter = x:find("-")
                 chapter = x:sub(1, chapter - 1)
                 chapter = chapter:sub(chapter:find("%d+"))
-                if chapter == "15" or chapter == "HD" then
+                if chapter == "15" then
                     log("15章难度切换")
                     appear({ "切换到险地作战", "切换到常规作战", }, 3)
                     local st = findAny({ "切换到险地作战", "切换到常规作战" })
@@ -5024,6 +5024,12 @@ path.主线 = function(x)
         end
         appear("开始行动")
     end
+    local next_tap_index = 0
+    if chapter_index > 15 then
+        next_tap_index = chapter_index - 15
+        chapter_index = 15
+    end
+    log("111", chapter_index, next_tap_index)
     local p
     p = {
         [state_with_home("当前进度列表" .. chapter_index)] = function()
@@ -5084,10 +5090,6 @@ path.主线 = function(x)
             return
         end
         local tap_chat_index = chapter_index - 1
-        if tap_chat_index > 14 then
-            tap_chat_index = tap_chat_index - 15
-            swip_formula(false, 315 * 3, 105)
-        end
         local samp = sample("商店")
         local wa_x, wa_y = point["主线第零章点击位置"][1] + tap_chat_index % 5 * scale(315),
             point["主线第零章点击位置"][2] + math.floor(tap_chat_index / 5) * scale(310)
@@ -5156,6 +5158,13 @@ path.主线 = function(x)
         if not appear(table.keys(p), 5) then
             log("无法确认是第几章")
             return
+        end
+        if next_tap_index > 0 then
+            ssleep(1)
+        end
+        for i = 1, next_tap_index do
+            tap("当前进度列表右")
+            ssleep(.5)
         end
     end
     -- 10秒内需要完成章节/环境切换
