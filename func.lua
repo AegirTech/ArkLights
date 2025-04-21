@@ -862,42 +862,25 @@ detect_simulators = function()
     }
     local ret = exec('su root sh -c "pm list packages"')
     if type(ret) == "string" and #ret > 2 then
-        ret = string.split(ret, "\n")
-        local apps = {}
-        for _, v in ipairs(ret) do
-            local app = v:match("package:(.-)$")
-            if app then
-                table.insert(apps, app)
-            end
+        all_apps = {}
+        for app in ret:gmatch("package:(.-)\n") do
+            table.insert(all_apps, app)
         end
-        all_apps = apps
     end
 
-    local 设备 = ""
+    local 设备 = "真机"
     for k, v in pairs(simulators_list) do
-        if type(v) == "table" then
-            for _, vv in ipairs(v) do
-                if isAppInstalled(vv) then
-                    设备 = k
-                    break
-                end
-            end
-            if 设备 ~= "" then break end
-        else
-            if isAppInstalled(v) then
+        local apps = type(v) == "table" and v or { v }
+        for _, app in ipairs(apps) do
+            if isAppInstalled(app) then
                 设备 = k
                 break
             end
         end
+        if 设备 ~= "真机" then break end
     end
-    if 设备 == "" then
-        设备 = "真机"
-    elseif 设备 == "xposed" then
-        设备 = "xp/云手机/未识别模拟器"
-    elseif 设备 == "supersu" then
-        设备 = "su/云手机/未识别模拟器"
-    end
-    print("环境检测：" .. 设备)
+
+    设备 = (设备 == "xposed" or 设备 == "supersu") and "云手机" or 设备
     console.println(1, "环境检测：" .. 设备)
     if 设备 == "mumu" then
         console.println(3, "如果出现任何问题，请更换雷电模拟器，不推荐使用Mumu。")

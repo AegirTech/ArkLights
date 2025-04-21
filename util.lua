@@ -2202,9 +2202,8 @@ notifytg = function(img_path, info, sync)
             chat_id = chatid,
             caption = info,
         }
-        local retd = curl_post(tgurl, nil, param, 10, '-F "photo=@/sdcard/Pictures/image.png"')
+        curl_post(tgurl, nil, param, 10, '-F "photo=@/sdcard/Pictures/image.png"')
         log("notifytg", tgurl, param)
-        log("notifytg", retd)
     end
     if sync then wait(function() return not lock:exist(id) end, 30) end
 end
