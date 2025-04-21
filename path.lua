@@ -6521,11 +6521,13 @@ path.访问好友 = function()
     log(2256)
 
     if not wait(function(reset_wait_start_time)
-            log("今日参与交流已达上限")
-            disappear("正在提交反馈至神经", network_timeout)
-            appear("主页", 5)
-            communication_enough = true
-            return true
+            if findOne("今日参与交流已达上限") then
+                log("今日参与交流已达上限")
+                disappear("正在提交反馈至神经", network_timeout)
+                appear("主页", 5)
+                communication_enough = true
+                return true
+            end
             if findOne("访问下位灰") then
                 log("访问下位灰")
                 return true
