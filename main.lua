@@ -161,7 +161,7 @@ if cloud.getTaskEnabled() and not cloud_task then
     -- 云控模式冷启动
     log("102", 102)
 elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi) and
-    multi_account_enable and not multi_account_only_login then
+    multi_account_enable then
     -- 多帐号模式
     log("多帐号模式")
     -- 分隔临时账号设置

@@ -1357,7 +1357,6 @@ qqnotify_before_run = function()
 end
 
 qqnotify_after_run = function(run_start_time)
-    if multi_account_only_login then return end
     local qqmessage_bak = shallowCopy(qqmessage)
     if not qqnotify_noruntime and run_start_time then
         table.insert(qqmessage,

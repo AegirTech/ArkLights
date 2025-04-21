@@ -219,7 +219,6 @@ show_multi_account_ui = function()
     addTextView(layout, "切号前关闭")
     ui.addCheckBox(layout, "multi_account_end_closeotherapp", "其他服", true)
     ui.addCheckBox(layout, "multi_account_end_closeapp", "当前服", true)
-    ui.addCheckBox(layout, "multi_account_only_login", "仅上号", false)
 
     -- newRow(layout)
     -- addTextView(layout, "单号最大登录次数")
