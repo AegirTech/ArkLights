@@ -6120,15 +6120,6 @@ path.商店搬空 = function()
                     goto continue
                 end
 
-                -- 点击商品，进入购买页面判断
-                -- if not wait(function()
-                --         tap({ 初始物品[1] + 物品横间距 * x + scale(245), 初始物品[2] + 物品纵间距 * y + scale(110) })
-                --         ssleep(.2)
-                --         if find_color("商店购买页面单价范围", point["商店货币颜色"], 1, 0.9) then return true end -- 表示已经进入商店
-                --         -- 不找支付按钮因为支付按钮的区域和商品页面有重合
-                --     end, 1) then
-                -- end
-
                 -- 点击购买
                 if not wait(function()
                         if not findOne(商店采样判断) then return true end
@@ -10652,7 +10643,6 @@ path.保全 = function()
             return
         end
         if not appear("保全作战开始按钮", 3) then return end
-        --保全抄作业()
         auto_sss(homework[cur_fight], true)
         return
     end
@@ -10673,7 +10663,6 @@ path.保全 = function()
             log("抄作业", cur_fight, homework[cur_fight])
             tap("保全1进入")
             if not appear("保全作战开始按钮", 3) then return end
-            --保全抄作业()
             auto_sss(homework[cur_fight], true)
         else
             log(778)
