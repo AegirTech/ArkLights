@@ -1639,26 +1639,6 @@ disappear = function(target, timeout, interval)
     return appear(target, timeout, interval, true)
 end
 
-trySolveCapture = function()
-    if not findOne("captcha") then return end
-    solveCapture()
-    -- 第二次重试
-    if not disappear("captcha", 5) then solveCapture() end
-    -- 手工给2分钟
-    if not appear("realgame", 5) then
-        local msg =
-        "请在2分钟内手动滑动验证码，超时将暂时跳过该账号"
-        toast(msg)
-        captureqqimagedeliver("WARN", "触发图灵测试",
-            table.join(qqmessage, ' ') .. ' ' .. msg)
-        if not appear("realgame", 120) then
-            back()
-            if not appear("realgame", 5) then closeapp(appid) end
-            stop("验证码", 'next')
-        end
-    end
-end
-
 wait_game_up = function(retry)
     retry = retry or 0
     if disable_game_up_check then return end
@@ -3541,15 +3521,6 @@ check_login_frequency = function()
     end
 end
 
-keepalive = function()
-    -- enable_log_wrapper(function() log("keepalive") end)()
-    -- trim_game_memory()
-    -- killacc()
-    -- oom_score_adj()
-    -- collectgarbage('collect')
-    -- disable_lmk()
-end
-
 killacc = function()
     exit()
     -- collectgarbage("collect")
@@ -3735,15 +3706,6 @@ done
     restartScript()
 end
 
-trim_game_memory = function()
-    if not root_mode then return end
-    local cmd = [[nohup su root sh -c ' \
-am send-trim-memory ]] .. appid .. [[ RUNNING_CRITICAL
-' > /dev/null & ]]
-
-    exec(cmd)
-end
-
 oom_score_adj = function()
     if not root_mode then return end
     if disable_oom_score_adj then return end
@@ -3805,161 +3767,161 @@ echo -1000 > /proc/$(pidof ]] .. [[nc)/oom_score_adj
     --       get(package .. ":remote"))
 end
 
-disable_lmk = function()
-    if not root_mode then return end
-    if not enable_disable_lmk then return end
-    local cmd = [[nohup su root sh -c ' \
-echo 1,2,3,4,5,6 > /sys/module/lowmemorykiller/parameters/minfree
-' > /dev/null & ]]
-    exec(cmd)
-end
+-- disable_lmk = function()
+--     if not root_mode then return end
+--     if not enable_disable_lmk then return end
+--     local cmd = [[nohup su root sh -c ' \
+-- echo 1,2,3,4,5,6 > /sys/module/lowmemorykiller/parameters/minfree
+-- ' > /dev/null & ]]
+--     exec(cmd)
+-- end
 
-solveCapture = function()
-    log("solve")
+-- solveCapture = function()
+--     log("solve")
 
-    ssleep(1)
-    keepCapture()
-    local node = findOne("captcha")
-    if not node then
-        log('3576 not found captcha')
-        return
-    end
-    local left, top = node.bounds.l, node.bounds.t
-    point.captcha_area = {
-        left + scale(240), top + scale(40), left + scale(789), top + scale(481),
-    }
-    point.captcha_left_area = {
-        left + scale(105), top + scale(40), left + scale(196), top + scale(481),
-    }
-    point.captcha_area_btn = { left + scale(114), top + scale(609) }
+--     ssleep(1)
+--     keepCapture()
+--     local node = findOne("captcha")
+--     if not node then
+--         log('3576 not found captcha')
+--         return
+--     end
+--     local left, top = node.bounds.l, node.bounds.t
+--     point.captcha_area = {
+--         left + scale(240), top + scale(40), left + scale(789), top + scale(481),
+--     }
+--     point.captcha_left_area = {
+--         left + scale(105), top + scale(40), left + scale(196), top + scale(481),
+--     }
+--     point.captcha_area_btn = { left + scale(114), top + scale(609) }
 
-    local w, h, color
-    local i, j, b, g, r
-    local best, best_score, best_left, best_right
-    local data
-    local maxgrad
-    local diff1, diff2, y1, y2, y3
-    w, h, color = getScreenPixel(table.unpack(point.captcha_area))
-    data = {}
-    for i = 1, #color do
-        b, g, r = colorToRGB(color[i])
-        table.extend(data, { r, g, b })
-    end
+--     local w, h, color
+--     local i, j, b, g, r
+--     local best, best_score, best_left, best_right
+--     local data
+--     local maxgrad
+--     local diff1, diff2, y1, y2, y3
+--     w, h, color = getScreenPixel(table.unpack(point.captcha_area))
+--     data = {}
+--     for i = 1, #color do
+--         b, g, r = colorToRGB(color[i])
+--         table.extend(data, { r, g, b })
+--     end
 
-    maxgrad = {}
-    for i = w + 1, #color do
-        y1 = (0.299 * data[i * 3 - 2] + 0.587 * data[i * 3 - 1] + 0.114 *
-            data[i * 3])
-        y2 =
-            (0.299 * data[(i - 2) * 3 - 2] + 0.587 * data[(i - 2) * 3 - 1] + 0.114 *
-                data[(i - 2) * 3])
-        y3 =
-            (0.299 * data[(i - w) * 3 - 2] + 0.587 * data[(i - w) * 3 - 1] + 0.114 *
-                data[(i - w) * 3])
-        diff1 = y1 - y2
-        diff2 = y1 - y3
-        maxgrad[i % w] = (maxgrad[i % w] or 0) + max(0, diff1) /
-            (1 + math.abs(diff2))
-    end
+--     maxgrad = {}
+--     for i = w + 1, #color do
+--         y1 = (0.299 * data[i * 3 - 2] + 0.587 * data[i * 3 - 1] + 0.114 *
+--             data[i * 3])
+--         y2 =
+--             (0.299 * data[(i - 2) * 3 - 2] + 0.587 * data[(i - 2) * 3 - 1] + 0.114 *
+--                 data[(i - 2) * 3])
+--         y3 =
+--             (0.299 * data[(i - w) * 3 - 2] + 0.587 * data[(i - w) * 3 - 1] + 0.114 *
+--                 data[(i - w) * 3])
+--         diff1 = y1 - y2
+--         diff2 = y1 - y3
+--         maxgrad[i % w] = (maxgrad[i % w] or 0) + max(0, diff1) /
+--             (1 + math.abs(diff2))
+--     end
 
-    -- local best = {}
-    -- for i = 4, #maxgrad do
-    --   table.insert(best, {maxgrad[i], i + point.captcha_area[1]})
-    -- end
-    -- table.sort(best, function(a, b) return a[1] > b[1] end)
-    -- log(table.slice(best, 1, 10))
-    -- log(point.captcha_area)
-    -- exit()
+--     -- local best = {}
+--     -- for i = 4, #maxgrad do
+--     --   table.insert(best, {maxgrad[i], i + point.captcha_area[1]})
+--     -- end
+--     -- table.sort(best, function(a, b) return a[1] > b[1] end)
+--     -- log(table.slice(best, 1, 10))
+--     -- log(point.captcha_area)
+--     -- exit()
 
-    best = 1
-    best_score = 0
-    for i = 4, #maxgrad do
-        if best_score < maxgrad[i] then
-            best_score = maxgrad[i]
-            best = i
-        end
-    end
+--     best = 1
+--     best_score = 0
+--     for i = 4, #maxgrad do
+--         if best_score < maxgrad[i] then
+--             best_score = maxgrad[i]
+--             best = i
+--         end
+--     end
 
-    best_right = best + point.captcha_area[1]
+--     best_right = best + point.captcha_area[1]
 
-    w, h, color = getScreenPixel(table.unpack(point.captcha_left_area))
-    data = {}
-    for i = 1, #color do
-        b, g, r = colorToRGB(color[i])
-        table.extend(data, { r, g, b })
-    end
-    maxgrad = {}
-    for i = w + 1, #color do
-        y1 = (0.299 * data[i * 3 - 2] + 0.587 * data[i * 3 - 1] + 0.114 *
-            data[i * 3])
-        y2 =
-            (0.299 * data[(i - 2) * 3 - 2] + 0.587 * data[(i - 2) * 3 - 1] + 0.114 *
-                data[(i - 2) * 3])
-        y3 =
-            (0.299 * data[(i - w) * 3 - 2] + 0.587 * data[(i - w) * 3 - 1] + 0.114 *
-                data[(i - w) * 3])
-        diff1 = y1 - y2
-        diff2 = y1 - y3
-        maxgrad[i % w] = (maxgrad[i % w] or 0) + max(0, -diff1) /
-            (1 + math.abs(diff2))
-    end
+--     w, h, color = getScreenPixel(table.unpack(point.captcha_left_area))
+--     data = {}
+--     for i = 1, #color do
+--         b, g, r = colorToRGB(color[i])
+--         table.extend(data, { r, g, b })
+--     end
+--     maxgrad = {}
+--     for i = w + 1, #color do
+--         y1 = (0.299 * data[i * 3 - 2] + 0.587 * data[i * 3 - 1] + 0.114 *
+--             data[i * 3])
+--         y2 =
+--             (0.299 * data[(i - 2) * 3 - 2] + 0.587 * data[(i - 2) * 3 - 1] + 0.114 *
+--                 data[(i - 2) * 3])
+--         y3 =
+--             (0.299 * data[(i - w) * 3 - 2] + 0.587 * data[(i - w) * 3 - 1] + 0.114 *
+--                 data[(i - w) * 3])
+--         diff1 = y1 - y2
+--         diff2 = y1 - y3
+--         maxgrad[i % w] = (maxgrad[i % w] or 0) + max(0, -diff1) /
+--             (1 + math.abs(diff2))
+--     end
 
-    -- local best = {}
-    -- for i = 4, #maxgrad do
-    --   table.insert(best, {maxgrad[i], i + point.captcha_area[1]})
-    -- end
-    -- table.sort(best, function(a, b) return a[1] > b[1] end)
-    -- log(table.slice(best,1,10))
-    -- exit()
+--     -- local best = {}
+--     -- for i = 4, #maxgrad do
+--     --   table.insert(best, {maxgrad[i], i + point.captcha_area[1]})
+--     -- end
+--     -- table.sort(best, function(a, b) return a[1] > b[1] end)
+--     -- log(table.slice(best,1,10))
+--     -- exit()
 
-    best = 1
-    best_score = 0
-    for i = 4, #maxgrad do
-        if best_score < maxgrad[i] then
-            best_score = maxgrad[i]
-            best = i
-        end
-    end
+--     best = 1
+--     best_score = 0
+--     for i = 4, #maxgrad do
+--         if best_score < maxgrad[i] then
+--             best_score = maxgrad[i]
+--             best = i
+--         end
+--     end
 
-    best_left = best + point.captcha_left_area[1]
-    log(3399, best_left, best_right)
-    -- exit()
+--     best_left = best + point.captcha_left_area[1]
+--     log(3399, best_left, best_right)
+--     -- exit()
 
-    -- log(table.slice(best, 1, 10))
-    -- exit()
-    -- log(w, h, best, best_score, best + point.captcha_area[1])
+--     -- log(table.slice(best, 1, 10))
+--     -- exit()
+--     -- log(w, h, best, best_score, best + point.captcha_area[1])
 
-    -- for i = 1, #maxgrad do log(i, maxgrad[i]) end
-    -- log(point.captcha_area)
-    --
-    local distance = best_right - best_left
-    local sx, sy
-    sx = point.captcha_area_btn[1]
-    sy = point.captcha_area_btn[2]
-    local duration = 500
-    local finger = {
-        point = {
-            { sx,                        sy }, { sx + distance, sy },
-            { sx + distance + scale(10), sy - scale(100) },
-            { sx + distance + scale(10), sy },
-            { sx + distance + scale(10), sy - scale(100) },
-            { sx + distance + scale(10), sy },
-            { sx + distance - scale(10), sy - scale(100) },
-            { sx + distance - scale(10), sy },
-            { sx + distance - scale(10), sy - scale(100) },
-            { sx + distance - scale(10), sy }, { sx + distance, sy - scale(100) },
-            { sx + distance, sy }, { sx + distance, sy - scale(100) },
-            { sx + distance, sy }, { sx + distance, sy - scale(100) },
-            { sx + distance, sy },
-        },
-        duration = duration,
-    }
-    log(finger.point[1], finger.point[#finger.point])
-    gesture(finger)
-    sleep(duration + 50)
+--     -- for i = 1, #maxgrad do log(i, maxgrad[i]) end
+--     -- log(point.captcha_area)
+--     --
+--     local distance = best_right - best_left
+--     local sx, sy
+--     sx = point.captcha_area_btn[1]
+--     sy = point.captcha_area_btn[2]
+--     local duration = 500
+--     local finger = {
+--         point = {
+--             { sx,                        sy }, { sx + distance, sy },
+--             { sx + distance + scale(10), sy - scale(100) },
+--             { sx + distance + scale(10), sy },
+--             { sx + distance + scale(10), sy - scale(100) },
+--             { sx + distance + scale(10), sy },
+--             { sx + distance - scale(10), sy - scale(100) },
+--             { sx + distance - scale(10), sy },
+--             { sx + distance - scale(10), sy - scale(100) },
+--             { sx + distance - scale(10), sy }, { sx + distance, sy - scale(100) },
+--             { sx + distance, sy }, { sx + distance, sy - scale(100) },
+--             { sx + distance, sy }, { sx + distance, sy - scale(100) },
+--             { sx + distance, sy },
+--         },
+--         duration = duration,
+--     }
+--     log(finger.point[1], finger.point[#finger.point])
+--     gesture(finger)
+--     sleep(duration + 50)
 
-    releaseCapture()
-end
+--     releaseCapture()
+-- end
 
 chineseUnicodeStringMatch = function(a, b)
     local len = min(#a, #b) // 3
