@@ -2712,40 +2712,6 @@ appops set ]] .. package .. [[ SYSTEM_ALERT_WINDOW allow
     end
 end)
 
-maa_copliot = function(x)
-    log("开始抄作业", x)
-    local headers = "Content-Type: application/json" --post请求头
-    --[===[local resp  ]===]
-    log(homework_folder .. "\\" .. x .. ".json")
-    --通过接口调用抄作业
-    local t2 = { id = simulator_id, type = "Copilot", params = { enable = true, filename = homework_folder .. "\\" .. x .. ".json", formation = true } }
-    log(JsonEncode(t2))
-    log("post作业，唤起抄作业流程")
-    function callback(response, code)
-        print(response)
-        resp = response
-    end
-
-    --[===[asynHttpPost(callback,"http://" .. pc_ipv4 .. ":8848/API/V1/appendTaskAndStart",JsonEncode(t2),30,headers)
-	while not resp ==true do
-	ssleep (1)
-	end]===]
-    local res, code = httpPost("http://" .. ip .. ":8848/API/V1/appendTaskAndStart", JsonEncode(t2), 100, headers)
-    log("post结束")
-    log("延时100s防止乱点")
-    ssleep(100) --延时100s防止乱点
-    for i = 1, 260 do
-        local state = findAny({ "作战中", "暂停中", "行动结束", "跳过剧情" })
-        if state == "作战中" or state == "暂停中" then
-        elseif state == "行动结束" then
-            break
-        elseif state == "跳过剧情" then
-            path.跳过剧情()
-        end
-        ssleep(5)
-    end
-end
-
 predebug_hook = function()
     if not predebug then return end
     tap_interval = -1
@@ -2815,7 +2781,6 @@ parse_fight_config = function(fight_ui)
         end
     end
     fight = expanded_fight
-    -- log("expanded_fight", expanded_fight)
 
     -- LMSQ => 龙门市区
     expand_fight = {}
