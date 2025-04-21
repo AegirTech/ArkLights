@@ -2107,7 +2107,85 @@ path.基建信息获取new = function()
         return
     end
     ssleep(.2)
+    基建卡片数据 = {}
+    -- 数据实例 {{{x,y,名称,等级,},{卡片2数据}},{第二页},{第三页}}
+    for i = 1, 5 do
+        -- 基建卡片数据[i] = {}
+        local start_x = scale(920)
+        local start_y = scale(161)
+        local end_y = screen.height - scale(200)
+        local is_jcard = false
+        local 是否已经记录 = false
 
+        for j = start_y, end_y, 2 do
+            if (not is_jcard) and compareColor(start_x, j, "#313131", default_findcolor_confidence) then
+                is_jcard = true
+                local 卡片名称ocr范围 = { scale(649), j, scale(814), j + scale(60) }
+                local 卡片名称 = ocr(卡片名称ocr范围)
+                卡片名称 = 卡片名称[1].text
+                local name2card = {
+                    ["客室"] = "会客室",
+                    ["宿舍"] = "宿舍",
+                    ["制造"] = "制造站",
+                    ["贸易"] = "贸易站",
+                    ["电"] = "发电站",
+                    ["控制"] = "控制中枢",
+                    ["公"] = "办公室",
+                    ["训练"] = "训练室",
+                    ["加工"] = "加工站"
+                }
+                for 关键字, 新名称 in pairs(name2card) do
+                    if string.finds(卡片名称, { 关键字 }) then
+                        卡片名称 = 新名称
+                        break
+                    end
+                end
+
+                local 获取等级信息 = function(基建卡片name)
+                    local 基建数据 = {
+                        制造站 = { "#FFCC00", 784 },
+                        贸易站 = { "#33CCFF", 784 },
+                        发电站 = { "#CCFF66", 784 },
+                        办公室 = { "#FFFFFF", 784 },
+                        控制中枢 = { "#FFFFFF", 822 },
+                        训练室 = { "#FFFFFF", 784 },
+                        加工站 = { "#FFFFFF", 784 },
+                        会客室 = { "#FFFFFF", 784 },
+                        宿舍 = { "#FFFFFF", 765 },
+                    }
+                    local start_y_c = j + scale(36)
+                    local start_x_c = 基建数据[基建卡片name][2]
+                    local end_x_c = start_x_c + scale(85)
+                    local is_find_node = false
+                    local card_level = 0
+                    for k = start_x_c, end_x_c, 1 do
+                        if (not is_find_node) and compareColor(k, start_y_c, 基建数据[基建卡片name][1],
+                                default_findcolor_confidence) then
+                            card_level = card_level + 1
+                            is_find_node = true
+                        end
+                        if is_find_node and not (compareColor(k, start_y_c, 基建数据[基建卡片name][1],
+                                default_findcolor_confidence)) then
+                            is_find_node = false
+                        end
+                    end
+                    return card_level
+                end
+
+                local card_level = 获取等级信息(卡片名称)
+                log(start_x, j, 卡片名称, card_level)
+                基建卡片数据[卡片名称] = 基建卡片数据[卡片名称] or {}
+                table.insert(基建卡片数据[卡片名称], { start_x, j + scale(10), i, card_level })
+            end
+            if is_jcard and (not compareColor(start_x, j, "#313131", default_findcolor_confidence)) then
+                is_jcard = false
+            end
+        end
+        log(基建卡片数据)
+        ssleep(1000)
+
+        path.基建总览翻页()
+    end
     -- path.基建总览翻页()
 end
 
@@ -2129,7 +2207,6 @@ path.基建总览翻页_new = function()
     sleep(duration + 50)
     -- 可能还是需要按下
     tap("入驻干员右侧")
-    -- 不用的话，大分辨率还是有可能出现错过加号
     sleep(100)
 end
 

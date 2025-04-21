@@ -4267,7 +4267,6 @@ string.finds = function(x, targetStr)
     local targetStr = targetStr or {}
     for _, v in ipairs(targetStr) do
         if string.find(x, v, 1, true) then
-            log(x, ' find ', v)
             return true
         end
     end
