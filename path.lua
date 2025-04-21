@@ -5718,7 +5718,7 @@ path.活动 = function(x)
             --有时候识别出问题，放这里进行多次循环
             for _, v in pairs(ocr查访) do
                 local cf = ocr(v)
-                local 待查访干员 = contains_character(table2string(cf), point.循心角色)
+                local 待查访干员 = string.finds(table2string(cf), point.循心角色)
                 if 待查访干员 ~= nil then
                     --插入{"名字,坐标x，坐标y"},名字用来查表合成乐章，坐标拿来点击
                     table.insert(等待查访角色, { 待查访干员, cf[1].l, cf[1].b })

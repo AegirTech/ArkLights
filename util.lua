@@ -3125,15 +3125,6 @@ ocr = function(r, max_height)
     return r
 end
 
-init_ocr = function()
-    local ocr_model_path = "mnt/sdcard/Pictures/chi_sim.traineddata"
-    if not fileExist(ocr_model_path) then
-        extractAssets("main.rc", "mnt/sdcard/Pictures/", "chi_sim.traineddata")
-    end
-    ocr_handle = createOcr(ocr_model_path, 6)
-    if ocr_handle then log("初始化ocr成功", ocr_handle) end
-end
-
 ocrex1 = function(r, white_list, max_height)
     -- releaseCapture()
     if type(r) == 'string' then
@@ -4241,30 +4232,6 @@ folder_exists = function(folderpath)
     else
         return false
     end
-end
-
--- 使用root权限判断文件是否存在
-file_exists = function(filepath)
-    local ret = exec2(string.format([[su root sh -c 'if [ -f "%s" ]; then echo "true"; else echo "false"; fi']], filepath))
-    if string.find(ret, "true") then
-        return true
-    else
-        return false
-    end
-end
-
--- 使用root权限复制文件
-copy_files = function(s, d)
-    exec(string.format([[su root sh -c 'cp -r "%s" "%s"']], s, d))
-end
-
-contains_character = function(str, table)
-    for _, char in ipairs(table) do
-        if string.find(str, char) then
-            return char
-        end
-    end
-    return nil
 end
 
 find_color = function(v, color, dir, condifence)
