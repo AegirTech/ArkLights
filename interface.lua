@@ -805,9 +805,6 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_云控, "log_login_to_cloud", "上报登录流程", false)
 
     newRow(debug_layout_云控)
-    ui.addCheckBox(debug_layout_云控, "apply_remote_config", "接受远程配置更新", false)
-
-    newRow(debug_layout_云控)
     ui.addCheckBox(debug_layout_云控, "skland_use_cloud", "森空岛签到使用云端接口", false)
 
     addInfo(debug_layout_云控, [[勾选使用云端接口请求时候会附带账户密码
