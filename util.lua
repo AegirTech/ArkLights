@@ -996,7 +996,7 @@ swipu = function(dis)
     -- flatten to one depth
     -- local max_once_dis = 1080
     -- local freey = scale(150)
-    local freey = scale(180)              -- 避开14章右上角
+    local freey = scale(160)              -- 避开14章右上角
     local freex = scale(360 / 720 * 1080) -- 第12章左上角
     local max_once_dis = screen.width - scale(300) - freex
     if type(swipp_max_len) == "string" and swipp_max_len ~= "" then
