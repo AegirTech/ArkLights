@@ -10796,7 +10796,10 @@ path.争锋频道活动 = function()
         tap("面板活动")
     end
     if not appear("争锋频道首页", 5) then return end
-    appearTap("加入赛事", 10)
+    wait(function()
+        tap("加入赛事")
+        if findOne("礼物对决") then return true end
+    end, 10)
     log("加入赛事完成")
 
     争锋左边投票人数 = 0
@@ -10827,7 +10830,7 @@ end
             local younumber = int(string.match(youtext, "%d+")) or 0
             log("左边支持人数", zuotext, zuonumber)
             log("右边支持人数", youtext, younumber)
-            if zuonumber >= 0 and younumber >= 0 then
+            if zuonumber > 0 and younumber > 0 then
                 if zuonumber > younumber then
                     tap("支持左侧按钮")
                     ssleep(0.5)
@@ -10839,4 +10842,7 @@ end
         end
         ssleep(1)
     end,
+    支持右侧 = function()
+        return 争锋频道循环.支持左侧()
+    end
 }
