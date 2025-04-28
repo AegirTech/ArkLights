@@ -1461,6 +1461,11 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
         end
     end
 
+    if findOne("争锋频道首页") then
+        back()
+        ssleep(0.5)
+    end
+
     -- 退出基建前截图
     if prev_jump == "基建" and x ~= "基建" and qqnotify_beforeleaving and
         not_first_time_jump then
@@ -10783,3 +10788,55 @@ end
 path.促融共竞 = function()
     ib.start()
 end
+
+
+path.争锋频道活动 = function()
+    if not findOne("争锋频道首页") then
+        path.跳转("首页")
+        tap("面板活动")
+    end
+    if not appear("争锋频道首页", 5) then return end
+    appearTap("加入赛事", 10)
+    log("加入赛事完成")
+
+    争锋左边投票人数 = 0
+    争锋右边投票人数 = 0
+    auto(争锋频道循环, nil, 0, nil, false)
+end
+
+
+争锋频道循环 = {
+    礼物对决 = function()
+        tap("礼物对决")
+        ssleep(0.5)
+    end,
+    开始匹配 = function()
+        tap("开始匹配")
+        ssleep(0.5)
+    end,
+    结算_离开比赛 = function()
+        tap("结算_离开比赛")
+        ssleep(0.5)
+        appearTap("继续匹配频道")
+    end,
+    支持左侧 = function()
+        if duel_channel_game_mode == 1 then
+            local zuotext = (ocr("左边支持人数ocr范围")[1] or {}).text or ""
+            local youtext = (ocr("右边支持人数ocr范围")[1] or {}).text or ""
+            local zuonumber = int(string.match(zuotext, "%d+")) or 0
+            local younumber = int(string.match(youtext, "%d+")) or 0
+            log("左边支持人数", zuotext, zuonumber)
+            log("右边支持人数", youtext, younumber)
+            if zuonumber >= 0 and younumber >= 0 then
+                if zuonumber > younumber then
+                    tap("支持左侧按钮")
+                    ssleep(0.5)
+                elseif younumber > zuonumber then
+                    tap("支持右侧按钮")
+                    ssleep(0.5)
+                end
+            end
+        end
+        ssleep(1)
+    end,
+}
