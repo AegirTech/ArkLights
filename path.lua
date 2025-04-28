@@ -10820,7 +10820,10 @@ end
     结算_离开比赛 = function()
         tap("结算_离开比赛")
         ssleep(0.5)
-        appearTap("继续匹配频道")
+    end,
+    继续匹配频道 = function()
+        tap("继续匹配频道")
+        ssleep(0.5)
     end,
     支持左侧 = function()
         if duel_channel_game_mode == 1 then
