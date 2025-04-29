@@ -4791,13 +4791,14 @@ path.开始游戏 = function(x, disable_ptrs_check)
             -- 出现面板后给一点时间等待展开
             ssleep(.6)
             local battle_times = 1
-            for i = 2, 6 do
+            for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
                 battle_times = i
                 if findOne("连战次数列表" .. i) then
                     battle_times = i - 1
                     break
                 end
             end
+            --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些
             rfg["连战次数白"][2] = (876 - 92 * battle_times) * hscale
             print(findOne("连战次数白"))
             tap(findOne("连战次数白"))
