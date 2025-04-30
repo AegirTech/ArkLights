@@ -4969,7 +4969,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         if 剩余理智药数量 ~= 0 and 剩余理智药数量 < 100 and 剩余理智药数量 > max_drug_left then
             need_use = true
         end
-        if not max_times or times >= max_times or max_drug_times == -1 then
+        if not max_times or times >= max_times or max_drug_times == -1 or max_drug_left == -1 then
             need_use = false
         end
         log(2320, 剩余理智药数量, max_drug_left, need_use)
