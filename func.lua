@@ -567,7 +567,7 @@ SolveSlipCaptcha = function(rect, p_type)
     if not rect then return end
 
     local img = getWorkPath() .. "/capture_cloud_upload.jpg"
-    snapShot(img, box.l, box.t, box.r, box.b)
+    snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local upload_img = base64(img)
     local postdata = [[{"image": "]] .. upload_img .. [["}]]
     local res, code = httpPost(m.captchaServer .. "/image/upload_image", postdata, 30, "Content-Type: application/json")
