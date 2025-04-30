@@ -4943,10 +4943,15 @@ path.开始游戏 = function(x, disable_ptrs_check)
         tap("理智药清空选择")
 
         local deadline = {}
+        local 剩余理智药数量 = 1
+
         wait(function()
             deadline = ocr("理智药到期时间范围")
             if #deadline == 1 and deadline[1].text:includes({ "天", "时" }) then
-                return true
+                剩余理智药数量 = tonumber((ocr("理智药数量oct范围")[1] or { text = "" }).text:match("%d+") or 0)
+                if 剩余理智药数量 > 0 and 剩余理智药数量 < 100 then
+                    return true
+                end
             end
         end, 5)
         deadline = deadline[1] or { text = '' }
@@ -4959,7 +4964,16 @@ path.开始游戏 = function(x, disable_ptrs_check)
         log(2318, idx)
         local max_times = _G['max_drug_times_' .. idx .. 'day']
         local times = _G['drug_times_' .. idx .. 'day']
+
+        local need_use = false
+        if 剩余理智药数量 ~= 0 and 剩余理智药数量 < 100 and 剩余理智药数量 > max_drug_left then
+            need_use = true
+        end
         if not max_times or times >= max_times or max_drug_times == -1 then
+            need_use = false
+        end
+        log(2320, 剩余理智药数量, max_drug_left, need_use)
+        if not need_use then
             log(2326, idx, times, max_times)
             zero_san = true
             tap("开始行动蓝")
@@ -4967,7 +4981,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
             if cloud.enabled() then
                 log("云控", "理智上报")
                 while appear("主页", 5) ~= "主页" do
-                    log("云控", "未找到主页")
                     -- 备用识别
                     log("云控", "备用识别")
                     if appear("代理券", 1) then
@@ -10823,6 +10836,17 @@ end
         ssleep(0.5)
     end,
     继续匹配频道 = function()
+        if duel_auto_stop then
+            local 代币增加 = (ocr("结算代币ocr范围")[1] or {}).text or ""
+            if string.finds(代币增加, { "+" }) then
+                local 代币增加数量 = int(string.match(代币增加, "%d+")) or 1
+                log("代币增加数量", 代币增加, 代币增加数量)
+                if 代币增加数量 == 0 then
+                    log("停止匹配")
+                    stop("争锋活动已经打完", '', true, true)
+                end
+            end
+        end
         tap("继续匹配频道")
         ssleep(0.5)
     end,

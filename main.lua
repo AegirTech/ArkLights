@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "04.29 07:15"
+release_date = "04.30 13:04"
 update_announcement = '最近更新：十五章导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -138,8 +138,9 @@ if use_local_dictionary then
 end
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug mode")
+    -- log(ocr("理智药到期时间范围"))
     -- path.基建信息获取new()
-    -- exit()
+    --exit()
 end
 
 load(before_account_hook or '')()

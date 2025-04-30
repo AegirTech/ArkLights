@@ -854,11 +854,15 @@ show_debug_ui = function()
     for i = 1, 7 do
         newRow(debug_layout_账户)
         local timenote = i == 1 and "“X小时”" or "“" .. (i - 1) .. "天”"
-        local default = i < 3 and '99' or '1'
+        local default = i < 4 and '99' or '1'
         addTextView(debug_layout_账户, timenote .. "理智药最多吃")
         ui.addEditText(debug_layout_账户, "max_drug_times_" .. i .. "day", default)
         addTextView(debug_layout_账户, "次")
     end
+
+    newRow(debug_layout_账户)
+    addTextView(debug_layout_账户, "理智药保留最大数量")
+    ui.addEditText(debug_layout_账户, "max_drug_left", "10")
 
     newRow(debug_layout_账户)
     ui.addCheckBox(debug_layout_账户, "continuous_battle", "自动使用最大连战次数,会导致作战次数错乱",
@@ -1203,6 +1207,9 @@ show_extra_ui = function()
     newRow(layout)
     addTextView(layout, "策略")
     ui.addSpinner(layout, "duel_channel_game_mode", { "保持观望", "随大流" }, 0)
+
+    newRow(layout)
+    ui.addCheckBox(layout, "duel_auto_stop", "代币不增加则停止", false)
 
     newRow(layout)
     addTextView(layout, "注意：默认不会选择all，分辨率只支持720/1080p")

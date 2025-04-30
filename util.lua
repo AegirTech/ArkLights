@@ -3919,6 +3919,7 @@ update_state_from_debugui = function()
     multi_account_use_abyssal_hunter = expand_number_config(
         multi_account_use_abyssal_hunter or '')
 
+    max_drug_left = str2int(max_drug_left, 10)
     max_jmfight_times = str2int(max_jmfight_times, 1)
     findOne_interval = str2int(findOne_interval, -1)
     max_fight_times = str2int(max_fight_times, math.huge)
