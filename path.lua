@@ -4968,6 +4968,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         local need_use = false
         if 剩余理智药数量 ~= 0 and 剩余理智药数量 < 100 and 剩余理智药数量 > max_drug_left then
             need_use = true
+            max_times = max_times == 0 and 1 or max_times -- 至少吃一瓶
         end
         if not max_times or times >= max_times or max_drug_times == -1 or max_drug_left == -1 then
             need_use = false
