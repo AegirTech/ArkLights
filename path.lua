@@ -4791,18 +4791,22 @@ path.开始游戏 = function(x, disable_ptrs_check)
             appear("连战次数面板", 4)
             -- 出现面板后给一点时间等待展开
             ssleep(.6)
+            log('30444')
             local battle_times = 1
             for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
                 battle_times = i
                 if findOne("连战次数列表" .. i) then
+                    log("tap 连战次数列表" .. i)
                     battle_times = i - 1
                     break
                 end
             end
+            log('30445')
             --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些
             rfg["连战次数白"][2] = (876 - 92 * battle_times) * hscale
-            print(findOne("连战次数白"))
+            log('30446', findOne("连战次数白"))
             tap(findOne("连战次数白"))
+            ssleep(1.5) --不加延迟不知道为什么 有时候不会点击后面的"开始行动蓝"
         end
     end
 
@@ -4817,7 +4821,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
     end, 1)
 
     ::wait_for_maa::
-
     local state = nil
     local start_time = time()
     if not wait(function(reset_wait_start_time)
@@ -4852,7 +4855,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         path.跳转("首页")
         return
     end
-
+    log('30448')
     if state == "行动结束" then
         no_success_one_loop = 0
         return path.base.接管作战()
@@ -5040,6 +5043,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             cloud.sanReport()
         end
     end
+    log('30449')
 end
 
 path.主线 = function(x)
