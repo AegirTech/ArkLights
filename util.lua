@@ -2913,7 +2913,7 @@ update_state_from_ui = function()
     -- 活动开放时间段
     hd_nickname = "MT"
     hd_max_stage = 10
-    hd_exclude = { 8, 9, 10 }
+    hd_exclude = {}                                --排除哪些关卡不刷，例如{9}
     hd_open_time_end = parse_time("202505220400")
     hd2_open_time_end = parse_time("202505220400") -- 故事集开放时间段
     hd_mod = "SS"
