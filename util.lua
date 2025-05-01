@@ -2911,11 +2911,11 @@ update_state_from_ui = function()
     job = parse_from_ui("now_job_ui", all_job)
 
     -- 活动开放时间段
-    hd_nickname = "BB"
-    hd_max_stage = 8
-    hd_exclude = { 0 }
-    hd_open_time_end = parse_time("202505010400")
-    hd2_open_time_end = parse_time("202502210400") -- 故事集开放时间段
+    hd_nickname = "MT"
+    hd_max_stage = 10
+    hd_exclude = { 8, 9, 10 }
+    hd_open_time_end = parse_time("202505220400")
+    hd2_open_time_end = parse_time("202505220400") -- 故事集开放时间段
     hd_mod = "SS"
 
     fight = parse_fight_config(fight_ui)

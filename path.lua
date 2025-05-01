@@ -1184,7 +1184,7 @@ path.限时活动 = function(retry)
     path.跳转("首页")
     local p = findAny({
         "面板限时活动", "面板限时活动2", "面板限时活动3",
-        "面板限时活动4", "面板限时活动5",
+        "面板限时活动4", "面板限时活动5", "面板限时活动6",
     })
     if p then
         tap(p, true)
@@ -1258,7 +1258,8 @@ path.限时活动 = function(retry)
             if not findOne("面板") then return true end
             if findAny({
                     "面板限时活动", "面板限时活动2", "面板限时活动3",
-                    "面板限时活动4", "面板限时活动5", "面板赠送一次",
+                    "面板限时活动4", "面板限时活动5", "面板限时活动6",
+                    "面板赠送一次",
                 }) then
                 return true
             end
@@ -5693,7 +5694,7 @@ path.活动 = function(x)
     if not skip_guide then
         path.跳转("首页")
         --tap("面板活动2")
-        path.活动页面寻找(2)
+        path.活动页面寻找(1)
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -6088,13 +6089,14 @@ path.活动页面寻找 = function(n)
     local l = { "面板活动", "面板活动2", "面板作战" }
     tap(l[n])
     disappear("主页", 2)
+    ssleep(5) --六周年庆活动进入时候容易触发"跳过剧情"，加点延迟
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if l[n] == "面板作战" then
                 tap("面板活动3")
                 ssleep(0.1)
             end
-            if findOne("跳过剧情") then path.跳过剧情() end
+            if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
             if findOne("教程关闭") then tap("教程关闭") end
         end, 5) then
         path.活动页面寻找(n + 1)
