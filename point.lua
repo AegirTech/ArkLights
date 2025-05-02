@@ -2121,7 +2121,7 @@ point = {
         -- 教学关和故事判断一下蓝色的六边形,打过就不打了
         ["HD-ST-1"] = "457|311|00B1FF",
         ["HD-1"] = { 793, 550 },
-        ["HD-TR-1"] = "860|698|00ACF9-101010",
+        ["HD-TR-1"] = "859|689|00B0FE",
         ["HD-2"] = { 960, 531 },
         ["HD-3"] = { 960, 528 },
         ["HD-4"] = { 960, 528 },
@@ -3308,9 +3308,9 @@ center = {
 }
 
 distance = {
-    ["HD-ST-1"] = { swip_right_max, -0 },
-    ["HD-1"] = { swip_right_max, -0 },
-    ["HD-TR-1"] = { swip_right_max, -0 },
+    ["HD-ST-1"] = { swip_right_max, 0 },
+    ["HD-1"] = { swip_right_max, 0 },
+    ["HD-TR-1"] = { swip_right_max, 0 },
     ["HD-2"] = { swip_right_max, -93 },
     ["HD-3"] = { swip_right_max, -364 },
     ["HD-4"] = { swip_right_max, -623 },
