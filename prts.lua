@@ -653,7 +653,11 @@ end
                 if not findOne("普通作战编队列表" .. i) then
                     tap("普通作战编队列表" .. i)
                     appear("普通作战编队列表" .. i)
-                    sleep(200)
+                    ssleep(1)
+                    if findOne("编队列表职业被展开") then
+                        tap("普通作战编队列表" .. i)
+                        ssleep(1)
+                    end
                 end
                 --print(干员目录)
                 未编入 = 选择干员(干员目录, "待编队干员", 是否群组)
