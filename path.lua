@@ -5953,7 +5953,40 @@ path.活动 = function(x)
         ssleep(1)
     end
 
-    -- car_check() --有些大型活动会自带一些任务
+    local car_check = function() --众生行记
+        if car_checked then return end
+        car_checked = true
+        fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
+
+        wait(function()
+            tap("制铳师之夜进入")
+            tap('制铳师之夜提示关闭')
+            if findOne("在制铳师之夜界面") then
+                ssleep(1) --有时候进入制铳师之夜界面，等待一会才会有提示出现
+                if findOne("在制铳师之夜界面") then return true end
+                return true
+            end
+        end, 10, .2)
+        wait(function()
+            tap('制铳师之夜入账')
+        end, 2, .2)
+        wait(function()
+            if findOne("制铳师之夜营业中") then
+                tap('制铳师之夜进入订单界面')
+            end
+            if findOne("制铳师之夜已经在订单界面") then return true end
+        end, 10, .2)
+        for i = 1, 4 do
+            tap('制铳师之夜订单列表' .. i)
+            appear({ '制铳师之夜接取订单', '制铳师之夜订单已经接取' }, 2)
+            ssleep(1)
+            if not findOne('制铳师之夜订单已经接取') then tap('制铳师之夜接取订单') end
+
+            ssleep(1.5)
+        end
+    end
+
+    car_check() --有些大型活动会自带一些任务
     -- path.烟花委员会()
     log("skip_guide", skip_guide)
     if not skip_guide then
