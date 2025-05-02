@@ -1898,11 +1898,17 @@ path.宿舍换班 = function()
     local fiammetta_used = false
     f = function(i)
         if not wait(function()
-                if findOne("筛选") then return true end
+                if findAny({ "筛选" }) then return true end
+                if findOne("筛选展开状态") then
+                    ssleep(.5)
+                    tap('筛选展开状态')
+                    ssleep(.5)
+                end
                 tap("宿舍列表" .. i)
             end) then
             return
         end
+
 
         local 进入宿舍并清空干员 = function()
             if not wait(function()
@@ -4818,7 +4824,8 @@ path.开始游戏 = function(x, disable_ptrs_check)
         if not findOne("代理指挥开") then return true end
         tap("开始行动蓝")
     end, 1)
-    if copy_homework then tap("开始行动蓝") end --2025.5.1更新之后不知道为什么不点击了
+    ssleep(1)
+    if findOne("开始行动") then tap("开始行动蓝") end --2025.5.1更新之后不知道为什么不点击了
     ::wait_for_maa::
     local state = nil
     local start_time = time()
@@ -4828,7 +4835,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 "单选确认框", "源石恢复理智不足", "当期委托侧边栏",
                 "行动结束", "开始行动故事集S", "沙盘推演确定",
             })
-            log(state)
+            log(3356, state)
             -- 剿灭后一直按开始行动导致开始行动界面消失，可能出现下面的界面
             if state == "当前委托侧边栏" then
                 path.跳转("首页")
@@ -4975,6 +4982,8 @@ path.开始游戏 = function(x, disable_ptrs_check)
         end
         if not max_times or times >= max_times or max_drug_times == -1 or max_drug_left == -1 then
             need_use = false
+        else
+            need_use = true
         end
         log(2320, 剩余理智药数量, max_drug_left, need_use)
         if not need_use then
