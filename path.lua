@@ -4714,11 +4714,10 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 return true
             end
         end
-
         tap("代理指挥开1")
         if not appear("代理指挥开", .5) then
             log(4591)
-            if copy_homework and homework[x] then
+            if copy_homework and (homework[x] or x == 'HD-TR-1') then
                 need_copy_homework = true
                 log("准备抄作业")
                 --ssleep (6)--等待右上角提示消失
@@ -4782,6 +4781,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             appear("沙盘推演选择面板", 2)
             ssleep(.5)
         elseif (not copy_homework_only) and copy_homework and homework[x] then
+            log("32001")
             tap("代理指挥开1")
             need_copy_homework = true
             disappear("代理指挥开", .5)
@@ -4813,7 +4813,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
     if is_jmfight_enough(x) then return end
 
     if findOne("全权委托") then path.fallback.全权委托() end
-
     -- quick tap .5s
     wait(function()
         if not findOne("代理指挥开") then return true end
@@ -5967,6 +5966,7 @@ path.活动 = function(x)
                 return true
             end
         end, 10, .2)
+        if findOne("活动导航0") then return true end
         wait(function()
             tap('制铳师之夜入账')
         end, 2, .2)
@@ -5979,14 +5979,16 @@ path.活动 = function(x)
         for i = 1, 4 do
             tap('制铳师之夜订单列表' .. i)
             appear({ '制铳师之夜接取订单', '制铳师之夜订单已经接取' }, 2)
-            ssleep(1)
-            if not findOne('制铳师之夜订单已经接取') then tap('制铳师之夜接取订单') end
+            ssleep(1.5)
+
+            tap('制铳师之夜接取订单')
+
 
             ssleep(1.5)
         end
     end
 
-    car_check() --有些大型活动会自带一些任务
+    --car_check() --有些大型活动会自带一些任务
     -- path.烟花委员会()
     log("skip_guide", skip_guide)
     if not skip_guide then
