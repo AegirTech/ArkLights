@@ -865,7 +865,7 @@ show_debug_ui = function()
     ui.addEditText(debug_layout_账户, "max_drug_left", "10")
 
     newRow(debug_layout_账户)
-    ui.addCheckBox(debug_layout_账户, "continuous_battle", "自动使用最大连战次数,会导致作战次数错乱",
+    ui.addCheckBox(debug_layout_账户, "continuous_battle", "自动使用最大连战次数(未过多测试，有bug录屏发频道)",
         false)
     newRow(debug_layout_账户)
     ui.addCheckBox(debug_layout_账户, "zero_san_after_fight", "使用1-7清空剩余理智",

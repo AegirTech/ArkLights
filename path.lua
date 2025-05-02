@@ -4819,7 +4819,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         if not findOne("代理指挥开") then return true end
         tap("开始行动蓝")
     end, 1)
-
+    if copy_homework then tap("开始行动蓝") end --2025.5.1更新之后不知道为什么不点击了
     ::wait_for_maa::
     local state = nil
     local start_time = time()
