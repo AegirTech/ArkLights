@@ -5997,15 +5997,20 @@ path.活动 = function(x)
             tap('制铳师之夜订单列表' .. i)
             appear({ '制铳师之夜接取订单', '制铳师之夜订单已经接取' }, 2)
             ssleep(1.5)
-
-            tap('制铳师之夜接取订单')
-
-
-            ssleep(1.5)
+            if findOne("制铳师之夜接取订单") then
+                tap('制铳师之夜接取订单')
+            end
+            if findOne("制铳师之夜领取报酬") then
+                wait(function()
+                    tap('制铳师之夜领取报酬')
+                    tap("获得物资")
+                end, 3, .2)
+            end
+            ssleep(1)
         end
     end
 
-    --car_check() --有些大型活动会自带一些任务
+    car_check() --有些大型活动会自带一些任务
     -- path.烟花委员会()
     log("skip_guide", skip_guide)
     if not skip_guide then
