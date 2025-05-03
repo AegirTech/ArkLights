@@ -5012,7 +5012,15 @@ path.开始游戏 = function(x, disable_ptrs_check)
         -- deadline = map(function(x) return {x.r, scale(409)} end, deadline)
         -- for _, v in pairs(deadline) do for i = 1, 1 do tap(v) end end
         -- log(2240, deadline)
-        tap({ deadline.l, scale(409) })
+
+        if continuous_battle then --勾选连战的话  可以一次多嗑药
+            for i = 1, max_use_number_drug do
+                tap({ deadline.l, scale(409) })
+                ssleep(0.5)
+            end
+        else
+            tap({ deadline.l, scale(409) })
+        end
 
         _G['drug_times_' .. idx .. 'day'] = times + 1
         log(drug_times_3day, max_drug_times_3day)
