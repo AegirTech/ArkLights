@@ -347,7 +347,9 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                     base = base - 0.15
                     storage = storage + 6
                 end
-            elseif icon == 'bskill_tra_spd_bd2' then --黑键2
+            elseif icon == 'bskill_tra_spd&limit5' then --蕾缪安2
+                base = base + 0.20
+            elseif icon == 'bskill_tra_spd_bd2' then    --黑键2
                 base = base + 0.005 * dormitoryCapacity
                 if isCharExsit["迷迭香"] or isCharExsit["絮雨"] then
                     base = base + 0.44
@@ -481,6 +483,8 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 base = base + 0.65
             end
         end
+
+        -- 老能天使+蕾缪安2,老能天使技能不唯一(需要ocr),暂时不考虑
 
         -- 雪雉
         if all['bskill_tra_spd_variable22'] then
@@ -1537,9 +1541,11 @@ meetingStationOperatorBest = function(operator)
             table.insert(best, o)
         elseif o[1] == "bskill_meet_exchange" or o[2] == "bskill_meet_exchange" then -- 跃跃
             table.insert(best, 1, o)
-        elseif table.includes({ o[1], o[2] }, 'bskill_meet_spd_hast1') then          --伊内丝
+        elseif table.includes({ o[1], o[2] }, 'bskill_meet_spd_confes1') and isCharExsit["肥鸭"] then --信仰搅拌机2
+            table.insert(best, 1, o)
+        elseif table.includes({ o[1], o[2] }, 'bskill_meet_spd_hast1') then --伊内丝
             table.insert(best, o)
-        elseif o[1] == "bskill_meet_spd3" or o[2] == "bskill_meet_spd3" then
+        elseif table.includes({ o[1], o[2] }, "bskill_meet_spd3") then
             if o[6] ~= "伺夜" then
                 table.insert(best, o)
             end
@@ -1701,7 +1707,7 @@ controlStationOperatorBest = function(operator)
     end
 
     if #best < 5 and not not_use_ocr and use_abyssal_hunter and -- 不使用ocr时无法选择深海
-        (not isCharExsit["承曦格雷伊"] or not isCharExsit["絮雨"] or not isCharExsit["焰尾"] or not isCharExsit["薇薇安娜"]) then -- 这四个全齐的时候位置不够
+        not (isCharExsit["承曦格雷伊"] and isCharExsit["絮雨"] and isCharExsit["焰尾"] and isCharExsit["薇薇安娜"]) then -- 这四个全齐的时候位置不够
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') and o[3] > 22 then -- 精二歌蕾蒂娅,高心情才使用
                 table.insert(best, o)

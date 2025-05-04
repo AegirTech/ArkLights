@@ -2008,6 +2008,7 @@ path.宿舍换班 = function()
                     确认干员选择()
                     ssleep(.2)
                     fiammetta_used = true
+                    isCharExsit["肥鸭"] = true
                     if not wait(function()
                             if findOne("筛选") then return true end
                             tap("宿舍列表" .. i)
