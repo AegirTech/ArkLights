@@ -6198,7 +6198,7 @@ path.商店搬空 = function()
     end
     log("商店清空任务")
 
-    if not path.活动页面寻找(2) then return end
+    if not path.活动页面寻找(1) then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
