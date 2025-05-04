@@ -4738,7 +4738,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         tap("代理指挥开1")
         if not appear("代理指挥开", .5) then
             log(4591)
-            if copy_homework and (homework[x] or x == 'HD-TR-1') then
+            if copy_homework and homework[x] then
                 need_copy_homework = true
                 log("准备抄作业")
                 --ssleep (6)--等待右上角提示消失
@@ -4802,32 +4802,28 @@ path.开始游戏 = function(x, disable_ptrs_check)
             appear("沙盘推演选择面板", 2)
             ssleep(.5)
         elseif (not copy_homework_only) and copy_homework and homework[x] then
-            log("32001")
             tap("代理指挥开1")
             need_copy_homework = true
             disappear("代理指挥开", .5)
-        elseif not findOne("连战次数面板") and findOne("连战按钮") and continuous_battle then
-            appearTap("连战按钮")
+        elseif not findOne("多倍代理次数面板") and findOne("多倍代理按钮") and multiple_proxy_commander then
+            appearTap("多倍代理按钮")
             ssleep(.2)
-            appear("连战次数面板", 4)
+            appear("多倍代理次数面板", 4)
             -- 出现面板后给一点时间等待展开
             ssleep(.6)
-            log('30444')
             local battle_times = 1
             for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
                 battle_times = i
-                if findOne("连战次数列表" .. i) then
-                    log("tap 连战次数列表" .. i)
+                if findOne("多倍代理次数列表" .. i) then
                     battle_times = i - 1
                     break
                 end
             end
-            log('30445')
-            --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些
-            rfg["连战次数白"][2] = (876 - 92 * battle_times) * hscale
-            log('30446', findOne("连战次数白"))
-            tap(findOne("连战次数白"))
-            ssleep(1.5) --不加延迟不知道为什么 有时候不会点击后面的"开始行动蓝"
+            log("最大可重复次数", battle_times)
+            --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些，92是每层高度
+            rfg["多倍代理次数白"][2] = (876 - 92 * battle_times) * hscale
+            tap(findOne("多倍代理次数白"))
+            ssleep(.5)
         end
     end
 
@@ -5028,7 +5024,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         -- for _, v in pairs(deadline) do for i = 1, 1 do tap(v) end end
         -- log(2240, deadline)
 
-        if continuous_battle then --勾选连战的话  可以一次多嗑药
+        if multiple_proxy_commander then --勾选多倍代理的话  可以一次多嗑药
             for i = 1, max_use_number_drug do
                 tap({ deadline.l, scale(409) })
                 ssleep(0.5)
