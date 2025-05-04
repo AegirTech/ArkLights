@@ -375,9 +375,9 @@ ib.自动编队 = function(干员, 群组)
                 if not 是否群组 then 编入数量 = #干员目录 + 编入数量 end
             end
             if i == 8 then
-                if not findOne("职业选择") then
-                    tap("职业选择")
-                    appear("职业选择", 2)
+                if not findOne("职业选择all") then
+                    tap("职业选择all")
+                    appear("职业选择all", 2)
                     sleep(300)
                 end
             end
