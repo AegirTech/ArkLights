@@ -865,13 +865,13 @@ show_debug_ui = function()
     ui.addEditText(debug_layout_账户, "max_drug_left", "10")
 
     newRow(debug_layout_账户)
-    ui.addCheckBox(debug_layout_账户, "continuous_battle", "自动使用最大连战次数(未过多测试，有bug录屏发频道)",
+    ui.addCheckBox(debug_layout_账户, "continuous_battle", "自动使用最大多倍代理次数(会导致指定次数失效)",
         false)
 
     newRow(debug_layout_账户)
-    addTextView(debug_layout_账户, "临时药一次点击次数 ")
+    addTextView(debug_layout_账户, "理智药每次使用瓶数")
     ui.addEditText(debug_layout_账户, "max_use_number_drug", "4")
-    addTextView(debug_layout_账户, " 勾选【连战】功能才生效")
+    addTextView(debug_layout_账户, " 勾选【多倍代理】功能才生效")
 
     newRow(debug_layout_账户)
     ui.addCheckBox(debug_layout_账户, "zero_san_after_fight", "使用1-7清空剩余理智",

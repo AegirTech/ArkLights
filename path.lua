@@ -3233,6 +3233,11 @@ path.加工站选人 = function(stationType, material_id, material_level)
     if not appear("加工站", 2) then return end
     if not wait(function()
             if findOne("确认蓝") then return true end
+            if findOne("筛选展开状态") then
+                ssleep(.5)
+                tap('筛选展开状态')
+                ssleep(.5)
+            end
             tap("加工站换人")
             ssleep(.3)
         end, 3) then
@@ -3241,6 +3246,11 @@ path.加工站选人 = function(stationType, material_id, material_level)
 
     if not wait(function()
             if findOne("筛选") then return true end
+            if findOne("筛选展开状态") then
+                ssleep(.5)
+                tap('筛选展开状态')
+                ssleep(.5)
+            end
             if findOne("进驻信息选中") then
                 wait(function()
                     if findOne("筛选") then return true end
@@ -3251,6 +3261,11 @@ path.加工站选人 = function(stationType, material_id, material_level)
                 ssleep(.2)
                 wait(function()
                     if findOne("筛选") then return true end
+                    if findOne("筛选展开状态") then
+                        ssleep(.5)
+                        tap('筛选展开状态')
+                        ssleep(.5)
+                    end
                     tap("进驻第一人")
                 end, 3)
             end
