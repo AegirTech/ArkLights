@@ -4823,7 +4823,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             log("最大可重复次数", battle_times)
             --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些，92是每层高度
             rfg["多倍代理次数白"][2] = (876 - 92 * battle_times) * hscale
-            tap(findOne("多倍代理次数白"))
+            tap(findOne("多倍代理次数白") or "多倍代理次数列表1")
             ssleep(.5)
         end
     end
@@ -4836,8 +4836,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
         if not findOne("代理指挥开") then return true end
         tap("开始行动蓝")
     end, 1)
-    ssleep(1)
-    if findOne("开始行动") then tap("开始行动蓝") end --2025.5.1更新之后不知道为什么不点击了
     ::wait_for_maa::
     local state = nil
     local start_time = time()
@@ -4859,8 +4857,9 @@ path.开始游戏 = function(x, disable_ptrs_check)
             if state == "开始行动突袭" or state == "开始行动故事集S" or state == "沙盘推演确定" then return true end
             if state == "行动结束" then return true end
             if state and not disappear(state, .5) then return true end
-            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
-
+            if findOne("正在提交反馈至神经") and not findOne("开始行动") then
+                reset_wait_start_time()
+            end
             local p = findAny({ "开始行动", "全权委托确认使用", "开始突袭", "开始险地作战" })
             if p then
                 tap("开始行动蓝")

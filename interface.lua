@@ -818,7 +818,9 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_账户, "new_change_account_plan", "新版切号方案（测试）", false)
 
     newRow(debug_layout_账户)
-    ui.addCheckBox(debug_layout_账户, "multiple_proxy_commander", "自动使用最大多倍代理次数，理智药每次使用瓶数", false)
+    ui.addCheckBox(debug_layout_账户, "multiple_proxy_commander", "自动使用最大多倍代理次数", false)
+    newRow(debug_layout_账户)
+    addTextView(debug_layout_账户, "  理智药每次使用瓶数")
     ui.addEditText(debug_layout_账户, "max_use_number_drug", "4")
     addInfo(debug_layout_账户, "会使指定次数失效，只打第一个能打的图")
 
