@@ -2116,15 +2116,12 @@ raise.材料合成 = function()
     end
     if not appear("加工站", 2) then return end
     tap("开始加工")
-    --[[if appear("加工站材料顶部获得物资", 15) then
-        ssleep(0.5)
-        tap("加工站材料顶部获得物资")
-        disappear("加工站材料顶部获得物资", 5)
-    end]]
 
     if appear("获得物资", 10) then
         ssleep(.2)
         tap("获得物资")
+    else
+        return
     end
     appear("加工站", 3)
     ssleep(.3)
