@@ -5922,12 +5922,12 @@ path.活动 = function(x)
         wait(function()
             tap('制铳师之夜入账')
         end, 2, .2)
-        wait(function()
-            if findOne("制铳师之夜营业中") then
+        if not wait(function()
                 tap('制铳师之夜进入订单界面')
-            end
-            if findOne("制铳师之夜已经在订单界面") then return true end
-        end, 10, .2)
+                if findOne("制铳师之夜已经在订单界面") then return true end
+            end, 10, .2) then
+            return
+        end
         for i = 1, 4 do
             tap('制铳师之夜订单列表' .. i)
             appear({ '制铳师之夜接取订单', '制铳师之夜订单已经接取' }, 2)
