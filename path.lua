@@ -1848,24 +1848,7 @@ path.宿舍清空 = function()
             log("621")
             return
         end
-        if not wait(function()
-                if findOne("筛选") then return true end
-                if findOne("进驻信息选中") then
-                    wait(function()
-                        if findOne("筛选") then return true end
-                        tap("进驻第一人")
-                    end, 1)
-                elseif findOne("进驻信息") then
-                    tap("进驻信息")
-                    ssleep(.2)
-                    wait(function()
-                        if findOne("筛选") then return true end
-                        tap("进驻第一人")
-                    end, 1)
-                end
-            end, 5) then
-            return
-        end
+        path.基建确认进入设施()
 
         tap("清空选择")
         if not wait(function()
@@ -1911,30 +1894,7 @@ path.宿舍换班 = function()
 
 
         local 进入宿舍并清空干员 = function()
-            if not wait(function()
-                    if findOne("筛选") then return true end
-                    --[[if not findOne("基建心情升序") then
-                        tap("基建心情升序")
-                        ssleep(.2)
-                    end]]
-                    if findOne("进驻信息选中") then
-                        wait(function()
-                            if findOne("筛选") then return true end
-                            log(1859)
-                            tap("进驻第一人")
-                        end, 1)
-                    elseif findOne("进驻信息") then
-                        tap("进驻信息")
-                        ssleep(.2)
-                        wait(function()
-                            if findOne("筛选") then return true end
-                            log(1867)
-                            tap("进驻第一人")
-                        end, 1)
-                    end
-                end, 5) then
-                return
-            end
+            path.基建确认进入设施()
 
             tap("清空选择")
             if not wait(function()
@@ -2903,6 +2863,42 @@ path.重置控制中枢位置 = function()
     end
 end
 
+path.基建确认进入设施 = function()
+    if not wait(function()
+            if findOne("筛选") then return true end
+            if findOne("职业选择") then
+                ssleep(.5)
+                tap('职业选择')
+                ssleep(.5)
+            end
+            if findOne("进驻信息选中") then
+                wait(function()
+                    if findOne("筛选") then return true end
+                    if findOne("职业选择") then
+                        ssleep(.5)
+                        tap('职业选择')
+                        ssleep(.5)
+                    end
+                    tap("进驻第一人")
+                end, 2)
+            elseif findOne("进驻信息") then
+                tap("进驻信息")
+                ssleep(.2)
+                wait(function()
+                    if findOne("筛选") then return true end
+                    if findOne("职业选择") then
+                        ssleep(.5)
+                        tap('职业选择')
+                        ssleep(.5)
+                    end
+                    tap("进驻第一人")
+                end, 3)
+            end
+        end, 7) then
+        return
+    end
+end
+
 path.基建总览翻页 = function()
     local flipd = 150
     local flips = 50
@@ -2976,24 +2972,7 @@ path.发电站换班 = function()
         end
 
         if not appear({ "进驻信息", "进驻信息选中" }, 5) then return end
-        if not wait(function()
-                if findOne("筛选") then return true end
-                if findOne("进驻信息选中") then
-                    wait(function()
-                        if findOne("筛选") then return true end
-                        tap("进驻第一人")
-                    end, 2)
-                elseif findOne("进驻信息") then
-                    tap("进驻信息")
-                    ssleep(.2)
-                    wait(function()
-                        if findOne("筛选") then return true end
-                        tap("进驻第一人")
-                    end, 3)
-                end
-            end, 7) then
-            return
-        end
+        path.基建确认进入设施()
 
         if not wait(function()
                 if findOne("干员未选中") and findOne("第一干员未选中") then
@@ -3040,24 +3019,7 @@ path.发电站换班 = function()
             return
         end
 
-        if not wait(function()
-                if findOne("筛选") then return true end
-                if findOne("进驻信息选中") then
-                    wait(function()
-                        if findOne("筛选") then return true end
-                        tap("进驻第一人")
-                    end, 2)
-                elseif findOne("进驻信息") then
-                    tap("进驻信息")
-                    ssleep(.2)
-                    wait(function()
-                        if findOne("筛选") then return true end
-                        tap("进驻第一人")
-                    end, 3)
-                end
-            end, 7) then
-            return
-        end
+        path.基建确认进入设施()
 
         if not wait(function()
                 if findOne("干员未选中") and findOne("第一干员未选中") then
@@ -3177,30 +3139,18 @@ path.训练室换班 = function(stationType, char_type, target_level)
     appear("干员技能专精页面", 3)
     if not wait(function()
             if findOne("筛选") then return true end
+            if findOne("职业选择") then
+                ssleep(.5)
+                tap('职业选择')
+                ssleep(.5)
+            end
             tap("选择陪练干员")
             ssleep(.2)
         end, 5) then
         return
     end
 
-    if not wait(function()
-            if findOne("筛选") then return true end
-            if findOne("进驻信息选中") then
-                wait(function()
-                    if findOne("筛选") then return true end
-                    tap("进驻第一人")
-                end, 2)
-            elseif findOne("进驻信息") then
-                tap("进驻信息")
-                ssleep(.2)
-                wait(function()
-                    if findOne("筛选") then return true end
-                    tap("进驻第一人")
-                end, 3)
-            end
-        end, 7) then
-        return
-    end
+    path.基建确认进入设施()
 
     if not wait(function()
             if findOne("干员未选中") and findOne("第一干员未选中") then
@@ -3245,34 +3195,7 @@ path.加工站选人 = function(stationType, material_id, material_level)
         return
     end
 
-    if not wait(function()
-            if findOne("筛选") then return true end
-            if findOne("职业选择") then
-                ssleep(.5)
-                tap('职业选择')
-                ssleep(.5)
-            end
-            if findOne("进驻信息选中") then
-                wait(function()
-                    if findOne("筛选") then return true end
-                    tap("进驻第一人")
-                end, 2)
-            elseif findOne("进驻信息") then
-                tap("进驻信息")
-                ssleep(.2)
-                wait(function()
-                    if findOne("筛选") then return true end
-                    if findOne("职业选择") then
-                        ssleep(.5)
-                        tap('职业选择')
-                        ssleep(.5)
-                    end
-                    tap("进驻第一人")
-                end, 3)
-            end
-        end, 7) then
-        return
-    end
+    path.基建确认进入设施()
 
     if not wait(function()
             if findOne("干员未选中") and findOne("第一干员未选中") then
