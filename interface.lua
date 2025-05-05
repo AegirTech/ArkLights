@@ -1202,8 +1202,8 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
 
-    newRow(layout)
-    addTextView(layout, "===========争锋频道(限时)===========")
+    ------------------------------------------------------------
+    addTitle(layout, "争锋频道(限时)")
     newRow(layout)
     addTextView(layout, "匹配模式")
     ui.addSpinner(layout, "duel_channel_mode", { "礼物对决" }, 0)
@@ -1214,8 +1214,7 @@ show_extra_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "duel_auto_stop", "代币不增加则停止", false)
 
-    newRow(layout)
-    addTextView(layout, "注意：默认不会选择all，分辨率只支持720/1080p")
+    addInfo(layout, "注意：默认不会选择all，分辨率只支持720/1080p")
 
     newRow(layout)
     addButton(layout, nil, "赌博开始",

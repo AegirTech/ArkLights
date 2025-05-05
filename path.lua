@@ -4786,6 +4786,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             local p = findAny({ "开始行动", "全权委托确认使用", "开始突袭", "开始险地作战" })
             if p then
                 tap("开始行动蓝")
+                ssleep(.2)
                 -- TODO 2秒太慢 => 一开始就用0秒, 2秒内增加至2秒
                 disappear(p, min(5, (time() - start_time) / 1000 * 5 / 5))
             end
