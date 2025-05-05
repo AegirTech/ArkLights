@@ -6125,7 +6125,7 @@ path.商店搬空 = function()
         end, 10) then
         return
     end
-    if appear("活动任务导航", 1) then
+    if appear("活动任务导航", .6) then
         tap("活动任务导航")
         ssleep(.2)
         if appear("活动任务页面", 2) then
