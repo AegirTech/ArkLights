@@ -4762,6 +4762,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             if not multiple_proxy_commander then
                 battle_times = 1
             end
+            log(fight)
             log("最大可重复次数 计算后", battle_times, multiple_proxy_commander)
             --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些，92是每层高度
             rfg["多倍代理次数白"][2] = (876 - 92 * battle_times) * hscale

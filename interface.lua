@@ -566,6 +566,9 @@ make_jump_ui = function(layout)
         if k % max_checkbox_one_row == 1 then newRow(layout) end
         addButton(layout, v[1], v[2], v[3])
     end
+    newRow(layout)
+    addButton(layout, "jump_afadian", "爱发电赞助",
+        make_jump_ui_command(layout, nil, "jump_address('https://afdian.com/a/arklights')"))
 end
 
 make_ui_title = function(layout, name)
@@ -583,7 +586,7 @@ jump_address = function(address)
         uri = address,
     }
     runIntent(intent)
-    toast("正在跳转到购买地址")
+    toast("正在跳转到地址")
     peaceExit()
 end
 
@@ -630,10 +633,11 @@ show_main_ui = function()
     if #loadConfig("readme_already_read", '') == 0 then
         ui.setBackground("readme_btn", tcolor)
     end
-    ui.setBackground("join_qq", tcolor)
-    ui.setBackground("join_channel", tcolor)
+    ui.setBackground("join_qq", "#ff37a652")
+    ui.setBackground("join_channel", "#ff37a652")
     ui.setBackground("quit_script", "#ffeb1c09")
     ui.setBackground("start_and_clock", "#ff37a652")
+    ui.setBackground("jump_afadian", "#ff37a652")
 end
 
 show_ad_ui = function()
@@ -1753,10 +1757,10 @@ end
 jump_qq_qun = function()
     local intent = {
         action = "android.intent.action.VIEW",
-        uri = "https://qm.qq.com/q/sA0WcIoIV2",
+        uri = "https://qm.qq.com/q/RlFMDJbhme",
     }
     runIntent(intent)
-    toast("或手动加入QQ群629618641")
+    toast("或手动加入QQ群891819123")
     while true do ssleep(1) end
     peaceExit()
 end
