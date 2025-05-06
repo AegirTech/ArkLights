@@ -4487,7 +4487,9 @@ path.轮次作战 = function()
             zero_san_hit = zero_san_hit + 1
             zero_san = false
             fight_tick = 0
-            fight = { "1-7" }
+            for i = 1, 99 do
+                table.insert(fight, "1-7")
+            end
         end
     end
 end
