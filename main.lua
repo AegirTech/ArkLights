@@ -44,8 +44,8 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "05.06 20:56"
-update_announcement = '最近更新：六周年庆，多倍代理功能(需要手动去勾选)'
+release_date = "05.06 21:33"
+update_announcement = '最近更新：六周年庆，多倍代理功能'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -138,7 +138,6 @@ if use_local_dictionary then
 end
 if debug_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug mode")
-    -- log(ocr("理智药到期时间范围"))
 end
 
 load(before_account_hook or '')()
