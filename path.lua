@@ -3083,7 +3083,7 @@ path.办公室换班 = function(stationType)
     local p = stationType
     if findOne("基建总览发电站") then
         log(3082, "在总览换办公室")
-        for i = 1, 2 do
+        for i = 1, 3 do
             path.基建总览翻页()
         end
         ssleep(.5) --加点延时防止回弹不充分
@@ -3103,6 +3103,8 @@ path.办公室换班 = function(stationType)
         return
     end
 
+    path.基建确认进入设施()
+
     if not wait(function()
             if findOne("确认蓝") then return true end
             tap("制造站进度")
@@ -3112,16 +3114,13 @@ path.办公室换班 = function(stationType)
     ssleep(.5)
     -- 如果第一个干员被选中,取消选择
     if not wait(function()
-            -- if findOne("干员未选中") and findOne("第一干员未选中") then
-            --     return true
-            -- end
-            if not find_color("干员1选中判断范围", "0098DC", 0, 0.9) then
+            if findOne("干员未选中") and findOne("第一干员未选中") then
                 return true
             end
-            tap("干员选择列表1")
-            ssleep(0.8)
-        end, 5) then
-        log(1037)
+            tap("第一干员未选中")
+            ssleep(.5)
+        end, 7) then
+        log("发电站超时")
         return
     end
 
