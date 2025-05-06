@@ -3919,7 +3919,7 @@ update_state_from_debugui = function()
     multi_account_use_abyssal_hunter = expand_number_config(
         multi_account_use_abyssal_hunter or '')
 
-    max_drug_left = str2int(max_drug_left, 10)
+    if multiple_proxy_commander == nil then multiple_proxy_commander = true end
     max_use_number_drug = str2int(max_use_number_drug, 3)
     max_jmfight_times = str2int(max_jmfight_times, 1)
     findOne_interval = str2int(findOne_interval, -1)
@@ -3948,7 +3948,6 @@ update_state_from_debugui = function()
         end
     end
     qqimagedeliver = (qqimagedeliver or ''):trim()
-    if #qqimagedeliver == 0 then qqimagedeliver = "82.156.198.12:49875" end
     pushplus_token = (pushplus_token or ''):trim()
     for i = 1, 7 do
         local k = 'max_drug_times_' .. i .. 'day'

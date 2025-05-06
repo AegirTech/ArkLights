@@ -328,7 +328,9 @@ path.base = {
             return path.跳转("首页")
         end
 
-        table.insert(fight_history, cur_fight)
+        for i = 1, battle_times do
+            table.insert(fight_history, cur_fight)
+        end
 
         fight_times = (fight_times or 0) + 1
         if fight_times >= max_fight_times then
@@ -4365,6 +4367,19 @@ path.采购中心商店 = function()
     红票商店购买()
 end
 
+get_fight_left_times = function(x)
+    local l_times = 0
+    local i = 1
+
+    while i <= #fight do
+        if fight[i] == x then
+            l_times = l_times + 1
+        end
+        i = i + 1
+    end
+    return l_times
+end
+
 get_fight_type = function(x)
     local f = startsWithX(x)
     if table.any({ "上一次" }, f) then
@@ -4599,20 +4614,6 @@ XinPian = {
     ["RMA70-12"] = { "9-19", "7-10", "R8-9", "2-10" }
 }
 
-通用ocr导航 = function(关卡名)
-    -- 只能导航已经三星的蓝色六边形关卡
-    -- 00B3FD
-    for ot = 0, 6 do
-        log("导航下一页")
-        local state = sample("干员第一个")
-        swipu(0 - (screen.width / 2))
-        if findOne(state) then
-            log("滑动到底")
-            return
-        end
-    end
-end
-
 path.开始游戏 = function(x, disable_ptrs_check)
     -- 记录石头数量
     save_run_state()
@@ -4736,13 +4737,14 @@ path.开始游戏 = function(x, disable_ptrs_check)
             tap("代理指挥开1")
             need_copy_homework = true
             disappear("代理指挥开", .5)
-        elseif not findOne("多倍代理次数面板") and findOne("多倍代理按钮") and multiple_proxy_commander then
-            appearTap("多倍代理按钮")
-            ssleep(.2)
-            appear("多倍代理次数面板", 4)
+        end
+        if findOne("多倍代理按钮") then
+            log(fight, cur_fight, fight_tick)
+            appearTap("多倍代理按钮", 1)
+            appear("多倍代理次数面板", 5)
             -- 出现面板后给一点时间等待展开
             ssleep(.6)
-            local battle_times = 1
+            battle_times = 1
             for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
                 battle_times = i
                 if findOne("多倍代理次数列表" .. i) then
@@ -4751,6 +4753,15 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 end
             end
             log("最大可重复次数", battle_times)
+            local l_time = get_fight_left_times(x)
+            l_time = l_time or 1
+            if l_time < battle_times then
+                battle_times = l_time
+            end
+            if not multiple_proxy_commander then
+                battle_times = 1
+            end
+            log("最大可重复次数 计算后", battle_times, multiple_proxy_commander)
             --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些，92是每层高度
             rfg["多倍代理次数白"][2] = (876 - 92 * battle_times) * hscale
             tap(findOne("多倍代理次数白") or "多倍代理次数列表1")
@@ -4803,7 +4814,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         path.跳转("首页")
         return
     end
-    log('30448')
+    log(30448, state)
     if state == "行动结束" then
         no_success_one_loop = 0
         return path.base.接管作战()
@@ -4895,19 +4906,14 @@ path.开始游戏 = function(x, disable_ptrs_check)
         tap("理智药清空选择")
 
         local deadline = {}
-        local 剩余理智药数量 = 1
 
         wait(function()
             deadline = ocr("理智药到期时间范围")
             if #deadline == 1 and deadline[1].text:includes({ "天", "时" }) then
-                剩余理智药数量 = tonumber((ocr("理智药数量oct范围")[1] or { text = "" }).text:match("%d+") or 0)
-                if 剩余理智药数量 > 0 and 剩余理智药数量 < 100 then
-                    return true
-                end
+                return true
             end
         end, 5)
         deadline = deadline[1] or { text = '' }
-        log(2317, deadline)
         local idx = table.findv(range(2, 7), function(i)
             return deadline.text == (i - 1) .. '天'
         end)
@@ -4917,18 +4923,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         local max_times = _G['max_drug_times_' .. idx .. 'day']
         local times = _G['drug_times_' .. idx .. 'day']
 
-        local need_use = false
-        if 剩余理智药数量 ~= 0 and 剩余理智药数量 < 100 and 剩余理智药数量 > max_drug_left then
-            need_use = true
-            max_times = max_times == 0 and 1 or max_times -- 至少吃一瓶
-        end
-        if not max_times or times >= max_times or max_drug_times == -1 or max_drug_left == -1 then
-            need_use = false
-        else
-            need_use = true
-        end
-        log(2320, 剩余理智药数量, max_drug_left, need_use)
-        if not need_use then
+        if not max_times or times >= max_times or max_drug_times == -1 then
             log(2326, idx, times, max_times)
             zero_san = true
             tap("开始行动蓝")
@@ -4960,12 +4955,12 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 tap({ deadline.l, scale(409) })
                 ssleep(0.5)
             end
+            _G['drug_times_' .. idx .. 'day'] = times + max_use_number_drug
         else
             tap({ deadline.l, scale(409) })
+            _G['drug_times_' .. idx .. 'day'] = times + 1
         end
 
-        _G['drug_times_' .. idx .. 'day'] = times + 1
-        log(drug_times_3day, max_drug_times_3day)
         if not wait(function()
                 if findOne("开始行动") then return true end
                 if findOne(state) then
@@ -4975,9 +4970,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
             end, 10) then
             return
         end
-
-        -- -- 可能出现吃多次才能满足当前关卡，失败次数要减
-        -- fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
 
         return path.开始游戏(x)
     elseif state == "源石恢复理智取消" or state ==

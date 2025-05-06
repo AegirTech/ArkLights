@@ -818,11 +818,10 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_账户, "new_change_account_plan", "新版切号方案（测试）", false)
 
     newRow(debug_layout_账户)
-    ui.addCheckBox(debug_layout_账户, "multiple_proxy_commander", "自动使用最大多倍代理次数", false)
+    ui.addCheckBox(debug_layout_账户, "multiple_proxy_commander", "自动使用最大多倍代理次数", true)
     newRow(debug_layout_账户)
-    addTextView(debug_layout_账户, "  理智药每次使用瓶数")
-    ui.addEditText(debug_layout_账户, "max_use_number_drug", "4")
-    addInfo(debug_layout_账户, "会使指定次数失效，只打第一个能打的图")
+    addTextView(debug_layout_账户, "理智药每次使用瓶数")
+    ui.addEditText(debug_layout_账户, "max_use_number_drug", "3")
 
     newRow(debug_layout_账户)
     addTextView(debug_layout_账户, "单号最大登录次数")
@@ -866,10 +865,6 @@ show_debug_ui = function()
         ui.addEditText(debug_layout_账户, "max_drug_times_" .. i .. "day", default)
         addTextView(debug_layout_账户, "次")
     end
-
-    newRow(debug_layout_账户)
-    addTextView(debug_layout_账户, "理智药保留最大数量")
-    ui.addEditText(debug_layout_账户, "max_drug_left", "10")
 
     newRow(debug_layout_账户)
     ui.addCheckBox(debug_layout_账户, "zero_san_after_fight", "使用1-7清空剩余理智", false)
