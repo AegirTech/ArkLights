@@ -4745,11 +4745,10 @@ path.开始游戏 = function(x, disable_ptrs_check)
             appear("多倍代理次数面板", 5)
             -- 出现面板后给一点时间等待展开
             ssleep(.6)
-            appear("多倍代理面板6X", 3)
             battle_times = 1
             for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
                 battle_times = i
-                if findOne("多倍代理次数列表" .. i) then
+                if findOne("多倍代理次数列表" .. i, .9) then
                     battle_times = i - 1
                     break
                 end
