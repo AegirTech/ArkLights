@@ -4788,7 +4788,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 "单选确认框", "源石恢复理智不足", "当期委托侧边栏",
                 "行动结束", "开始行动故事集S", "沙盘推演确定",
             })
-            log(3356, state)
+            log(4791, state)
             -- 剿灭后一直按开始行动导致开始行动界面消失，可能出现下面的界面
             if state == "当前委托侧边栏" then
                 path.跳转("首页")
@@ -4801,14 +4801,17 @@ path.开始游戏 = function(x, disable_ptrs_check)
             if state == "行动结束" then return true end
             if state and not disappear(state, .5) then return true end
             if findOne("正在提交反馈至神经") and not findOne("开始行动") then
+                log(4804, "正在提交反馈至神经")
                 reset_wait_start_time()
             end
             local p = findAny({ "开始行动", "全权委托确认使用", "开始突袭", "开始险地作战" })
+            log(4808, p)
             if p then
                 tap("开始行动蓝")
                 ssleep(.2)
                 -- TODO 2秒太慢 => 一开始就用0秒, 2秒内增加至2秒
                 disappear(p, min(5, (time() - start_time) / 1000 * 5 / 5))
+                log((time() - start_time) / 1000 * 5 / 5))
             end
         end, 10) then
         back()
