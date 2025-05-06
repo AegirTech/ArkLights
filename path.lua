@@ -327,7 +327,7 @@ path.base = {
             fight_failed_times[cur_fight] = 99
             return path.跳转("首页")
         end
-
+        battle_times = battle_times or 1
         for i = 1, battle_times do
             table.insert(fight_history, cur_fight)
         end

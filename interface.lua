@@ -12,7 +12,7 @@ script_layouts = { "multi_account", "gesture_capture", "extra", "debug", "main",
 
 now_job = table.filter(all_job, function(x) return x ~= "副手换人" end)
 now_job = table.filter(all_job, function(x) return true end)
-multi_account_num = 30
+multi_account_num = 50
 
 getUIConfigPath = function(layout)
     return getWorkPath() .. '/config_' .. layout .. '.json'
