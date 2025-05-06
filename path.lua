@@ -3003,7 +3003,12 @@ path.发电站换班 = function()
             end
         end, 5)
     end
-    path.重置控制中枢位置()
+    wait(function()
+        tap("基建总览工作区")
+        ssleep(.2)
+        if findOne("基建总览工作区") then return true end
+    end, 5)
+    ssleep(.2)
     for i = 1, 4 do
         path.基建总览翻页()
         p = findOne("基建总览发电站")
@@ -3075,12 +3080,14 @@ path.办公室换班 = function(stationType)
     stationType = stationType or "办公室"
     local p = stationType
     if findOne("基建总览发电站") then
+        log(3082, "在总览换办公室")
         for i = 1, 2 do
             path.基建总览翻页()
         end
-        ssleep(.3) --加点延时防止回弹不充分
+        ssleep(.5) --加点延时防止回弹不充分
         p = "基建总览办公室"
     else
+        log(3089, "不在总览")
         path.跳转("基建")
     end
 
