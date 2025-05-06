@@ -3076,10 +3076,25 @@ path.办公室换班 = function(stationType)
     --if 1 then return end
     stationType = stationType or "办公室"
     local p = stationType
-    if findOne("基建总览发电站") then
-        for i = 1, 2 do
-            path.基建总览翻页()
-        end
+
+    path.跳转("基建")
+
+    if not wait(function()
+            if not findOne("进驻总览") or not findOne("缩放结束") then
+                return true
+            end
+            tap("进驻总览")
+            ssleep(.3)
+        end) then
+        return
+    end
+
+    for i = 1, 5 do
+        path.基建总览翻页_new()
+    end
+    ssleep(.5)
+
+    if findOne("基建总览办公室添加队列") then
         ssleep(.3) --加点延时防止回弹不充分
         p = "基建总览办公室"
     else
