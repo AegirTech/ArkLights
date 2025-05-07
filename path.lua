@@ -4739,7 +4739,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             need_copy_homework = true
             disappear("代理指挥开", .5)
         end
-        if findOne("多倍代理按钮") then
+        if findOne("多倍代理按钮") and get_fight_type(x) ~= "剿灭" then
             log(fight, cur_fight, fight_tick)
             appearTap("多倍代理按钮", 1)
             appear("多倍代理次数面板", 5)
@@ -4762,7 +4762,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
             if not multiple_proxy_commander then
                 battle_times = 1
             end
-            log(fight)
             log("最大可重复次数 计算后", battle_times, multiple_proxy_commander)
             --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些，92是每层高度
             rfg["多倍代理次数白"][2] = (876 - 92 * battle_times) * hscale
@@ -4770,11 +4769,12 @@ path.开始游戏 = function(x, disable_ptrs_check)
             ssleep(.5)
         end
     end
-
+    log(4562)
     if is_jmfight_enough(x) then return end
 
     if findOne("全权委托") then path.fallback.全权委托() end
     -- quick tap .5s
+    log(4563)
     wait(function()
         if not findOne("代理指挥开") then return true end
         tap("开始行动蓝")
