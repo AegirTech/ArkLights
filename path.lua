@@ -2585,7 +2585,17 @@ path.总览换班 = function()
 
     path.控制中枢换班()
     log(1034)
-    path.会客厅换班()
+
+    path.跳转("基建")
+    if not wait(function()
+            if findOne("基建总览工作区") then return true end
+            tap("进驻总览")
+            ssleep(.2)
+        end, 10) then
+        return
+    end
+    path.会客厅换班(nil, true)
+    ssleep(.2)
 
     if not wait(function()
             if findOne("基建总览非工作区") then return true end
