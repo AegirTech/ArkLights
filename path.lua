@@ -4746,27 +4746,29 @@ path.开始游戏 = function(x, disable_ptrs_check)
             -- 出现面板后给一点时间等待展开
             ssleep(.6)
             battle_times = 1
-            for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
-                battle_times = i
-                if findOne("多倍代理次数列表" .. i, .9) then
-                    battle_times = i - 1
-                    break
+            if findOne("多倍代理次数面板") then
+                for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
+                    battle_times = i
+                    if findOne("多倍代理次数列表" .. i, .9) then
+                        battle_times = i - 1
+                        break
+                    end
                 end
+                log("最大可重复次数", battle_times)
+                local l_time = get_fight_left_times(x)
+                l_time = l_time or 1
+                if l_time < battle_times then
+                    battle_times = l_time
+                end
+                if not multiple_proxy_commander then
+                    battle_times = 1
+                end
+                log("最大可重复次数 计算后", battle_times, multiple_proxy_commander)
+                --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些，92是每层高度
+                rfg["多倍代理次数白"][2] = (876 - 92 * battle_times) * hscale
+                tap(findOne("多倍代理次数白") or "多倍代理次数列表1")
+                ssleep(.5)
             end
-            log("最大可重复次数", battle_times)
-            local l_time = get_fight_left_times(x)
-            l_time = l_time or 1
-            if l_time < battle_times then
-                battle_times = l_time
-            end
-            if not multiple_proxy_commander then
-                battle_times = 1
-            end
-            log("最大可重复次数 计算后", battle_times, multiple_proxy_commander)
-            --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些，92是每层高度
-            rfg["多倍代理次数白"][2] = (876 - 92 * battle_times) * hscale
-            tap(findOne("多倍代理次数白") or "多倍代理次数列表1")
-            ssleep(.5)
         end
     end
     log(4562)
