@@ -519,6 +519,7 @@ trySolveSlipCaptcha = function(retry)
                 tap("B服刷新验证")
                 ssleep(1.5)
             end
+            ssleep(4)
         end
         official_choice = false
         wait(function()
@@ -566,12 +567,12 @@ end
 SolveSlipCaptcha = function(rect, p_type)
     if not rect then return end
 
-    local img = getWorkPath() .. "/capture_cloud_upload.jpg"
-    snapShot(img, rect.l, rect.t, rect.r, rect.b)
-    local upload_img = base64(img)
-    local postdata = [[{"image": "]] .. upload_img .. [["}]]
-    local res, code = httpPost(m.captchaServer .. "/image/upload_image", postdata, 30, "Content-Type: application/json")
-    log("云控打码图片上传", res, code)
+    -- local img = getWorkPath() .. "/capture_cloud_upload.jpg"
+    -- snapShot(img, rect.l, rect.t, rect.r, rect.b)
+    -- local upload_img = base64(img)
+    -- local postdata = [[{"image": "]] .. upload_img .. [["}]]
+    -- local res, code = httpPost(m.captchaServer .. "/image/upload_image", postdata, 30, "Content-Type: application/json")
+    -- log("云控打码图片上传", res, code)
 
     local p_type = p_type or 1
     if (p_type == 1 and not use_free_server_captcha) or (p_type == 2 and not jfbym_token) then return end
