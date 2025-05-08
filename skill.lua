@@ -164,7 +164,8 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
             table.insert(corner, x)
         end
     end
-    log(113, #corner)
+    log("dis ocr")
+    log(9113, #corner)
 
     local card = {}
     if #corner == 0 then
@@ -181,7 +182,7 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
     end
 
     -- card = table.slice(card, 4, 4)
-    log(114, card)
+    log(9114, card)
     local empty1_num = 0
     for idx, v in pairs(card) do
         -- 技能判断
@@ -190,7 +191,7 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
         }
         local name = "干员名未识别"
         if dev_mode or (not not_use_ocr) then
-            log(188)
+            log(9188)
             local status, charName = pcall(ocro, {
                 v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
             })
@@ -216,10 +217,10 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
                 break
             end
         end
-        log(129, idx, operator, mood, name)
+        log(9129, idx, operator, mood, name)
         table.insert(operators, { png, png2, mood, icon1, pageid, name })
     end
-    log(217, operators)
+    log(9217, operators)
 end)
 
 -- 宿舍总览换班，保持原有并填满剩余的

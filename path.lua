@@ -1929,14 +1929,13 @@ path.宿舍换班 = function()
         log(1923)
         进入宿舍并清空干员()
         local operator
-
         -- 根据心情阈值选择
         operator = {}
         discoverWithOcr(operator, {}, 1, true)
         operator = table.filter(operator, function(x)
             return math.abs(x[3]) < shift_min_mood + 1
         end)
-        log(819, operator, shift_min_mood)
+        log(5819, operator, shift_min_mood)
         if i < 4 and not not_use_ocr and fiammetta_used == false then
             local char_after_fiammetta
             if table.any(operator,
@@ -1953,6 +1952,7 @@ path.宿舍换班 = function()
                 -- 取消选择需要被换心情的干员,防止识别错误
                 tap("干员选择列表1")
                 ssleep(.2)
+                log(10001)
                 if chooseOperator("肥鸭") then
                     ssleep(.4)
                     tap("干员选择列表1") -- 这时候是肥鸭,干员,需要把他们换个顺序
@@ -1971,6 +1971,7 @@ path.宿舍换班 = function()
                     ssleep(.2)
                     fiammetta_used = true
                     isCharExsit["肥鸭"] = true
+                    log(10005)
                     if not wait(function()
                             if findOne("筛选") then return true end
                             tap("宿舍列表" .. i)
@@ -1980,7 +1981,7 @@ path.宿舍换班 = function()
                     进入宿舍并清空干员()
                     operator = {}
                     discover(operator, {}, 1, true)
-                    log(818, operator, shift_min_mood)
+                    log(7818, operator, shift_min_mood)
                     operator = table.filter(operator, function(x)
                         return math.abs(x[3]) < shift_min_mood + 1
                     end)
