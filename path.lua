@@ -4758,6 +4758,20 @@ path.开始游戏 = function(x, disable_ptrs_check)
             ssleep(.6)
             battle_times = 1
             if findOne("多倍代理次数面板") then
+                if findOne("多倍代理处于选择状态") then -- 首先清空到1倍状态再判断
+                    tap("多倍代理次数列表1")
+                    disappear("多倍代理次数面板", 1)
+                    wait(function()
+                        if not multiple_proxy_commander then return true end
+                        if appear("多倍代理次数面板", 2) then return true end
+                        tap("多倍代理按钮")
+                    end, 10)
+                    ssleep(.3)
+                end
+                if not multiple_proxy_commander then
+                    battle_times = 1
+                    goto skipChoose
+                end
                 for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
                     battle_times = i
                     if findOne("多倍代理次数列表" .. i, .9) then
@@ -4771,14 +4785,12 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 if l_time < battle_times then
                     battle_times = l_time
                 end
-                if not multiple_proxy_commander then
-                    battle_times = 1
-                end
                 log("最大可重复次数 计算后", battle_times, multiple_proxy_commander)
                 --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些，92是每层高度
                 rfg["多倍代理次数白"][2] = (876 - 92 * battle_times) * hscale
                 tap(findOne("多倍代理次数白") or "多倍代理次数列表1")
                 ssleep(.5)
+                ::skipChoose::
             end
         end
     end
@@ -5683,6 +5695,7 @@ path.活动 = function(x)
     end
 
     local car_check = function() --众生行记
+        if dev_mode then return end
         if car_checked then return end
         car_checked = true
         fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
