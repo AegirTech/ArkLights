@@ -793,7 +793,7 @@ log = function(...)
     -- TODO: 有可能是日志太多导致速通停止运行
     print(l)
     console.println(1, a .. ' ' .. l)
-    if write_log then
+    if write_log_local then
         -- writeLog(l)
         writeFile(log_path .. "log_ark.txt", a .. ' ' .. l .. "\n", true)
     end

@@ -718,7 +718,7 @@ show_debug_ui = function()
 
     newRow(layout)
     ui.addCheckBox(layout, "enable_log", "启用日志", true)
-    ui.addCheckBox(layout, "write_log", "保存日志到本地", false)
+    ui.addCheckBox(layout, "write_log_local", "保存日志到本地", true)
     addButton(layout, "upload_log_server", "上传日志至开发者", "upload_log()")
 
     newRow(layout)

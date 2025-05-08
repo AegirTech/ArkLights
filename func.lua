@@ -898,7 +898,7 @@ detect_simulators = function()
 end
 
 upload_log = function()
-    if not write_log then
+    if not write_log_local then
         ui.setButton("upload_log_server", "请先勾选保存日志到本地")
         return
     end
