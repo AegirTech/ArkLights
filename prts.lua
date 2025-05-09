@@ -653,7 +653,7 @@ end
                 if not findOne("普通作战编队列表" .. i) then
                     tap("普通作战编队列表" .. i)
                     appear("普通作战编队列表" .. i)
-                    ssleep(200)
+                    sleep(200)
                 end
                 --print(干员目录)
                 未编入 = 选择干员(干员目录, "待编队干员", 是否群组)
@@ -788,8 +788,11 @@ end
             if 干员名字字符串 ~= "" and group_selected == 0 then
                 if not findOne("普通作战编队列表" .. i) then
                     tap("普通作战编队列表" .. i)
+                    log(665)
                     appear("普通作战编队列表" .. i)
+                    log(665)
                     sleep(200)
+                    log(667)
                 end
                 --print(干员目录)
                 未编入 = 选择干员(干员目录, "待编队干员", 是否群组, 群组需要数量)
