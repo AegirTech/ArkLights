@@ -1708,7 +1708,7 @@ controlStationOperatorBest = function(operator)
     end
 
     if #best < 5 and not not_use_ocr and use_abyssal_hunter and -- 不使用ocr时无法选择深海
-        not (isCharExsit["承曦格雷伊"] and isCharExsit["絮雨"] and isCharExsit["焰尾"] and isCharExsit["薇薇安娜"]) then -- 这四个全齐的时候位置不够
+        not (isCharExsit["承曦格雷伊"] and isCharExsit["焰尾"] and isCharExsit["薇薇安娜"]) then -- 这几个全齐的时候位置不够
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') and o[3] > 22 then -- 精二歌蕾蒂娅,高心情才使用
                 table.insert(best, o)
