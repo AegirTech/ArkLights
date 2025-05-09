@@ -4752,31 +4752,30 @@ path.开始游戏 = function(x, disable_ptrs_check)
         end
         if findOne("多倍代理按钮") and get_fight_type(x) ~= "剿灭" then
             log("多倍处理开始")
-            log(fight, cur_fight, fight_tick)
             wait(function()
-                if appear("多倍代理次数面板", 2) then return true end
+                if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 2) then return true end
                 tap("多倍代理按钮")
             end, 10)
             -- 出现面板后给一点时间等待展开
             ssleep(.6)
             battle_times = 1
-            if findOne("多倍代理次数面板") then
+            if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
                 if findOne("多倍代理处于选择状态") then -- 首先清空到1倍状态再判断
                     tap("多倍代理次数列表1")
-                    disappear("多倍代理次数面板", 1)
+                    wait(function()
+                        if (not findOne("多倍代理次数面板")) and (not findOne("多倍代理次数面板2")) then return true end
+                    end, 4)
                     wait(function()
                         if not multiple_proxy_commander then return true end
-                        if appear("多倍代理次数面板", 2) then return true end
+                        if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 2) then return true end
                         tap("多倍代理按钮")
                     end, 10)
-                    ssleep(.3)
+                    ssleep(.5)
                 end
-                if not multiple_proxy_commander then
-                    battle_times = 1
-                else
+                if multiple_proxy_commander then
                     for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
-                        battle_times = i
                         if findOne("多倍代理次数列表" .. i, .9) then
+                            log("find 多倍代理次数列表" .. i)
                             battle_times = i - 1
                             break
                         end
@@ -4797,6 +4796,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         end
     end
     log(4562)
+    exit()
     if is_jmfight_enough(x) then return end
 
     if findOne("全权委托") then path.fallback.全权委托() end
