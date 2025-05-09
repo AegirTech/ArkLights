@@ -4796,7 +4796,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
         end
     end
     log(4562)
-    exit()
     if is_jmfight_enough(x) then return end
 
     if findOne("全权委托") then path.fallback.全权委托() end
