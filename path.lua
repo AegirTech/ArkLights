@@ -4468,7 +4468,9 @@ get_fight_special_type = function(x)
 end
 
 same_page_fight = function(pre, cur)
+    log(4471, pre, cur)
     if type(pre) ~= 'string' then return end
+    if findOne("面板") then return end
 
     -- 禁用同页跳转
     -- if get_fight_type(cur) == '活动' then return end
@@ -4507,7 +4509,7 @@ path.轮次作战 = function()
         cur_fight = fight[fight_tick]
         log(971, cur_fight)
         if cur_fight == 'BREAK' then break end
-        log(pre_fight, cur_fight)
+        log(972, cur_fight, pre_fight)
         if not same_page_fight(pre_fight, cur_fight) then
             skip_guide = false
             path.跳转("首页")
@@ -4688,7 +4690,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
     save_run_state()
     local need_copy_homework = nil
     log("开始游戏", fight_tick, x)
-    -- pre_fight = x
+    pre_fight = x
     if not findOne("开始行动") then return end
 
     -- TODO 活动时需要注意这个地方，活动关的代理指挥不长这样
@@ -4705,6 +4707,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         if copy_homework and findOne("突袭模式") then
             tap("突袭模式")
             appear("开始突袭", 3)
+            ssleep(.5)
             if findOne("突袭未三星") or not copy_homework_only then
                 tap("开始突袭")
                 appear("开始行动突袭", 3)
@@ -4720,7 +4723,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         end
         if copy_homework then
             if findOne("险地作战星未打") or not copy_homework_only then
-
+            elseif findOne("开始行动") then
             elseif findOne("险地作战星已打") and findOne("沙盘推演星未打满") then
                 log("沙盘推演")
                 --选择沙盘推演
@@ -4779,6 +4782,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 return path.跳转("首页")
             end
         elseif copy_homework_only then
+            log("短路导航")
             pre_fight = cur_fight
             return
         end
