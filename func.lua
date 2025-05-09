@@ -231,6 +231,24 @@ official_get_last_login = function()
     return data
 end
 
+clear_fight_auto_battle = function()
+    local xmlname = getWorkPath() .. "/playerprefs.xml"
+    exec2(string.format(
+        [[su root sh -c "cp '/data/user/0/com.hypergryph.arknights/shared_prefs/com.hypergryph.arknights.v2.playerprefs.xml' '%s'"]],
+        xmlname))
+    setFilePremission(xmlname, nil)
+    local file = io.open(xmlname, "r+")
+    local xml = file:read("*a")
+    local pattern = "<[^>]+name=\"%d+%%23key_mulitple_battle_times_[^\"]+\"[^>]*/>"
+    local cleaned_xml = xml:gsub(pattern, "")
+    file:seek("set", 0)
+    file:write(cleaned_xml)
+    file:close()
+    exec2(string.format(
+        [[su root sh -c "cp '%s' '/data/user/0/com.hypergryph.arknights/shared_prefs/com.hypergryph.arknights.v2.playerprefs.xml'"]],
+        xmlname))
+end
+
 -- 设置官服登录账户
 official_set_login_user = function(data)
     local data = data or ""
