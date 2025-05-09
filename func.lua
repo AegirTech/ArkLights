@@ -232,6 +232,7 @@ official_get_last_login = function()
 end
 
 clear_fight_auto_battle = function()
+    if not root_mode then return end
     local xmlname = getWorkPath() .. "/playerprefs.xml"
     exec2(string.format(
         [[su root sh -c "cp '/data/user/0/com.hypergryph.arknights/shared_prefs/com.hypergryph.arknights.v2.playerprefs.xml' '%s'"]],
@@ -247,6 +248,7 @@ clear_fight_auto_battle = function()
     exec2(string.format(
         [[su root sh -c "cp '%s' '/data/user/0/com.hypergryph.arknights/shared_prefs/com.hypergryph.arknights.v2.playerprefs.xml'"]],
         xmlname))
+    log("清除连战历史记录完成")
 end
 
 -- 设置官服登录账户

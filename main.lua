@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "05.09 13:31"
+release_date = "05.09 13:57"
 update_announcement = '最近更新：六周年庆，多倍代理功能'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -140,7 +140,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug mode")
 end
 
-clear_fight_auto_battle()
+local _, _ = pcall(clear_fight_auto_battle)
 
 load(before_account_hook or '')()
 

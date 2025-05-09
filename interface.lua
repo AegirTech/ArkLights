@@ -871,7 +871,7 @@ show_debug_ui = function()
     end
 
     newRow(debug_layout_账户)
-    ui.addCheckBox(debug_layout_账户, "zero_san_after_fight", "使用1-7清空剩余理智", false)
+    ui.addCheckBox(debug_layout_账户, "zero_san_after_fight", "使用1-7清空剩余理智", true)
 
     local debug_layout_通知 = "debug_tab_notify"
     ui.addTab("debug_tab", debug_layout_通知, "通知")

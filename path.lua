@@ -4751,9 +4751,12 @@ path.开始游戏 = function(x, disable_ptrs_check)
             disappear("代理指挥开", .5)
         end
         if findOne("多倍代理按钮") and get_fight_type(x) ~= "剿灭" then
+            log("多倍处理开始")
             log(fight, cur_fight, fight_tick)
-            appearTap("多倍代理按钮", 1)
-            appear("多倍代理次数面板", 5)
+            wait(function()
+                if appear("多倍代理次数面板", 2) then return true end
+                tap("多倍代理按钮")
+            end, 10)
             -- 出现面板后给一点时间等待展开
             ssleep(.6)
             battle_times = 1
