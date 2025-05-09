@@ -4690,7 +4690,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
     save_run_state()
     local need_copy_homework = nil
     log("开始游戏", fight_tick, x)
-    pre_fight = x
+    if copy_homework_only then pre_fight = x end
     if not findOne("开始行动") then return end
 
     -- TODO 活动时需要注意这个地方，活动关的代理指挥不长这样
