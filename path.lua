@@ -4776,11 +4776,26 @@ path.开始游戏 = function(x, disable_ptrs_check)
                     ssleep(.5)
                 end
                 if multiple_proxy_commander then
+                    battle_times = 6
                     for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
                         if findOne("多倍代理次数列表" .. i, .9) then
                             log("find 多倍代理次数列表" .. i)
                             battle_times = i - 1
                             break
+                        end
+                    end
+
+                    if battle_times == 6 then
+                        -- 没有理智药的判断
+                        local pp = find_color("多倍代理白色查找范围", "FFFFFF")
+                        if pp then
+                            local x, y = pp[1], pp[2]
+                            y = y - scale(320)
+                            local 次数 = 6 - math.floor(y / scale(90))
+                            log("多倍代理", pp, y, 次数)
+                            battle_times = 次数
+                        else
+                            battle_times = 1
                         end
                     end
                     log("最大可重复次数", battle_times)
