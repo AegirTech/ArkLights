@@ -4488,6 +4488,7 @@ path.轮次作战 = function()
         end
 
         -- 清光理智: 第一次理智不足时，转为1-7
+        log(9921, zero_san_after_fight, zero_san)
         if zero_san_after_fight and zero_san then
             if zero_san_hit > 0 then break end
             zero_san_hit = zero_san_hit + 1
@@ -4770,13 +4771,21 @@ path.开始游戏 = function(x, disable_ptrs_check)
                     ssleep(.5)
                 end
                 if multiple_proxy_commander then
-                    for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
-                        battle_times = i
-                        if findOne("多倍代理次数列表" .. i, .9) then
-                            log("find 多倍代理次数列表" .. i)
-                            battle_times = i - 1
-                            break
-                        end
+                    battle_times = 6
+                    -- for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
+                    --     if findOne("多倍代理次数列表" .. i, .9) then
+                    --         log("find 多倍代理次数列表" .. i)
+                    --         battle_times = i - 1
+                    --         break
+                    --     end
+                    -- end
+                    local pp = find_color("多倍代理蓝色加号查找范围", "17A7C5", 2)
+                    if pp then
+                        battle_times = 5 - math.floor(pp[2] - scale(320) / scale(90))
+                        log("多倍代理检测2", pp, battle_times)
+                    else
+                        log("多倍代理检测2没有找到")
+                        -- 没有理智药的情况
                     end
                     log("最大可重复次数", battle_times)
                     local l_time = get_fight_left_times(x)
