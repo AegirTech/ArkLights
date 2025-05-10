@@ -203,6 +203,7 @@ path.base = {
                     tap("开包skip")
                     disappear("暂停中")
                 end
+                ssleep(3)
             end, 20 * 60) then
             return restartapp(appid)
         end
@@ -833,13 +834,6 @@ path.fallback = {
         tap("断罪返回")
         disappear("断罪返回")
     end,
-    -- 断罪 = function()
-    --   if appear("跳过剧情") then
-    --     tap("跳过剧情")
-    --     ssleep(1)
-    --     tap("跳过剧情确认")
-    --   end
-    -- end,
     签到返回黄 = function() return path.fallback.签到返回() end,
     回坑返回 = function() return path.fallback.签到返回() end,
     签到返回 = function()
