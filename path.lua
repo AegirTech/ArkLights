@@ -2500,8 +2500,12 @@ path.制造换班 = function(trading)
             wait(function()
                 tap("制造站最多")
                 if findOne("制造站执行更改") then return true end
-            end, 2)
-            tap("制造站执行更改")
+            end, 10)
+            wait(function()
+                ssleep(.2)
+                tap("制造站执行更改")
+                if disappear("制造站执行更改", 1) then return true end
+            end, 10)
         end
 
         -- 芯片换经验
