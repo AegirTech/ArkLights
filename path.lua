@@ -4494,6 +4494,7 @@ path.轮次作战 = function()
             zero_san_hit = zero_san_hit + 1
             zero_san = false
             fight_tick = 0
+            fight = {}
             for i = 1, 99 do
                 table.insert(fight, "1-7")
             end
@@ -4782,7 +4783,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                     end
                     local pp = find_color("多倍代理蓝色加号查找范围", "17A7C5", 2)
                     if pp then
-                        local battle_times2 = 5 - math.floor(pp[2] - scale(320) / scale(90))
+                        local battle_times2 = 5 - math.floor((pp[2] - scale(320)) / scale(90))
                         log("多倍代理检测2", pp, battle_times2)
                         if battle_times ~= battle_times2 then
                             log(battle_times, battle_times2)
