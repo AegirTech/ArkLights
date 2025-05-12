@@ -2387,7 +2387,8 @@ path.制造换班 = function(trading)
                 if trading and findOne("贸易站设施列表" .. i, .9) then return true end
                 if not trading and findOne("制造站设施列表" .. i, .9) then return true end
                 tap(station)
-            end) then
+                ssleep(.5)
+            end, 8) then
             return
         end
 
