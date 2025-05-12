@@ -2816,7 +2816,6 @@ path.总览换班 = function()
     for i = 1, 4 do
         if findOne("基建总览非工作区") then
             ssleep(.5)
-            --bottom = sample("进驻总览底部")
         elseif findOne("确认蓝") then
             back()
             ssleep(1)
@@ -3105,11 +3104,14 @@ path.办公室换班 = function(stationType)
             return
         end
     end
-
-    for i = 1, 5 do
+    for i = 1, 7 do -- 可能设备会卡 多滑动几次
         path.基建总览翻页()
+        ssleep(.5)
+        if findOne("基建总览翻到最后一页") then
+            break
+        end
     end
-    ssleep(1)
+    ssleep(0.5)
     p = "基建总览办公室"
 
     -- 进办公室
