@@ -1383,10 +1383,29 @@ chooseOperator = function(stationType, goodType, stationLevel,
             干员职业 = JsonDecode(readFile("character_type_list.json"))
         end
     end
+
     swipo(true, true)
     start_time = time()
 
-    --log(671, operator)
+    log(671, operator)
+    -- 检查operator
+    local tto = 0
+    for i = 1, #operator do
+        if operator[i][1] == "" then
+            log("没有技能", operator[i])
+            -- table.remove(operator, i)
+            -- i = i - 1
+            tto = tto + 1
+        end
+    end
+    log(#operator, tto)
+    if #operator == tto then
+        log("全部干员识别失败")
+        return
+    end
+    log(677)
+
+
     -- exit()
 
     -- TODO 滑动时就可以开始计算
