@@ -3093,15 +3093,24 @@ path.办公室换班 = function(stationType)
     local p = stationType
     if findOne("基建总览发电站") then
         log(3082, "在总览换办公室")
-        for i = 1, 3 do
-            path.基建总览翻页()
-        end
-        ssleep(.5) --加点延时防止回弹不充分
-        p = "基建总览办公室"
     else
-        log(3089, "不在总览")
+        log(3089, "不在总览") -- 不在总览有概率直接点到活动室
         path.跳转("基建")
+
+        if not wait(function()
+                if findOne("基建总览工作区") then return true end
+                tap("进驻总览")
+                ssleep(.2)
+            end, 10) then
+            return
+        end
     end
+
+    for i = 1, 5 do
+        path.基建总览翻页()
+    end
+    ssleep(1)
+    p = "基建总览办公室"
 
     -- 进办公室
     if not wait(function()
