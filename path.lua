@@ -2384,8 +2384,8 @@ path.制造换班 = function(trading)
         -- end
 
         if not wait(function()
-                if trading and findOne("贸易站设施列表" .. i, .9) then return true end
-                if not trading and findOne("制造站设施列表" .. i, .9) then return true end
+                if trading and findOne("贸易站设施列表" .. i) then return true end
+                if not trading and findOne("制造站设施列表" .. i) then return true end
                 tap(station)
                 ssleep(.5)
             end, 8) then
