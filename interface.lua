@@ -823,7 +823,7 @@ show_debug_ui = function()
 
     newRow(debug_layout_账户)
     ui.addCheckBox(debug_layout_账户, "multiple_proxy_commander", "自动使用最大多倍代理次数", true)
-    newRow(debug_layout_账户)
+
     addInfo(debug_layout_账户, [[自动多倍代理要求：作战次数必须大于1次，写"HD-9"或者"HD-9*1"均不会使用多倍代理,
 写"HD-8*4"时候，则最大代理次数为4次，即使剩余理智可以代理更多次。
 如果写"HD-8 HD-9 HD-8"这样，那么仍然算作存在2次HD-8代理，会使用多倍作战]])
