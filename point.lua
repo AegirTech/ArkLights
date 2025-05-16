@@ -158,11 +158,11 @@ point = {
         level = "17",
         package = "com.hypergryph.arknights.bilibili",
     },
-    B服验证码主体 = { 
-        class = "android.view.View", 
-        index = "1", 
-        level = "17", 
-        package = "com.hypergryph.arknights.bilibili" 
+    B服验证码主体 = {
+        class = "android.view.View",
+        index = "1",
+        level = "17",
+        package = "com.hypergryph.arknights.bilibili"
     },
     B服验证码_请在下图依次点击 = { index = "0", level = "16", package = "com.hypergryph.arknights.bilibili", text = "请在下图依次点击：" },
 
@@ -266,7 +266,7 @@ point = {
     -- 迷宫饭_下一关 = "1836|557|E3D7CB",
     活动导航EX = "1371|842|3FACB7",
     活动导航0 = "1120|908|3DAAB8",
-    活动导航S = "",
+    活动导航S = "1539|673|FFFFFF",
     活动导航1 = "",
     活动导航2 = "",
     活动商店导航 = "1755|393|469BA7", -- 只需要更新进入商店导航坐标
@@ -1997,6 +1997,12 @@ point = {
         ["HD-EX-6"] = { 1451, 773 },
         ["HD-EX-7"] = { 1571, 505 },
         ["HD-EX-8"] = { 1469, 253 },
+
+        ["HD-S-1"] = { 358, 411 },
+        ["HD-S-2"] = { 1611, 404 },
+        ["HD-S-3"] = { 389, 696 },
+        ["HD-S-4"] = { 1599, 695 },
+        ["HD-S-5"] = { 970, 866 },
 
         ["CW-6"] = { 960, 603 },
         ["GT-5"] = { 1270, 570 },
