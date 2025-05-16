@@ -518,7 +518,7 @@ path.bilibili_login = {
             tap("B服刷新验证")
             ssleep(1)
         end
-        if not appear({ "B服安全验证提交", "B服安全验证提交320DPI" }, 5) then
+        if not appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 5) then
             log("等待节点识别加载失败")
             if not checkPointColor({ 823, 605, "BAD9FF" }) then
                 log("等待720p图色识别加载失败")

@@ -161,83 +161,99 @@ m.captcha = function(box)
     -- local res, code = httpPost(m.captchaServer .. "/image/upload_image", postdata, 30, "Content-Type: application/json")
     -- log("云控打码图片上传", res, code)
 
-    if m.captchaToken == '' then
-        return false
-    end
+    -- if m.captchaToken == '' then
+    --     return false
+    -- end
     log("使用云控打码")
 
-    local x_size = box.r - box.l
-    local y_size = box.b - box.t
-    local text_pos, image_pos
-    if official_choice then
-        -- l t r b
-        text_pos = {
-            box.l + x_size * 0.577249 // 1,
-            box.t + y_size * 0.012 // 1,
-            box.r,
-            box.t + y_size * 0.20565 // 1,
-        }
-        image_pos = {
-            box.l,
-            box.t + y_size * 0.20565 // 1,
-            box.r,
-            box.b,
-        }
-        log("官服新版滑块")
-        log("图像坐标", image_pos)
-        log("目标字符坐标", text_pos)
-    else
-        text_pos = {
-            box.l + x_size * 0.49375 // 1,
-            box.t + y_size * 0.13958 // 1,
-            box.r,
-            box.t + y_size * 0.27708 // 1
-        }
-        image_pos = {
-            box.l + x_size * 0.22708 // 1,
-            box.t + y_size * 0.27916 // 1,
-            box.l + x_size * 0.79583 // 1,
-            box.t + y_size * 0.85 // 1
-        }
-    end
+    -- local x_size = box.r - box.l
+    -- local y_size = box.b - box.t
+    -- local text_pos, image_pos
+    -- if official_choice then
+    --     -- l t r b
+    --     text_pos = {
+    --         box.l + x_size * 0.577249 // 1,
+    --         box.t + y_size * 0.012 // 1,
+    --         box.r,
+    --         box.t + y_size * 0.20565 // 1,
+    --     }
+    --     image_pos = {
+    --         box.l,
+    --         box.t + y_size * 0.20565 // 1,
+    --         box.r,
+    --         box.b,
+    --     }
+    --     log("官服新版滑块")
+    --     log("图像坐标", image_pos)
+    --     log("目标字符坐标", text_pos)
+    -- else
+    --     text_pos = {
+    --         box.l + x_size * 0.49375 // 1,
+    --         box.t + y_size * 0.13958 // 1,
+    --         box.r,
+    --         box.t + y_size * 0.27708 // 1
+    --     }
+    --     image_pos = {
+    --         box.l + x_size * 0.22708 // 1,
+    --         box.t + y_size * 0.27916 // 1,
+    --         box.l + x_size * 0.79583 // 1,
+    --         box.t + y_size * 0.85 // 1
+    --     }
+    -- end
 
     local node_count = 0
     -- 验证码加载目标切片有上移动作，需要多次查找直到返回不变化才能确保节点稳定
     -- local text_box = findOne("B服安全验证目标字符")
-    local text_box = nil
-    local text_slice_box = nil
-    local big_image_box = nil
+    -- local text_box = nil
+    -- local text_slice_box = nil
+    -- local big_image_box = nil
+    -- local img_b_main_pre = nil
     wait(
         function()
-            local text_box_pre = findOne("B服安全验证目标字符")
-            local text_slice_box_pre = findOne("B服安全验证目标字符切片")
-            local big_image_box_pre = findOne("B服安全验证泛目标图像")
-            if text_box_pre == text_box and text_slice_box_pre == text_slice_box and big_image_box_pre == big_image_box then
+            local img_b_main = findOne("B服验证码主体")
+            -- local text_box_pre = findOne("B服安全验证目标字符")
+            -- local text_slice_box_pre = findOne("B服安全验证目标字符切片")
+            -- local big_image_box_pre = findOne("B服安全验证泛目标图像")
+            -- if text_box_pre == text_box and text_slice_box_pre == text_slice_box and big_image_box_pre == big_image_box then
+            --     return true
+            -- end
+            if img_b_main ~= nil then
+                log("B服验证码主体", "主体已稳定")
+                ssleep(.3)
                 return true
             end
-            text_box = text_box_pre
-            text_slice_box = text_slice_box_pre
-            big_image_box = big_image_box_pre
+            -- print("img_b_main", img_b_main)
+            -- print("img_b_main_pre", img_b_main_pre)
+
+            -- if text_box_pre ~= text_box then
+            --     log("text_box异常", text_box)
+            -- end
+            -- if text_slice_box_pre ~= text_slice_box then
+            --     log("text_slice_box异常", text_slice_box)
+            -- end
+            -- if big_image_box_pre ~= big_image_box then
+            --     log("big_image_box异常", big_image_box)
+            -- end
+            -- text_box = text_box_pre
+            -- text_slice_box = text_slice_box_pre
+            -- big_image_box = big_image_box_pre
+            -- img_b_main_pre = img_b_main
             node_count = node_count + 1
             log("B服云控打码节点刷新计数器", node_count)
             ssleep(.1)
         end
     )
     -- local text_pos = { text_slice_box.bounds.r, text_box.bounds.t, big_image_box.bounds.r, text_box.bounds.b }
-    log("目标字符坐标", text_pos)
+    -- log("目标字符坐标", text_pos)
     -- local image_box = findOne("B服安全验证目标图像")
     -- local image_pos = { image_box.bounds.l, image_box.bounds.t, image_box.bounds.r, image_box.bounds.b }
-    log("图像坐标", image_pos)
+    -- log("图像坐标", image_pos)
 
-    local img = getWorkPath() .. "/capture_cloud_text.jpg"
-    snapShot(img, text_pos[1], text_pos[2], text_pos[3], text_pos[4])
-    local text_img_base64 = base64(img)
-    ssleep(.1)
     img = getWorkPath() .. "/capture_cloud.jpg"
-    snapShot(img, image_pos[1], image_pos[2], image_pos[3], image_pos[4])
+    snapShot(img)
     local image_img_base64 = base64(img)
 
-    local postdata = [[{"image_base64": "]] .. image_img_base64 .. [[", "text_base64": "]] .. text_img_base64 .. [["}]]
+    local postdata = [[{"image_base64": "]] .. image_img_base64 .. [[", "captcha_type_override": "geetest_v3_click"}]]
     local UA = "Arklights/" .. getApkVerInt() .. " " .. release_date
 
     if cloud_get_task then
@@ -261,22 +277,25 @@ m.captcha = function(box)
     headers = string.gsub(headers, "{APKVERSION}", getApkVerInt())
     headers = string.gsub(headers, "{CAPTCHATOKEN}", m.captchaToken)
     headers = string.gsub(headers, "{UA}", UA)
-    local res, code = httpPost(m.captchaServer .. "/captcha/geetest_v3/select/base64", postdata, 30, headers)
+    local res, code = httpPost(m.captchaServer .. "/captcha/recognize", postdata, 30, headers)
     log(res, code)
     if code == 200 then
         status, data = pcall(JsonDecode, res)
         if data.code == 0 then
             cloud_captcha_id = data.data.captcha_id or nil
             -- 计算缩放比例 返回图片344x344
-            local x_scale = (image_pos[3] - image_pos[1]) / 344 or 1
-            local y_scale = (image_pos[4] - image_pos[2]) / 344 or 1
+            -- local x_scale = (image_pos[3] - image_pos[1]) / 344 or 1
+            -- local y_scale = (image_pos[4] - image_pos[2]) / 344 or 1
             if official_choice then
                 y_scale = y_scale + 0.25 -- 官服不知道为什么y轴偏移严重
             end
-            for _, coord in pairs(data.data.result.point) do
-                x = (coord[1] or 0) * x_scale
-                y = (coord[2] or 0) * y_scale
-                tap({ image_pos[1] + x, image_pos[2] + y })
+            log("云控打码坐标", "总计点数", #data.data.result.click_points)
+            for _, coord in pairs(data.data.result.click_points) do
+                -- print(coord)
+                -- x = (coord[1] or 0) * x_scale
+                -- y = (coord[2] or 0) * y_scale
+                -- tap({ image_pos[1] + x, image_pos[2] + y })
+                tap({ coord[1] or 0, coord[2] or 0 })
                 ssleep(0.3)
                 if official_choice then
                     ssleep(0.3)

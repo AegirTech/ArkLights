@@ -134,6 +134,7 @@ point = {
     B服安全验证 = { text = "安全验证" },
     B服安全验证320DPI = "894|168|23ADE5,876|168|FFFFFF,891|159|FFFFFF,895|177|FFFFFF,907|165|FFFFFF,942|163|23ADE5",
     B服安全验证提交 = { text = "提交答案" },
+    B服安全验证确认按钮 = { text = "确认" },
     B服安全验证提交320DPI = "1132|818|539FFE",
     B服安全验证失败 = { text = "验证失败" },
     B服安全验证失败320DPI = "1155|847|DE715B",
@@ -156,6 +157,12 @@ point = {
         index = "1",
         level = "17",
         package = "com.hypergryph.arknights.bilibili",
+    },
+    B服验证码主体 = { 
+        class = "android.view.View", 
+        index = "1", 
+        level = "17", 
+        package = "com.hypergryph.arknights.bilibili" 
     },
 
     b服年度报告 = { package = "com.hypergryph.arknights.bilibili", text = "该内容不再展示" },
