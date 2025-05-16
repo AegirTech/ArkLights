@@ -210,7 +210,7 @@ m.captcha = function(box)
     -- local img_b_main_pre = nil
     wait(
         function()
-            local img_b_main = findOne("B服验证码主体")
+            local img_b_main = findOne("B服验证码_请在下图依次点击")
             -- local text_box_pre = findOne("B服安全验证目标字符")
             -- local text_slice_box_pre = findOne("B服安全验证目标字符切片")
             -- local big_image_box_pre = findOne("B服安全验证泛目标图像")
@@ -218,9 +218,11 @@ m.captcha = function(box)
             --     return true
             -- end
             if img_b_main ~= nil then
-                log("B服验证码主体", "主体已稳定")
+                log("B服验证码_请在下图依次点击", "主体已稳定，等待校验验证码出现")
                 ssleep(.3)
-                return true
+                if appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 5) then
+                    return true
+                end
             end
             -- print("img_b_main", img_b_main)
             -- print("img_b_main_pre", img_b_main_pre)
@@ -239,9 +241,9 @@ m.captcha = function(box)
             -- big_image_box = big_image_box_pre
             -- img_b_main_pre = img_b_main
             node_count = node_count + 1
-            log("B服云控打码节点刷新计数器", node_count)
+            -- log("B服云控打码节点刷新计数器", node_count)
             ssleep(.1)
-        end
+        end, 10
     )
     -- local text_pos = { text_slice_box.bounds.r, text_box.bounds.t, big_image_box.bounds.r, text_box.bounds.b }
     -- log("目标字符坐标", text_pos)
