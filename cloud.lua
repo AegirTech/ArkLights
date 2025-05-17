@@ -221,7 +221,11 @@ m.captcha = function(box)
                 log("B服验证码_请在下图依次点击", "主体已稳定，等待校验验证码出现")
                 ssleep(.3)
                 if appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 5) then
-                    return true
+                    if disappear("B服验证码_二值化主体", 10) then
+                        log("B服验证码_二值化主体", "主体已稳定，验证码已出现")
+                        ssleep(.2)
+                        return true
+                    end
                 end
             end
             -- print("img_b_main", img_b_main)

@@ -165,6 +165,7 @@ point = {
         package = "com.hypergryph.arknights.bilibili"
     },
     B服验证码_请在下图依次点击 = { index = "0", level = "16", package = "com.hypergryph.arknights.bilibili", text = "请在下图依次点击：" },
+    B服验证码_二值化主体 = "794|753|FFFFFF,800|780|FFFFFF,810|750|FFFFFF",
 
     b服年度报告 = { package = "com.hypergryph.arknights.bilibili", text = "该内容不再展示" },
     b服年度报告关闭 = { class = "android.widget.ImageView", id = "com.hypergryph.arknights.bilibili:id/iv_gs_announcement_close", level = "5", package = "com.hypergryph.arknights.bilibili" },
