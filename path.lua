@@ -513,58 +513,73 @@ path.bilibili_login = {
         return path.bilibili_login.B服安全验证()
     end,
     B服安全验证 = disable_game_up_check_wrapper(function()
-        log("等待加载出图")
-        if bilibili_captcha_times > 1 and findOne("B服刷新验证") then
-            tap("B服刷新验证")
-            ssleep(1)
-        end
-        if not appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 5) then
-            log("等待节点识别加载失败")
-            if not checkPointColor({ 823, 605, "BAD9FF" }) then
-                log("等待720p图色识别加载失败")
-                return
-            end
-        end
+        log("开始B服安全验证流程")
+        -- if bilibili_captcha_times > 1 and findOne("B服刷新验证") then
+        --     tap("B服刷新验证")
+        --     ssleep(1)
+        -- end
+        path.bilibili_login.B服等待验证码弹窗加载()
 
+        -- 这段有点屎，不应该放在主流程里，但是为了兼容先不动他
         local box = findOne("B服安全验证框")
-        log("box", box)
-        if not box then return end
+        -- log("box", box)
+        if not box then
+            log("B服安全验证流程", "B服安全验证框未找到")
+            return
+        end
         box = box.bounds
 
-        bilibili_captcha_times = (bilibili_captcha_times or 0) + 1
-        if bilibili_captcha_times > 5 then
-            stop("B服安全验证5次失败", account_idx and 'next' or '')
-        end
+        -- bilibili_captcha_times = (bilibili_captcha_times or 0) + 1
+        -- if bilibili_captcha_times > 5 then
+        --     stop("B服安全验证5次失败", account_idx and 'next' or '')
+        -- end
 
-        ssleep(.5)
-        log("b服打码")
+        -- ssleep(.5)
+        -- log("b服打码")
 
         local choices = { 3, 4, 1 }
+        local choice_map = {}
+        choice_map[1] = "图鉴"
+        choice_map[3] = "Aunly"
+        choice_map[4] = "自选B服打码"
         for _, choice in ipairs(choices) do
-            log(choice, "尝试", box)
+            log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice])
             if trySolvePointSelectionCapture(box, choice) then
-                log(choices, "success")
+                log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 成功")
                 break
+            else
+                -- 打码失败，必须重置以刷新点选内容，否则会导致前期点按内容未清理
+                log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 失败，刷新验证码")
+                path.bilibili_login.B服验证码刷新()
             end
         end
         ssleep(0.3)
+
+        log("B服安全验证流程", "点选已完成，正在提交打码结果")
         if not findTap("B服安全验证提交") then
             findTap("B服安全验证提交320DPI")
             tapIfCheckedColor({ 823, 605, "539FFE" }, { 823, 605, "539FFE" })
         end
+        log("B服安全验证流程", "已的点击提交，等待服务返回结果")
+
+        -- 出现失败字样，说明验证码错误
         if appear({ "B服安全验证失败", "B服安全验证失败320DPI" }) then
+            log("B服安全验证流程", "失败，正在上报失败并刷新验证码")
             cloud.captcha_report()
             jfbym_report()
             ttshitu_report()
             ssleep(1.0)
-            back()
-            next_cap_type = next_cap_type + 1
+            -- 检查是否超过次数，以验证码刷新次数为准
+            if (bilibili_captcha_times or 0) > 5 then
+                back()
+                stop("B服安全验证5次失败", account_idx and 'next' or '')
+            end
+            path.bilibili_login.B服验证码刷新()
         end
 
         wait(function()
-            if not findAny({
-                    "B服安全验证提交", "B服安全验证提交320DPI",
-                }) then
+            if not findAny({ "B服安全验证提交", "B服安全验证提交320DPI", }) then
+                -- 这个log是阿点写的 不知道什么意思
                 log("B服安全验证提交失败2")
                 return true
             end
@@ -572,8 +587,39 @@ path.bilibili_login = {
             back()
         end, 5)
 
-        log(7)
+        log("B服安全验证流程", "安全验证流程结束")
     end),
+    -- 该方法需保证刷新后图片已完全加载
+    B服验证码刷新 = function()
+        bilibili_captcha_times = (bilibili_captcha_times or 0) + 1
+        log("B服安全验证流程", "正在刷新B服验证码")
+        if findTap("B服刷新验证") then
+            tap("B服刷新验证")
+            ssleep(2)
+        end
+        -- 刷新完成后等待加载出图
+        local img_b_main = findOne("B服验证码_请在下图依次点击")
+        if img_b_main ~= nil then
+            if appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 5) then
+                if disappear("B服验证码_二值化主体", 10) then
+                    ssleep(.2)
+                    log("B服安全验证流程", "刷新后验证码已加载")
+                    return true
+                end
+            end
+        end
+    end,
+    B服等待验证码弹窗加载 = function()
+        if not appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 10) then
+            log("B服安全验证流程", "等待节点识别加载失败")
+            if not checkPointColor({ 823, 605, "BAD9FF" }) then
+                log("B服安全验证流程", "弹窗加载失败")
+                return false
+            end
+        end
+        log("B服安全验证流程", "弹窗已加载")
+        return true
+    end,
 }
 
 path.bilibili_login_change = update(path.bilibili_login, {

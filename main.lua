@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "05.17 17:49"
+release_date = "05.17 19:55"
 update_announcement = '最近更新：六周年庆，多倍代理功能'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -140,8 +140,8 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("debug mode")
     -- path.基建信息获取()
     -- path.办公室换班()
-    m.captcha()
-    exit()
+    -- path.bilibili_login.B服验证码刷新()
+    -- exit()
 end
 
 load(before_account_hook or '')()

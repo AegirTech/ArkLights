@@ -665,7 +665,7 @@ trySolvePointSelectionCapture = function(rect, p_type)
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local ans = nil
     if p_type == 1 then -- 图鉴
-        log("图鉴")
+        log("B服安全验证流程", "正在使用图鉴")
         if not use_captcha then return end
         if not captcha_username or not captcha_password then return end
         local data = {
@@ -686,14 +686,14 @@ trySolvePointSelectionCapture = function(rect, p_type)
             ans = get(data, "data", "result") or ""
         end
     elseif p_type == 3 then
-        log("cloud1")
+        log("B服安全验证流程", "正在使用Aunly")
         if cloud.captcha(rect) then
             return true
         else
             return false
         end
     elseif p_type == 4 then
-        log("cloud2")
+        log("B服安全验证流程", "正在使用自选打码")
         if cloud.captchaSecond(rect) then
             return true
         else
