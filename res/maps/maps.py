@@ -326,12 +326,13 @@ def zip_files(file_folder, output_path):
 zip_files(map_path, map_path.parent / "maps.zip")
 
 output_path = os.path.join(map_path.parent, "maps.zip")
-upload_url = "https://arktoken.enlysure.com:21999/upload_ark_file"
-params = {
-    "verify": "arklights",
+upload_url = "https://arkapi.enlysure.com:33033/ark/upload_file"
+headers = {
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlbmx5c3VyZSJ9.AoDoOVosfVJUl-mAE1G-KneyrZcnkcFeWfRwyTtaX74",
+    "Connection": "keep-alive",
 }
 file = {"file": open(output_path, "rb")}
-ret = requests.post(upload_url, params=params, files=file, timeout=500)
+ret = requests.post(upload_url, headers=headers, files=file, timeout=500)
 print(ret.status_code, ret.text)
 
 """
