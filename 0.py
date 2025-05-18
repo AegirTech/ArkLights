@@ -247,6 +247,35 @@ def upload(md5, type, force):
 
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
     print(response.json().get("msg"))
+    upload_to_backup_server(type)
+
+
+def upload_to_backup_server(type):
+    bearer_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlbmx5c3VyZSJ9.AoDoOVosfVJUl-mAE1G-KneyrZcnkcFeWfRwyTtaX74"
+    url = "https://arkapi.enlysure.com:33033/ark/upload_file?cache=true"
+    upFile = ""
+    if type == "RELEASE":
+        upFile = pkgPath
+    elif type == "SKILL":
+        upFile = r"res\skill.zip"
+
+    headers = {
+        "Authorization": "Bearer " + bearer_token,
+        "Connection": "keep-alive",
+    }
+    files = [
+        (
+            "file",
+            (
+                "script" if type == "RELEASE" else "skill",
+                open(upFile, "rb"),
+                "application/octet-stream",
+            ),
+        )
+    ]
+    response = requests.post(url, headers=headers, files=files)
+    # print(response.text)
+    print("备用更新服务器上传：", "成功" if response.status_code == 200 else "失败")
 
 
 def statistician():

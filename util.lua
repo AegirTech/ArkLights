@@ -2240,7 +2240,7 @@ end
 download_from_alist = function(file_name, path)
     local path = path or getWorkPath()
     path = path .. '/' .. file_name
-    local url = "https://arktoken.enlysure.com:21999/get_ark_file?name=" .. file_name .. "&verify=arklights"
+    local url = ark_api_base .. "/ark/get_file?name=" .. file_name .. "&verify=arklights"
     local ret, code = httpGet(url, 10)
     log(ret, code)
     if code == 200 then
@@ -2315,8 +2315,8 @@ check_hot_update = function()
     local apk_v = dev_mode and 1000000 or getApkVerInt()
     local res, code = httpGet(
         update_source .. "/checkUpdate?lr_md5=" .. tostring(file_md5) ..
-        "&skill_md5=" .. tostring(skill_md5) .. "&apk_ver=" .. tostring(apk_v), 30)
-    if code == -1 then
+        "&skill_md5=" .. tostring(skill_md5) .. "&apk_ver=" .. tostring(apk_v), 5)
+    if code ~= 200 then
         toast("无法连接到热更新服务器")
         ssleep(3)
         return false
@@ -2331,7 +2331,6 @@ updateLr = function(update_info)
         toast("正在更新脚本...")
         if downloadFile(update_info.lrUrl, new_script_path) == -1 then
             toast("下载最新版本失败")
-            ssleep(3)
             return false
         end
     else
@@ -2340,7 +2339,6 @@ updateLr = function(update_info)
     end
     if fileMD5(new_script_path) ~= update_info.lrMD5 then
         toast("脚本校验失败")
-        ssleep(3)
         return false
     end
     installLrPkg(new_script_path)
@@ -2359,7 +2357,6 @@ updateSkill = function(update_info)
         toast("正在更新基建图标...")
         if downloadFile(update_info.skillUrl, skill_path) == -1 then
             toast("下载最新版本基建图标失败")
-            ssleep(3)
             return false
         end
     else
@@ -2368,7 +2365,6 @@ updateSkill = function(update_info)
     end
     if fileMD5(skill_path) ~= update_info.skillMD5 then
         toast("基建图标校验失败")
-        ssleep(3)
         return false
     end
     unZip(skill_path, skill_extract_path)
@@ -2386,7 +2382,7 @@ uploadStatistician = function(is_download)
         tostring(account_count) ..
         "&is_download=" ..
         tostring(is_download)
-    local res, code = httpGet(url, 30)
+    local res, code = httpGet(url, 5)
     local status, data = pcall(JsonDecode, res)
     if not status then
         return
@@ -2397,9 +2393,47 @@ uploadStatistician = function(is_download)
     end
 end
 
+
+check_hot_update_backup = function()
+    toast("备用更新...")
+    local file_md5 = loadConfig("lr_md5", "null")
+    local skill_md5 = loadConfig("skill_md5", "null")
+
+    local res, code = httpGet(ark_api_base .. "/ark/script/update", 5)
+    if code ~= 200 then
+        toast("无法连接到热更新服务器2")
+        return false
+    end
+    local status, data = pcall(JsonDecode, res)
+    local update_info = data
+    update_info = {
+        lrUrl = data.script.url,
+        lrMD5 = data.script.md5,
+        updateLr = true and data.script.md5 ~= file_md5 or false,
+        skillUrl = data.skill.url,
+        skillMD5 = data.skill.md5,
+        updateSkill = true and data.skill.md5 ~= skill_md5 or false,
+        isOldApk = false,
+    }
+    return update_info
+end
+
 hotUpdate = function()
-    local update_info = check_hot_update()
-    if not update_info then return false end
+    local update_info
+    if math.random() < 0.5 then
+        update_info = check_hot_update()
+        if not update_info then
+            update_info = check_hot_update_backup()
+        end
+    else
+        update_info = check_hot_update_backup()
+    end
+
+    if not update_info then
+        return false
+    end
+
+    log("update_info", update_info)
     if get(update_info, "isOldApk") then
         toast("当前APK版本过旧，请更新！")
         sleep(1000)
@@ -2419,6 +2453,7 @@ hotUpdate = function()
     end
     updateLr(update_info)
     updateSkill(update_info)
+    toast("基建图标已经是最新版")
     uploadStatistician(true)
     sleep(1000)
     log("更新完成")

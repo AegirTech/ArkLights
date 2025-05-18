@@ -272,7 +272,7 @@ skland.get_refresh_token = function()
 end
 
 skland_sign_cloud = function(account, password)
-    local url = "https://skland-api.enlysure.com:13000/skland/sign"
+    local url = ark_api_base .. "/skland/sign"
     local data = {
         account = account,
         password = password,

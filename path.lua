@@ -558,7 +558,7 @@ path.bilibili_login = {
         log("B服安全验证流程", "点选已完成，正在提交打码结果")
         if not findTap("B服安全验证提交") then
             findTap("B服安全验证提交320DPI")
-            tapIfCheckedColor({ 823, 605, "539FFE" }, { 823, 605, "539FFE" }, { 728, 548 ,"539FFE"})
+            tapIfCheckedColor({ 823, 605, "539FFE" }, { 823, 605, "539FFE" }, { 728, 548, "539FFE" })
         end
         log("B服安全验证流程", "已的点击提交，等待服务返回结果")
 
