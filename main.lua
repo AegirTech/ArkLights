@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "05.18 12:28"
+release_date = "05.19 16:42"
 update_announcement = '最近更新：六周年庆，多倍代理功能'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -143,7 +143,6 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     -- path.基建信息获取()
     -- path.办公室换班()
     -- path.bilibili_login.B服验证码刷新()
-    -- exit()
 end
 
 load(before_account_hook or '')()
@@ -238,10 +237,14 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
             skip_account = true
         end
 
-        -- 双休日不上号
-        if not isweekday() and table.includes(multi_account_choice_weekday_only, i) then
+        --特殊指定不上号时间
+        local login_time = expand_number_config((login_week_time == nil or login_week_time == "") and "1-7" or
+            login_week_time)
+        if not table.includes(login_time, tonumber(os.date("%w"))) then
+            log("不在每周上号列表，跳过")
             skip_account = true
         end
+
         log(job)
         if not skip_account then run(job) end
     end
@@ -266,8 +269,19 @@ elseif not crontab_enable_only then
             table.insert(job, 1, "退出账号")
         end
     end
+
+    local skip_account = false
+    local login_time = expand_number_config((login_week_time == nil or login_week_time == "") and "1-7" or
+        login_week_time)
+    if not table.includes(login_time, tonumber(os.date("%w"))) then
+        log("不在每周上号列表，跳过")
+        skip_account = true
+    end
+
     log(job)
-    run(job)
+    if not skip_account then
+        run(job)
+    end
     log("任务完成")
     cloud.completeTask(last_upload_img)
 end

@@ -130,10 +130,8 @@ make_account_ui = function(layout, prefix)
     addTextView(layout, "信用少买")
     ui.addEditText(layout, prefix .. "low_priority_goods", "碳 家 急")
 
-    newRow(layout)
     -- addTextView(layout, "商店购买黑名单")
     -- ui.addEditText(layout, prefix .. "shop_buy_black", "增补条 ")
-    ui.addCheckBox(layout, prefix .. "accelerate_trading", "无人机用于贸易站", false)
 
     newRow(layout)
     addTextView(layout, "自动招募")
@@ -142,6 +140,11 @@ make_account_ui = function(layout, prefix)
     ui.addCheckBox(layout, prefix .. "auto_recruit4", "4", true)
     ui.addCheckBox(layout, prefix .. "auto_recruit5", "5", true)
     ui.addCheckBox(layout, prefix .. "auto_recruit6", "6", false)
+
+    newRow(layout)
+    addTextView(layout, "时间配置(每周几上号)")
+    ui.addEditText(layout, prefix .. "login_week_time", "1-7")
+    ui.addCheckBox(layout, prefix .. "accelerate_trading", "加速贸易站", false)
 
     newRow(layout)
     addTextView(layout, "培养计划")
@@ -170,9 +173,6 @@ show_multi_account_ui = function()
     make_ui_title(layout, "多账号")
 
     newRow(layout)
-    -- ui.addButton(layout, layout .. "_start", "返回", ui_submit_width)
-    -- ui.setBackground(layout .. "_start", ui_submit_color)
-    -- ui.setOnClick(layout .. "_start", make_jump_ui_command(layout, "main"))
 
     addButton(layout, nil, "返回", make_jump_ui_command(layout, "main"), nil,
         nil)
@@ -183,9 +183,6 @@ show_multi_account_ui = function()
     }
     ui_cmd = table.join(cmd, ';')
 
-    -- addButton(layout, nil, "启动", make_jump_ui_command(layout, nil,
-    --                                                       "crontab_enable=false;lock:remove(main_ui_lock)"),
-    -- ui_small_submit_width)
     addButton(layout, nil, "定时", make_jump_ui_command(layout, nil,
             "crontab_enable_only=true;lock:remove(main_ui_lock)"),
         ui_small_submit_width)
@@ -1045,10 +1042,6 @@ show_debug_ui = function()
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "disable_strick_account_check",
         "多账号允许不填帐密(双号双服玩家)", false)
-
-    newRow(debug_layout_其他)
-    addTextView(debug_layout_其他, "多账号双休日跳过账号")
-    ui.addEditText(debug_layout_其他, "multi_account_choice_weekday_only", '')
 
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "restart_on_crontab_timeout",
