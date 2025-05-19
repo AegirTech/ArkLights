@@ -208,6 +208,8 @@ def release(type):
             print("md5值错误")
     elif type == "SKILL":
         upload("", type, "false")
+    elif type == "MAPS":
+        upload_to_backup_server(type)
 
 
 def upload(md5, type, force):
@@ -258,6 +260,8 @@ def upload_to_backup_server(type):
         upFile = pkgPath
     elif type == "SKILL":
         upFile = r"res\skill.zip"
+    elif type == "MAPS":
+        upFile = r"res\maps.zip"
 
     headers = {
         "Authorization": "Bearer " + bearer_token,
@@ -360,6 +364,8 @@ if __name__ == "__main__":
             release("RELEASE")
         elif arg == "rs":
             release("SKILL")
+        elif arg == "rm":
+            release("MAPS")
         elif arg == "s":
             statistician()
         elif arg == "ver":
