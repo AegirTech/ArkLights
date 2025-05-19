@@ -239,7 +239,7 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
 
         --特殊指定不上号时间
         log("login_week_time", login_week_time)
-        local login_time = expand_number_config((login_week_time == nil or login_week_time == "") and "1-7" or
+        local login_time = expand_number_config((not login_week_time or login_week_time == "") and "1-7" or
             login_week_time)
         if not table.includes(login_time, tonumber(os.date("%w"))) then
             log("不在每周上号列表，跳过")
