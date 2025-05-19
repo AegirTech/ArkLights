@@ -317,6 +317,7 @@ read_local_config()
 
 switch_account = function()
     -- 无密码切号方案
+    log("switch_account")
     if new_change_account_plan and root_mode and account_data[username] then
         log("切号测试")
         _G.快速切号功能状态 = false
