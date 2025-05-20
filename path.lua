@@ -536,8 +536,17 @@ path.bilibili_login = {
 
         -- ssleep(.5)
         -- log("b服打码")
-
-        local choices = { 3, 4, 1 }
+        local choices = {}
+        if use_captcha_aunly then
+            table.insert(choices, 3)
+        end
+        if use_captcha_free2 then
+            table.insert(choices, 4)
+        end
+        if use_captcha then
+            table.insert(choices, 1)
+        end
+        log(154, 'choices', choices)
         local choice_map = {}
         choice_map[1] = "图鉴"
         choice_map[3] = "Aunly"

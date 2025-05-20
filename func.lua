@@ -689,8 +689,10 @@ trySolvePointSelectionCapture = function(rect, p_type)
     elseif p_type == 3 then
         log("B服安全验证流程", "正在使用Aunly")
         if cloud.captcha(rect) then
+            log(12015, "Aunly打码成功")
             return true
         else
+            log(12016, "Aunly打码失败")
             return false
         end
     elseif p_type == 4 then
