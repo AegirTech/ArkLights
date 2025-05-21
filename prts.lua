@@ -1409,7 +1409,7 @@ end
             appear("作战中", 3)
             加速()
         end
-
+        ssleep(1) -- 减少循环占用
         if not (findOne("作战中") or findOne("暂停中") or findOne("作战中2")) then
             sleep(500)
             if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "生息演算剧情上" }) then
