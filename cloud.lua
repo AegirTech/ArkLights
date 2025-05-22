@@ -223,7 +223,7 @@ m.captcha = function(box)
                 if appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 5) then
                     if disappear("B服验证码_二值化主体", 10) then
                         log("B服验证码_二值化主体", "主体已稳定，验证码已出现")
-                        ssleep(.2)
+                        ssleep(1)
                         return true
                     end
                 end

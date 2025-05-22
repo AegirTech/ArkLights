@@ -551,15 +551,26 @@ path.bilibili_login = {
         choice_map[1] = "图鉴"
         choice_map[3] = "Aunly"
         choice_map[4] = "自选B服打码"
+        choice_map_jump = {}
+        bilibili_captcha_cloud_times = 0
         for _, choice in ipairs(choices) do
             log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice])
             if trySolvePointSelectionCapture(box, choice) then
-                log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 成功")
+                log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 平台认为打码成功，等待提交验证")
                 break
             else
-                -- 打码失败，必须重置以刷新点选内容，否则会导致前期点按内容未清理
-                log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 失败，刷新验证码")
-                path.bilibili_login.B服验证码刷新()
+                if choice_map_jump[choice] ~= nil and choice_map_jump[choice] == true then
+                    log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 未配置，跳过")
+                else
+                    -- 平台打码失败，需要刷新验证码
+                    log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 平台打码失败，非提交失败，刷新后重试")
+                    bilibili_captcha_cloud_times = (bilibili_captcha_cloud_times or 0) + 1
+                    if bilibili_captcha_cloud_times > 3 then
+                        log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 平台打码失败超过3次，跳过")
+                        stop("B服安全验证平台打码失败3次", account_idx and 'next' or '')
+                    end
+                    path.bilibili_login.B服验证码刷新()
+                end
             end
         end
         ssleep(0.3)
@@ -567,23 +578,23 @@ path.bilibili_login = {
         log("B服安全验证流程", "点选已完成，正在提交打码结果")
         if not findTap("B服安全验证提交") then
             findTap("B服安全验证提交320DPI")
-            tapIfCheckedColor({ 823, 605, "539FFE" }, { 823, 605, "539FFE" }, { 728, 548, "539FFE" })
+            tapIfCheckedColor({ 823, 605, "539FFE" }, { 823, 605, "539FFE" }, { 692, 552, "539FFE" })
         end
         log("B服安全验证流程", "已的点击提交，等待服务返回结果")
 
-        -- 出现失败字样，说明验证码错误
+        -- 出现失败字样，说明验证码错误，等待自动刷新
         if appear({ "B服安全验证失败", "B服安全验证失败320DPI" }) then
-            log("B服安全验证流程", "失败，正在上报失败并刷新验证码")
+            log("B服安全验证流程", "游戏认为打码失败，正在上报失败并等待自动刷新验证码")
             cloud.captcha_report()
             jfbym_report()
             ttshitu_report()
             ssleep(1.0)
-            -- 检查是否超过次数，以验证码刷新次数为准
+            -- 检查是否超过次数
             if (bilibili_captcha_times or 0) > 5 then
                 back()
                 stop("B服安全验证5次失败", account_idx and 'next' or '')
             end
-            path.bilibili_login.B服验证码刷新()
+            path.bilibili_login.B服验证码失败计数()
         end
 
         wait(function()
@@ -598,9 +609,12 @@ path.bilibili_login = {
 
         log("B服安全验证流程", "安全验证流程结束")
     end),
-    -- 该方法需保证刷新后图片已完全加载
-    B服验证码刷新 = function()
+    B服验证码失败计数 = function()
         bilibili_captcha_times = (bilibili_captcha_times or 0) + 1
+    end,
+    -- 该方法需保证刷新后图片已完全加载
+    B服验证码刷新 = function(no_count)
+        log("B服安全验证流程", "当前重试次数: " .. (bilibili_captcha_times or 0))
         log("B服安全验证流程", "正在刷新B服验证码")
         if findTap("B服刷新验证") then
             tap("B服刷新验证")

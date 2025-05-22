@@ -668,7 +668,11 @@ trySolvePointSelectionCapture = function(rect, p_type)
     if p_type == 1 then -- 图鉴
         log("B服安全验证流程", "正在使用图鉴")
         if not use_captcha then return end
-        if not captcha_username or not captcha_password then return end
+        if not captcha_username or not captcha_password then
+            log("未配置图鉴打码，跳过")
+            choice_map_jump[p_type] = true
+            return
+        end
         local data = {
             username = captcha_username,
             password = captcha_password,
@@ -687,6 +691,11 @@ trySolvePointSelectionCapture = function(rect, p_type)
             ans = get(data, "data", "result") or ""
         end
     elseif p_type == 3 then
+        if #cloud.captchaToken < 10 then
+            log("未配置aunly打码，跳过")
+            choice_map_jump[p_type] = true
+            return
+        end
         log("B服安全验证流程", "正在使用Aunly")
         if cloud.captcha(rect) then
             log(12015, "Aunly打码成功")
@@ -700,6 +709,10 @@ trySolvePointSelectionCapture = function(rect, p_type)
         if cloud.captchaSecond(rect) then
             return true
         else
+            if type(cloud_captcha_server2) ~= "string" or #cloud_captcha_server2 < 10 then
+                log("未配置自选打码，跳过")
+                choice_map_jump[p_type] = true
+            end
             return false
         end
     end
