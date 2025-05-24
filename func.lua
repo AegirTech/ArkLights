@@ -1006,3 +1006,9 @@ backup_config = function()
         end
     end
 end
+
+
+get_day_of_week = function()
+    local day = tonumber(os.date("%w"))
+    return day == 0 and 7 or day
+end

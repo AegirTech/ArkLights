@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "05.22 23:05"
+release_date = "05.25 00:26"
 update_announcement = '最近更新：六周年庆，多倍代理功能'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -242,7 +242,7 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
         log("login_week_time", login_week_time)
         local login_time = expand_number_config((not login_week_time or login_week_time == "") and "1-7" or
             login_week_time)
-        if not table.includes(login_time, tonumber(os.date("%w"))) then
+        if not table.includes(login_time, get_day_of_week()) then
             log("不在每周上号列表，跳过")
             skip_account = true
         end
@@ -275,7 +275,7 @@ elseif not crontab_enable_only then
     local skip_account = false
     local login_time = expand_number_config((not login_week_time or login_week_time == "") and "1-7" or
         login_week_time)
-    if not table.includes(login_time, tonumber(os.date("%w"))) then
+    if not table.includes(login_time, get_day_of_week()) then
         log("不在每周上号列表，跳过")
         skip_account = true
     end
