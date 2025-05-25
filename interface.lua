@@ -529,8 +529,23 @@ make_afterjob_ui = function(layout)
     ui.addCheckBox(layout, "end_screenoff", "熄屏")
 
     newRow(layout)
-    addTextView(layout, "定时启动")
+    addTextView(layout, "定时")
     ui.addEditText(layout, "crontab_text", "4:00 12:00 20:00")
+
+    -- ui.addCheckBox(layout, "auto_start_script", "脚本打开自动运行")
+    addButton(layout, "auto_run_button", "启用脚本自动运行", "set_auto_run_state();")
+end
+
+set_auto_run_state = function()
+    local state = loadConfig('auto_run', 'false') == 'true'
+    if state then
+        ui.setButton("auto_run_button", "启用脚本自动运行")
+        saveConfig('auto_run', 'false')
+        toast("您需要退出脚本/或等待下次脚本启动才能生效")
+    else
+        ui.setButton("auto_run_button", "禁用脚本自动运行")
+        saveConfig('auto_run', 'true')
+    end
 end
 
 make_jump_ui = function(layout)
@@ -635,6 +650,9 @@ show_main_ui = function()
     ui.setBackground("quit_script", "#ffeb1c09")
     ui.setBackground("start_and_clock", "#ff37a652")
     ui.setBackground("jump_afadian", "#ff37a652")
+    if loadConfig("auto_run", 'false') == 'true' then
+        ui.setButton("auto_run_button", "禁用脚本自动运行")
+    end
 end
 
 show_ad_ui = function()
@@ -1851,6 +1869,7 @@ show_gesture_capture_ui = function()
 end
 
 showUI = function(last_layout)
+    local is_auto_start = loadConfig('auto_run', 'false') == 'true'
     if loadConfig("hideUIOnce", "false") ~= "false" then
         saveConfig("hideUIOnce", "false")
     else
@@ -1858,8 +1877,14 @@ showUI = function(last_layout)
         main_ui_lock = lock:add()
         local last_layout = last_layout or loadConfig("last_layout", "main")
         _G["show_" .. last_layout .. "_ui"]()
+        local start_ui_time = os.time()
         if not wait(function()
-                sleep(300)
+                sleep(500)
+                if is_auto_start and (os.time() - start_ui_time) > 10 then
+                    ui.saveProfile(getUIConfigPath(last_layout))
+                    ui.dismiss(last_layout)
+                    lock:remove(main_ui_lock)
+                end
                 return not lock:exist(main_ui_lock)
             end, math.huge) then
             peaceExit()
