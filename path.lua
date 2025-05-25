@@ -349,6 +349,10 @@ path.base = {
         fight_failed_times[cur_fight] = -3
         -- if same fight or same page fight
         log(90)
+        if fight == nil or #fight == 0 then
+            log("fight is empty, return to home")
+            return
+        end
         local next_fight_tick = fight_tick % #fight + 1
         local next_fight = fight[next_fight_tick]
         log(cur_fight, next_fight)
