@@ -823,11 +823,14 @@ stop = function(msg, mode, nohome, complete)
         cloud.failTask(last_upload_img, type)
     end
     toast(msg)
-    cloud.fetchSolveTask()
+
     if not nohome then
         closeapp(appid)
         home()
     end
+
+    cloud.fetchSolveTask()
+
     ssleep(2)
 
     if mode == 'next' then restart_account(true) end
