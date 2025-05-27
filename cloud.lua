@@ -156,12 +156,6 @@ end
 m.captcha = function(rect)
     log("使用云控打码")
     local node_count = 0
-    -- 验证码加载目标切片有上移动作，需要多次查找直到返回不变化才能确保节点稳定
-    -- local text_box = findOne("B服安全验证目标字符")
-    -- local text_box = nil
-    -- local text_slice_box = nil
-    -- local big_image_box = nil
-    -- local img_b_main_pre = nil
     wait(
         function()
             local img_b_main = findOne("B服验证码_请在下图依次点击")
@@ -201,18 +195,14 @@ m.captcha = function(rect)
             node_count = node_count + 1
             -- log("B服云控打码节点刷新计数器", node_count)
             ssleep(.1)
-        end, 10
+        end, 5
     )
-    -- local text_pos = { text_slice_box.bounds.r, text_box.bounds.t, big_image_box.bounds.r, text_box.bounds.b }
-    -- log("目标字符坐标", text_pos)
-    -- local image_box = findOne("B服安全验证目标图像")
-    -- local image_pos = { image_box.bounds.l, image_box.bounds.t, image_box.bounds.r, image_box.bounds.b }
-    -- log("图像坐标", image_pos)
 
     local img = getWorkPath() .. "/capture_cloud.jpg"
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local image_img_base64 = base64(img)
 
+    -- UA/数据生成
     local postdata = [[{"image_base64": "]] .. image_img_base64 .. [[", "captcha_type_override": "geetest_v3_click"}]]
     local UA = "Arklights/" .. getApkVerInt() .. " " .. release_date
 
@@ -237,21 +227,15 @@ m.captcha = function(rect)
     headers = string.gsub(headers, "{APKVERSION}", getApkVerInt())
     headers = string.gsub(headers, "{CAPTCHATOKEN}", m.captchaToken)
     headers = string.gsub(headers, "{UA}", UA)
+
     local res, code = httpPost(m.captchaServer .. "/captcha/recognize", postdata, 30, headers)
     log(res, code)
     if code == 200 then
         status, data = pcall(JsonDecode, res)
         if data.code == 0 then
             cloud_captcha_id = data.data.captcha_id or nil
-            -- 计算缩放比例 返回图片344x344
-            -- local x_scale = (image_pos[3] - image_pos[1]) / 344 or 1
-            -- local y_scale = (image_pos[4] - image_pos[2]) / 344 or 1
-            -- if official_choice then
-            --     y_scale = y_scale + 0.25 -- 官服不知道为什么y轴偏移严重
-            -- end
             log("云控打码坐标", "总计点数", #data.data.result.click_points)
             for _, coord in pairs(data.data.result.click_points) do
-                -- print(coord)
                 local ans_p = { rect.l + (coord[1] or 0), rect.t + (coord[2] or 0) }
                 log("云控打码坐标", ans_p)
                 tap(ans_p)
@@ -263,7 +247,7 @@ m.captcha = function(rect)
             ssleep(0.3)
             return true
         else
-            log("云控打码", data.message)
+            log("云控打码", data)
             return false
         end
     else
