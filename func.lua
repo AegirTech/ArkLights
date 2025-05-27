@@ -657,6 +657,7 @@ SolveSlipCaptcha = function(rect, p_type)
 
     local sx, sy
     if is_old_slip then
+        distance = distance + scale(4)
         sx, sy = scale(702), scale(686)
     else
         tap({ scale(964), scale(805) })
