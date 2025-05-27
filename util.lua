@@ -3983,7 +3983,13 @@ update_state_from_debugui = function()
     max_log_time = str2int(max_log_time, 15)
     max_log_count = str2int(max_log_count, 1000)
     --bili_captcha_mode = str2int(bili_captcha_mode, 1)
+
+    --验证码
+    use_free_server_captcha = (use_free_server_captcha == nil) and true or use_free_server_captcha
+    use_captcha_aunly_slip = (use_captcha_aunly_slip == nil) and true or use_captcha_aunly_slip
     use_captcha = (use_captcha == nil) and true or use_captcha
+    use_captcha_aunly = (use_captcha_aunly == nil) and true or use_captcha_aunly
+
 
     catch_run_crash = (catch_run_crash == nil) and true or catch_run_crash
 
