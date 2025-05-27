@@ -437,6 +437,7 @@ getCaptchaBox = function(retry)
     bx = find_color(nil, "5381FD", 3, 0.95)
     if not bx then return end
     box.b = bx[2] - 3
+    log("bbox", box)
     local notb = false
     for y = box.b, box.t, -1 do
         if cmpColor(bx[1], y, "FFFFFF", 0.96) == 1 then
@@ -461,31 +462,20 @@ getCaptchaBox = function(retry)
         return getCaptchaBox(retry + 1)
     end
 
-    local hava_white = false
-
-    for i = 1, 10 do
-        local x = box.l + math.random(0, math.floor((box.r - box.l) / 2))
-        local y = box.t + math.random(0, math.floor(box.b - box.t))
-        if cmpColor(x, y, "FFFFFF", 0.95) == 1 then
-            hava_white = true
-            break
-        end
-    end
-    if hava_white then
-        local total_pixels = (box.r - box.l) * (box.b - box.t)
-        local white_pixels = 0
-        for x = box.l, box.r do
-            for y = box.t, box.b do
-                if cmpColor(x, y, "FFFFFF", 0.96) == 1 then
-                    white_pixels = white_pixels + 1
-                end
+    local total_pixels = (box.r - box.l) * (box.b - box.t)
+    local white_pixels = 0
+    for x = box.l, box.r do
+        for y = box.t, box.b do
+            if cmpColor(x, y, "FFFFFF", 0.96) == 1 then
+                white_pixels = white_pixels + 1
             end
         end
-        local white_ratio = white_pixels / total_pixels
-        if white_ratio > 0.2 then
-            ssleep(1.5)
-            return getCaptchaBox(retry + 1)
-        end
+    end
+    local white_ratio = white_pixels / total_pixels
+    log("滑块验证框白色像素比例", white_ratio, "总像素", total_pixels, "白色像素", white_pixels)
+    if white_ratio > 0.35 then
+        ssleep(1.5)
+        return getCaptchaBox(retry + 1)
     end
 
     log("cap box", box)
@@ -548,6 +538,7 @@ trySolveSlipCaptcha = function(retry)
     if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
         log("find 滑块验证节点新")
         local box = getCaptchaBox()
+        log(box)
         local choices = { 1, 3, 2 }
         for _, choice in ipairs(choices) do
             local ret = SolveSlipCaptcha(box, choice)
@@ -569,7 +560,7 @@ trySolveSlipCaptcha = function(retry)
                 tap("B服刷新验证")
                 ssleep(1.5)
             end
-            ssleep(4)
+            ssleep(3)
         end
         official_choice = false
         wait(function()
@@ -629,6 +620,7 @@ SolveSlipCaptcha = function(rect, p_type)
         local status, data = pcall(JsonDecode, ret)
         if not status then return end
         distance = str2int(data.target[1].distance, 0)
+        distance = distance - scale(17)
     elseif p_type == 2 then
         local data = {
             token = jfbym_token,
@@ -642,6 +634,7 @@ SolveSlipCaptcha = function(rect, p_type)
         data = data or {}
         if get(data, "code") ~= 10000 then return end
         distance = tonumber(get(data, "data", "data")) or 0
+        distance = distance - scale(18)
     elseif p_type == 3 then
         -- UA/数据生成
         local postdata = [[{"image_base64": "]] .. base64(img) .. [["}]]
@@ -658,9 +651,9 @@ SolveSlipCaptcha = function(rect, p_type)
                 return false
             end
         end
+        distance = distance - scale(20)
     end
     if distance < 1 then return false end
-    distance = distance - scale(12)
 
     local sx, sy
     if is_old_slip then
@@ -674,14 +667,14 @@ SolveSlipCaptcha = function(rect, p_type)
         {
             point = {
                 { sx,                                        sy }, { sx + distance, sy },
-                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance + scale(math.random(5, 20)), sy },
-                { sx + distance + scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance + scale(math.random(5, 20)), sy },
-                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance - scale(math.random(5, 20)), sy },
-                { sx + distance - scale(math.random(5, 20)), sy - scale(math.random(80, 150)) },
-                { sx + distance - scale(math.random(5, 20)), sy }, { sx + distance, sy - scale(math.random(80, 150)) },
+                { sx + distance + scale(math.random(5, 10)), sy - scale(math.random(80, 120)) },
+                { sx + distance + scale(math.random(3, 10)), sy },
+                { sx + distance + scale(math.random(5, 10)), sy - scale(math.random(80, 150)) },
+                { sx + distance + scale(math.random(3, 10)), sy },
+                { sx + distance - scale(math.random(3, 10)), sy - scale(math.random(80, 120)) },
+                { sx + distance - scale(math.random(5, 10)), sy },
+                { sx + distance - scale(math.random(5, 10)), sy - scale(math.random(80, 150)) },
+                { sx + distance - scale(math.random(3, 10)), sy }, { sx + distance, sy - scale(math.random(80, 150)) },
                 { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
                 { sx + distance, sy }, { sx + distance, sy - scale(math.random(80, 150)) },
                 { sx + distance, sy },
