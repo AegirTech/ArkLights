@@ -994,6 +994,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
     local best = {}
     local best_score = -1
     local best_only_need = {}
+    log(402, #operator, maxOperator)
     for _, c in pairs(table.combination(range(1, #operator), maxOperator)) do
         --log(674, c, table.index(operatorIcon, c))
         local s, only_need = score(table.index(operatorIcon, c))
@@ -1006,7 +1007,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
         -- if table.equal(c, {1, 2, 3}) then exit() end
     end
     best = table.index(operator, best)
-
+    log(403, "best", best)
     -- 特殊处理，白板干员用白板
     if #best_only_need > 0 then
         best = table.filter(best, function(v)
