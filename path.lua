@@ -533,21 +533,15 @@ path.bilibili_login = {
         end
         box = box.bounds
 
-        -- bilibili_captcha_times = (bilibili_captcha_times or 0) + 1
-        -- if bilibili_captcha_times > 5 then
-        --     stop("B服安全验证5次失败", account_idx and 'next' or '')
-        -- end
-
-        -- ssleep(.5)
         -- log("b服打码")
         local choices = {}
-        if use_captcha_aunly then
+        if use_captcha_aunly and type(cloud_captcha_token) == "string" and #cloud_captcha_token > 10 then
             table.insert(choices, 3)
         end
-        if use_captcha_free2 then
+        if use_captcha_free2 and type(cloud_captcha_server2) == "string" and #cloud_captcha_server2 > 4then
             table.insert(choices, 4)
         end
-        if use_captcha then
+        if use_captcha and captcha_username then
             table.insert(choices, 1)
         end
         log(154, 'choices', choices)
@@ -555,36 +549,45 @@ path.bilibili_login = {
         choice_map[1] = "图鉴"
         choice_map[3] = "Aunly"
         choice_map[4] = "自选B服打码"
-        choice_map_jump = {}
         bilibili_captcha_cloud_times = 0
         for _, choice in ipairs(choices) do
             log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice])
+            if bilibili_captcha_cloud_times > 0 then
+                log("第二次登录，尝试刷新验证码")
+                path.bilibili_login.B服验证码刷新()
+                path.bilibili_login.B服等待验证码弹窗加载()
+                ssleep(0.3)
+            end
             if trySolvePointSelectionCapture(box, choice) then
                 log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 平台认为打码成功，等待提交验证")
                 break
             else
-                if choice_map_jump[choice] ~= nil and choice_map_jump[choice] == true then
-                    log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 未配置，跳过")
-                else
-                    -- 平台打码失败，需要刷新验证码
-                    log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 平台打码失败，非提交失败，刷新后重试")
-                    bilibili_captcha_cloud_times = (bilibili_captcha_cloud_times or 0) + 1
-                    if bilibili_captcha_cloud_times > 3 then
-                        log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 平台打码失败超过3次，跳过")
-                        stop("B服安全验证平台打码失败3次", account_idx and 'next' or '')
-                    end
-                    path.bilibili_login.B服验证码刷新()
+                -- 平台打码失败，需要刷新验证码
+                log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 平台打码失败，非提交失败，刷新后重试")
+                bilibili_captcha_cloud_times = (bilibili_captcha_cloud_times or 0) + 1
+                if bilibili_captcha_cloud_times > 3 then
+                    log("B服安全验证流程", "当前尝试打码方式: " .. choice_map[choice] .. " 平台打码失败超过3次，跳过")
+                    stop("B服安全验证平台打码失败3次", account_idx and 'next' or '')
                 end
+                path.bilibili_login.B服验证码刷新()
             end
         end
-        ssleep(0.3)
+        ssleep(0.4)
 
         log("B服安全验证流程", "点选已完成，正在提交打码结果")
-        if not findTap("B服安全验证提交") then
+        if not wait(function()
+            local ft = findAny({
+                "B服安全验证提交", "B服安全验证提交320DPI",
+                "B服安全验证确认按钮",
+            })
+            tap(ft)
+        end, 2) then
+            log("未找到b服提交按钮1")
             findTap("B服安全验证提交320DPI")
             tapIfCheckedColor({ 823, 605, "539FFE" }, { 823, 605, "539FFE" }, { 692, 552, "539FFE" })
         end
-        log("B服安全验证流程", "已的点击提交，等待服务返回结果")
+
+        log("B服安全验证流程", "已点击提交，等待服务返回结果")
 
         -- 出现失败字样，说明验证码错误，等待自动刷新
         if appear({ "B服安全验证失败", "B服安全验证失败320DPI" }) then
@@ -602,14 +605,14 @@ path.bilibili_login = {
         end
 
         wait(function()
-            if not findAny({ "B服安全验证提交", "B服安全验证提交320DPI", }) then
+            if not findAny({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮",}) then
                 -- 这个log是阿点写的 不知道什么意思
-                log("B服安全验证提交失败2")
+                log("B服安全验证提交未找到，可能提交成功")
                 return true
             end
             ssleep(2)
             back()
-        end, 5)
+        end, 4)
 
         log("B服安全验证流程", "安全验证流程结束")
     end),

@@ -153,54 +153,8 @@ m.check_captcha_token = function()
     end
 end
 
-m.captcha = function(box)
-    -- local img = getWorkPath() .. "/capture_cloud_upload.jpg"
-    -- snapShot(img, box.l, box.t, box.r, box.b)
-    -- local upload_img = base64(img)
-    -- local postdata = [[{"image": "]] .. upload_img .. [["}]]
-    -- local res, code = httpPost(m.captchaServer .. "/image/upload_image", postdata, 30, "Content-Type: application/json")
-    -- log("云控打码图片上传", res, code)
-
-    -- if m.captchaToken == '' then
-    --     return false
-    -- end
+m.captcha = function(rect)
     log("使用云控打码")
-
-    -- local x_size = box.r - box.l
-    -- local y_size = box.b - box.t
-    -- local text_pos, image_pos
-    -- if official_choice then
-    --     -- l t r b
-    --     text_pos = {
-    --         box.l + x_size * 0.577249 // 1,
-    --         box.t + y_size * 0.012 // 1,
-    --         box.r,
-    --         box.t + y_size * 0.20565 // 1,
-    --     }
-    --     image_pos = {
-    --         box.l,
-    --         box.t + y_size * 0.20565 // 1,
-    --         box.r,
-    --         box.b,
-    --     }
-    --     log("官服新版滑块")
-    --     log("图像坐标", image_pos)
-    --     log("目标字符坐标", text_pos)
-    -- else
-    --     text_pos = {
-    --         box.l + x_size * 0.49375 // 1,
-    --         box.t + y_size * 0.13958 // 1,
-    --         box.r,
-    --         box.t + y_size * 0.27708 // 1
-    --     }
-    --     image_pos = {
-    --         box.l + x_size * 0.22708 // 1,
-    --         box.t + y_size * 0.27916 // 1,
-    --         box.l + x_size * 0.79583 // 1,
-    --         box.t + y_size * 0.85 // 1
-    --     }
-    -- end
-
     local node_count = 0
     -- 验证码加载目标切片有上移动作，需要多次查找直到返回不变化才能确保节点稳定
     -- local text_box = findOne("B服安全验证目标字符")
@@ -255,8 +209,8 @@ m.captcha = function(box)
     -- local image_pos = { image_box.bounds.l, image_box.bounds.t, image_box.bounds.r, image_box.bounds.b }
     -- log("图像坐标", image_pos)
 
-    img = getWorkPath() .. "/capture_cloud.jpg"
-    snapShot(img)
+    local img = getWorkPath() .. "/capture_cloud.jpg"
+    snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local image_img_base64 = base64(img)
 
     local postdata = [[{"image_base64": "]] .. image_img_base64 .. [[", "captcha_type_override": "geetest_v3_click"}]]
@@ -292,16 +246,15 @@ m.captcha = function(box)
             -- 计算缩放比例 返回图片344x344
             -- local x_scale = (image_pos[3] - image_pos[1]) / 344 or 1
             -- local y_scale = (image_pos[4] - image_pos[2]) / 344 or 1
-            if official_choice then
-                y_scale = y_scale + 0.25 -- 官服不知道为什么y轴偏移严重
-            end
+            -- if official_choice then
+            --     y_scale = y_scale + 0.25 -- 官服不知道为什么y轴偏移严重
+            -- end
             log("云控打码坐标", "总计点数", #data.data.result.click_points)
             for _, coord in pairs(data.data.result.click_points) do
                 -- print(coord)
-                -- x = (coord[1] or 0) * x_scale
-                -- y = (coord[2] or 0) * y_scale
-                -- tap({ image_pos[1] + x, image_pos[2] + y })
-                tap({ coord[1] or 0, coord[2] or 0 })
+                local ans_p = { rect.l + (coord[1] or 0), rect.t + (coord[2] or 0) }
+                log("云控打码坐标", ans_p)
+                tap(ans_p)
                 ssleep(0.3)
                 if official_choice then
                     ssleep(0.3)
