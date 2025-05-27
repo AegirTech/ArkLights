@@ -771,8 +771,12 @@ show_debug_ui = function()
     -- ui.addCheckBox(debug_layout_验证码, "use_local_captcha", "使用速通本地打码服务", true)
     newRow(debug_layout_验证码)
     ui.addCheckBox(debug_layout_验证码, "use_free_server_captcha", "1.使用免费打码服务", true)
+
     newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "use_jfbym", "2.使用云码API", false)
+    ui.addCheckBox(debug_layout_验证码, "use_captcha_aunly_slip", "2.使用Aunly打码", true)
+
+    newRow(debug_layout_验证码)
+    ui.addCheckBox(debug_layout_验证码, "use_jfbym", "3.使用云码API", false)
     addButton(debug_layout_验证码, nil, "云码官网",
         make_jump_ui_command(layout, nil, [[jump_address("https://www.jfbym.com/")]]))
 

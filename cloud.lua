@@ -202,31 +202,9 @@ m.captcha = function(rect)
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local image_img_base64 = base64(img)
 
-    -- UA/数据生成
+    -- headers/数据生成
     local postdata = [[{"image_base64": "]] .. image_img_base64 .. [[", "captcha_type_override": "geetest_v3_click"}]]
-    local UA = "Arklights/" .. getApkVerInt() .. " " .. release_date
-
-    if cloud_get_task then
-        headers = [[Content-Type: application/json
-            Type: cloud
-            Cloud_url: {SERVER}
-            User-Agent: {UA}
-            Authorization: Bearer {CAPTCHATOKEN}]]
-        headers = string.gsub(headers, "{SERVER}", cloud_server)
-    elseif multi_account_enable then
-        headers = [[Content-Type: application/json
-            Type: multi_account
-            User-Agent: {UA}
-            Authorization: Bearer {CAPTCHATOKEN}]]
-    else
-        headers = [[Content-Type: application/json
-            Type: single
-            User-Agent: {UA}
-            Authorization: Bearer {CAPTCHATOKEN}]]
-    end
-    headers = string.gsub(headers, "{APKVERSION}", getApkVerInt())
-    headers = string.gsub(headers, "{CAPTCHATOKEN}", m.captchaToken)
-    headers = string.gsub(headers, "{UA}", UA)
+    local headers = gen_ua()
 
     local res, code = httpPost(m.captchaServer .. "/captcha/recognize", postdata, 30, headers)
     log(res, code)

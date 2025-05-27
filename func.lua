@@ -397,6 +397,33 @@ curl_custom = function(command)
     return exec2(curlCommand)
 end
 
+gen_ua = function()
+    local UA = "Arklights/" .. getApkVerInt() .. " " .. release_date
+    local headers = ""
+    if cloud_get_task then
+        headers = [[Content-Type: application/json
+            Type: cloud
+            Cloud_url: {SERVER}
+            User-Agent: {UA}
+            Authorization: Bearer {CAPTCHATOKEN}]]
+        headers = string.gsub(headers, "{SERVER}", cloud_server)
+    elseif multi_account_enable then
+        headers = [[Content-Type: application/json
+            Type: multi_account
+            User-Agent: {UA}
+            Authorization: Bearer {CAPTCHATOKEN}]]
+    else
+        headers = [[Content-Type: application/json
+            Type: single
+            User-Agent: {UA}
+            Authorization: Bearer {CAPTCHATOKEN}]]
+    end
+    headers = string.gsub(headers, "{APKVERSION}", getApkVerInt())
+    headers = string.gsub(headers, "{CAPTCHATOKEN}", cloud.captchaToken)
+    headers = string.gsub(headers, "{UA}", UA)
+    return headers
+end
+
 getCaptchaBox = function(retry)
     retry = retry or 0
     if retry > 3 then return end
@@ -514,16 +541,18 @@ end
 -- 滑块验证码/官服点选 处理判断
 trySolveSlipCaptcha = function(retry)
     local retry = retry or 1
+    ssleep(1.5) -- 等待验证码出图
     if not findAny({ "captcha", "滑块验证节点", "官服点选验证节点", "滑块验证节点新720" }) then return end
     log("等待验证码出图")
-    ssleep(1) -- 等待验证码出图
     is_old_slip = false
     if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
         log("find 滑块验证节点新")
-        if retry > 1 then
-            SolveSlipCaptcha(getCaptchaBox(), 2)
-        else
-            SolveSlipCaptcha(getCaptchaBox(), 1)
+        local box = getCaptchaBox()
+        local choices = { 1, 3, 2 }
+        for _, choice in ipairs(choices) do
+            local ret = SolveSlipCaptcha(box, choice)
+            if ret then break end
+            ssleep(0.5)
         end
     elseif findOne("官服点选验证节点") then
         log("find 官服点选验证节点")
@@ -589,7 +618,7 @@ SolveSlipCaptcha = function(rect, p_type)
     if not rect then return end
 
     local p_type = p_type or 1
-    if (p_type == 1 and not use_free_server_captcha) or (p_type == 2 and not jfbym_token) then return end
+    if (p_type == 1 and not use_free_server_captcha) or (p_type == 2 and not jfbym_token) or (p_type == 3 and not cloud_captcha_token) then return end
     local img = getWorkPath() .. "/captcha_slip.jpg"
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local ret, distance
@@ -600,7 +629,7 @@ SolveSlipCaptcha = function(rect, p_type)
         local status, data = pcall(JsonDecode, ret)
         if not status then return end
         distance = str2int(data.target[1].distance, 0)
-    else
+    elseif p_type == 2 then
         local data = {
             token = jfbym_token,
             type = "22222",
@@ -613,8 +642,23 @@ SolveSlipCaptcha = function(rect, p_type)
         data = data or {}
         if get(data, "code") ~= 10000 then return end
         distance = tonumber(get(data, "data", "data")) or 0
+    elseif p_type == 3 then
+        -- UA/数据生成
+        local postdata = [[{"image_base64": "]] .. base64(img) .. [["}]]
+        local headers = gen_ua()
+
+        local res, code = httpPost(cloud.captchaServer .. "/captcha/recognize", postdata, 30, headers)
+        log(res, code)
+        if code == 200 then
+            local status, data = pcall(JsonDecode, res)
+            if data.code == 0 then
+                distance = tonumber(data.data.result.slider_distance) or 0
+            else
+                log("Aunly打码失败", data.msg)
+                return false
+            end
+        end
     end
-    log(p_type == 1 and "free solve" or "云码", distance)
     if distance < 1 then return false end
     distance = distance - scale(12)
 
