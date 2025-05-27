@@ -1104,6 +1104,9 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_调试, "use_system_library", "使用系统支持库", true)
 
     newRow(debug_layout_调试)
+    ui.addCheckBox(debug_layout_调试, "catch_run_crash", "防止脚本异常崩溃", true)
+
+    newRow(debug_layout_调试)
     addTextView(debug_layout_调试, "游戏重启间隔(s)")
     ui.addEditText(debug_layout_调试, "restart_game_interval", "900")
 

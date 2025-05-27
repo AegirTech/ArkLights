@@ -1383,25 +1383,38 @@ end
 
 -- run function / job / table of function and job
 run = function(...)
-    local arg = { ... }
-    if #arg == 1 then
-        if type(arg[1]) == "function" then return arg[1]() end
-        if type(arg[1]) == "table" then arg = arg[1] end
-    end
-    local run_start_time = time()
-    qqnotify_before_run()
-    update_state()
-    save_run_state()
-    wait_game_up()
-    for _, v in ipairs(arg) do
-        running = v
-        if type(v) == 'function' then
-            v()
-        else
-            auto(path[v], path.fallback)
+    local run_internal = function(...)
+        local arg = { ... }
+        if #arg == 1 then
+            if type(arg[1]) == "function" then return arg[1]() end
+            if type(arg[1]) == "table" then arg = arg[1] end
         end
+        local run_start_time = time()
+        qqnotify_before_run()
+        update_state()
+        save_run_state()
+        wait_game_up()
+        for _, v in ipairs(arg) do
+            running = v
+            if type(v) == 'function' then
+                v()
+            else
+                auto(path[v], path.fallback)
+            end
+        end
+        qqnotify_after_run(run_start_time)
     end
-    qqnotify_after_run(run_start_time)
+
+    if catch_run_crash then
+        local status, err = pcall(run_internal, ...)
+        if not status then
+            log("Error in run(): " .. err)
+            toast("捕获到运行崩溃，请上传日志至开发者，即将跳过当前任务")
+            ssleep(5)
+        end
+    else
+        run_internal(...)
+    end
 end
 
 half_hour_cron = function(x, h)
@@ -3970,8 +3983,9 @@ update_state_from_debugui = function()
     max_log_time = str2int(max_log_time, 15)
     max_log_count = str2int(max_log_count, 1000)
     --bili_captcha_mode = str2int(bili_captcha_mode, 1)
-    use_local_captcha = (use_local_captcha == nil) and true or use_local_captcha
     use_captcha = (use_captcha == nil) and true or use_captcha
+
+    catch_run_crash = (catch_run_crash == nil) and true or catch_run_crash
 
     if not (always_enable_log or enable_log) then run = disable_log_wrapper(run) end
     QQ = (QQ or ''):commonmap():trim()

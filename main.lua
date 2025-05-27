@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "05.25 17:55"
+release_date = "05.25 18:01"
 update_announcement = '最近更新：六周年庆，多倍代理功能'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -124,7 +124,7 @@ enable_snapshot_service()
 remove_old_log()
 remove_lr_ad()
 detectServer()
-predebug_hook()
+-- predebug_hook()
 backup_config()
 showUI()
 loadUIConfig()
