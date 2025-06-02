@@ -118,6 +118,7 @@ point = {
     -- 验证码
     滑块验证节点 = { text = "请通过以下验证" },
     官服点选验证节点 = { text = "请在下图依次点击" },
+    官服点选验证确定按钮 = { text = "确定" },
     captcha = function()
         if findOne({ id = 'captcha' }) then
             return findOne({ class = "android.webkit.WebView" })

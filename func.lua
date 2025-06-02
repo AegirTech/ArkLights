@@ -486,33 +486,19 @@ getChoiceBox = function(retry)
     local retry = retry or 0
     if retry > 3 then return end
     local box = { l = 0, t = 0, r = 0, b = 0 }
-    local bx = find_color(nil, "4E79ED", 0)
+    local bx = find_color(nil, "5381FD", 0)
+    log(1)
     if not bx then return end
     box.l = bx[1]
     box.t = bx[2]
-    bx = find_color(nil, "4E79ED", 4)
+    bx = find_color(nil, "5381FD", 4)
+    log(2)
     if not bx then return end
     box.r = bx[1]
     bx = find_color(nil, "B2C2EE", 3)
+    log(3)
     if not bx then return end
     box.b = bx[2] - 5
-    local notb = false
-    for y = box.b, box.t, -1 do
-        if cmpColor(bx[1] + 4, y, "EFEFEF", 0.9) == 1 then
-            notb = true
-        end
-        if notb then
-            if cmpColor(bx[1] + 4, y, "EFEFEF", 0.9) == 0 then
-                box.b = y
-                break
-            end
-        end
-    end
-    box.l = box.l + scale(37)
-    box.r = box.r - scale(37)
-    if not notb then
-        box.b = box.b - scale(50)
-    end
     log("点选验证框2", box)
     if box.b - box.t < scale(200) then
         log("点选验证框 failed", box)
@@ -545,14 +531,17 @@ trySolveSlipCaptcha = function(retry)
             if ret then break end
             ssleep(0.5)
         end
-    elseif findOne("官服点选验证节点") then
+    elseif findOne("官服点选验证节点") or findOne("官服点选验证节点") then
         log("find 官服点选验证节点")
+        ssleep(0.2)
         official_choice = true
         local choices = { 3, 4, 1 }
+        local bbox = getChoiceBox()
+        log("点选验证框", bbox)
         for _, choice in ipairs(choices) do
-            local ret = trySolvePointSelectionCapture(getChoiceBox(), choice)
+            local ret = trySolvePointSelectionCapture(bbox, choice)
             ssleep(0.5)
-            if findOne("官服点选验证确认720") then
+            if findOne("官服点选验证确认720") or findOne("官服点选验证确定按钮") then
                 log("点选确认按钮 find")
                 break
             end
@@ -564,8 +553,11 @@ trySolveSlipCaptcha = function(retry)
         end
         official_choice = false
         wait(function()
-            if not findAny({ "captcha", "官服点选验证确认720", "官服点选验证节点" }) then return true end
-            appearTap("官服点选验证确认720", 1)
+            if not findAny({ "captcha", "官服点选验证确认720", "官服点选验证节点", "官服点选验证确定按钮" }) then return true end
+            local fo = findAny({ "官服点选验证确认720", "官服点选验证确定按钮" })
+            log("find 官服点选验证确认2 ", fo)
+            tap(fo)
+            ssleep(0.5)
         end, 10)
     elseif findOne("滑块验证节点") then -- 旧版滑块->b服
         if findOne("官服点选验证节点") then
