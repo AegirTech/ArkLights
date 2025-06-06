@@ -302,7 +302,8 @@ skland_daily_checkin = function(account, password)
     local did_time = get(account_data, "did_time")
     if did_time == nil or did_time ~= curtime then
         log("get did start")
-        local res, code = httpGet("https://skland-api.enlysure.com:13000/skland/get_did?verify=arklights", 10)
+        local res, code = httpGet(ark_api_base .. "/skland/get_did?verify=arklights",
+            10)
         log("did code get", res, code)
         if code == 200 then
             s_did = res
