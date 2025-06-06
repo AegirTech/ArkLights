@@ -5844,7 +5844,7 @@ path.活动 = function(x)
         end
     end
 
-    car_check() --有些大型活动会自带一些任务
+    --car_check() --有些大型活动会自带一些任务
     -- path.烟花委员会()
     log("skip_guide", skip_guide)
     if not skip_guide then
