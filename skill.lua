@@ -695,7 +695,11 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 if goodType == '作战记录' then base = base + 0.2501 end
             elseif icon == 'bskill_man_exp4' then
                 if goodType == '作战记录' then base = base + 0.20 end
-            elseif icon == 'bskill_man_gold2' then -- 砾
+            elseif icon == 'bskill_man_exp&spd&limit&cost2' then -- 酒神2
+                if goodType == '作战记录' then base = base + 0.35 end
+            elseif icon == 'bskill_man_exp&spd&limit&cost1' then -- 酒神0
+                if goodType == '作战记录' then base = base + 0.20 end
+            elseif icon == 'bskill_man_gold2' then               -- 砾
                 if goodType == '贵金属' then
                     base = base + 0.35
                     metallics = metallics + 1
@@ -913,6 +917,12 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
         -- 至简
         if all["bskill_man_spd_bd3"] then base = base + (robot // 16) * 0.05 end
         if all["bskill_man_spd_bd4"] then base = base + (robot // 8) * 0.05 end
+
+        -- Miss.Christine2
+        local tragodia = all['bskill_man_exp&spd&limit&cost2'] or all['bskill_man_exp&spd&limit&cost1']
+        if all['bskill_man_spd_double2'] and tragodia then
+            if goodType == '作战记录' then base = base + 0.3 end
+        end
 
         if all['bskill_man_spd_variable31'] then
             -- 泡泡
