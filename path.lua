@@ -6256,7 +6256,8 @@ path.活动商店购买 = function()
 
     if not wait(function()
             tap("活动商店导航")
-            if findOne("商店主页") then return true end
+            ssleep(.2)
+            if disappear("活动商店导航") then return true end
         end, 5) then
     end
     ssleep(0.5)
