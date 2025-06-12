@@ -272,11 +272,10 @@ skland.get_refresh_token = function()
 end
 
 skland_sign_cloud = function(account, password)
-    local url = ark_api_base .. "/skland/sign"
+    local url = ark_api_base .. "/skland/sign?verify=arklights"
     local data = {
         account = account,
-        password = password,
-        verify = "arklights"
+        password = password
     }
     local res, code = httpPost(url, JsonEncode(data), 30, "Content-Type: application/json")
     log("cloud sign", res, code)
