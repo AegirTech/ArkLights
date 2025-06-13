@@ -1610,6 +1610,9 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
             p["主页"] = nil
             tap(plain[x])
             log(208)
+            if x == "基建" and appear("语音资源未下载", 1) then
+                tap("左取消")
+            end
             appear({
                 target, "活动公告返回", "签到返回", "签到返回黄",
                 "活动签到返回", "国庆签到返回", "抽签返回",
@@ -1674,45 +1677,45 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
                 return
             end
         end,
-        基建全白判断 = function()
-            log('基建全白判断')
-            if not 基建白屏卡住时间 then
-                基建白屏卡住时间 = time()
-                log(基建白屏卡住时间)
-            end
-            if time() - 基建白屏卡住时间 > 15 * 1000 then
-                log('15s timeout')
-                if findOne('启动卡黑屏界面') then
-                    restartapp(appid)
-                    基建白屏卡住时间 = nil
-                end
-            else
-                log(time() - 基建白屏卡住时间)
-            end
-            ssleep(.1)
-        end,
-        基建全黑判断 = function()
-            log('基建全黑')
-            if not 基建黑屏卡住时间 then
-                基建黑屏卡住时间 = time()
-                log(基建黑屏卡住时间)
-            end
-            if time() - 基建黑屏卡住时间 > 15 * 1000 then
-                log('15s timeout')
-                if findOne('启动卡黑屏界面') then
-                    restartapp(appid)
-                    基建黑屏卡住时间 = nil
-                end
-            else
-                log(time() - 基建黑屏卡住时间)
-            end
-            ssleep(.1)
-        end,
+        -- 基建全白判断 = function()
+        --     log('基建全白判断')
+        --     if not 基建白屏卡住时间 then
+        --         基建白屏卡住时间 = time()
+        --         log(基建白屏卡住时间)
+        --     end
+        --     if time() - 基建白屏卡住时间 > 15 * 1000 then
+        --         log('15s timeout')
+        --         if findOne('启动卡黑屏界面') then
+        --             restartapp(appid)
+        --             基建白屏卡住时间 = nil
+        --         end
+        --     else
+        --         log(time() - 基建白屏卡住时间)
+        --     end
+        --     ssleep(.1)
+        -- end,
+        -- 基建全黑判断 = function()
+        --     log('基建全黑')
+        --     if not 基建黑屏卡住时间 then
+        --         基建黑屏卡住时间 = time()
+        --         log(基建黑屏卡住时间)
+        --     end
+        --     if time() - 基建黑屏卡住时间 > 15 * 1000 then
+        --         log('15s timeout')
+        --         if findOne('启动卡黑屏界面') then
+        --             restartapp(appid)
+        --             基建黑屏卡住时间 = nil
+        --         end
+        --     else
+        --         log(time() - 基建黑屏卡住时间)
+        --     end
+        --     ssleep(.1)
+        -- end,
     })
-    if x ~= "基建" then
-        p["基建全白判断"] = nil
-        p["基建全黑判断"] = nil
-    end
+    -- if x ~= "基建" then
+    --     p["基建全白判断"] = nil
+    --     p["基建全黑判断"] = nil
+    -- end
     if x == prev_jump and x ~= "首页" or disable_quick_jump then p.主页 = nil end
     p[target] = function()
         if prev_jump == "基建" and x == "基建" and not leaving_jump then
