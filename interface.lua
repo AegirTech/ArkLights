@@ -1744,7 +1744,6 @@ show_auto_fight_ui = function()
     newRow(layout)
     addButton(layout, "map_online", "联网更新地图包", "fetchMaps()")
     addButton(layout, nil, "本地更新地图包", "fetchLocalMaps()")
-    newRow(layout)
     addInfo(layout, "本地更新请在频道下载maps.zip放在/sdcard/Pictures下")
     -----------------------------------------------------------
     addTitle(layout, "使用方法")
