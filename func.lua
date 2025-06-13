@@ -962,7 +962,7 @@ upload_log = function()
         return
     end
     ui.setButton("upload_log_server", "上传日志中，请稍后")
-    local url = "https://arktoken.enlysure.com:21999/upload_log?verify=arklights"
+    local url = ark_api_base .. "/statistic/log?verify=arklights&device_id=test"
     local log_path = log_path .. "log_backup.txt"
     local ret = uploadFile(url, log_path)
     -- log(ret)
