@@ -1035,3 +1035,23 @@ get_day_of_week = function()
     local day = tonumber(os.date("%w"))
     return day == 0 and 7 or day
 end
+
+
+check_screen_size = function()
+    log("当前分辨率", screen.width, screen.height)
+    if screen.width < 0 or screen.width > 10000 then
+        toast("屏幕分辨率异常")
+        return
+    end
+    if math.abs(screen.width / screen.height - 16 / 9) > 0.2 then
+        toast("屏幕分辨率不符合要求，无法运行脚本")
+        console.println(3, "当前分辨率" .. screen.width .. screen.height .. "，不符合要求的16:9比例")
+        console.println(3, "脚本不适配除720p和1080p以外的分辨率")
+        console.println(3, "您可以忽略此错误，但是出现任何问题请不要向开发者反馈")
+        console.println(3, "脚本将在10s后运行")
+        console.show()
+        ssleep(10)
+        console.dismiss()
+        return
+    end
+end

@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "06.19 16:58"
+release_date = "06.19 17:58"
 update_announcement = '最近更新：生路活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -126,6 +126,7 @@ remove_lr_ad()
 detectServer()
 -- predebug_hook()
 backup_config()
+check_screen_size()
 showUI()
 loadUIConfig()
 restart_mode_hook()
