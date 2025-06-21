@@ -277,7 +277,7 @@ def upload_to_backup_server(type):
             ),
         )
     ]
-    response = requests.post(url, headers=headers, files=files)
+    response = requests.post(url, headers=headers, files=files, timeout=6000)
     # print(response.text)
     print("备用更新服务器上传：", "成功" if response.status_code == 200 else "失败")
 
