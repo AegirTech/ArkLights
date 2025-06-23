@@ -11,7 +11,6 @@ end
 console.println(3, "当前分辨率" .. screen.width .. "x" .. screen.height)
 if screen.width < 0 or screen.width > 10000 then
     toast("屏幕分辨率异常")
-    return
 end
 if math.abs(screen.width / screen.height - 16 / 9) > 0.2 then
     toast("屏幕分辨率不符合要求，无法运行脚本")
@@ -22,7 +21,6 @@ if math.abs(screen.width / screen.height - 16 / 9) > 0.2 then
     console.show()
     ssleep(10)
     console.dismiss()
-    return
 end
 
 -- if getDisplayDpi() < 320 then stop("不支持DPI" .. getDisplayDpi()) end
