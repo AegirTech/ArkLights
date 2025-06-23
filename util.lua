@@ -3119,7 +3119,6 @@ setEventCallback = function()
 end
 
 consoleInit = function()
-    console.clearLog()
     console.setPos(round(screen.height * 0.05), round(screen.height * 0.05),
         round(screen.height * 0.9), round(screen.height * 0.9))
     local screen = getScreen()

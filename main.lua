@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "06.19 17:58"
+release_date = "06.23 12:41"
 update_announcement = '最近更新：生路活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -60,7 +60,7 @@ log_time = os.time()
 log_count = 0
 max_log_time = 15
 max_log_count = 1000
-
+console.clearLog()
 
 ark_api_base = "https://arkapi.enlysure.com:33033"
 update_source = 'http://ark.aegirtech.com:8080'
@@ -126,7 +126,6 @@ remove_lr_ad()
 detectServer()
 -- predebug_hook()
 backup_config()
-check_screen_size()
 showUI()
 loadUIConfig()
 restart_mode_hook()
