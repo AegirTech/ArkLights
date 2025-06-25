@@ -292,6 +292,7 @@ skland_daily_checkin = function(account, password)
         return true
     end
     if skland_use_cloud then
+        account_data[account] = {}
         skland_sign_cloud(account, password)
         account_data[account]["lastcheckintime"] = curtime
         table.insert(qqmessage, "森空岛签到完成")
