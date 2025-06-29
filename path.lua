@@ -6268,7 +6268,7 @@ path.活动商店购买 = function()
     -- 防止各种掉帧等导致卡在领取等页面
     local 回到商店主页 = function()
         if not wait(function()
-                if findOne("商店主页1") then return true end
+                if findOne("商店主页") then return true end
                 tap("商店顶栏")
                 ssleep(0.2)
             end, 10) then
@@ -6276,8 +6276,8 @@ path.活动商店购买 = function()
         end
     end
 
-    if not appear("商店主页1", 1) then
-        log("未找到商店")
+    if not appear("商店主页", 2) then
+        log(6280, "未找到商店")
         return
     end
     local 物品横间距, 物品纵间距 = scale(516), scale(242)
@@ -6305,7 +6305,7 @@ path.活动商店购买 = function()
                             if findOne("购买物品面板") then return true end
                         end, 1.8) then
                     end
-                    if findOne("商店主页1") then
+                    if findOne("商店主页") then
                         log("未能进入商品，大概是识别错了")
                         break
                     end
