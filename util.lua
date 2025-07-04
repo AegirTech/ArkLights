@@ -2968,8 +2968,9 @@ update_state_from_ui = function()
     hd_open_time_end = parse_time("202506290400")
     hd2_open_time_end = parse_time("202505220400") -- 故事集开放时间段
     hd_mod = "SS"
-
+    log("fight_ui", fight_ui)
     fight = parse_fight_config(fight_ui)
+    print("fight", fight)
 
     -- 资源关全天开放时间段
     all_open_time_start = parse_time("202505111600")
