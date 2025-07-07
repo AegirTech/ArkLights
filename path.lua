@@ -4964,6 +4964,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         no_success_one_loop = 0
         if need_copy_homework then
             ssleep(0.5)
+            pcall(upload_launch_info, "autofight")
             auto_prts(homework[x], true)
         else
             if not wait(function()
@@ -8148,6 +8149,7 @@ end
 path.战略前瞻投资 = never_end_wrapper(path.前瞻投资)
 
 path.肉鸽任务 = function()
+    pcall(upload_launch_info, "rouge")
     log("肉鸽任务开始")
     if zl_ky then
         log("傀影")
@@ -8166,22 +8168,6 @@ path.肉鸽任务 = function()
             end
             path.前瞻投资()
         end
-    end
-
-    -- 分辨率检查
-    if math.abs(screen.width // screen.height - 16 // 9) < 0.1 then
-        log("分辨率检查通过")
-    else
-        log("分辨率检查未通过")
-        toast("分辨率不支持，请使用720p或者1080p")
-        toast("手机可以使用光速虚拟机，电脑请使用雷电模拟器")
-        stop("分辨率不支持", '', true, true)
-    end
-
-    if detect_simulators() == "mumu" then
-        toast("mumu请关闭保活，否则可能出现循环重启")
-        toast("如果仍然有问题，请更换雷电模拟器，mumu问题太多，不做适配")
-        ssleep(5)
     end
 
     if zl_mizuki then

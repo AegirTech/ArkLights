@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "06.30 23:31"
+release_date = "07.07 23:52"
 update_announcement = '最近更新：生路活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -152,6 +152,8 @@ transfer_global_variable("multi_account_user1", "multi_account_user0")
 saveConfig("continue_account", '')
 saveConfig("continue_extra_mode", extra_mode or '')
 
+pcall(upload_device_info)
+pcall(upload_launch_info, "launch")
 -- 清理download文件夹
 if delete_download_floder == true then delele_download_file() end
 

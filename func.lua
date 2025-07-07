@@ -1035,3 +1035,105 @@ get_day_of_week = function()
     local day = tonumber(os.date("%w"))
     return day == 0 and 7 or day
 end
+
+
+get_device_id = function()
+    local device_id = loadConfig("device_id", "")
+    if #device_id < 5 then
+        log("error not found")
+        local url = ark_api_base .. "/statistic/device/new?verify=arklights"
+        local res, code = httpGet(url, 10)
+        if code ~= 201 then
+            log("error 1")
+            return nil
+        end
+        saveConfig("device_id", res)
+        return res
+    end
+    return device_id
+end
+
+get_run_type = function()
+    local p_type = "single"
+    if cloud_get_task then
+        p_type = "cloud"
+    elseif multi_account_enable then
+        p_type = "multi"
+    elseif extra_mode then
+        p_type = "rouge"
+    end
+    return p_type
+end
+
+upload_device_info = function()
+    local device_id = get_device_id()
+    if not device_id then
+        log("error 01")
+        return
+    end
+    -- 上传时间检查
+    local curtime = os.date('%y%m%d')
+    local last_time = loadConfig("last_upd", "")
+    if last_time == curtime then
+        return
+    end
+
+    local url = ark_api_base .. "/statistic/device/update?verify=arklights&device_id=" .. device_id
+    local c_type = "aunly"
+    if type(cloud_captcha_token) == "string" and #cloud_captcha_token > 10 then
+        c_type = "aunly"
+        c_username = cloud_captcha_token
+    elseif type(captcha_username) == "string" and #captcha_username > 2 then
+        c_type = "图鉴"
+        c_username = captcha_username
+    elseif type(cloud_captcha_server2) == "string" and #cloud_captcha_server2 > 5 then
+        c_type = "第三方"
+        c_username = cloud_captcha_server2
+    end
+
+    local data = {
+        type = get_run_type(),
+        cloud_url = cloud_server,
+        cpu = get_cpu_arch(),
+        device_type = detect_simulators(),
+        captcha_type = c_type,
+        captcha_username = c_username,
+        apk_version = str(getApkVerInt()),
+        script_version = release_date,
+    }
+    local headers = [[Content-Type: application/json]]
+    local res, code = httpPost(url, JsonEncode(data), 10, headers)
+    saveConfig("last_upd", curtime)
+    log("success 10")
+end
+
+upload_launch_info = function(l_type, ex_data)
+    local ex_data = ex_data or {}
+    local device_id = get_device_id()
+    if not device_id then
+        log("error 01")
+        return
+    end
+    local url = ark_api_base .. "/statistic/report?verify=arklights"
+    local data = {
+        id = device_id,
+        type = l_type,
+        data = {
+        }
+    }
+    if l_type == "account" then
+        data.data = {
+            account = username,
+            server = server,
+            type = get_run_type(),
+            cloud_url = cloud_server,
+        }
+    end
+
+    for k, v in pairs(ex_data) do
+        data.data[k] = v
+    end
+    local headers = [[Content-Type: application/json]]
+    local res, code = httpPost(url, JsonEncode(data), 10, headers)
+    log("success 20")
+end

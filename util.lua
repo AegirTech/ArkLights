@@ -1383,6 +1383,7 @@ end
 
 -- run function / job / table of function and job
 run = function(...)
+    pcall(upload_launch_info, "account")
     local run_internal = function(...)
         local arg = { ... }
         if #arg == 1 then
@@ -4317,7 +4318,11 @@ find_color = function(v, color, dir, condifence)
 end
 
 get_cpu_arch = function()
-    return exec("getprop ro.product.cpu.abi")
+    return (exec("getprop ro.product.cpu.abi")):map({
+        ["\n"] = "",
+        [" "] = "",
+        ["　"] = "",
+    })
 end
 
 string.finds = function(x, targetStr)
