@@ -1122,6 +1122,9 @@ upload_launch_info = function(l_type, ex_data)
         }
     }
     if l_type == "account" then
+        if not username or not server then
+            return
+        end
         data.data = {
             account = username,
             server = server,
