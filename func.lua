@@ -1103,6 +1103,11 @@ upload_device_info = function()
     }
     local headers = [[Content-Type: application/json]]
     local res, code = httpPost(url, JsonEncode(data), 10, headers)
+    if code == 404 then
+        log("error 2", res, code)
+        saveConfig("device_id", "")
+        return
+    end
     saveConfig("last_upd", curtime)
     log("success 10")
 end
