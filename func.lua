@@ -1140,3 +1140,38 @@ upload_launch_info = function(l_type, ex_data)
     local res, code = httpPost(url, JsonEncode(data), 10, headers)
     log("success 20")
 end
+
+
+check_server_is_close = function()
+    local current_hour = tonumber(os.date("%H"))
+    local current_minute = tonumber(os.date("%M"))
+
+    if (current_hour > 10 or (current_hour == 10 and current_minute >= 0)) and
+        (current_hour < 16 or (current_hour == 16 and current_minute == 0)) then
+        local curtime = os.date('%y%m%d')
+        local last_time = loadConfig("last_check_server", "")
+        if last_time == curtime then
+            return
+        end
+
+        local url = ark_api_base .. "/ark/server/check?verify=arklights"
+        local res, code = httpGet(url, 10)
+        if code == 200 then
+            saveConfig("last_check_server", curtime)
+            log("服务器检查通过")
+            return
+        elseif code == 210 then
+            saveConfig("last_check_server", curtime)
+            log("检测到方舟服务器处于关闭状态")
+            local close_time = tonumber(res) or 0
+            local sleep_time = close_time - os.time()
+            console.println(3, "方舟服务器处于关闭状态,需要休眠" .. str(sleep_time) .. "秒")
+            console.show()
+            ssleep(sleep_time)
+            console.dismiss()
+            return
+        end
+    else
+        return
+    end
+end

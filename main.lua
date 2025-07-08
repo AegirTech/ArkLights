@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.08 00:05"
+release_date = "07.08 11:44"
 update_announcement = '最近更新：生路活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -131,7 +131,7 @@ loadUIConfig()
 restart_mode_hook()
 update_state_from_debugui()
 check_crontab_on_start()
-show_ad_ui()
+-- show_ad_ui()
 cloud.startHeartBeat()
 
 if use_local_dictionary then
@@ -151,7 +151,7 @@ no_extra_job = {}
 transfer_global_variable("multi_account_user1", "multi_account_user0")
 saveConfig("continue_account", '')
 saveConfig("continue_extra_mode", extra_mode or '')
-
+check_server_is_close()
 pcall(upload_device_info)
 pcall(upload_launch_info, "launch")
 -- 清理download文件夹
