@@ -1143,9 +1143,21 @@ end
 
 
 check_server_is_close = function()
+    local wait_s = function()
+        log("服务器处于关闭状态")
+        local sleep_time = tonumber(loadConfig("server_close", 0)) - os.time()
+        console.println(3, "方舟服务器处于关闭状态,需要休眠" .. str(sleep_time) .. "秒")
+        console.show()
+        ssleep(sleep_time)
+        console.dismiss()
+        return
+    end
+
     local current_hour = tonumber(os.date("%H"))
     local current_minute = tonumber(os.date("%M"))
-
+    if tonumber(loadConfig("server_close", 0)) > os.time() then
+        return wait_s()
+    end
     if (current_hour > 10 or (current_hour == 10 and current_minute >= 0)) and
         (current_hour < 16 or (current_hour == 16 and current_minute == 0)) then
         local curtime = os.date('%y%m%d')
@@ -1162,14 +1174,9 @@ check_server_is_close = function()
             return
         elseif code == 210 then
             saveConfig("last_check_server", curtime)
+            saveConfig("server_close", close_time)
             log("检测到方舟服务器处于关闭状态")
-            local close_time = tonumber(res) or 0
-            local sleep_time = close_time - os.time()
-            console.println(3, "方舟服务器处于关闭状态,需要休眠" .. str(sleep_time) .. "秒")
-            console.show()
-            ssleep(sleep_time)
-            console.dismiss()
-            return
+            return wait_s()
         end
     else
         return
