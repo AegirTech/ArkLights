@@ -2963,10 +2963,10 @@ update_state_from_ui = function()
     job = parse_from_ui("now_job_ui", all_job)
 
     -- 活动开放时间段
-    hd_nickname = "BP"
-    hd_max_stage = 7
+    hd_nickname = "FM"
+    hd_max_stage = 8
     hd_exclude = {}                                --排除哪些关卡不刷，例如{9}
-    hd_open_time_end = parse_time("202506290400")
+    hd_open_time_end = parse_time("202507150400")
     hd2_open_time_end = parse_time("202507150400") -- 故事集开放时间段
     hd_mod = "故事集"
     log("fight_ui", fight_ui)

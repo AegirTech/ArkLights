@@ -5786,7 +5786,7 @@ path.活动 = function(x)
         clean_hdfight()
         return
     end
-    log("活动", x, skip_guide)
+    log("进入活动关卡:", x,"跳过导航:", skip_guide)
 
     if not skip_guide then
         path.跳转("首页")
@@ -5989,6 +5989,7 @@ path.活动页面寻找 = function(n)
     tap(l[n])
     disappear("主页", 2)
     ssleep(5) --六周年庆活动进入时候容易触发"跳过剧情"，加点延迟
+    log(5992)
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if l[n] == "面板作战" then
