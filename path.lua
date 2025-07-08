@@ -6368,73 +6368,75 @@ path.故事解锁 = function()
     end
     if not wait(function()
             tap("故事集导航")
-            if not findOne("故事集导航") then return true end
+            if findOne("故事集相片页面") then return true end
+            ssleep(0.2)
         end, 5) then
         return
     end
 
     disappear("正在提交反馈至神经", network_timeout)
-
-    -- 进入故事集页面
-
-    -- 边栏宽度 0-260 143-底
-    ssleep(1)
-    if not wait(function()
-            local tc = getColor(scale(360), scale(940))
-            log(tc)
-            if tc == "EDEDED" or tc == "313131" then return true end
-        end, 5) then
-    end
-    local 故事集页面左列特征点 = { math.random(10, scale(260)), math.random(scale(145), screen.height) }
-    local 故事集主页颜色 = getColor(故事集页面左列特征点[1], 故事集页面左列特征点[2])
-    log(故事集页面左列特征点, 故事集主页颜色)
+    ssleep(0.5)
+    local 故事集页面左侧= { math.random(10, scale(260)), math.random(scale(145), screen.height) }
     -- 防止各种掉帧等导致卡在领取等页面
     回到故事集主页 = function()
         if not wait(function()
-                if cmpColorEx(故事集页面左列特征点[1], 故事集页面左列特征点[2], str(故事集主页颜色), default_findcolor_confidence) then return true end
-                tap(故事集页面左列特征点)
+                if findOne("故事集相片页面") then return true end
+                tap(故事集页面左侧)
                 ssleep(0.2)
             end, 10) then
         end
     end
 
-    local 向左滑动 = function() -- 左边3个 右边3个 直接滑动到底
+    local 向左滑动 = function()
+        local sx = 1880
+        local sy = 300
+        local distance = -1800
         gesture({
             {
-                point = { { screen.width * 0.95, screen.height / 2 }, { screen.width * 0.1, screen.height / 2 } },
+                point = {
+                    { sx,            sy },
+                    { sx + distance, sy - scale(math.random(80, 150)) },
+                    { sx + distance, sy },
+                    { sx + distance, sy - scale(math.random(80, 150)) },
+                    { sx + distance, sy },
+                },
                 start = 0,
-                duration = 1500,
+                duration = 500,
             },
         })
+        sleep(500 + 50)
     end
-    -- 未解锁颜色 313131 起始 360,940 间隔 485 结束 1720 940
-    -- 边栏宽度 0-260 143-底
-    local t = os.time()
-    local gy = scale(940)
-    for i = 0, 5 do
-        if os.time() - t > 2 * 60 then -- 任务总时长2分钟
-            log("故事集任务超时")
-            return
-        end
+    
+    for i = 0, 7 do
         回到故事集主页()
-
-        if i == 3 then
-            ssleep(1)
+        if i == 4 then
             向左滑动()
             ssleep(2)
         end
-        ssleep(1)
-        local gx = i < 3 and scale(360) + scale(485) * i or scale(1720) - scale(485) * (5 - i)
-        local tap_color = getColor(gx, gy)
-        log(gx, gy, tap_color)
-        if tap_color == "313131" then -- 未解锁
-            log(i, "未解锁")
-            tap({ gx, gy })
+        local 领取 =function ()
             disappear("正在提交反馈至神经", network_timeout)
             if appear("故事集解锁确认页面", 3) then
                 tap("故事集解锁确认按钮")
             end
             disappear("故事集解锁确认按钮", network_timeout)
+            ssleep(1)
+        end
+        if i<=4 then
+            if findOne(point["故事集未解锁左列表"][i]) then
+                log("find", i)
+                tap(point["故事集未解锁左列表"][i])
+                领取()
+            else
+                log("not find", i)
+            end
+        else
+            if findOne(point["故事集未解锁右列表"][i - 4]) then
+                log("find2", i)
+                tap(point["故事集未解锁右列表"][i - 4])
+                领取()
+            else
+                log("not find2", i)
+            end
         end
     end
 end
