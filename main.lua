@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.09 01:30"
+release_date = "07.09 13:21"
 update_announcement = '最近更新：镜中集商店导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -139,7 +139,7 @@ if use_local_dictionary then
     require("turing")
 end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
-    log("debug mode")
+    log("dev mode")
     -- path.基建信息获取()
     -- path.办公室换班()
     -- path.bilibili_login.B服验证码刷新()
@@ -151,9 +151,11 @@ no_extra_job = {}
 transfer_global_variable("multi_account_user1", "multi_account_user0")
 saveConfig("continue_account", '')
 saveConfig("continue_extra_mode", extra_mode or '')
-check_server_is_close()
-pcall(upload_device_info)
-pcall(upload_launch_info, "launch")
+if not dev_mode then
+    check_server_is_close()
+    pcall(upload_device_info)
+    pcall(upload_launch_info, "launch")
+end
 -- 清理download文件夹
 if delete_download_floder == true then delele_download_file() end
 
