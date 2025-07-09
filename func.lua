@@ -1079,7 +1079,7 @@ upload_device_info = function()
     end
 
     local url = ark_api_base .. "/statistic/device/update?verify=arklights&device_id=" .. device_id
-    local c_type = "aunly"
+    local c_type = "未知"
     if type(cloud_captcha_token) == "string" and #cloud_captcha_token > 10 then
         c_type = "aunly"
         c_username = cloud_captcha_token
