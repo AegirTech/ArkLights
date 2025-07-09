@@ -538,7 +538,7 @@ path.bilibili_login = {
         if use_captcha_aunly and type(cloud_captcha_token) == "string" and #cloud_captcha_token > 10 then
             table.insert(choices, 3)
         end
-        if use_captcha_free2 and type(cloud_captcha_server2) == "string" and #cloud_captcha_server2 > 4then
+        if use_captcha_free2 and type(cloud_captcha_server2) == "string" and #cloud_captcha_server2 > 4 then
             table.insert(choices, 4)
         end
         if use_captcha and captcha_username then
@@ -576,12 +576,12 @@ path.bilibili_login = {
 
         log("B服安全验证流程", "点选已完成，正在提交打码结果")
         if not wait(function()
-            local ft = findAny({
-                "B服安全验证提交", "B服安全验证提交320DPI",
-                "B服安全验证确认按钮",
-            })
-            tap(ft)
-        end, 2) then
+                local ft = findAny({
+                    "B服安全验证提交", "B服安全验证提交320DPI",
+                    "B服安全验证确认按钮",
+                })
+                tap(ft)
+            end, 2) then
             log("未找到b服提交按钮1")
             findTap("B服安全验证提交320DPI")
             tapIfCheckedColor({ 823, 605, "539FFE" }, { 823, 605, "539FFE" }, { 692, 552, "539FFE" })
@@ -605,7 +605,7 @@ path.bilibili_login = {
         end
 
         wait(function()
-            if not findAny({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮",}) then
+            if not findAny({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮", }) then
                 -- 这个log是阿点写的 不知道什么意思
                 log("B服安全验证提交未找到，可能提交成功")
                 return true
@@ -5786,7 +5786,7 @@ path.活动 = function(x)
         clean_hdfight()
         return
     end
-    log("进入活动关卡:", x,"跳过导航:", skip_guide)
+    log("进入活动关卡:", x, "跳过导航:", skip_guide)
 
     if not skip_guide then
         path.跳转("首页")
@@ -5988,8 +5988,10 @@ path.活动页面寻找 = function(n)
     local l = { "面板活动", "面板活动2", "面板作战" }
     tap(l[n])
     disappear("主页", 2)
-    ssleep(5) --六周年庆活动进入时候容易触发"跳过剧情"，加点延迟
-    log(5992)
+    if hd_mod ~= "故事集" then
+        ssleep(5) --六周年庆活动进入时候容易触发"跳过剧情"，加点延迟
+        log(5992)
+    end
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if l[n] == "面板作战" then
@@ -6377,7 +6379,7 @@ path.故事解锁 = function()
 
     disappear("正在提交反馈至神经", network_timeout)
     ssleep(0.5)
-    local 故事集页面左侧= { math.random(10, scale(260)), math.random(scale(145), screen.height) }
+    local 故事集页面左侧 = { math.random(10, scale(260)), math.random(scale(145), screen.height) }
     -- 防止各种掉帧等导致卡在领取等页面
     回到故事集主页 = function()
         if not wait(function()
@@ -6407,14 +6409,14 @@ path.故事解锁 = function()
         })
         sleep(500 + 50)
     end
-    
+
     for i = 0, 7 do
         回到故事集主页()
         if i == 4 then
             向左滑动()
             ssleep(2)
         end
-        local 领取 =function ()
+        local 领取 = function()
             disappear("正在提交反馈至神经", network_timeout)
             if appear("故事集解锁确认页面", 3) then
                 tap("故事集解锁确认按钮")
@@ -6422,7 +6424,7 @@ path.故事解锁 = function()
             disappear("故事集解锁确认按钮", network_timeout)
             ssleep(1)
         end
-        if i<=4 then
+        if i <= 4 then
             if findOne(point["故事集未解锁左列表"][i]) then
                 log("find", i)
                 tap(point["故事集未解锁左列表"][i])
