@@ -1072,9 +1072,10 @@ swipe = function(x)
     -- tap({scale(300), scale(150)})
     log("swipe", x)
     if x == 'right' then
+        -- 15章滑动修复
         gesture({
             {
-                point = { { scale(300), scale(150) }, { 1000000, scale(150) } },
+                point = { { scale(370), scale(873) }, { 1000000, scale(873) } },
                 start = 0,
                 duration = 250,
             },

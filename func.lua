@@ -1142,7 +1142,7 @@ upload_launch_info = function(l_type, ex_data)
         data.data[k] = v
     end
     local headers = [[Content-Type: application/json]]
-    local res, code = httpPost(url, JsonEncode(data), 10, headers)
+    local res, code = httpPost(url, JsonEncode(data), 5, headers)
     log("success 20")
 end
 
