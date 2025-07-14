@@ -413,10 +413,6 @@ sarkaz.保持黄负荷 = function()
     end
 end
 
-sarkaz.识别地图 = function()
-
-end
-
 sarkaz.蓝图速通 = function()
     log('start skz spdrun')
     初始队员 = { "维什戴尔", "谷米", "卡达" }
