@@ -194,19 +194,6 @@ path.界园前瞻投资 = function()
                 end, 5) then
                 return
             end
-        end
-
-        if not wait(function()
-                if findOne("返回确认界面") then return true end
-                tap("界园_放弃探索")
-            end, 5) then
-            log(2608)
-            -- 无法直接放弃的情况 不处理
-            if not appear("界园_常规行动", 5) then
-                log(2609)
-                return
-            end
-
             if not wait(function()
                     if findOne("界园_常规行动") then return true end
                     -- 第一次数据更新处理
@@ -222,6 +209,34 @@ path.界园前瞻投资 = function()
                 return
             end
             if jumpout then return end
+        else
+            if not wait(function()
+                    if findOne("返回确认界面") then return true end
+                    tap("界园_放弃探索")
+                end, 5) then
+                log(2608)
+                -- 无法直接放弃的情况 不处理
+                if not appear("界园_常规行动", 5) then
+                    log(2609)
+                    return
+                end
+
+                if not wait(function()
+                        if findOne("界园_常规行动") then return true end
+                        -- 第一次数据更新处理
+                        if findAny({
+                                "面板", "活动公告返回", "签到返回", "签到返回黄",
+                                "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                            }) then
+                            jumpout = true
+                            return true
+                        end
+                        tap("新战略确认")
+                    end, 5) then
+                    return
+                end
+                if jumpout then return end
+            end
         end
         if not wait(function(reset_wait_start_time)
                 if findOne("正在提交反馈至神经") then
