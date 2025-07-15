@@ -3032,6 +3032,8 @@ apply_multi_account_setting = function(i, visited)
 end
 
 crontab_next_time = function(text)
+    log(1056)
+    log(text)
     local config = string.filterSplit(text)
     local candidate = {}
     if #config == 0 then return 0 end
@@ -3045,10 +3047,12 @@ crontab_next_time = function(text)
         table.insert(candidate, os.time(
             update(os.date("*t"), { hour = hour + 24, min = min, sec = 0 })))
     end
+    log(candidate)
     table.sort(candidate)
     -- log("candidate", candidate)
     -- log("#candidate", #candidate)
     local next_time = table.findv(candidate, function(x) return x > current end)
+    log(next_time)
     return next_time or 0
 end
 
@@ -3068,7 +3072,7 @@ check_crontab = function()
     local next_time_on_start = loadConfig("crontab_next_time_on_start", "")
     saveConfig("crontab_next_time_on_start", '')
     local next_time = crontab_next_time(crontab_text)
-    log(4749, "next_time", next_time, next_time_on_start)
+    log(4749, "next_time_now", next_time, "next_time_ori", next_time_on_start)
     multi_account_choice_idx = nil
 
     local restart = function()
@@ -3091,10 +3095,10 @@ check_crontab = function()
         restart()
     end
 
-    toast("下次执行时间：" .. os.date("%H:%M", next_time))
+    toast("下次执行时间：" .. os.date("%Y-%m-%d %H:%M", next_time))
     while true do
         if os.time() >= next_time then break end
-        ssleep(1)
+        ssleep(5)
         -- ssleep(clamp(next_time - os.time(), 0, 1000))
     end
     restart()
