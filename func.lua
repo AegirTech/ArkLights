@@ -1198,3 +1198,8 @@ check_server_is_close = function()
         return
     end
 end
+
+ocr_ret = function(ocr_target, h)
+    return table.join(map(function(x) return x.text end,
+        ocr(ocr_target, h)))
+end

@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.15 16:59"
+release_date = "07.15 19:53"
 update_announcement = '最近更新：镜中集商店导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -142,9 +142,9 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     ssleep(1)
     -- ocr({ 1231, 441, 1366, 485 })
-    -- ocr({ 585, 441, 693, 482 })
-    zl_navigation('界园_常规行动', '界园_进入主题')
-    exit()
+    -- ocr({ 1285, 445, 1412, 477 })
+
+    -- exit()
     -- path.基建信息获取()
     -- path.办公室换班()
     -- path.bilibili_login.B服验证码刷新()

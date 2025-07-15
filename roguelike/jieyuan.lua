@@ -5,17 +5,252 @@
 
 jieyuan = {}
 
+jieyuan.分支选择 = function()
+    keepCapture()
+    local 第一列 = {}
+    local 第二列 = {}
+    local 第三列 = {}
+    local 第一列选择 = 0
+    local 第二列选择 = 0
+    local 第三列选择 = 0
+
+    for i = 1, 2 do
+        table.insert(第一列, "作战")
+    end
+
+    log("第1列")
+    log(第一列)
+
+    -- 第二列关卡判断
+    log("第2列")
+    local 第二列分支_数目 = 0
+    local 第二列分支_来源上 = false
+    local 第二列分支_来源下 = false
+    if findOne("萨卡兹_第二列_中间分支_来源上") then
+        第二列分支_来源上 = true
+    end
+    if findOne("萨卡兹_第二列_中间分支_来源下") then
+        第二列分支_来源下 = true
+    end
+    log(第二列分支_来源上, 第二列分支_来源下)
+    if (not 第二列分支_来源上) and (not 第二列分支_来源下) then --2列
+        第二列分支_数目 = 2
+        for i = 1, 2 do
+            local ret = ocr_ret("界园_第二列_关卡名ocr2_列表" .. i)
+            log("ocr", ret)
+            if string.finds(ret, { "不", "而", "期", "超" }) then
+                table.insert(第二列, "不期而遇")
+            elseif string.finds(ret, { "得", "所", "愿" }) then
+                table.insert(第二列, "得偿所愿")
+            else
+                table.insert(第二列, "作战")
+            end
+        end
+    else
+        第二列分支_数目 = 3
+        for i = 1, 3 do
+            if findOne("界园_第二列_不期而遇3_列表" .. i) then
+                table.insert(第二列, "不期而遇")
+            else
+                local ret = ocr_ret("界园_第二列_关卡名ocr3_列表" .. i)
+                if string.finds(ret, { "得", "所", "愿" }) then
+                    table.insert(第二列, "得偿所愿")
+                else
+                    table.insert(第二列, "作战")
+                end
+            end
+        end
+    end
+    log(第二列分支_数目)
+    log(第二列)
+
+    -- 第三列关卡判断
+    -- 似乎没必要 第三列基本全是不期而遇
+    -- 如果是三列 就默认全部是直线 不考虑分支（懒得写了）
+    -- 如果是二三都为2列 也默认全部是直线
+    log("第3列")
+    local 第三列分支_数目 = 3
+    if findOne("界园_第三列_不期而遇3_列表1") then
+        for i = 1, 3 do
+            table.insert(第三列, "不期而遇")
+        end
+    else
+        第三列分支_数目 = 2
+        for i = 1, 2 do
+            table.insert(第三列, "不期而遇")
+        end
+    end
+    log(第三列分支_数目)
+    log(第三列)
+    local 第三列分支_32连接下 = false
+    local 第三列分支_32连接上 = false
+    if 第二列分支_数目 == 3 and 第三列分支_数目 == 2 then
+        local po = find_color("萨卡兹_第三列_32_中间分支连接下查找范围", "FEFEFE")
+        if po then
+            第三列分支_32连接下 = true --找到则是连接的第三条分支的第二个
+        end
+
+        local po = find_color("萨卡兹_第三列_32_中间分支连接上查找范围", "FEFEFE")
+        if po then
+            第三列分支_32连接上 = true --找到则是连接的第三条分支的第二个
+        end
+    end
+    log(第三列分支_32连接上, 第三列分支_32连接下)
+    local 第三列分支_23连接下 = false
+    local 第三列分支_23连接上 = false
+    if 第二列分支_数目 == 2 and 第三列分支_数目 == 3 then
+        local po = find_color("萨卡兹_第三列_23_中间分支连接下查找范围", "FEFEFE")
+        if po then
+            第三列分支_23连接下 = true --找到则是连接的第三条分支的第二个
+        end
+
+        local po = find_color("萨卡兹_第三列_23_中间分支连接上查找范围", "FEFEFE")
+        if po then
+            第三列分支_23连接上 = true --找到则是连接的第三条分支的第二个
+        end
+    end
+    log(第三列分支_23连接上, 第三列分支_23连接下)
+
+    -- 生成路线图
+    local skz_map = {}
+    local function checkCondition(i, j, k, branch2, branch3)
+        if branch2 and branch3 then
+            return { { 1, 1, 1 }, { 1, 2, 2 }, { 2, 3, 2 } }
+        elseif branch2 and not branch3 then
+            return { { 1, 1, 1 }, { 1, 2, 2 }, { 1, 3, 2 } }
+        elseif not branch2 and branch3 then
+            return { { 1, 1, 1 }, { 1, 2, 1 }, { 1, 3, 2 } }
+        elseif not branch2 and not branch3 then
+            return { { 1, 1, 1 }, { 2, 2, 1 }, { 1, 3, 2 } }
+        end
+        return {}
+    end
+
+    for i, v in ipairs(第一列) do
+        for j, w in ipairs(第二列) do
+            for k, x in ipairs(第三列) do
+                if 第二列分支_数目 == 第三列分支_数目 then
+                    if 第二列分支_数目 == 2 then
+                        if i == j and j == k then
+                            table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                        end
+                    else
+                        if 第二列分支_来源上 then
+                            if i == 1 and j == k and (j == 1 or 2) then
+                                table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                            end
+                            if i == 2 and j == 3 and k == 3 then
+                                table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                            end
+                        end
+                        if 第二列分支_来源下 then
+                            if i == 2 and j == k and (j == 2 or 3) then
+                                table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                            end
+                            if i == 1 and j == 1 and k == 1 then
+                                table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                            end
+                        end
+                    end
+                else
+                    if 第二列分支_数目 == 2 and 第三列分支_数目 == 3 then
+                        local 条件组合 = {
+                            { 第三列分支_23连接下, { { 1, 1, 1 }, { 2, 2, 2 }, { 2, 2, 3 } } },
+                            { 第三列分支_23连接上, { { 1, 1, 1 }, { 1, 1, 2 }, { 2, 2, 3 } } }
+                        }
+                        -- 遍历每个条件组合并插入数据到 skz_map
+                        for _, 条件 in ipairs(条件组合) do
+                            local 第三列条件, 值组合 = table.unpack(条件)
+                            if 第三列条件 then
+                                for _, 值 in ipairs(值组合) do
+                                    local a, b, c = table.unpack(值)
+                                    if i == a and j == b and k == c then
+                                        table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                                    end
+                                end
+                            end
+                        end
+                    else
+                        -- 相反就是 第二列 3 第三列 2
+                        local 条件组合 = {
+                            { 第三列分支_32连接下, 第二列分支_来源上, { { 1, 1, 1 }, { 1, 2, 2 }, { 2, 3, 2 } } },
+                            { 第三列分支_32连接下, 第二列分支_来源下, { { 1, 1, 1 }, { 2, 2, 2 }, { 2, 3, 2 } } },
+                            { 第三列分支_32连接上, 第二列分支_来源上, { { 1, 1, 1 }, { 1, 2, 1 }, { 2, 3, 2 } } },
+                            { 第三列分支_32连接上, 第二列分支_来源下, { { 1, 1, 1 }, { 2, 2, 1 }, { 2, 3, 2 } } }
+                        }
+                        -- 遍历每个条件组合并插入数据到 skz_map
+                        for _, 条件 in ipairs(条件组合) do
+                            local 第三列条件, 第二列条件, 值组合 = table.unpack(条件)
+                            if 第三列条件 then
+                                if 第二列条件 then
+                                    for _, 值 in ipairs(值组合) do
+                                        local a, b, c = table.unpack(值)
+                                        if i == a and j == b and k == c then
+                                            table.insert(skz_map, { { i, v }, { j, w }, { k, x } })
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    log("map")
+    log(skz_map)
+
+    local function find_best_route(routes)
+        local best_score = 0
+        local best_route = nil
+        for _, route in ipairs(routes) do
+            local score = 0
+            for rx, segment in ipairs(route) do
+                if segment[2] == "紧急作战" then
+                    score = score - 5
+                elseif segment[2] == "不期而遇" then
+                    if rx == 3 then
+                        -- score = score + 1
+                        -- 在第一列优先
+                    else
+                        score = score + 2
+                    end
+                elseif segment[2] == "作战" then
+                    if rx == 1 then
+                        score = score + 3
+                    end
+                    score = score - 3
+                elseif segment[2] == "得偿所愿" then
+                    score = score
+                end
+            end
+            log(score, route)
+            if score > best_score then
+                best_score = score
+                best_route = route
+            end
+        end
+        log(best_score, route)
+        return best_route
+    end
+    releaseCapture()
+    local best_route = find_best_route(skz_map)
+    if not best_route then
+        log("没有满足条件的路线")
+        -- best_route = skz_map[1]
+        -- best_route = { { 1, 第一列[1] }, { 1, 第二列[1] }, { 1, 第三列[1] } }
+        return nil
+    end
+    log(best_route)
+    best_route[1][3] = 2
+    best_route[2][3] = 第二列分支_数目
+    best_route[3][3] = 第三列分支_数目
+    return best_route
+end
+
 
 path.界园前瞻投资 = function()
     log('start 界园')
-    if findAny({ "萨卡兹_戛然而止", "萨卡兹_戛然而止2" }) then
-        log('萨卡兹_戛然而止')
-        wait(function()
-            if findAny({ "萨卡兹_常规行动", "面板" }) then return true end
-            tap("新战略确认")
-        end, 15)
-        return
-    end
 
     -- 肉鸽每8小时做日常
     zl_eight_daily()
@@ -40,30 +275,35 @@ path.界园前瞻投资 = function()
     zl_navigation('界园_常规行动', '界园_进入主题')
 
     --肉鸽 等级源石锭检查
-    萨卡兹肉鸽完成 = zl_level_coin_inquire('萨卡兹_常规行动', '萨卡兹_等级检测范围', '萨卡兹_源石锭检测范围')
-    if 萨卡兹肉鸽完成 then
+    界园肉鸽完成 = zl_level_coin_inquire('界园_常规行动', '界园_等级检测范围', '界园_源石锭检测范围')
+    if 界园肉鸽完成 then
         return
     end
 
     -- 放弃探索
-    if findOne("萨卡兹_放弃本次探索") then
+    if findOne("界园_戛然而止") then
+        if not findOne("界园_放弃探索") then
+            if not wait(function()
+                    if not findOne("界园_戛然而止") then return true end
+                    tap("界园_探索开始")
+                end, 5) then
+                return
+            end
+        end
+
         if not wait(function()
                 if findOne("返回确认界面") then return true end
-                tap("萨卡兹_放弃本次探索")
+                tap("界园_放弃探索")
             end, 5) then
             log(2608)
             -- 无法直接放弃的情况 不处理
-            if not wait(function()
-                    if not findOne("萨卡兹_常规行动") then return true end
-                    tap("萨卡兹_继续探索")
-                    ssleep(.5)
-                    log(2613)
-                end, 5) then
+            if not appear("界园_常规行动", 5) then
+                log(2609)
                 return
             end
 
             if not wait(function()
-                    if findOne("萨卡兹_常规行动") then return true end
+                    if findOne("界园_常规行动") then return true end
                     -- 第一次数据更新处理
                     if findAny({
                             "面板", "活动公告返回", "签到返回", "签到返回黄",
@@ -87,7 +327,7 @@ path.界园前瞻投资 = function()
                     return
                 end
                 tap("新战略确认")
-                if findOne("萨卡兹_常规行动") and not findOne("萨卡兹_放弃探索") then
+                if findOne("界园_常规行动") and not findOne("界园_放弃探索") then
                     return true
                 end
                 -- 第一次数据更新处理
@@ -117,7 +357,6 @@ path.界园前瞻投资 = function()
             end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
 
-            sarkaz.加载种子()
             tap("新战略确认")
             tap("继续探索")
             if time() - t > 2 * 1000 then --第一次时候，需要选择难度等级
@@ -128,28 +367,17 @@ path.界园前瞻投资 = function()
             end
         end, 60) then
         -- 初始选难度
-        tap('萨米_难度选择确认')
+        tap('难度选择确认')
 
         return
     end
     if jumpout then return end
 
     -- 开始探索 一路按到 招募干员
-    -- local first_time_see_first_card = 0
-
     if not wait(function(reset_wait_start_time)
-            if findOne("萨卡兹_初始招募") then return true end
+            if findOne("界园_选择招募二阶段") then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
             tap("新战略确认")
-            tap("新战略确认")
-            tap("新战略确认")
-        end, 10) then
-        return
-    end
-
-    if not wait(function(reset_wait_start_time)
-            if findOne("萨卡兹_初始招募") then return true end
-            tap("萨卡兹_近卫招募券")
         end, 10) then
         return
     end
@@ -158,7 +386,7 @@ path.界园前瞻投资 = function()
     if not wait(function()
             tap("近卫招募券")
             tap("招募说明关闭")
-            if not findOne("萨卡兹_初始招募") and findOne("确认招募") then
+            if not findOne("肉鸽_右上角希望") then
                 return true
             end
         end, 10) then
@@ -166,16 +394,14 @@ path.界园前瞻投资 = function()
     end
 
     if not wait(function()
-            if findAny({ "萨卡兹_初始招募", "战略返回" }) then
+            if findAny({ "肉鸽_右上角希望", "战略返回" }) then
                 log(26)
                 return true
             end
             if findOne("返回确认界面") then
                 log(27)
-                -- 虽然不知道会不会走这儿
                 tap("左取消")
                 disappear("返回确认界面")
-                -- 不等会怎么样呢，有时会闪
                 ssleep(.5)
             end
             log(28, zl_best_operator)
@@ -188,7 +414,7 @@ path.界园前瞻投资 = function()
                 tap("开包skip")
             elseif idx == -1 then
                 -- 助战自动
-                zl_help_fight(0, '萨卡兹_初始招募')
+                zl_help_fight(0, '肉鸽_右上角希望')
             else
                 stop("请设置近卫干员序号(1~12)", '', true, false)
             end
@@ -207,17 +433,15 @@ path.界园前瞻投资 = function()
     end
     appear('战略助战')
     if not wait(function()
-            if findOne("萨卡兹_希望源石锭界面") then
+            if findOne("肉鸽_右上角希望") then
                 -- if findAny({ "", "战略返回" }) then
                 log(26)
                 return true
             end
             if findOne("返回确认界面") then
                 log(27)
-                -- 虽然不知道会不会走这儿
                 tap("左取消")
                 disappear("返回确认界面")
-                -- 不等会怎么样呢，有时会闪
                 ssleep(.5)
             end
             tap("近卫招募列表" .. 1)
@@ -227,7 +451,6 @@ path.界园前瞻投资 = function()
         return
     end
 
-    --ssleep(1)
     -- 第3人
     log('招募医疗')
     if not wait(function()
@@ -239,17 +462,15 @@ path.界园前瞻投资 = function()
     end
     appear('战略助战')
     if not wait(function()
-            if findOne("萨卡兹_希望源石锭界面") then
+            if findOne("肉鸽_右上角希望") then
                 --if findAny({ "萨米_初始招募", "战略返回" }) then
                 log(26)
                 return true
             end
             if findOne("返回确认界面") then
                 log(27)
-                -- 虽然不知道会不会走这儿
                 tap("左取消")
                 disappear("返回确认界面")
-                -- 不等会怎么样呢，有时会闪
                 ssleep(.5)
             end
             tap("近卫招募列表" .. 1)
@@ -259,12 +480,13 @@ path.界园前瞻投资 = function()
         return
     end
 
-    if not appear("萨卡兹_初始招募") then return end
+    if not appear("肉鸽_右上角希望") then return end
     log(2698)
+
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
-            if not findOne("萨卡兹_初始招募") then return true end
-            tap("萨卡兹_进入探索")
+            if not findOne("肉鸽_右上角希望") then return true end
+            tap("界园_进入探索")
         end, 5) then
         return
     end
@@ -275,58 +497,70 @@ path.界园前瞻投资 = function()
     if not wait(function()
             if findOne("战略返回") then return true end
             tap("战略确认")
+            tap("界园_每层通宝确认")
+            appear("肉鸽_右上角希望", 1.5)
             --第一次会弹出‘战略帮助’那个界面
             if time() - xtime > 3 * 1000 then
                 xtime = time()
                 tap("招募说明关闭")
             end
-        end, 15) then
+        end, 35) then -- 这次肉鸽动画时间很长
         return
     end
     ssleep(0.5) -- 右边第三列有概率加载过慢
-    -- 分支选择 返回每一列行数
-    萨卡兹路线 = sarkaz.分支选择()
-    log("路线选择", 萨卡兹路线)
-    -- if debug_mode then
-    --     ssleep(5)
-    -- end
-    --延迟一会，否则会产生位移，可以拿来后续做线路优化的筛选
-    --目前默认选择上面的线路
-    ssleep(1)
-    findTap("萨卡兹_待编入负荷干员")
-    local t = time()
-    if not wait(function()
-            findTap("萨卡兹_点击负荷干员")
-            if time() - t > 1500 then
-                t = time()
-                tap('招募说明关闭') --第一次加载会有这个弹窗
+
+    local 界园路线选择结果 = {}
+    local 第二列数量 = 0
+    local 节点判断 = function(x)
+        第二列数量 = x
+        log(300, 第二列数量)
+        local strx = str(x)
+        for i = 1, x do
+            if findOne("界园_第2列_不期而遇" .. strx .. "_列表" .. i) then
+                table.insert(界园路线选择结果, { i, "不期而遇" })
+            else
+                local ret = ocr_ret("界园_第2列_关卡名ocr" .. strx .. "_列表" .. i)
+                if string.finds(ret, { "得", "所", "愿" }) then
+                    table.insert(界园路线选择结果, { i, "得偿所愿" })
+                end
             end
-            if findOne('萨卡兹_等待负荷干员列表出现') then return true end
-        end, 10, .3) then
-        return false
+        end
     end
-    ssleep(1)
-    for i = 1, #point['萨卡兹_选项负荷干员列表'] do
-        tap('萨卡兹_选项负荷干员列表' .. i)
-        ssleep(.1)
+
+    if findOne("界园_第二列存在3节点") then
+        节点判断(3)
+    else
+        节点判断(2)
     end
-    tap("萨卡兹_等待负荷干员列表出现")
-    disappear('萨卡兹_等待负荷干员列表出现')
-    ssleep(.5)
-    tap("萨卡兹_收起负荷干员")
+    log(界园路线选择结果)
+    if not 界园路线选择结果 then
+        log("第二列没有不期而遇")
+        return
+    end
+    local 第一列关卡 = 1
+    if 第二列数量 == 3 then
+        if 界园路线选择结果[1][1] == 2 then
+            if not findOne("界园_第一列1第二列2是否连接") then
+                第一列关卡 = 2
+            end
+        elseif 界园路线选择结果[1][1] == 3 then
+            第一列关卡 = 2
+        end
+    else
+        第一列关卡 = 界园路线选择结果[1][1]
+    end
+
+    -- 目前写到这里了
+
     ::fight_first::
     log("准备进入第一关作战")
     ssleep(.5)
-    if not 萨卡兹路线[1] then return end --有时候值为空会出错
-    local 第一列 = 萨卡兹路线[1][1]
-    table.remove(萨卡兹路线, 1)
     if not wait(function()
-            -- tap("萨卡兹_第一次作战上")
-            tap("萨卡兹_第一列_作战列表" .. 第一列)
-            if findOne('萨卡兹_第一次作战被点击') then return true end
+            tap("萨卡兹_第一列_作战列表" .. 第一列关卡)
+            if findOne('界园_作战页面加载') then return true end
         end, 5) then
         -- in_fight_return = "无法进入第一关"
-        zl_repos_path('萨卡兹_放弃本次探索')
+        zl_repos_path('界园_放弃探索')
         goto fight_first
     end
 
@@ -376,7 +610,6 @@ path.界园前瞻投资 = function()
 
     if not appear("快捷编队") then return end
 
-    ::fight_trusteeship::
     -- 开始游戏
     if not wait(function()
             tap("确认招募")
@@ -453,17 +686,9 @@ path.界园前瞻投资 = function()
         return restartapp(appid)
     end
 
-    appear({ "战略返回", "萨卡兹_联系中断", '萨卡兹_戛然而止' }, 30)
-    if findOne("萨卡兹_戛然而止") then
+    appear({ "战略返回", '界园_戛然而止' }, 30)
+    if findOne("界园_戛然而止") then
         log('戛然而止界面，准备返回')
-        return
-    end
-    if findOne("萨卡兹_联系中断") then
-        log('重启')
-        tap('战略确认')
-        appear('萨卡兹_戛然而止')
-        ssleep(1) --减少重启次数
-        --restartapp(appid)
         return
     end
     if not findOne("战略返回") then return end
@@ -472,70 +697,10 @@ path.界园前瞻投资 = function()
         log("未能完成战斗后拾取")
         return false
     end
-    log("完成一次战斗")
+    log("完成战斗")
 
-    ::fight_select::
-    log('在选择节点界面')
-    log(萨卡兹路线)
-    if next(萨卡兹路线) == nil then
-        -- local idxs = -1
-        -- local idxs, maxIndex = zl_selection_node()
-        -- --如果maxIndex是1 2 则是战斗关卡   3 4 是不期而遇
-        -- if idxs > 0 then
-        --     log(idxs, maxIndex)
-        --     tap(point.萨卡兹关卡节点坐标[idxs])
-        --     ssleep(.5)
-        -- end
-
-        -- 最后为商店
-        sx = { scale(1761), scale(846) }
-        oricol = getColor(sx[1], sx[2])
-        if not wait(function()
-                if findOne("萨卡兹_商店进入") then
-                    return true
-                end
-                tap("萨卡兹_地图商店坐标")
-            end, 5) then
-            return
-        end
-        ssleep(.5)
-        maxIndex = 5
-    else
-        sx = { scale(1761), scale(846) }
-        oricol = getColor(sx[1], sx[2])
-        log("每列节点", 萨卡兹路线[1][3])
-        log(萨卡兹路线)
-        if not wait(function()
-                if getColor(sx[1], sx[2]) ~= oricol then
-                    return true
-                end
-                tap("萨卡兹_" .. 萨卡兹路线[1][3] .. "节点_作战列表" .. 萨卡兹路线[1][1])
-            end, 5, .2) then
-            return
-        end
-        if 萨卡兹路线[1][2] == "不期而遇" then
-            maxIndex = 4
-        else
-            maxIndex = 1
-        end
-        table.remove(萨卡兹路线, 1)
-        ssleep(.5)
-    end
-
-    if maxIndex <= 3 then
-        --进入战斗
-        --检测作战关卡名字
-        zl.fight_name_ocr()
-
-        log("进入战斗")
-        if not wait(function()
-                if findOne("快捷编队") then return true end
-                tap("萨卡兹_进入")
-            end, 10) then
-            return
-        end
-        goto fight_trusteeship
-    elseif maxIndex == 4 then
+    -- 第二列是不期而遇/得偿所愿
+    if 界园路线选择结果[1][2] == "不期而遇" then
         --进入不期而遇
         log("进入不期而遇")
         appear('萨卡兹_不期而遇节点出现')
@@ -599,6 +764,19 @@ path.界园前瞻投资 = function()
         goto fight_select
     end
 
+    if 界园路线选择结果[1][2] == "得偿所愿" then
+    end
+
+    -- 第三列商店
+    if not wait(function()
+            if findOne("萨卡兹_商店进入") then
+                return true
+            end
+            tap("萨卡兹_地图商店坐标")
+        end, 5) then
+        return
+    end
+
     -- 商店
 
     local goto_next_level = function()
@@ -642,6 +820,8 @@ path.界园前瞻投资 = function()
         return
     end
     for i = 1, 10 do if not zl_shop_buy() then break end end
+
+    -- 第四列 误入奇境
 
     return goto_next_level()
 end

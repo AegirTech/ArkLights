@@ -258,7 +258,7 @@ sarkaz.跳转 = function()
             end
         end, 15) then
         -- 初始选难度
-        tap('萨米_难度选择确认')
+        tap('难度选择确认')
 
         return
     end
@@ -921,7 +921,7 @@ sarkaz.蓝图分队 = function()
             end
         end, 60) then
         -- 初始选难度
-        tap('萨米_难度选择确认')
+        tap('难度选择确认')
         return
     end
     if jumpout then return end
@@ -1503,7 +1503,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
             end
         end, 60) then
         -- 初始选难度
-        tap('萨米_难度选择确认')
+        tap('难度选择确认')
 
         return
     end

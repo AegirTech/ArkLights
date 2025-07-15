@@ -641,7 +641,7 @@ zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型)
     --招募界面出来之后的，‘初始招募’界面色点
     local 初始招募界面 = 初始招募界面 or "初始招募"
     wait(function()
-        if findAny({ "萨卡兹_希望源石锭界面", '水月_希望源石锭钥匙界面' }) then return true end
+        if findAny({ "萨卡兹_希望源石锭界面", '水月_希望源石锭钥匙界面', "肉鸽_右上角希望" }) then return true end
         if findOne("战略助战确认界面") then tap("战略助战确认") end
         if not findOne("战略助战确认界面") then tap("开包skip") end
     end, 10)
@@ -1212,8 +1212,6 @@ zl_abandon_explore = function(type)
     end
     return true
 end
-
-
 
 -- 最后require,不然会找不到函数
 require("mizuki")
