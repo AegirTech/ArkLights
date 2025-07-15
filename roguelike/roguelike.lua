@@ -282,15 +282,13 @@ zl.fight_name_ocr = function(rogueType)
             ["狡鼷三窟"] = { "狡", "三", "窟" },
         }
     end
-    print(zl_fight_name)
+    log(zl_fight_name)
     if not wait(function()
-            fight1ocr = ocr(rogueType .. "_作战检测范围")
+            fight1ocr = ocr_ret(rogueType .. "_作战检测范围")
             if #fight1ocr > 1 then
                 log("4880", 4880, fight1ocr)
-                local fight1 = fight1ocr[2].text
-
                 for name, chars in pairs(zl_fight_name) do
-                    if fight1:includes(chars) then
+                    if string.finds(fight1ocr, chars) then
                         now_fight_name = name
                         return true
                     end
@@ -669,8 +667,7 @@ zl_deploy = function(deploy_table)
         wait(function()
             tap("干员费用够列表1")
             disappear("干员费用够列表1", 0.5)
-            local deploy_point = { scale(deploy_table[i][1]), scale(deploy_table[i][2]), deploy_table[i][3] }
-            nDeploy3(1, deploy_point, 4 - i)
+            nDeploy3(1, deploy_table, 4 - i)
 
             wait(function()
                 if findOne("生命值") then return true end
@@ -704,8 +701,7 @@ zl_deploy2 = function(deploy_table)
         wait(function()
             tap("干员费用够列表1")
             disappear("干员费用够列表1", 0.5)
-            local deploy_point = { scale(deploy_table[i][1]), scale(deploy_table[i][2]), deploy_table[i][3] }
-            nDeploy3(1, deploy_point, 4 - i)
+            nDeploy3(1, deploy_table, 4 - i)
 
             wait(function()
                 if findOne("生命值") then return true end

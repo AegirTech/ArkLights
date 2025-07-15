@@ -1201,7 +1201,7 @@ point = {
     界园_第四列_关卡坐标 = "1193|463|E753A4",
     -- 目标位置，格式{x,y,direction} direction: 上1 右2 下3 左4
     界园_作战关卡 = {
-        老戏骨 = {},
+        老戏骨 = { { 963, 576, 2 }, { 1086, 574, 2 }, { 647, 757, 2 } },
         正经生意 = {},
         赶集 = {},
         狡鼷三窟 = { { 651, 521, 2 }, { 759, 626, 2 }, { 647, 757, 2 } },
@@ -1212,7 +1212,6 @@ point = {
     界园_烛火界面 = "960|487|FF4D98,961|559|FC539B",
     界园_剩余烛火 = "1844|213|285659",
     界园_烛火离开 = "1831|558|DE1F1F",
-
 
     --- 肉鸽
     选择分队 = "935|93|CE9320",
@@ -3714,6 +3713,15 @@ convert_coords = function(point)
             end
             dst = dst:sub(0, #dst - 1)
             point[k] = dst
+        elseif type(v) == "table" and #v ~= 0 then
+            for kk, vv in pairs(v) do
+                if type(vv) == "table" then
+                    local new = { { vv[1], vv[2] } }
+                    convert_coords(new)
+                    vv[1] = new[1][1]
+                    vv[2] = new[1][2]
+                end
+            end
         end
     end
 end
