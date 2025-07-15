@@ -3,7 +3,156 @@
 -- ===========================================
 
 
-jieyuan = {}
+sui = {}
+
+sui.招募处理 = function()
+    log('招募近卫')
+    if not wait(function()
+            tap("近卫招募券")
+            tap("招募说明关闭")
+            if not findOne("肉鸽_右上角希望") then
+                return true
+            end
+        end, 10) then
+        return
+    end
+
+    if not wait(function()
+            if findAny({ "肉鸽_右上角希望", "战略返回" }) then
+                log(26)
+                return true
+            end
+            if findOne("返回确认界面") then
+                log(27)
+                tap("左取消")
+                disappear("返回确认界面")
+                ssleep(.5)
+            end
+            log(28, zl_best_operator)
+            local idx = str2int(zl_best_operator, -1)
+
+            if idx >= 1 and idx <= 12 then
+                -- 指定
+                tap("近卫招募列表" .. (zl_best_operator or 1))
+                findTap("确认招募")
+                tap("开包skip")
+            elseif idx == -1 then
+                -- 助战自动
+                zl_help_fight(0, '肉鸽_右上角希望')
+            else
+                stop("请设置近卫干员序号(1~12)", '', true, false)
+            end
+        end, 120) then
+        return
+    end
+
+    -- 第2人
+    log('招募辅助')
+    if not wait(function()
+            tap("萨卡兹_辅助招募券")
+            tap("招募说明关闭")
+            if findOne("确认招募") then return true end
+        end, 10) then
+        return
+    end
+    appear('战略助战')
+    if not wait(function()
+            if findOne("肉鸽_右上角希望") then
+                -- if findAny({ "", "战略返回" }) then
+                log(26)
+                return true
+            end
+            if findOne("返回确认界面") then
+                log(27)
+                tap("左取消")
+                disappear("返回确认界面")
+                ssleep(.5)
+            end
+            tap("近卫招募列表" .. 1)
+            findTap("确认招募")
+            tap("开包skip")
+        end, 10) then
+        return
+    end
+
+    -- 第3人
+    log('招募医疗')
+    if not wait(function()
+            tap("萨卡兹_医疗招募券")
+            tap("招募说明关闭")
+            if findOne("确认招募") then return true end
+        end, 10) then
+        return
+    end
+    appear('战略助战')
+    if not wait(function()
+            if findOne("肉鸽_右上角希望") then
+                --if findAny({ "萨米_初始招募", "战略返回" }) then
+                log(26)
+                return true
+            end
+            if findOne("返回确认界面") then
+                log(27)
+                tap("左取消")
+                disappear("返回确认界面")
+                ssleep(.5)
+            end
+            tap("近卫招募列表" .. 1)
+            findTap("确认招募")
+            tap("开包skip")
+        end, 10) then
+        return
+    end
+end
+
+sui.不期而遇处理 = function(战略帮助)
+    local 战略帮助 = 战略帮助 or "界园_战略帮助"
+    log("进入不期而遇")
+    disappear("界园_战略帮助")
+    if not wait(function()
+            if findOne("界园_不期而遇加载完成") then return true end
+            tap("战略确认")
+        end, 15) then
+        return sarkaz.restart('进入不期而遇出错,可能误点到了什么') --减少重启次数
+    end
+
+    --判断不期而遇事件，并处理
+    log('处理不期而遇事件')
+    if not wait(function()
+            local x = function()
+                local incident
+                local t = time()
+                if not wait(function()
+                        incident = ocr("界园_不期而遇关卡ocr范围")
+                        if time() - t > 1000 then --不期而遇事件，偶尔下面的 '√' 会一直存在，间隔点击一次
+                            t = time()
+                            if not findOne('萨米_希望源石锭界面') then
+                                tap({ scale(960), scale(935) }) --更上面一点，防止误触
+                            end
+                        end
+                        if incident[1] then return true end
+                        if findOne(战略帮助) then return true end
+                    end, 8) then
+                    return false
+                end
+                if not incident[1] then return false end
+                local str = incident[1].text
+                log('事件名字：', str)
+                if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
+                if string.finds(str, { "地", "地镇" }) then -- 二选第一个 或者 三选第二个
+                    if zl_event_solve(8, 战略帮助) then return true end
+                elseif string.finds(str, {}) then
+                    if zl_event_solve(2, 战略帮助) then return true end
+                elseif string.finds(str, { "传讯" }) then -- 三选第一个
+                    if zl_event_solve(7, 战略帮助) then return true end
+                end
+            end
+            if x() then return true end
+            if findOne(战略帮助) then return true end
+        end, 30) then
+        return false
+    end
+end
 
 path.界园前瞻投资 = function()
     log('start 界园')
@@ -138,103 +287,7 @@ path.界园前瞻投资 = function()
         return
     end
 
-    log('招募近卫')
-    if not wait(function()
-            tap("近卫招募券")
-            tap("招募说明关闭")
-            if not findOne("肉鸽_右上角希望") then
-                return true
-            end
-        end, 10) then
-        return
-    end
-
-    if not wait(function()
-            if findAny({ "肉鸽_右上角希望", "战略返回" }) then
-                log(26)
-                return true
-            end
-            if findOne("返回确认界面") then
-                log(27)
-                tap("左取消")
-                disappear("返回确认界面")
-                ssleep(.5)
-            end
-            log(28, zl_best_operator)
-            local idx = str2int(zl_best_operator, -1)
-
-            if idx >= 1 and idx <= 12 then
-                -- 指定
-                tap("近卫招募列表" .. (zl_best_operator or 1))
-                findTap("确认招募")
-                tap("开包skip")
-            elseif idx == -1 then
-                -- 助战自动
-                zl_help_fight(0, '肉鸽_右上角希望')
-            else
-                stop("请设置近卫干员序号(1~12)", '', true, false)
-            end
-        end, 120) then
-        return
-    end
-
-    -- 第2人
-    log('招募辅助')
-    if not wait(function()
-            tap("萨卡兹_辅助招募券")
-            tap("招募说明关闭")
-            if findOne("确认招募") then return true end
-        end, 10) then
-        return
-    end
-    appear('战略助战')
-    if not wait(function()
-            if findOne("肉鸽_右上角希望") then
-                -- if findAny({ "", "战略返回" }) then
-                log(26)
-                return true
-            end
-            if findOne("返回确认界面") then
-                log(27)
-                tap("左取消")
-                disappear("返回确认界面")
-                ssleep(.5)
-            end
-            tap("近卫招募列表" .. 1)
-            findTap("确认招募")
-            tap("开包skip")
-        end, 10) then
-        return
-    end
-
-    -- 第3人
-    log('招募医疗')
-    if not wait(function()
-            tap("萨卡兹_医疗招募券")
-            tap("招募说明关闭")
-            if findOne("确认招募") then return true end
-        end, 10) then
-        return
-    end
-    appear('战略助战')
-    if not wait(function()
-            if findOne("肉鸽_右上角希望") then
-                --if findAny({ "萨米_初始招募", "战略返回" }) then
-                log(26)
-                return true
-            end
-            if findOne("返回确认界面") then
-                log(27)
-                tap("左取消")
-                disappear("返回确认界面")
-                ssleep(.5)
-            end
-            tap("近卫招募列表" .. 1)
-            findTap("确认招募")
-            tap("开包skip")
-        end, 10) then
-        return
-    end
+    sui.招募处理()
 
     if not appear("肉鸽_右上角希望") then return end
     log(2698)
@@ -282,7 +335,6 @@ path.界园前瞻投资 = function()
             end
         end
     end
-
     if findOne("界园_第二列存在3节点") then
         节点判断(3)
     else
@@ -321,14 +373,14 @@ path.界园前瞻投资 = function()
     end
 
     --检查作战关卡名字
-    if not zl.fight_name_ocr() then return end
+    if not zl.fight_name_ocr("界园") then return end
     toast(now_fight_name)
     ssleep(1)
     if not wait(function()
             if findOne("快捷编队") then return true end
             tap("萨卡兹_进入")
         end, 5) then
-        zl_repos_path('萨卡兹_放弃本次探索')
+        zl_repos_path('界园_放弃探索')
         goto fight_first
     end
 
@@ -393,7 +445,7 @@ path.界园前瞻投资 = function()
     appearTap("两倍速", 3)
 
     -- 部署干员到关卡位置
-    zl_deploy(point.萨卡兹_作战关卡[now_fight_name])
+    zl_deploy(point.界园_作战关卡[now_fight_name])
 
     appear("生命值")
 
@@ -455,109 +507,49 @@ path.界园前瞻投资 = function()
     end
     log("完成战斗")
 
+    if 第二列数量 == 3 then
+        tap("萨卡兹_3节点_作战列表" .. str(界园路线选择结果[1][1]))
+    else
+        tap("萨卡兹_2节点_作战列表" .. str(界园路线选择结果[1][1]))
+    end
+
     -- 第二列是不期而遇/得偿所愿
     if 界园路线选择结果[1][2] == "不期而遇" then
         --进入不期而遇
-        log("进入不期而遇")
-        appear('萨卡兹_不期而遇节点出现')
-        wait(function()
-            tap("萨卡兹_进入")
-            tap("萨卡兹_思维混乱确认红") --偶尔有情况 思维负载太多了，第一第二个节点都是作战时候，第三个节点有概率出现
-        end, 2)
-        if not wait(function()
-                if not findOne("萨米_战略帮助") then return true end
-                tap("战略确认")
-            end, 15) then
-            return sarkaz.restart('进入不期而遇出错,可能误点到了什么') --减少重启次数
-        end
-
-        --判断不期而遇事件，并处理
-        log('处理不期而遇事件')
-        if not wait(function()
-                local x = function()
-                    local incident
-                    local t = time()
-                    if not wait(function()
-                            incident = ocr("萨卡兹_不期而遇事件名字检测")
-                            if time() - t > 1000 then --不期而遇事件，偶尔下面的 '√' 会一直存在，间隔点击一次
-                                t = time()
-                                if not findOne('萨米_希望源石锭界面') then
-                                    tap({ scale(960), scale(935) }) --更上面一点，防止误触
-                                end
-                            end
-                            if incident[1] then return true end
-                            if findOne("萨卡兹_战略帮助") then return true end
-                        end, 8) then
-                        return false
-                    end
-                    if not incident[1] then return false end
-                    local str = incident[1].text
-                    log('事件名字：', str)
-                    if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
-                    if string.finds(str, { "虫" }) then
-                        if zl_event_solve(3, "萨卡兹_战略帮助") then return true end
-                    elseif string.finds(str, { '故事', '高空', '不散' }) then
-                        if zl_event_solve(2, '相遇', "萨卡兹_战略帮助") then return true end
-                    elseif string.finds(str, { '解', '惑', "萨米", "维", "女士" }) then
-                        if zl_event_solve(1, "萨卡兹_战略帮助") then return true end
-                    end
-                end
-                if x() then return true end
-                if findOne("萨卡兹_战略帮助") then return true end
-            end, 30) then
-            return false
-        end
-
-        -- 检查是否点到思维界面
-        ssleep(0.5)
-        if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
-        if not wait(function()
-                if findOne("战略返回") then return true end
-                if findOne("萨卡兹_思维界面") then tap("萨卡兹_思维返回") end
-            end, 3) then
-        end
-
-        goto fight_select
+        appearTap("界园_不期而遇_进入", 5)
     end
 
     if 界园路线选择结果[1][2] == "得偿所愿" then
+
     end
+    sui.不期而遇处理()
+
+    appear("肉鸽_右上角希望")
 
     -- 第三列商店
-    if not wait(function()
-            if findOne("萨卡兹_商店进入") then
-                return true
-            end
-            tap("萨卡兹_地图商店坐标")
-        end, 5) then
-        return
+    商店关卡寻找 = function()
+        log('商店关卡寻找')
+        local po = find_color("界园_商店关卡查找_列范围", "039D54")
+        log("不期而遇关卡位置", po)
+        if po then
+            wait(function()
+                tap({ po[1], po[2] - scale(20) })
+                appear("界园_商店进入", 1)
+            end, 20)
+            return true
+        end
     end
 
     -- 商店
-
-    local goto_next_level = function()
-        wait(function()
-            if not findOne("战略返回") then return true end
-            tap("诡意行商离开")
-        end, 10)
-        wait(function()
-            if findOne("战略返回") then return true end
-            tap("诡意行商离开")
-        end, 10)
-        appear('战略返回')
-        findTap('战略返回')
-    end
+    商店关卡寻找()
 
     if not wait(function()
             -- if not findOne("战略帮助") then return true end
             if findAny({ "诡意行商投资", "诡意行商离开" }) then return true end
             tap("萨卡兹_商店进入")
-            tap("萨卡兹_思维混乱确认红") --偶尔有情况 思维负载太多了，第一第二个节点都是作战时候，第三个节点有概率出现
         end, 3) then
-        return zl_repos_path('萨卡兹_放弃本次探索')
+        return zl_repos_path('界园_放弃探索')
     end
-
-    --check_goods()
 
     --投币
 
@@ -565,7 +557,7 @@ path.界园前瞻投资 = function()
     if zl_only_coin then
         log('只是投币，准备退出')
         findTap('战略退出')
-        appear('萨卡兹_放弃本次探索', 3)
+        appear('界园_放弃探索', 3)
         return true
     end
     --购买商品
@@ -577,7 +569,46 @@ path.界园前瞻投资 = function()
     end
     for i = 1, 10 do if not zl_shop_buy() then break end end
 
-    -- 第四列 误入奇境
+    wait(function()
+        if not findOne("战略返回") then return true end
+        tap("诡意行商离开")
+    end, 10)
 
-    return goto_next_level()
+
+    -- 第四列 误入奇境
+    appearTap("界园_第四列_关卡坐标")
+    if appear("界园_误入奇境_进入") then
+        tap("界园_误入奇境_进入")
+    else
+        log("没有入口")
+        return
+    end
+
+    sui.不期而遇处理("界园_每层通宝确认")
+
+    appearTap("界园_每层通宝确认", 20)
+    if not wait(function()
+            tap("招募说明关闭")
+            if findOne("界园_烛火界面") then return true end
+            ssleep(0.5)
+        end, 10) then
+        return
+    end
+    if not wait(function()
+            tap("界园_剩余烛火")
+            if appear("界园_烛火离开", 1) then
+                tap("界园_烛火离开")
+                disappear("界园_烛火离开")
+                tap("右确认")
+                return true
+            end
+            ssleep(0.5)
+        end, 10) then
+        return
+    end
+
+    appearTap("界园_每层通宝确认", 20)
+    appear('战略返回')
+    findTap('战略返回')
+    return
 end

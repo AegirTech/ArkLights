@@ -274,6 +274,13 @@ zl.fight_name_ocr = function(rogueType)
             ["共生"] = { "共", "生" },
             ["互助"] = { "互", "助" },
         }
+    elseif rogueType == '界园' then
+        zl_fight_name = {
+            ["老戏骨"] = { "老", "戏", "骨" },
+            ["正经生意"] = { "正", "经", "生", "意" },
+            ["赶集"] = { "赶", "集" },
+            ["狡鼷三窟"] = { "狡", "三", "窟" },
+        }
     end
     print(zl_fight_name)
     if not wait(function()
@@ -526,7 +533,7 @@ zl_event_solve = function(xx, 战略帮助)
             end
             if findOne(战略帮助) then return true end
             tap("不期而遇选项点击列表" .. xx)
-        end, 8, .05) then
+        end, 20, .05) then
         return false
     end
     return true
@@ -1217,4 +1224,4 @@ end
 require("mizuki")
 require("sarkaz")
 require("sami")
-require("jieyuan")
+require("sui")

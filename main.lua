@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.15 19:53"
+release_date = "07.15 22:15"
 update_announcement = '最近更新：镜中集商店导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -143,8 +143,17 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     ssleep(1)
     -- ocr({ 1231, 441, 1366, 485 })
     -- ocr({ 1285, 445, 1412, 477 })
+    -- 第四列 误入奇境
+    appearTap("界园_第四列_关卡坐标")
+    if appear("界园_误入奇境_进入") then
+        tap("界园_误入奇境_进入")
+    else
+        log("没有入口")
+        return
+    end
 
-    -- exit()
+    sui.不期而遇处理()
+    exit()
     -- path.基建信息获取()
     -- path.办公室换班()
     -- path.bilibili_login.B服验证码刷新()
