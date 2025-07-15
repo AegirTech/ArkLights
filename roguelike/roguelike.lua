@@ -740,6 +740,47 @@ zl_repos_path = function(放弃本次探索)
     end, 5)
 end
 
+
+zl_swip = function(left, swip_dis, nodelay)
+    --活动商店滑动,滑动三个商品的距离
+    local duration
+    local finger
+    local delay
+    local swip_dis = swip_dis or 1550
+    if left then
+        local x1 = scale(200)
+        local x2 = scale(10000 / 720 * 1080)
+        local y1 = scale(810)
+        duration = 400
+        finger = { { point = { { x1, y1 }, { x2, y1 } }, duration = duration } }
+        delay = 750
+    else
+        local x = scale(64) --滑动容器内较左侧
+        local y = scale(655)
+        local y2 = scale(494)
+        --修改x2坐标，x+滑动距离,两个物品1031,三个物品1550
+        local x2 = scale(swip_dis + x) --不可超出1920 目标x点
+        local x3 = scale(1760)         --不会点到物品 X3Y3为点击的点，用于防止滑动
+        local y3 = scale(790)
+        local slids = 50
+        local slidd = 200
+        local taps = slids + slidd + 150
+        local tapd = 200
+        local downd = taps + 100
+        duration = downd
+        finger = {
+            { point = { { x, y }, { x, y2 } },    start = 0,     duration = downd },
+            { point = { { x2, y }, { x2, y3 } },  start = slids, duration = slidd },
+            { point = { { x3, y3 }, { x3, y3 } }, start = taps,  duration = tapd },
+        }
+        delay = 250
+    end
+    log(JsonEncode(finger))
+    gesture(finger)
+    sleep(duration + (nodelay and 0 or delay))
+    return nodelay and delay or 0
+end
+
 --1常规行动，也就是肉鸽主界面   2,在点击肉鸽列表的时候，选择的肉鸽
 --zl_navigation('萨米_常规行动', '探索者的银淞止境进入主题')
 --zl_navigation('水月_常规行动', '水月与深蓝之树进入主题')
@@ -776,23 +817,34 @@ zl_navigation = function(常规行动, 需要点击的肉鸽)
     ssleep(1) --太快了停顿一会，稳!
     if not wait(function()
             log('滑动')
-            --if not findOne("选择集成战略列表界面") then return true end --防止滑动出错
-            gesture({
-                {
-                    point = { { screen.width * 0.3,   screen.height * 0.95 },
-                        { screen.width * 0.8,             screen.height * 0.95 },
-                        { screen.width * 0.8 - scale(10), screen.height * 0.95 },
-                        { screen.width * 0.8 + scale(10), screen.height * 0.95 } },
-                    start = 0,
-                    duration = 800,
-                },
-            })
-
-            ssleep(1.5)
+            -- --if not findOne("选择集成战略列表界面") then return true end --防止滑动出错
+            -- gesture({
+            --     {
+            --         point = { { screen.width * 0.3,   screen.height * 0.95 },
+            --             { screen.width * 0.8,             screen.height * 0.95 },
+            --             { screen.width * 0.8 - scale(10), screen.height * 0.95 },
+            --             { screen.width * 0.8 + scale(10), screen.height * 0.95 } },
+            --         start = 0,
+            --         duration = 800,
+            --     },
+            -- })
+            zl_swip(true) --滑动到最左边
+            ssleep(.5)
             if appear('傀影与猩红孤钻', 2) then return true end
             --作为定位，是否滑到了最左边
         end, 10) then
         return zl_navigation(常规行动, 需要点击的肉鸽)
+    end
+
+    if 需要点击的肉鸽 == '界园_进入主题' then
+        if not wait(function()
+                log('滑动2')
+                zl_swip(false, 1101)
+                ssleep(.5)
+                if appear('界园_进入主题', 2) then return true end
+            end, 10) then
+            return zl_navigation(常规行动, 需要点击的肉鸽)
+        end
     end
 
     if not wait(function()
@@ -1161,7 +1213,10 @@ zl_abandon_explore = function(type)
     return true
 end
 
+
+
 -- 最后require,不然会找不到函数
 require("mizuki")
 require("sarkaz")
 require("sami")
+require("jieyuan")

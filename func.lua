@@ -1006,6 +1006,10 @@ clear_cache = function()
 end
 
 backup_config = function()
+    if dev_mode then
+        log("开发模式跳过备份恢复配置")
+        return true
+    end
     local backup_path = "/sdcard/" .. getPackageName() .. "/backup/"
     local config_path = getWorkPath() .. "/"
     mkdir(backup_path)

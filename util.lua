@@ -2437,6 +2437,10 @@ check_hot_update_backup = function()
 end
 
 hotUpdate = function()
+    if disable_hotupdate or dev_mode then
+        log("热更新已禁用")
+        return true
+    end
     local update_info
     if math.random() < 0.5 then
         update_info = check_hot_update()
@@ -2462,11 +2466,6 @@ hotUpdate = function()
         --显示一些更新公告
         toast(update_announcement)
         uploadStatistician(false)
-        return true
-    end
-    if disable_hotupdate or dev_mode then
-        log("热更新已禁用")
-        updateSkill(update_info)
         return true
     end
     updateLr(update_info)

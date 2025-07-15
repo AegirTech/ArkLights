@@ -1285,6 +1285,7 @@ show_extra_ui = function()
     ---------------------------------------------------------------------
     addTitle(layout, "集成战略")
     addInfo(layout, "重复刷第一层以获得源石锭和经验。最好单选主题，多选未测试")
+
     newRow(layout)
     ui.addCheckBox(layout, "zl_ky", "【傀影】", false)
     ui.addCheckBox(layout, "zl_mizuki", "【水月】", false)
@@ -1293,6 +1294,9 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "zl_sami", "【萨米】", false)
     addTextView(layout, "| 已经勉强可以刷")
     ui.addCheckBox(layout, "zl_skz", "【萨卡兹】", false)
+    newRow(layout)
+    ui.addCheckBox(layout, "zl_jy", "【界园】", false)
+
     newRow(layout)
     addButton(layout, nil, "肉鸽任务开始",
         make_jump_ui_command(layout, nil,
@@ -1366,10 +1370,10 @@ show_extra_ui = function()
     addTextView(rouge_layout_水月, [[源石锭]])
     ui.addEditText(rouge_layout_水月, "zl_max_coin_mizuki", [[]])
 
+    ------------------------------------------------------------
     local rouge_layout_萨米 = "extra_tab_zl3"
     ui.addTab("extra_tab", rouge_layout_萨米, "萨米")
 
-    ------------------------------------------------------------
     newRow(rouge_layout_萨米)
     ui.addCheckBox(rouge_layout_萨米, "zl_skip_coin_sami", "跳过投币", false)
     ui.addCheckBox(rouge_layout_萨米, "zl_only_coin_sami", "只是投币", false)
@@ -1382,10 +1386,10 @@ show_extra_ui = function()
     addTextView(rouge_layout_萨米, [[源石锭]])
     ui.addEditText(rouge_layout_萨米, "zl_max_coin_sami", [[]])
 
+    ------------------------------------------------------------
     local rouge_layout_萨卡兹 = "extra_tab_zl4"
     ui.addTab("extra_tab", rouge_layout_萨卡兹, "萨卡兹")
 
-    ------------------------------------------------------------
     newRow(rouge_layout_萨卡兹)
     ui.addCheckBox(rouge_layout_萨卡兹, "zl_skip_coin_skz", "跳过投币", false)
     ui.addCheckBox(rouge_layout_萨卡兹, "zl_only_coin_skz", "只是投币", false)
@@ -1407,6 +1411,22 @@ show_extra_ui = function()
     ui.addEditText(rouge_layout_萨卡兹, "zl_max_level_skz", [[]])
     addTextView(rouge_layout_萨卡兹, [[源石锭]])
     ui.addEditText(rouge_layout_萨卡兹, "zl_max_coin_skz", [[]])
+
+    ------------------------------------------------------------
+    local rouge_layout_萨卡兹 = "extra_tab_zl5"
+    ui.addTab("extra_tab", rouge_layout_界园, "界园")
+
+    newRow(rouge_layout_界园)
+    ui.addCheckBox(rouge_layout_界园, "zl_skip_coin_jy", "跳过投币", false)
+    ui.addCheckBox(rouge_layout_界园, "zl_only_coin_jy", "只是投币", false)
+
+    newRow(rouge_layout_界园)
+    addTextView(rouge_layout_界园, [[需求商品]])
+    ui.addEditText(rouge_layout_界园, "zl_need_goods_jy", [[]])
+    addTextView(rouge_layout_界园, [[等级]])
+    ui.addEditText(rouge_layout_界园, "zl_max_level_jy", [[max]])
+    addTextView(rouge_layout_界园, [[源石锭]])
+    ui.addEditText(rouge_layout_界园, "zl_max_coin_jy", [[]])
 
     -- newRow(layout)
     -- addTextView(layout, "===========肉鸽相关===========")

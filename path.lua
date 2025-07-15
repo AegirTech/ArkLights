@@ -8234,6 +8234,23 @@ path.肉鸽任务 = function()
             path.萨卡兹的无终奇语前瞻投资()
         end
     end
+
+    if zl_jy then
+        log("界园")
+        界园肉鸽完成 = false
+        zl_level_enough = false
+        zl_skip_coin = zl_skip_coin_jy
+        zl_only_coin = zl_only_coin_jy
+        zl_need_goods = zl_need_goods_jy
+        zl_max_level = zl_max_level_jy
+        zl_max_coin = zl_max_coin_jy
+        while true do
+            if 界园肉鸽完成 then
+                break
+            end
+            path.界园前瞻投资()
+        end
+    end
     stop("肉鸽结束", '', true, true) --打不完不关闭游戏，有时候需要再检测一下的
 end
 
