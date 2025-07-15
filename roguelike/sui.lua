@@ -45,7 +45,7 @@ sui.招募处理 = function()
         end, 120) then
         return
     end
-
+    ssleep(.1)
     -- 第2人
     log('招募辅助')
     if not wait(function()
@@ -74,11 +74,11 @@ sui.招募处理 = function()
         end, 10) then
         return
     end
-
+    ssleep(.1)
     -- 第3人
     log('招募医疗')
     if not wait(function()
-            tap("萨卡兹_医疗招募券")
+            tap("界园_医疗招募券")
             tap("招募说明关闭")
             if findOne("确认招募") then return true end
         end, 10) then

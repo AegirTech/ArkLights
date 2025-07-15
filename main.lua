@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.15 23:45"
+release_date = "07.16 02:39"
 update_announcement = '最近更新：镜中集商店导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -140,7 +140,6 @@ if use_local_dictionary then
 end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
-    ssleep(1)
     -- ocr({ 1231, 441, 1366, 485 })
     -- ocr({ 1285, 445, 1412, 477 })
     -- 第四列 误入奇境
