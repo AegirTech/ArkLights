@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.16 20:06"
+release_date = "07.16 20:19"
 update_announcement = '最近更新：界园/任务领取'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -141,8 +141,9 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     -- 退出游戏，等待回到主线
-    -- ocr({ 1231, 441, 1366, 485 })
-    -- ocr({ 1285, 445, 1412, 477 })
+    -- log(ocrex_ret("界园_不期而遇关卡ocr范围"))
+    -- log(ocr_ret("界园_不期而遇关卡ocr范围"))
+    -- exit()
     -- 第四列 误入奇境
     -- zl.fight_name_ocr("界园")
     -- if not sui.战斗后领取() then
