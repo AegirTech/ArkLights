@@ -241,6 +241,89 @@ sui.招募处理 = function()
     end
 end
 
+sui.不招募 = function()
+    ssleep(0.5)
+    appear("肉鸽_右上角希望")
+    log('不招募近卫')
+    if not wait(function()
+            tap("近卫招募券")
+            tap("招募说明关闭")
+            if not findOne("肉鸽_右上角希望") and not findOne("战略返回") then
+                return true
+            end
+            ssleep(0.2)
+        end, 10) then
+        return
+    end
+    if not wait(function()
+            tap("放弃招募")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if not findOne("确认招募") then return true end
+        end, 10) then
+        return
+    end
+
+    if not wait(function()
+            tap("右右确认")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if findOne("肉鸽_右上角希望") then return true end
+        end, 10) then
+        return
+    end
+    ssleep(.1)
+    -- 第2人
+    log('不招募辅助')
+    if not wait(function()
+            tap("萨卡兹_辅助招募券")
+            tap("招募说明关闭")
+            if findOne("确认招募") then return true end
+        end, 10) then
+        return
+    end
+    appear('战略助战')
+    if not wait(function()
+            tap("放弃招募")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if not findOne("确认招募") then return true end
+        end, 10) then
+        return
+    end
+
+    if not wait(function()
+            tap("右右确认")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if findOne("肉鸽_右上角希望") then return true end
+        end, 10) then
+        return
+    end
+    ssleep(.1)
+    -- 第3人
+    log('不招募医疗')
+    if not wait(function()
+            tap("界园_医疗招募券")
+            tap("招募说明关闭")
+            if findOne("确认招募") then return true end
+        end, 10) then
+        return
+    end
+    appear('战略助战')
+    if not wait(function()
+            tap("放弃招募")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if not findOne("确认招募") then return true end
+        end, 10) then
+        return
+    end
+
+    if not wait(function()
+            tap("右右确认")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if findOne("肉鸽_右上角希望") then return true end
+        end, 10) then
+        return
+    end
+end
+
 sui.不期而遇处理 = function(战略帮助)
     local 战略帮助 = 战略帮助 or "界园_战略帮助"
     log("进入不期而遇")
@@ -419,6 +502,63 @@ sui.战斗开始 = function()
             ssleep(0.5)
         end, 300) then
         return restartapp(appid)
+    end
+end
+
+sui.放弃作战 = function()
+    --检查作战关卡名字
+    ssleep(1)
+    if not wait(function()
+            if findOne("快捷编队") then return true end
+            tap("界园_作战_进入")
+        end, 5) then
+        log(3302, "无法进入")
+        zl_repos_path('界园_放弃探索')
+    end
+
+    -- 开始游戏
+    if not wait(function()
+            tap("确认招募")
+            if not findOne("快捷编队") then return true end
+            -- 出现过在这儿卡死的
+            if not disappear("正在提交反馈至神经", network_timeout) then
+                restartapp(appid)
+                return true
+            end
+        end, 10) then
+        return
+    end
+    log(3306)
+    appearTap("界园_无干员进入", 5)
+    -- 等待加载游戏界面
+    if not wait(function()
+            if findOne("单选确认框") then return true end
+            if findOne("生命值") then return true end
+        end, 60) then
+        return
+    end
+
+    if not findOne("生命值") then return end
+    log(3307)
+    -- 退出游戏，等待回到主线
+    if not wait(function()
+            tap("界园_左上角退出游戏")
+            ssleep(0.5)
+            if findOne("界园_放弃游戏") then
+                log(3309)
+                tap("界园_放弃游戏")
+                return true
+            end
+        end, 60) then
+        return
+    end
+
+    if not wait(function()
+            if findOne("肉鸽_右上角希望") then return true end
+            tap("右确认")
+            ssleep(1)
+        end, 60) then
+        return
     end
 end
 
@@ -607,8 +747,11 @@ path.界园前瞻投资 = function()
         end, 10) then
         return
     end
-
-    sui.招募处理()
+    if zl_skip_fight then
+        sui.不招募()
+    else
+        sui.招募处理()
+    end
 
     if not appear("肉鸽_右上角希望") then return end
     log(2698)
@@ -689,7 +832,11 @@ path.界园前瞻投资 = function()
         zl_repos_path('界园_放弃探索')
     end
 
-    sui.战斗开始()
+    if zl_skip_fight then
+        sui.放弃作战()
+    else
+        sui.战斗开始()
+    end
 
     appear({ "战略返回", '界园_戛然而止' }, 30)
     if findOne("界园_戛然而止") then
