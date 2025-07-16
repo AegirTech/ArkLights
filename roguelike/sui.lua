@@ -11,11 +11,11 @@ sui.战斗后领取 = function()
             if not drop_page then tap("战略确认") end
             if findOne("界园_战略帮助") then drop_page = true end
             if zl_only_coin then
-                local x = findAny({ "界园_不要了1" })
+                local x = findAny({ "界园_不要了列表1", "界园_不要了列表2" })
                 log(2516, x)
                 tap(x)
                 if not wait(function()
-                        tap(findAny({ "界园_不要了确认1" }))
+                        tap(findAny({ "界园_不要了确认列表1", "界园_不要了确认列表2" }))
                         if findAny({ "战略返回", "界园_战略帮助" }) then return true end
                     end, 2) then
                 end
@@ -26,6 +26,8 @@ sui.战斗后领取 = function()
             })
             log(2555, x)
             tap(x)
+
+            findTap("通宝替换确认")
 
             -- 误触到招募券处理
             if findOne("确认招募") then
@@ -238,13 +240,14 @@ sui.不期而遇处理 = function(战略帮助)
                     if zl_event_solve(8, 战略帮助) then return true end
                 elseif string.finds(str, { "食", }) then -- 三选第三个 如 饕餮廊
                     if zl_event_solve(4, 战略帮助) then return true end
-                elseif string.finds(str, { "护鸭", "金刚", "金则" }) then -- 二选第二个
+                elseif string.finds(str, { "护鸭", "金刚", "金则", "偏安", "安", "师", "女" }) then -- 二选第二个
                     if zl_event_solve(2, 战略帮助) then return true end
                 elseif string.finds(str, { "传讯", }) then -- 三选第一个
                     if zl_event_solve(7, 战略帮助) then return true end
                 elseif string.finds(str, { "路" }) then -- 四选第一个
                     if zl_event_solve(10, 战略帮助) then return true end
                 end
+                ssleep(.5)
             end
             if x() then return true end
             if findOne(战略帮助) then return true end
@@ -456,7 +459,7 @@ path.界园前瞻投资 = function()
     end
     log(界园路线选择结果)
     if #界园路线选择结果 == 0 then
-        log("第二列没有不期而遇")
+        toast("第二列没有不期而遇")
         return
     end
     local 第一列关卡 = 1
@@ -604,6 +607,7 @@ path.界园前瞻投资 = function()
                 end)
                 ssleep(1)
             end
+            ssleep(0.5)
         end, 300) then
         return restartapp(appid)
     end
