@@ -1296,6 +1296,7 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "zl_skz", "【萨卡兹】", false)
     newRow(layout)
     ui.addCheckBox(layout, "zl_jy", "【界园】", false)
+    addTextView(layout, "| 开发ing")
 
     newRow(layout)
     addButton(layout, nil, "肉鸽任务开始",
@@ -1418,7 +1419,7 @@ show_extra_ui = function()
 
     newRow(rouge_layout_界园)
     ui.addCheckBox(rouge_layout_界园, "zl_skip_coin_jy", "跳过投币", false)
-    ui.addCheckBox(rouge_layout_界园, "zl_only_coin_jy", "只是投币", false)
+    ui.addCheckBox(rouge_layout_界园, "zl_only_coin_jy", "投币完立刻退出", false)
 
     newRow(rouge_layout_界园)
     addTextView(rouge_layout_界园, [[需求商品]])
@@ -1427,6 +1428,11 @@ show_extra_ui = function()
     ui.addEditText(rouge_layout_界园, "zl_max_level_jy", [[max]])
     addTextView(rouge_layout_界园, [[源石锭]])
     ui.addEditText(rouge_layout_界园, "zl_max_coin_jy", [[]])
+
+    newRow(rouge_layout_界园)
+    ui.addCheckBox(rouge_layout_界园, "zl_skip_fight", "跳过战斗(适用时光之末)", false)
+    addTextView(rouge_layout_界园, [[分队位置]])
+    ui.addEditText(rouge_layout_界园, "zl_team_position_sui", [[1]]) --分队位置
 
     -- newRow(layout)
     -- addTextView(layout, "===========肉鸽相关===========")
