@@ -368,7 +368,7 @@ sui.不期而遇处理 = function(战略帮助)
                 if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
                 if string.finds(str, { "暂时没有这个" }) then -- 二选第一个 或者 三选第二个
                     if zl_event_solve(8, 战略帮助) then return true end
-                elseif string.finds(str, { "食", "来者", "不拒" }) then -- 三选第三个 如 饕餮廊
+                elseif string.finds(str, { "食", "餐", "廊", "来者", "不拒" }) then -- 三选第三个 如 饕餮廊
                     if zl_event_solve(4, 战略帮助) then return true end
                 elseif string.finds(str, { "偏安", "安", "师", "女", "相会", "会", "地", "地镇" }) then -- 二选第二个 或者1选1
                     if zl_event_solve(2, 战略帮助) then return true end
