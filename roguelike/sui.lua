@@ -184,7 +184,7 @@ sui.招募处理 = function()
     end
     ssleep(.1)
     -- 第2人
-    log('招募辅助')
+    log('不招募辅助')
     if not wait(function()
             tap("萨卡兹_辅助招募券")
             tap("招募说明关闭")
@@ -194,26 +194,23 @@ sui.招募处理 = function()
     end
     appear('战略助战')
     if not wait(function()
-            if findOne("肉鸽_右上角希望") then
-                -- if findAny({ "", "战略返回" }) then
-                log(26)
-                return true
-            end
-            if findOne("返回确认界面") then
-                log(27)
-                tap("左取消")
-                disappear("返回确认界面")
-                ssleep(.5)
-            end
-            tap("近卫招募列表" .. 1)
-            findTap("确认招募")
-            tap("开包skip")
+            tap("放弃招募")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if not findOne("确认招募") then return true end
+        end, 10) then
+        return
+    end
+
+    if not wait(function()
+            tap("右右确认")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if findOne("肉鸽_右上角希望") then return true end
         end, 10) then
         return
     end
     ssleep(.1)
     -- 第3人
-    log('招募医疗')
+    log('不招募医疗')
     if not wait(function()
             tap("界园_医疗招募券")
             tap("招募说明关闭")
@@ -223,20 +220,17 @@ sui.招募处理 = function()
     end
     appear('战略助战')
     if not wait(function()
-            if findOne("肉鸽_右上角希望") then
-                --if findAny({ "萨米_初始招募", "战略返回" }) then
-                log(26)
-                return true
-            end
-            if findOne("返回确认界面") then
-                log(27)
-                tap("左取消")
-                disappear("返回确认界面")
-                ssleep(.5)
-            end
-            tap("近卫招募列表" .. 1)
-            findTap("确认招募")
-            tap("开包skip")
+            tap("放弃招募")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if not findOne("确认招募") then return true end
+        end, 10) then
+        return
+    end
+
+    if not wait(function()
+            tap("右右确认")
+            if findOne("剿灭说明") then tap("剿灭说明") end
+            if findOne("肉鸽_右上角希望") then return true end
         end, 10) then
         return
     end
