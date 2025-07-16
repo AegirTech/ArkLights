@@ -587,12 +587,35 @@ path.界园前瞻投资 = function()
         end
     end
 
+    local 作战结算返回 = function()
+        log("界园_作战失败，准备返回")
+        wait(function()
+            if findOne("界园_常规行动") then
+                ssleep(3)
+                if findOne("界园_常规行动") then
+                    return true
+                end
+            end
+            if findAny({
+                    "面板", "活动公告返回", "签到返回", "签到返回黄",
+                    "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                }) then
+                return true
+            end
+            tap("新战略确认")
+            ssleep(1)
+        end, 20)
+    end
+
     --判断是否在其他界面
     local jumpout
     if findOne("战略返回") then path.fallback.战略返回() end
     if findOne("暂停中") and findOne("生命值") then restartapp(appid) end
     if findOne("界园_每层通宝确认") then tap("界园_每层通宝确认") end
-
+    if findOne("界园_主页干员详情") then back() end
+    if findOne("界园_作战失败结算") then
+        return 作战结算返回()
+    end
     -- 先导航到常规行动
     zl_navigation('界园_常规行动', '界园_进入主题')
 
@@ -861,18 +884,7 @@ path.界园前瞻投资 = function()
         return
     end
     if findOne("界园_作战失败结算") then
-        log("界园_作战失败，准备返回")
-        wait(function()
-            if findOne("界园_常规行动") then return true end
-            -- 第一次数据更新处理
-            if findAny({
-                    "面板", "活动公告返回", "签到返回", "签到返回黄",
-                    "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
-                }) then
-                return true
-            end
-            tap("新战略确认")
-        end, 20)
+        作战结算返回()
         if not appear("界园_常规行动", 5) then
             log(3303, "无法返回常规行动")
             return
@@ -918,6 +930,20 @@ path.界园前瞻投资 = function()
         log("准备进入第2关作战")
         ssleep(.5)
         sui.战斗开始()
+        appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
+        if findOne("界园_戛然而止") then
+            log('戛然而止界面，准备返回')
+            return
+        end
+        if findOne("界园_作战失败结算") then
+            作战结算返回()
+            if not appear("界园_常规行动", 5) then
+                log(3303, "无法返回常规行动")
+                return
+            end
+            return
+        end
+        if not findOne("战略返回") then return end
     else
         sui.不期而遇处理()
     end
