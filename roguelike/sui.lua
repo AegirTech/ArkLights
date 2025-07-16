@@ -64,6 +64,7 @@ sui.战斗后领取 = function()
                                 tap("近卫招募列表" .. 1)
                                 findTap("确认招募")
                                 tap("开包skip")
+                                findTap("通宝替换确认")
                             end, 10) then
                             return
                         end
@@ -104,7 +105,7 @@ end
 sui.招募处理 = function()
     log('招募近卫')
     appear("界园_招募界面")
-    ssleep(.5)
+    ssleep(1)
     if not wait(function()
             tap("近卫招募券")
             tap("招募说明关闭")
@@ -239,7 +240,7 @@ sui.不期而遇处理 = function(战略帮助)
                 if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
                 if string.finds(str, { "地", "地镇" }) then -- 二选第一个 或者 三选第二个
                     if zl_event_solve(8, 战略帮助) then return true end
-                elseif string.finds(str, { "食", }) then -- 三选第三个 如 饕餮廊
+                elseif string.finds(str, { "食", "来者", "不拒" }) then -- 三选第三个 如 饕餮廊
                     if zl_event_solve(4, 战略帮助) then return true end
                 elseif string.finds(str, { "护鸭", "金刚", "金则", "偏安", "安", "师", "女" }) then -- 二选第二个
                     if zl_event_solve(2, 战略帮助) then return true end
