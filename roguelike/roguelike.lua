@@ -1094,6 +1094,9 @@ zl_shop_buy = function()
                         tap("近卫招募列表" .. 1)
                         findTap("确认招募")
                         tap("开包skip")
+                        if findOne("肉鸽弹出窗口") then
+                            tap("右确认")
+                        end
                     end, 10) then
                     return
                 end

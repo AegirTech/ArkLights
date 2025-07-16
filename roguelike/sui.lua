@@ -219,9 +219,11 @@ sui.不期而遇处理 = function(战略帮助)
                 if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
                 if string.finds(str, { "地", "地镇" }) then -- 二选第一个 或者 三选第二个
                     if zl_event_solve(8, 战略帮助) then return true end
+                elseif string.finds(str, { "食", }) then -- 三选第三个 如 饕餮廊
+                    if zl_event_solve(4, 战略帮助) then return true end
                 elseif string.finds(str, { "护鸭", "金刚", "金则" }) then -- 二选第二个
                     if zl_event_solve(2, 战略帮助) then return true end
-                elseif string.finds(str, { "传讯" }) then -- 三选第一个
+                elseif string.finds(str, { "传讯", }) then -- 三选第一个
                     if zl_event_solve(7, 战略帮助) then return true end
                 end
             end
@@ -594,16 +596,29 @@ path.界园前瞻投资 = function()
     end
     if not findOne("战略返回") then return end
 
-    if not zl_fight_after_skz() then
+    if not sui.战斗后领取() then
         log("未能完成战斗后拾取")
         return false
     end
     log("完成战斗")
 
-    if 第二列数量 == 3 then
-        tap("萨卡兹_3节点_作战列表" .. str(界园路线选择结果[1][1]))
-    else
-        tap("萨卡兹_2节点_作战列表" .. str(界园路线选择结果[1][1]))
+    if not wait(function()
+            if findOne("界园_不期而遇_进入") then return true end
+            if 第二列数量 == 3 then
+                tap("萨卡兹_3节点_作战列表" .. str(界园路线选择结果[1][1]))
+            else
+                tap("萨卡兹_2节点_作战列表" .. str(界园路线选择结果[1][1]))
+            end
+        end, 5) then
+        return false
+    end
+
+    if not wait(function()
+            if not findOne("界园_不期而遇_进入") then return true end
+            tap("界园_不期而遇_进入")
+        end, 5) then
+        log("未能进入作战列表")
+        return false
     end
 
     -- 第二列是不期而遇/得偿所愿
