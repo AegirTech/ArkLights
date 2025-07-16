@@ -31,6 +31,10 @@ sui.点天赋 = function()
                 appearTap("界园_学识升级按钮", 2)
             end
             开始x坐标 = 开始x坐标 + scale(70)
+            if findOne("界园_学识数量不足") then
+                log("学识数量不足，退出")
+                return
+            end
         end
         开始x坐标 = scale(130)
     end
