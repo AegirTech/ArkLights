@@ -5,6 +5,37 @@
 
 sui = {}
 
+sui.点天赋 = function()
+    if not wait(function()
+            tap("战略确认")
+            tap("界园_进入天学识页面")
+            if findOne("界园_学识页面") then return true end
+            ssleep(.5)
+        end, 20) then
+        return
+    end
+
+    ssleep(.5)
+    local y坐标 = { scale(300), scale(489), scale(692) }
+    local 开始x坐标 = scale(130)
+
+    for i = 1, 3 do
+        local ty = y坐标[i]
+        log("开始x坐标", 开始x坐标, "ty", ty)
+        while 开始x坐标 < (screen.width - scale(100)) do
+            log("点击坐标", 开始x坐标, ty)
+            local 点击前采样 = sample("界园_学识", 0.5)
+            tap({ 开始x坐标, ty })
+            ssleep(.5)
+            if not findOne(点击前采样) then
+                appearTap("界园_学识升级按钮", 2)
+            end
+            开始x坐标 = 开始x坐标 + scale(70)
+        end
+        开始x坐标 = scale(130)
+    end
+end
+
 sui.战斗后领取 = function()
     local drop_page = false
     if not wait(function()
@@ -105,7 +136,7 @@ end
 sui.招募处理 = function()
     log('招募近卫')
     appear("界园_招募界面")
-    ssleep(1)
+    ssleep(2)
     if not wait(function()
             tap("近卫招募券")
             tap("招募说明关闭")
@@ -399,9 +430,10 @@ path.界园前瞻投资 = function()
 
     -- 开始探索 一路按到 招募干员
     if not wait(function(reset_wait_start_time)
-            if findOne("界园_选择招募二阶段") then return true end
+            if findOne("界园_招募界面") then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
             tap("新战略确认")
+            ssleep(.3)
         end, 10) then
         return
     end

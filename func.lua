@@ -998,6 +998,10 @@ copy_file_s = function(src, dest)
     dest_file:close()
 end
 
+copy_file_exec = function(src, dest)
+    exec("cp '" .. src .. "' '" .. dest .. "'")
+end
+
 clear_cache = function()
     delfile(getWorkPath() .. "/account_data.json")
     delfile(getWorkPath() .. "/HypergryphSdkPreferences.xml")
@@ -1029,7 +1033,7 @@ backup_config = function()
         local c_path = source_path .. "config_" .. layout .. ".json"
         local d_path = dest_path .. "config_" .. layout .. ".json"
         if fileExist(c_path) then
-            copy_file_s(c_path, d_path)
+            copy_file_exec(c_path, d_path)
         end
     end
 end

@@ -849,14 +849,8 @@ zl_navigation = function(常规行动, 需要点击的肉鸽)
     end
 
     if 需要点击的肉鸽 == '界园_进入主题' then
-        if not wait(function()
-                log('滑动2')
-                zl_swip(false, 1101)
-                ssleep(.5)
-                if appear('界园_进入主题', 2) then return true end
-            end, 10) then
-            return zl_navigation(常规行动, 需要点击的肉鸽)
-        end
+        log('滑动2')
+        zl_swip(false, 1101)
     end
 
     if not wait(function()
