@@ -390,6 +390,7 @@ end
 
 sui.战斗开始 = function()
     --检查作战关卡名字
+    log(3306)
     if not zl.fight_name_ocr("界园") then return end
     toast(now_fight_name)
     ssleep(1)
@@ -400,14 +401,14 @@ sui.战斗开始 = function()
         log(3302, "无法进入")
         zl_repos_path('界园_放弃探索')
     end
-
+    log(3307)
     if not wait(function()
             if findOne("确认招募") then return true end
             tap("快捷编队")
         end, 10) then
         return
     end
-
+    log(3309)
     if not wait(function()
             if findOne("攻击范围") and
                 (zl_skill_idx ~= 2 or zl_skill_idx == 2 and findOne("战略二技能")) then
@@ -425,7 +426,7 @@ sui.战斗开始 = function()
         end, 10) then
         return
     end
-
+    log(3312)
     if not wait(function()
             if not findOne("确认招募") then return true end
             tap("确认招募")
@@ -434,7 +435,7 @@ sui.战斗开始 = function()
     end
 
     if not appear("快捷编队") then return end
-
+    log(3319)
     -- 开始游戏
     if not wait(function()
             tap("确认招募")
@@ -447,7 +448,7 @@ sui.战斗开始 = function()
         end, 10) then
         return
     end
-    log(3306)
+    log(3390)
     -- 等待加载游戏界面
     if not wait(function()
             if findOne("单选确认框") then return true end
@@ -460,17 +461,15 @@ sui.战斗开始 = function()
 
     -- 需要等等才能点两倍速
     appearTap("两倍速", 3)
-
+    log(3394)
     -- 部署干员到关卡位置 只部署一个人的
     zl_deploy(point.界园_作战关卡[now_fight_name], 1)
 
     appear("生命值")
-
+    log(3395)
     local last_time_see_life = time()
     local skill_times = 0
     if not wait(function()
-            --
-            -- toast('当前等级：' .. zl_level, 0, scale(1080))
             if findOne("返回确认界面") then tap("左取消") end
             if findOne("暂停中") then
                 tap("开包skip")
@@ -480,9 +479,9 @@ sui.战斗开始 = function()
             -- 超过3秒没看到生命值
             if time() - last_time_see_life > 5000 then
                 tap("战略确认")
+                log(3396, "超过3秒没看到生命值")
                 return true
             end
-
             tap("开始行动1")
             local p = findOne("技能亮")
             local jump = false
@@ -509,8 +508,10 @@ sui.战斗开始 = function()
             end
             ssleep(0.5)
         end, 300) then
+        log(3399)
         return restartapp(appid)
     end
+    log(3400)
 end
 
 sui.放弃作战 = function()
@@ -748,12 +749,15 @@ path.界园前瞻投资 = function()
     end
 
     if not wait(function(reset_wait_start_time)
-            if findOne("界园_招募界面") then return true end
+            if findOne("界园_选择招募二阶段") then return true end
+            if findOne("界园_近卫招募组合") then return true end
             tap("界园_下一步")
             ssleep(1)
         end, 10) then
         return
     end
+    appearTap("界园_近卫招募组合", 5)
+    appearTap("界园_近卫招募确认", 5)
     if zl_skip_fight then
         sui.不招募()
     else
@@ -844,16 +848,35 @@ path.界园前瞻投资 = function()
         log(3301, "无法进入")
         zl_repos_path('界园_放弃探索')
     end
-
+    log(3305)
     if zl_skip_fight then
         sui.放弃作战()
     else
         sui.战斗开始()
     end
-
-    appear({ "战略返回", '界园_戛然而止' }, 30)
+    log(1055)
+    appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
     if findOne("界园_戛然而止") then
         log('戛然而止界面，准备返回')
+        return
+    end
+    if findOne("界园_作战失败结算") then
+        log("界园_作战失败，准备返回")
+        wait(function()
+            if findOne("界园_常规行动") then return true end
+            -- 第一次数据更新处理
+            if findAny({
+                    "面板", "活动公告返回", "签到返回", "签到返回黄",
+                    "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                }) then
+                return true
+            end
+            tap("新战略确认")
+        end, 20)
+        if not appear("界园_常规行动", 5) then
+            log(3303, "无法返回常规行动")
+            return
+        end
         return
     end
     if not findOne("战略返回") then return end
