@@ -8176,7 +8176,10 @@ path.肉鸽任务 = function()
             if 傀影肉鸽完成 then
                 break
             end
-            path.前瞻投资()
+            local status, err = pcall(path.前瞻投资)
+            if not status then
+                log("傀影肉鸽任务出错", err)
+            end
         end
     end
 
@@ -8195,7 +8198,10 @@ path.肉鸽任务 = function()
             if 水月肉鸽完成 then
                 break
             end
-            path.水月与深蓝之树前瞻投资()
+            local status, err = pcall(path.水月与深蓝之树前瞻投资)
+            if not status then
+                log("水月肉鸽任务出错", err)
+            end
         end
     end
 
@@ -8213,7 +8219,10 @@ path.肉鸽任务 = function()
             if 萨米肉鸽完成 then
                 break
             end
-            path.探索者的银淞止境前瞻投资()
+            local status, err = pcall(path.萨米的银淞止境前瞻投资)
+            if not status then
+                log("萨米肉鸽任务出错", err)
+            end
         end
     end
 
@@ -8231,7 +8240,10 @@ path.肉鸽任务 = function()
             if 萨卡兹肉鸽完成 then
                 break
             end
-            path.萨卡兹的无终奇语前瞻投资()
+            local status, err = pcall(path.萨卡兹的无终奇语前瞻投资)
+            if not status then
+                log("萨卡兹肉鸽任务出错", err)
+            end
         end
     end
 
