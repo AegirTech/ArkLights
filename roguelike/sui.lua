@@ -141,6 +141,7 @@ sui.招募处理 = function()
     appear("界园_招募界面")
     ssleep(0.5)
     appear("肉鸽_右上角希望")
+    ssleep(1)
     log('招募近卫')
     if not wait(function()
             tap("近卫招募券")
@@ -564,7 +565,6 @@ end
 
 path.界园前瞻投资 = function()
     log('start 界园')
-
     -- 肉鸽每8小时做日常
     zl_eight_daily()
 
@@ -805,9 +805,13 @@ path.界园前瞻投资 = function()
         节点判断(2)
     end
     log(界园路线选择结果)
-    if #界园路线选择结果 == 0 then
+    if #界园路线选择结果 == 0 and not zl_fight_more then
         toast("第二列没有不期而遇")
         return
+    else
+        界园路线选择结果 = {
+            { 1, "作战" },
+        }
     end
     local 第一列关卡 = 1
     if 第二列数量 == 3 then
@@ -852,7 +856,7 @@ path.界园前瞻投资 = function()
     log("完成战斗")
 
     if not wait(function()
-            if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入" }) then return true end
+            if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入", "界园_作战页面加载" }) then return true end
             if 第二列数量 == 3 then
                 tap("萨卡兹_3节点_作战列表" .. str(界园路线选择结果[1][1]))
             else
@@ -881,7 +885,15 @@ path.界园前瞻投资 = function()
             return false
         end
     end
-    sui.不期而遇处理()
+
+    if 界园路线选择结果[1][2] == "作战" then
+        log("准备进入第2关作战")
+        ssleep(.5)
+        sui.战斗开始()
+    else
+        sui.不期而遇处理()
+    end
+
 
     appear("肉鸽_右上角希望")
 

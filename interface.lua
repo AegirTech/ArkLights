@@ -1422,6 +1422,9 @@ show_extra_ui = function()
     ui.addCheckBox(rouge_layout_界园, "zl_only_coin_jy", "投币完立刻退出", false)
 
     newRow(rouge_layout_界园)
+    ui.addCheckBox(rouge_layout_界园, "zl_fight_more", "第二列可作战", false)
+
+    newRow(rouge_layout_界园)
     addTextView(rouge_layout_界园, [[需求商品]])
     ui.addEditText(rouge_layout_界园, "zl_need_goods_jy", [[]])
     addTextView(rouge_layout_界园, [[等级]])
