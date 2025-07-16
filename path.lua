@@ -3921,7 +3921,7 @@ path.任务收集 = function()
 
         -- nagivate to tab
         if not wait(function()
-                if findOne("收集全部") then return true end
+                if findOne("收集全部") or findOne("特勤任务一键领取") then return true end
                 tap(p)
             end, 10) then
             return
@@ -3932,7 +3932,7 @@ path.任务收集 = function()
 
         -- tap collect
         if not wait(function()
-                if not findTap("收集全部") then return true end
+                if not findTap("收集全部") and not findTap("特勤任务一键领取") then return true end
             end, 5) then
             return
         end
