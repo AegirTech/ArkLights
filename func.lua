@@ -1207,3 +1207,8 @@ ocr_ret = function(ocr_target, h)
     return table.join(map(function(x) return x.text end,
         ocr(ocr_target, h)))
 end
+
+ocrex_ret = function(ocr_target, h)
+    return table.join(map(function(x) return x.text end,
+        ocrex(ocr_target, h)))
+end

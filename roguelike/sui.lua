@@ -799,7 +799,7 @@ path.界园前瞻投资 = function()
             if findOne("界园_第2列_不期而遇" .. strx .. "_列表" .. i) then
                 table.insert(界园路线选择结果, { i, "不期而遇" })
             else
-                local ret = ocr_ret("界园_第2列_关卡名ocr" .. strx .. "_列表" .. i)
+                local ret = ocrex_ret("界园_第2列_关卡名ocr" .. strx .. "_列表" .. i)
                 if string.finds(ret, { "得", "所", "愿" }) then
                     table.insert(界园路线选择结果, { i, "得偿所愿" })
                 end
@@ -812,13 +812,15 @@ path.界园前瞻投资 = function()
         节点判断(2)
     end
     log(界园路线选择结果)
-    if #界园路线选择结果 == 0 and not zl_fight_more then
-        toast("第二列没有不期而遇")
-        return
-    else
-        界园路线选择结果 = {
-            { 1, "作战" },
-        }
+    if #界园路线选择结果 == 0 then
+        if zl_fight_more then
+            界园路线选择结果 = {
+                { 1, "作战" },
+            }
+        else
+            toast("第二列没有不期而遇")
+            return
+        end
     end
     local 第一列关卡 = 1
     if 第二列数量 == 3 then
@@ -863,7 +865,7 @@ path.界园前瞻投资 = function()
     log("完成战斗")
 
     if not wait(function()
-            if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入", "界园_作战页面加载" }) then return true end
+            if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入", "界园_作战页面加载", "界园_关卡进入" }) then return true end
             if 第二列数量 == 3 then
                 tap("萨卡兹_3节点_作战列表" .. str(界园路线选择结果[1][1]))
             else
@@ -874,21 +876,17 @@ path.界园前瞻投资 = function()
     end
 
     -- 第二列是不期而遇/得偿所愿
-    if 界园路线选择结果[1][2] == "不期而遇" then
+    log("第二步", 界园路线选择结果)
+    log("第二步", 界园路线选择结果[1], 界园路线选择结果[1][2])
+    if 界园路线选择结果[1][2] == "不期而遇" or 界园路线选择结果[1][2] == "得偿所愿" then
         --进入不期而遇
         if not wait(function()
-                if not findOne("界园_不期而遇_进入") then return true end
-                tap("界园_不期而遇_进入")
-            end, 5) then
+                if not findOne("界园_关卡进入") then return true end
+                tap("界园_关卡进入")
+                findTap("界园_不期而遇_进入")
+                findTap("界园_得偿所愿_进入")
+            end, 10) then
             log("未能进入作战列表")
-            return false
-        end
-    elseif 界园路线选择结果[1][2] == "得偿所愿" then
-        if not wait(function()
-                if not findOne("界园_得偿所愿_进入") then return true end
-                tap("界园_得偿所愿_进入")
-            end, 5) then
-            log("未能进入作战列表2")
             return false
         end
     end
