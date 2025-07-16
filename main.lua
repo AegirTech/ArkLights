@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.16 16:19"
+release_date = "07.16 16:32"
 update_announcement = '最近更新：界园/任务领取'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -140,9 +140,6 @@ if use_local_dictionary then
 end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
-    ret = ocr_ret({ 1712, 36, 1805, 94 })
-    log(ret)
-    exit()
     -- sui.点天赋()
     -- exit()
     -- ocr({ 1231, 441, 1366, 485 })

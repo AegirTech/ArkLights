@@ -293,8 +293,7 @@ zl.fight_name_ocr = function(rogueType)
                         return true
                     end
                 end
-
-                log("不知道什么作战：" .. fight1)
+                log("不知道什么作战：" .. fight1ocr)
                 return
             end
         end, 5, .2) then
@@ -660,8 +659,9 @@ zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型)
 end
 
 -- 集成战略干员摆放 摆放三个人， 写的有点乱 可以优化
-zl_deploy = function(deploy_table)
-    for i = 1, 3 do
+zl_deploy = function(deploy_table, number)
+    local number = number or 3
+    for i = 1, number do
         if not wait(function()
                 if findOne("干员费用够列表1") then return true end
                 if not findOne("生命值") then
