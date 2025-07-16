@@ -279,8 +279,10 @@ sui.不期而遇处理 = function(战略帮助)
                     if zl_event_solve(8, 战略帮助) then return true end
                 elseif string.finds(str, { "食", "来者", "不拒" }) then -- 三选第三个 如 饕餮廊
                     if zl_event_solve(4, 战略帮助) then return true end
-                elseif string.finds(str, { "护鸭", "金刚", "金则", "偏安", "安", "师", "女", "相会", "会", "地", "地镇" }) then -- 二选第二个 或者1选1
+                elseif string.finds(str, { "偏安", "安", "师", "女", "相会", "会", "地", "地镇" }) then -- 二选第二个 或者1选1
                     if zl_event_solve(2, 战略帮助) then return true end
+                elseif string.finds(str, { "护鸭", "金刚", "金则" }) then -- 二选第二个 或者3选2
+                    if zl_event_solve(5, 战略帮助) then return true end
                 elseif string.finds(str, { "传讯", }) then -- 三选第一个
                     if zl_event_solve(7, 战略帮助) then return true end
                 elseif string.finds(str, { "路" }) then -- 四选第一个
