@@ -369,7 +369,7 @@ sui.不期而遇处理 = function(战略帮助)
                     if zl_event_solve(5, 战略帮助) then return true end
                 elseif string.finds(str, { "传讯", }) then -- 三选第一个
                     if zl_event_solve(7, 战略帮助) then return true end
-                elseif string.finds(str, { "路" }) then -- 四选第一个
+                elseif string.finds(str, { "路", "味" }) then -- 四选第一个
                     if zl_event_solve(10, 战略帮助) then return true end
                 end
                 ssleep(.5)
