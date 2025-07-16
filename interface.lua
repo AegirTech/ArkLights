@@ -1296,7 +1296,7 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "zl_skz", "【萨卡兹】", false)
     newRow(layout)
     ui.addCheckBox(layout, "zl_jy", "【界园】", false)
-    addTextView(layout, "| 开发ing")
+    addTextView(layout, "| 测试阶段(有问题请加群反馈 891819123 / 629618641)")
 
     newRow(layout)
     addButton(layout, nil, "肉鸽任务开始",

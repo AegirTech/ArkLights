@@ -589,6 +589,15 @@ zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型)
             --{ "羽毛笔", 99, 2 },
             --{ "海沫", 99, 2 },
         }
+    elseif 肉鸽类型 == '界园' then
+        order = {
+            { "百炼嘉维尔", 99, 2 },
+            { "圣约送葬人", 99, 2 },
+            { "乌尔比安", 99, 1 },
+            { "羽毛笔", 99, 2 },
+            { "海沫", 99, 2 },
+            { "煌", 99, 1 },
+        }
     else
         order = {
             { "百炼嘉维尔", 99, 2 },
@@ -667,7 +676,7 @@ zl_deploy = function(deploy_table)
         wait(function()
             tap("干员费用够列表1")
             disappear("干员费用够列表1", 0.5)
-            nDeploy3(1, deploy_table, 4 - i)
+            nDeploy3(1, deploy_table[i], 4 - i)
 
             wait(function()
                 if findOne("生命值") then return true end
@@ -701,7 +710,7 @@ zl_deploy2 = function(deploy_table)
         wait(function()
             tap("干员费用够列表1")
             disappear("干员费用够列表1", 0.5)
-            nDeploy3(1, deploy_table, 4 - i)
+            nDeploy3(1, deploy_table[i], 4 - i)
 
             wait(function()
                 if findOne("生命值") then return true end

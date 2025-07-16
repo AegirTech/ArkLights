@@ -21,7 +21,8 @@ sui.战斗后领取 = function()
                 end
             end
             local x = appear({
-                "界园_源石锭收下", "界园_招募卷收下"
+                "界园_源石锭收下", "界园_通宝收下",
+                "界园_招募卷收下",
             })
             log(2555, x)
             tap(x)
@@ -68,6 +69,21 @@ sui.战斗后领取 = function()
                 end
             end
 
+            if findOne("放弃招募") and not findOne("确认招募") then
+                if not wait(function()
+                        if not findOne("放弃招募") then return true end
+                        tap("放弃招募")
+                    end, 5) then
+                    return
+                end
+                if not wait(function()
+                        if findOne("编队") then return true end
+                        tap("右右确认")
+                    end, 5) then
+                    return
+                end
+            end
+
             if not findOne("战略返回") then
                 if not appear({ "战略返回", "界园_战略帮助" }) then
                     tap("战略确认")
@@ -85,6 +101,7 @@ end
 
 sui.招募处理 = function()
     log('招募近卫')
+    ssleep(.3)
     if not wait(function()
             tap("近卫招募券")
             tap("招募说明关闭")
@@ -225,6 +242,8 @@ sui.不期而遇处理 = function(战略帮助)
                     if zl_event_solve(2, 战略帮助) then return true end
                 elseif string.finds(str, { "传讯", }) then -- 三选第一个
                     if zl_event_solve(7, 战略帮助) then return true end
+                elseif string.finds(str, { "路" }) then -- 四选第一个
+                    if zl_event_solve(10, 战略帮助) then return true end
                 end
             end
             if x() then return true end
@@ -391,7 +410,7 @@ path.界园前瞻投资 = function()
     if not wait(function()
             if not findOne("肉鸽_右上角希望") then return true end
             tap("界园_进入探索")
-        end, 5) then
+        end, 15) then
         return
     end
 
@@ -401,8 +420,8 @@ path.界园前瞻投资 = function()
     if not wait(function()
             if findOne("战略返回") then return true end
             tap("战略确认")
-            tap("界园_每层通宝确认")
-            appear("肉鸽_右上角希望", 1.5)
+            findTap("界园_每层通宝确认")
+            appear("肉鸽_右上角希望", 0.3)
             --第一次会弹出‘战略帮助’那个界面
             if time() - xtime > 3 * 1000 then
                 xtime = time()
