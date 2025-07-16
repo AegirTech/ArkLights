@@ -136,7 +136,7 @@ end
 sui.招募处理 = function()
     log('招募近卫')
     appear("界园_招募界面")
-    ssleep(2)
+    ssleep(0.5)
     if not wait(function()
             tap("近卫招募券")
             tap("招募说明关闭")
@@ -414,12 +414,18 @@ path.界园前瞻投资 = function()
 
             tap("新战略确认")
             tap("继续探索")
+            if findOne("界园_主页干员详情") then
+                log(2690)
+                back()
+                ssleep(.5)
+            end
             if time() - t > 2 * 1000 then --第一次时候，需要选择难度等级
                 ssleep(1)
                 t = time()
                 log('选择一次难度等级')
                 tap({ scale(1759), scale(567) })
             end
+            ssleep(.8)
         end, 60) then
         -- 初始选难度
         tap('难度选择确认')
