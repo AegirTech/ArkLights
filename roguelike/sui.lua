@@ -103,7 +103,8 @@ end
 
 sui.招募处理 = function()
     log('招募近卫')
-    ssleep(.3)
+    appear("界园_招募界面")
+    ssleep(.5)
     if not wait(function()
             tap("近卫招募券")
             tap("招募说明关闭")
