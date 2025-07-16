@@ -338,12 +338,18 @@ sui.不期而遇处理 = function(战略帮助)
 
     --判断不期而遇事件，并处理
     log('处理不期而遇事件')
+    local ocr次数 = 0
     if not wait(function()
             local x = function()
                 local incident
                 local t = time()
                 if not wait(function()
-                        incident = ocr("界园_不期而遇关卡ocr范围")
+                        if ocr次数 % 2 == 0 then
+                            incident = ocrex("界园_不期而遇关卡ocr范围")
+                        else
+                            incident = ocr("界园_不期而遇关卡ocr范围")
+                        end
+                        ocr次数 = ocr次数 + 1
                         if time() - t > 1000 then --不期而遇事件，偶尔下面的 '√' 会一直存在，间隔点击一次
                             t = time()
                             if not findOne('萨米_希望源石锭界面') then
@@ -352,6 +358,7 @@ sui.不期而遇处理 = function(战略帮助)
                         end
                         if incident[1] then return true end
                         if findOne(战略帮助) then return true end
+                        ssleep(.3)
                     end, 8) then
                     return false
                 end
