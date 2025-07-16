@@ -1488,6 +1488,7 @@ deploy2 = function(idx, total, x2, y2, d)
 end
 
 deploy = function(x1, x2, y2, d, nopause)
+    log("deploy", x1, x2, y2, d, nopause)
     local y1 = screen.height - scale(109)
     d = d or 2
     d = ({ { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } })[d]

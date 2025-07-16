@@ -44,7 +44,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.16 09:44"
+release_date = "07.16 10:30"
 update_announcement = '最近更新：镜中集商店导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -144,6 +144,11 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     -- ocr({ 1285, 445, 1412, 477 })
     -- 第四列 误入奇境
     -- zl.fight_name_ocr("界园")
+    -- if not sui.战斗后领取() then
+    --     log("未能完成战斗后拾取")
+    --     return false
+    -- end
+
     -- exit()
     -- path.基建信息获取()
     -- path.办公室换班()
