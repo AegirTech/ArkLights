@@ -168,7 +168,7 @@ sui.招募处理 = function()
                 tap("开包skip")
             elseif idx == -1 then
                 -- 助战自动
-                zl_help_fight(0, '肉鸽_右上角希望')
+                zl_help_fight(0, '肉鸽_右上角希望', "界园")
             else
                 stop("请设置近卫干员序号(1~12)", '', true, false)
             end
