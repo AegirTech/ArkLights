@@ -134,21 +134,23 @@ sui.战斗后领取 = function()
 end
 
 sui.招募处理 = function()
-    log('招募近卫')
     appear("界园_招募界面")
     ssleep(0.5)
+    appear("肉鸽_右上角希望")
+    log('招募近卫')
     if not wait(function()
             tap("近卫招募券")
             tap("招募说明关闭")
-            if not findOne("肉鸽_右上角希望") then
+            if not findOne("肉鸽_右上角希望") and not findOne("战略返回") then
                 return true
             end
+            ssleep(0.2)
         end, 10) then
         return
     end
-
+    disappear({ "肉鸽_右上角希望", "战略返回" })
     if not wait(function()
-            if findAny({ "肉鸽_右上角希望", "战略返回" }) then
+            if findAny({ "肉鸽_右上角希望" }) then
                 log(26)
                 return true
             end
@@ -269,11 +271,11 @@ sui.不期而遇处理 = function(战略帮助)
                 local str = incident[1].text
                 log('事件名字：', str)
                 if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
-                if string.finds(str, { "地", "地镇" }) then -- 二选第一个 或者 三选第二个
+                if string.finds(str, { "暂时没有这个" }) then -- 二选第一个 或者 三选第二个
                     if zl_event_solve(8, 战略帮助) then return true end
                 elseif string.finds(str, { "食", "来者", "不拒" }) then -- 三选第三个 如 饕餮廊
                     if zl_event_solve(4, 战略帮助) then return true end
-                elseif string.finds(str, { "护鸭", "金刚", "金则", "偏安", "安", "师", "女", "相会", "会" }) then -- 二选第二个 或者1选1
+                elseif string.finds(str, { "护鸭", "金刚", "金则", "偏安", "安", "师", "女", "相会", "会", "地", "地镇" }) then -- 二选第二个 或者1选1
                     if zl_event_solve(2, 战略帮助) then return true end
                 elseif string.finds(str, { "传讯", }) then -- 三选第一个
                     if zl_event_solve(7, 战略帮助) then return true end
@@ -310,6 +312,7 @@ path.界园前瞻投资 = function()
     local jumpout
     if findOne("战略返回") then path.fallback.战略返回() end
     if findOne("暂停中") and findOne("生命值") then restartapp(appid) end
+    if findOne("界园_每层通宝确认") then tap("界园_每层通宝确认") end
 
     -- 先导航到常规行动
     zl_navigation('界园_常规行动', '界园_进入主题')
@@ -435,11 +438,41 @@ path.界园前瞻投资 = function()
     if jumpout then return end
 
     -- 开始探索 一路按到 招募干员
+    -- if not wait(function(reset_wait_start_time)
+    --         if findOne("界园_招募界面") then return true end
+    --         if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+    --         tap("新战略确认")
+    --         ssleep(.3)
+    --     end, 10) then
+    --     return
+    -- end
+
+    if not appear("肉鸽_右上角希望", 10) then
+        return
+    end
+
+    local x_position = str2int(zl_team_position_sui, 1)
+    while x_position > 4 do
+        ssleep(0.5)
+        path.swip_hd_shop(false, scale(1704))
+        ssleep(0.5)
+        x_position = x_position - 4
+    end
+    local t_position = zl_team_position_sui == str(x_position) and zl_team_position_sui or str(x_position)
+
+    if not wait(function(reset_wait_start_time)
+            if findOne("界园_选择招募一阶段完成") then return true end
+            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+            tap('萨卡兹_蓝图分队位置列表' .. t_position)
+            ssleep(0.8)
+        end, 10) then
+        return
+    end
+
     if not wait(function(reset_wait_start_time)
             if findOne("界园_招募界面") then return true end
-            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
-            tap("新战略确认")
-            ssleep(.3)
+            tap("界园_下一步")
+            ssleep(0.8)
         end, 10) then
         return
     end
@@ -762,12 +795,14 @@ path.界园前瞻投资 = function()
             tap("界园_每层通宝确认")
             tap("招募说明关闭")
             if findOne("界园_烛火界面") then return true end
+            if findOne("界园_每层通宝确认") then return true end
             ssleep(0.5)
         end, 10) then
         return
     end
     if not wait(function()
             tap("界园_剩余烛火")
+            if findOne("界园_每层通宝确认") then return true end
             if appear("界园_烛火离开", 1) then
                 tap("界园_烛火离开")
                 disappear("界园_烛火离开")
@@ -786,8 +821,15 @@ path.界园前瞻投资 = function()
         end, 10) then
         return
     end
-
     appear('战略返回')
     findTap('战略返回')
+    if not wait(function()
+            findTap("界园_每层通宝确认")
+            findTap('战略返回')
+            if findAny({ "界园_常规行动", "界园_戛然而止" }) then return true end
+            ssleep(0.5)
+        end, 10) then
+        return
+    end
     return
 end
