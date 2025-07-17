@@ -360,11 +360,11 @@ sui.不期而遇处理 = function(战略帮助)
                 local str = incident[1].text
                 log('事件名字：', str)
                 if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
-                if string.finds(str, { "暂时没有这个" }) then -- 二选第一个 或者 三选第二个
+                if string.finds(str, { "地", "地镇" }) then -- 二选第一个 或者 三选第二个
                     if zl_event_solve(8, 战略帮助) then return true end
                 elseif string.finds(str, { "食", "餐", "廊", "来者", "不拒" }) then -- 三选第三个 如 饕餮廊
                     if zl_event_solve(4, 战略帮助) then return true end
-                elseif string.finds(str, { "偏安", "安", "师", "女", "相会", "会", "地", "地镇" }) then -- 二选第二个 或者1选1
+                elseif string.finds(str, { "偏安", "安", "师", "女", "相会", "会", }) then -- 二选第二个 或者1选1
                     if zl_event_solve(2, 战略帮助) then return true end
                 elseif string.finds(str, { "护鸭", "金刚", "金则" }) then -- 二选第二个 或者3选2
                     if zl_event_solve(5, 战略帮助) then return true end
