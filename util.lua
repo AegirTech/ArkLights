@@ -3130,7 +3130,7 @@ consoleInit = function()
         round(screen.height * 0.9), round(screen.height * 0.9))
     local screen = getScreen()
     local resolution = screen.width .. 'x' .. screen.height
-    local title = getApkVerInt() .. ' ' .. release_date .. '  ' .. resolution
+    local title = getApkVerInt() .. ' ' .. release_date .. '  ' .. resolution .. ' 版本:' .. release_date
     console.setTitle(title)
     console.show()
     console.dismiss()
@@ -3139,7 +3139,6 @@ end
 detectServer = function()
     appid = oppid
     if prefer_bapp then appid = bppid end
-    if prefer_bapp_on_android7 and android_verison_code < 30 then appid = bppid end
     local app_info = isAppInstalled(appid)
     local bpp_info = isAppInstalled(bppid)
     if not app_info and not bpp_info then

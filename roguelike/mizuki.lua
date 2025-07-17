@@ -211,7 +211,7 @@ mizuki_fight_select = function()
             useDict(0)
             if not wait(function()
                     -- 战斗
-                    select_fight = matrixOcr(mizuki_point.水月关卡标题坐标1[1],
+                    select_fight = ocr(mizuki_point.水月关卡标题坐标1[1],
                         mizuki_point.水月关卡标题坐标1[2],
                         mizuki_point.水月关卡标题坐标1[3],
                         mizuki_point.水月关卡标题坐标1[4],
@@ -221,7 +221,7 @@ mizuki_fight_select = function()
                         return true
                     end
                     -- 不期而遇/地区委托/诡异行商
-                    select_fight = matrixOcr(mizuki_point.水月关卡标题坐标2[1],
+                    select_fight = ocr(mizuki_point.水月关卡标题坐标2[1],
                         mizuki_point.水月关卡标题坐标2[2],
                         mizuki_point.水月关卡标题坐标2[3],
                         mizuki_point.水月关卡标题坐标2[4],
@@ -231,7 +231,7 @@ mizuki_fight_select = function()
                         return true
                     end
                     -- 紧急战斗识别区域
-                    select_fight = matrixOcr(mizuki_point.水月关卡标题坐标3[1],
+                    select_fight = ocr(mizuki_point.水月关卡标题坐标3[1],
                         mizuki_point.水月关卡标题坐标3[2],
                         mizuki_point.水月关卡标题坐标3[3],
                         mizuki_point.水月关卡标题坐标3[4],
@@ -572,7 +572,7 @@ mizuki_unexpect_solve = function()
     if not wait(function()
             setDict(0, "水月_不期而遇.txt") -- 字库需要放到资源文件中
             useDict(0)
-            select_unexpect = matrixOcr(unexpect_area[1], unexpect_area[2],
+            select_unexpect = ocr(unexpect_area[1], unexpect_area[2],
                 unexpect_area[3], unexpect_area[4],
                 "008AFF-215682", 0.90)
             if select_unexpect ~= nil then
