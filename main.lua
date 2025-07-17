@@ -35,7 +35,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.16 22:32"
+release_date = "07.17 09:48"
 update_announcement = '最近更新：界园/任务领取'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -133,6 +133,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     ssleep(1)
     -- appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
     -- log(111)
+    -- log(point["任务有列表4"])
     -- exit()
     -- 退出游戏，等待回到主线
     -- log(ocrex_ret("界园_不期而遇关卡ocr范围"))

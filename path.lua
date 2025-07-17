@@ -3918,7 +3918,6 @@ path.任务收集 = function()
         if not p then break end
 
         log(795, p)
-
         -- nagivate to tab
         if not wait(function()
                 if findOne("收集全部") or findOne("特勤任务一键领取") then return true end
