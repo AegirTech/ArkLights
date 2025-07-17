@@ -605,7 +605,18 @@ path.界园前瞻投资 = function()
     local jumpout
     if findOne("战略返回") then path.fallback.战略返回() end
     if findOne("暂停中") and findOne("生命值") then restartapp(appid) end
-    if findOne("界园_每层通宝确认") then tap("界园_每层通宝确认") end
+    if findOne("界园_每层通宝确认") then
+        tap("界园_每层通宝确认")
+        appear('战略返回')
+        if not wait(function()
+                if findOne("界园_常规行动") then return true end
+                tap('战略返回')
+                tap("新战略确认")
+                ssleep(0.3)
+            end, 5) then
+            return restart()
+        end
+    end
     if findOne("界园_主页干员详情") then back() end
     if findOne("界园_作战失败结算") then
         return 作战结算返回()

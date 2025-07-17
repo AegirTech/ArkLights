@@ -3130,7 +3130,7 @@ consoleInit = function()
         round(screen.height * 0.9), round(screen.height * 0.9))
     local screen = getScreen()
     local resolution = screen.width .. 'x' .. screen.height
-    local title = getApkVerInt() .. ' ' .. release_date .. '  ' .. resolution .. ' 版本:' .. release_date
+    local title = getApkVerInt() .. ' ' .. release_date .. '  ' .. resolution
     console.setTitle(title)
     console.show()
     console.dismiss()
