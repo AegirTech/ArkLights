@@ -532,9 +532,9 @@ sui.放弃作战 = function()
         return
     end
     log(3306)
-    appearTap("界园_无干员进入", 5)
     -- 等待加载游戏界面
     if not wait(function()
+            findTap("界园_无干员进入")
             if findOne("单选确认框") then return true end
             if findOne("生命值") then return true end
         end, 60) then

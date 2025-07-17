@@ -5284,13 +5284,17 @@ path.主线 = function(x)
             return
         end
         local tap_chat_index = chapter_index - 1
-        local samp = sample("商店")
         local wa_x, wa_y = point["主线第零章点击位置"][1] + tap_chat_index % 5 * scale(315),
             point["主线第零章点击位置"][2] + math.floor(tap_chat_index / 5) * scale(310)
         log("wa_x", wa_x, "wa_y", wa_y)
         log("1046", chapter, chapter_index, tap_chat_index % 5, math.floor(tap_chat_index / 5))
         if not wait(function()
-                if not findOne(samp) then return true end
+                -- if not findOne(samp) then return true end
+                for i = 1, 16 do
+                    if findOne("当前进度列表" .. i) then
+                        return true
+                    end
+                end
                 tap({ wa_x, wa_y })
                 ssleep(.5)
             end) then
