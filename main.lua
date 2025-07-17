@@ -35,7 +35,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.17 18:59"
+release_date = "07.17 21:36"
 update_announcement = '最近更新：界园/任务领取'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -131,6 +131,8 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     ssleep(1)
+    sui.战斗后领取()
+    exit()
     -- incident = ocr("界园_不期而遇关卡ocr范围")
     -- log("incident", incident)
     -- sui.战斗后领取()

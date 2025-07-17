@@ -57,10 +57,14 @@ sui.战斗后领取 = function()
             end
             local x = appear({
                 "界园_源石锭收下", "界园_通宝收下",
-                "界园_招募卷收下",
+                "界园_招募卷收下", "界园_通宝收下2",
             })
             log(2555, x)
             tap(x)
+            if x == "界园_通宝收下2" then
+                appearTap("界园_通宝交换左", 5)
+                disappear("界园_通宝交换左")
+            end
 
             findTap("通宝替换确认")
 
