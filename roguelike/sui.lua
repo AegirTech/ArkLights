@@ -1036,7 +1036,7 @@ path.界园前瞻投资 = function()
                 return true
             end
             ssleep(0.5)
-        end, 10) then
+        end, 20) then
         return
     end
 
@@ -1044,7 +1044,7 @@ path.界园前瞻投资 = function()
             tap("界园_每层通宝确认")
             if findAny({ "界园_战略帮助" }) then return true end
             ssleep(0.5)
-        end, 10) then
+        end, 25) then
         return
     end
     appear('战略返回')
@@ -1054,7 +1054,7 @@ path.界园前瞻投资 = function()
             findTap('战略返回')
             if findAny({ "界园_常规行动", "界园_戛然而止" }) then return true end
             ssleep(0.5)
-        end, 10) then
+        end, 30) then
         return
     end
     return
