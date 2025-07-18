@@ -1023,14 +1023,12 @@ path.界园前瞻投资 = function()
             tap("界园_每层通宝确认")
             tap("招募说明关闭")
             if findOne("界园_烛火界面") then return true end
-            if findOne("界园_每层通宝确认") then return true end
             ssleep(0.5)
         end, 10) then
         return
     end
     if not wait(function()
             tap("界园_剩余烛火")
-            if findOne("界园_每层通宝确认") then return true end
             if appear("界园_烛火离开", 1) then
                 tap("界园_烛火离开")
                 disappear("界园_烛火离开")
