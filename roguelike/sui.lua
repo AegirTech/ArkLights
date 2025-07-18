@@ -788,8 +788,28 @@ path.界园前瞻投资 = function()
         end, 10) then
         return
     end
-    appearTap("界园_近卫招募组合", 5)
-    appearTap("界园_近卫招募确认", 5)
+    local 获得藏品需要重开 = false
+    if not wait(function(reset_wait_start_time)
+            if findOne("界园_招募界面") then return true end
+            if findOne("界园_进入探索获得藏品") then
+                获得藏品需要重开 = true
+                return true
+            end
+            appearTap("界园_近卫招募组合", 5)
+            appearTap("界园_近卫招募确认", 5)
+            ssleep(1)
+        end, 10) then
+        return
+    end
+    if 获得藏品需要重开 then
+        if not wait(function(reset_wait_start_time)
+                if findAny({ "界园_常规行动", "界园_戛然而止" }) then return true end
+                back()
+                ssleep(1)
+            end, 10) then
+            return
+        end
+    end
     if zl_skip_fight then
         sui.不招募()
     else

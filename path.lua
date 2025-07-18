@@ -8262,7 +8262,10 @@ path.肉鸽任务 = function()
             if 界园肉鸽完成 then
                 break
             end
-            path.界园前瞻投资()
+            local status, err = pcall(path.界园前瞻投资)
+            if not status then
+                log("界园肉鸽任务出错", err)
+            end
         end
     end
     stop("肉鸽结束", '', true, true) --打不完不关闭游戏，有时候需要再检测一下的
