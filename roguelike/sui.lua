@@ -610,10 +610,9 @@ path.界园前瞻投资 = function()
     if findOne("战略返回") then path.fallback.战略返回() end
     if findOne("暂停中") and findOne("生命值") then restartapp(appid) end
     if findOne("界园_每层通宝确认") then
-        tap("界园_每层通宝确认")
-        appear('战略返回')
         if not wait(function()
                 if findOne("界园_常规行动") then return true end
+                findTap("界园_每层通宝确认")
                 tap('战略返回')
                 tap("新战略确认")
                 ssleep(0.3)
@@ -840,7 +839,7 @@ path.界园前瞻投资 = function()
                 xtime = time()
                 tap("招募说明关闭")
             end
-        end, 35) then -- 这次肉鸽动画时间很长
+        end, 40) then -- 这次肉鸽动画时间很长
         return
     end
     ssleep(0.5) -- 右边第三列有概率加载过慢
@@ -1026,7 +1025,7 @@ path.界园前瞻投资 = function()
     wait(function()
         if not findOne("战略返回") then return true end
         tap("诡意行商离开")
-    end, 10)
+    end, 15)
 
     -- 第四列 误入奇境
     appearTap("界园_第四列_关卡坐标")
@@ -1061,20 +1060,14 @@ path.界园前瞻投资 = function()
     end
 
     if not wait(function()
-            tap("界园_每层通宝确认")
-            if findAny({ "界园_战略帮助" }) then return true end
-            ssleep(0.5)
-        end, 25) then
-        return
-    end
-    appear('战略返回')
-    findTap('战略返回')
-    if not wait(function()
             findTap("界园_每层通宝确认")
+            ssleep(0.3)
             findTap('战略返回')
-            if findAny({ "界园_常规行动", "界园_戛然而止" }) then return true end
+            if findAny({ "界园_常规行动" }) then return true end
             ssleep(0.5)
-        end, 30) then
+        end, 45) then
+        log("第二层退出返回失败")
+        back()
         return
     end
     return
