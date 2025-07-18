@@ -518,7 +518,7 @@ end
 trySolveSlipCaptcha = function(retry)
     local retry = retry or 1
     ssleep(1.5) -- 等待验证码出图
-    if not findAny({ "captcha", "滑块验证节点", "官服点选验证节点", "滑块验证节点新720" }) then return end
+    if not appear({ "滑块验证节点", "官服点选验证节点", "滑块验证节点新720", "滑块验证节点新", "滑块验证节点2" }, 8) then return end
     log("等待验证码出图")
     is_old_slip = false
     if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
@@ -531,7 +531,7 @@ trySolveSlipCaptcha = function(retry)
             if ret then break end
             ssleep(0.5)
         end
-    elseif findOne("官服点选验证节点") or findOne("官服点选验证节点") then
+    elseif findOne("官服点选验证节点") then
         log("find 官服点选验证节点")
         ssleep(0.2)
         official_choice = true
@@ -559,14 +559,16 @@ trySolveSlipCaptcha = function(retry)
             tap(fo)
             ssleep(0.5)
         end, 10)
-    elseif findOne("滑块验证节点") then -- 旧版滑块->b服
+    elseif findAny({ "滑块验证节点", "滑块验证节点2" }) then -- 旧版滑块->b服
+        log("find 旧版滑块box", box)
         if findOne("官服点选验证节点") then
+            log("find 旧版滑块box -> 官服点选验证节点", box)
             ssleep(0.5)
             return
         end
-        local box = findOne("滑块验证节点")
-        log("find 旧版滑块box", box)
+        local box = findOne(findAny({ "滑块验证节点", "滑块验证节点2" }))
         is_old_slip = true
+        log("box", box)
         if not box then return end
         box = box.bounds
         if retry > 1 then
@@ -986,7 +988,7 @@ upload_screen = function()
     if type(ret) == "string" and #ret == 6 then
         console.println(3, "上传成功,编号：" .. ret)
         toast("上传成功,编号：" .. ret)
-        return true
+        peaceExit()
     end
 end
 
