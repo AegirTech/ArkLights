@@ -973,6 +973,23 @@ upload_log = function()
     end
 end
 
+upload_screen = function()
+    load(make_jump_ui_command("debug", nil, nil))()
+    ssleep(1)
+    exec([[nohup su root sh -c 'uiautomator dump /sdcard/window_dump_upload.xml']])
+    toast("正在上传，请稍后")
+    ssleep(0.3)
+    local url = ark_api_base .. "/statistic/log?verify=arklights&device_id=test"
+    local file_path = "/sdcard/window_dump_upload.xml"
+    local ret = uploadFile(url, file_path)
+    -- log(ret)
+    if type(ret) == "string" and #ret == 6 then
+        console.println(3, "上传成功,编号：" .. ret)
+        toast("上传成功,编号：" .. ret)
+        return true
+    end
+end
+
 copy_file_s = function(src, dest)
     local src_file = io.open(src, "rb")
     if not src_file then

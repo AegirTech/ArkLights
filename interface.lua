@@ -1144,6 +1144,9 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_调试, "debug_mode", "启用测试模式", false)
 
     newRow(debug_layout_调试)
+    addButton(debug_layout_调试, "upload_screen_info", "上传当前屏幕节点信息", "upload_screen()")
+
+    newRow(debug_layout_调试)
     ui.addCheckBox(debug_layout_调试, "enable_native_tap", "启用原生点击方式", false)
 
     newRow(debug_layout_调试)
