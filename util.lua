@@ -3968,6 +3968,8 @@ end
 
 -- 调试界面 某些功能的默认值
 update_state_from_debugui = function()
+    write_log_local = (write_log_local == nil) and true or write_log_local
+    enable_log = (enable_log == nil) and true or enable_log
     multi_account_disable_clue_unlock = expand_number_config(
         multi_account_disable_clue_unlock or '')
     multi_account_use_abyssal_hunter = expand_number_config(

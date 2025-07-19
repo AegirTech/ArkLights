@@ -146,16 +146,46 @@ sui.招募处理 = function()
     ssleep(0.5)
     appear("肉鸽_右上角希望")
     ssleep(1)
+    log(1090)
+    -- 第2人
+    log('不招募辅助')
+    if appear("界园_辅助招募卷", 1) then
+        if not wait(function()
+                tap("界园_辅助招募卷")
+                tap("招募说明关闭")
+                if findOne("确认招募") then return true end
+            end, 10) then
+        end
+        appear('战略助战')
+        if not wait(function()
+                tap("放弃招募")
+                if findOne("剿灭说明") then tap("剿灭说明") end
+                if not findOne("确认招募") then return true end
+            end, 10) then
+            log(1092)
+            return
+        end
+
+        if not wait(function()
+                tap("右右确认")
+                if findOne("剿灭说明") then tap("剿灭说明") end
+                if findOne("肉鸽_右上角希望") then return true end
+            end, 10) then
+            log(1093)
+            return
+        end
+    end
+    ssleep(.1)
+    log(1095)
     log('招募近卫')
     if not wait(function()
-            tap("近卫招募券")
+            tap("界园_近卫招募卷")
             tap("招募说明关闭")
             if not findOne("肉鸽_右上角希望") and not findOne("战略返回") then
                 return true
             end
             ssleep(0.2)
         end, 10) then
-        return
     end
     disappear({ "肉鸽_右上角希望", "战略返回" })
     if not wait(function()
@@ -187,40 +217,13 @@ sui.招募处理 = function()
         return
     end
     ssleep(.1)
-    -- 第2人
-    log('不招募辅助')
-    if not wait(function()
-            tap("萨卡兹_辅助招募券")
-            tap("招募说明关闭")
-            if findOne("确认招募") then return true end
-        end, 10) then
-        return
-    end
-    appear('战略助战')
-    if not wait(function()
-            tap("放弃招募")
-            if findOne("剿灭说明") then tap("剿灭说明") end
-            if not findOne("确认招募") then return true end
-        end, 10) then
-        return
-    end
-
-    if not wait(function()
-            tap("右右确认")
-            if findOne("剿灭说明") then tap("剿灭说明") end
-            if findOne("肉鸽_右上角希望") then return true end
-        end, 10) then
-        return
-    end
-    ssleep(.1)
     -- 第3人
     log('不招募医疗')
     if not wait(function()
-            tap("界园_医疗招募券")
+            tap("界园_医疗招募卷")
             tap("招募说明关闭")
             if findOne("确认招募") then return true end
         end, 10) then
-        return
     end
     appear('战略助战')
     if not wait(function()
@@ -243,6 +246,34 @@ end
 sui.不招募 = function()
     ssleep(0.5)
     appear("肉鸽_右上角希望")
+    log('不招募辅助')
+    if appear("界园_辅助招募卷", 1) then
+        if not wait(function()
+                tap("萨卡兹_辅助招募券")
+                tap("招募说明关闭")
+                if findOne("确认招募") then return true end
+            end, 10) then
+            return
+        end
+        appear('战略助战')
+        if not wait(function()
+                tap("放弃招募")
+                if findOne("剿灭说明") then tap("剿灭说明") end
+                if not findOne("确认招募") then return true end
+            end, 10) then
+            return
+        end
+
+        if not wait(function()
+                tap("右右确认")
+                if findOne("剿灭说明") then tap("剿灭说明") end
+                if findOne("肉鸽_右上角希望") then return true end
+            end, 10) then
+            return
+        end
+    end
+    ssleep(.1)
+
     log('不招募近卫')
     if not wait(function()
             tap("近卫招募券")
@@ -271,31 +302,7 @@ sui.不招募 = function()
     end
     ssleep(.1)
     -- 第2人
-    log('不招募辅助')
-    if not wait(function()
-            tap("萨卡兹_辅助招募券")
-            tap("招募说明关闭")
-            if findOne("确认招募") then return true end
-        end, 10) then
-        return
-    end
-    appear('战略助战')
-    if not wait(function()
-            tap("放弃招募")
-            if findOne("剿灭说明") then tap("剿灭说明") end
-            if not findOne("确认招募") then return true end
-        end, 10) then
-        return
-    end
 
-    if not wait(function()
-            tap("右右确认")
-            if findOne("剿灭说明") then tap("剿灭说明") end
-            if findOne("肉鸽_右上角希望") then return true end
-        end, 10) then
-        return
-    end
-    ssleep(.1)
     -- 第3人
     log('不招募医疗')
     if not wait(function()
@@ -780,35 +787,67 @@ path.界园前瞻投资 = function()
     end
 
     if not wait(function(reset_wait_start_time)
-            if findOne("界园_选择招募二阶段") then return true end
-            if findOne("界园_近卫招募组合") then return true end
+            -- if findOne("界园_选择招募二阶段") then return true end
+            if findOne("界园_选择招募最后阶段") then return true end
             tap("界园_下一步")
-            ssleep(1)
+            ssleep(0.5)
         end, 10) then
-        return
     end
-    local 获得藏品需要重开 = false
+    -- if not wait(function(reset_wait_start_time)
+    --         if findOne("界园_近卫招募组合") then return true end
+    --         if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+    --         tap("界园_近卫招募组合")
+    --         ssleep(0.5)
+    --     end, 10) then
+    --     return
+    -- end
+    log(1064)
     if not wait(function(reset_wait_start_time)
-            if findOne("界园_招募界面") then return true end
-            if findOne("界园_进入探索获得藏品") then
-                获得藏品需要重开 = true
-                return true
+            if findOne("界园_是否大于等于6希望") then
+                ssleep(1)
+                if findOne("界园_是否大于等于6希望") then
+                    return true
+                end
             end
-            appearTap("界园_近卫招募组合", 5)
-            appearTap("界园_近卫招募确认", 5)
-            ssleep(1)
+            findTap("招募说明关闭")
+            if findAny({
+                    "战略助战", "放弃招募", "剿灭说明",
+                }) then
+                tap("放弃招募")
+                if findOne("剿灭说明") then tap("剿灭说明") end
+                disappear("放弃招募")
+                if not wait(function()
+                        tap("右右确认")
+                        if findOne("剿灭说明") then tap("剿灭说明") end
+                        if findOne("肉鸽_右上角希望") then return true end
+                        if findAny({
+                                "界园_近卫招募卷", "界园_医疗招募卷",
+                            }) then
+                            return true
+                        end
+                    end, 10) then
+                    return
+                end
+            end
+            ssleep(.1)
         end, 10) then
         return
     end
-    if 获得藏品需要重开 then
-        if not wait(function(reset_wait_start_time)
-                if findAny({ "界园_常规行动", "界园_戛然而止" }) then return true end
-                back()
-                ssleep(1)
-            end, 10) then
-            return
-        end
+    log(1065)
+    if not findOne("界园_是否大于等于6希望") then
+        log(2695, "没有足够的希望")
+        back()
+        return
     end
+
+    -- if not wait(function(reset_wait_start_time)
+    --         if findOne("界园_招募界面") then return true end
+    --         appearTap("界园_近卫招募组合", 5)
+    --         appearTap("界园_近卫招募确认", 5)
+    --         ssleep(1)
+    --     end, 15) then
+    --     return
+    -- end
     if zl_skip_fight then
         sui.不招募()
     else
