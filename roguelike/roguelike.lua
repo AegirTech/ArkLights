@@ -1113,11 +1113,12 @@ end
 
 zl_shop_coin = function()
     -- if not appear("诡意行商投资", 1) then return goto_next_level() end
-    if not appear("诡意行商投资", 1) then return true end
+    if not appear("诡意行商投资", 3) then return true end
+    ssleep(1) --等待界面稳定
     if not wait(function()
             if findOne("诡意行商投币") then return true end
             tap("诡意行商投资")
-        end) then
+        end, 5) then
         return
     end
     if not wait(function()

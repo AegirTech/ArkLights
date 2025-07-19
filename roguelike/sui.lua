@@ -967,13 +967,13 @@ path.界园前瞻投资 = function()
     log("完成战斗")
 
     if not wait(function()
-            if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入", "界园_作战页面加载", "界园_关卡进入" }) then return true end
+            if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入", "界园_作战页面加载" }) then return true end
             if 第二列数量 == 3 then
                 tap("萨卡兹_3节点_作战列表" .. str(界园路线选择结果[1][1]))
             else
                 tap("萨卡兹_2节点_作战列表" .. str(界园路线选择结果[1][1]))
             end
-        end, 5) then
+        end, 10) then
         return false
     end
 
@@ -983,8 +983,7 @@ path.界园前瞻投资 = function()
     if 界园路线选择结果[1][2] == "不期而遇" or 界园路线选择结果[1][2] == "得偿所愿" then
         --进入不期而遇
         if not wait(function()
-                if not findOne("界园_关卡进入") then return true end
-                tap("界园_关卡进入")
+                if not findOne("界园_不期而遇_进入") and not findOne("界园_得偿所愿_进入") then return true end
                 findTap("界园_不期而遇_进入")
                 findTap("界园_得偿所愿_进入")
             end, 10) then
@@ -1039,7 +1038,7 @@ path.界园前瞻投资 = function()
             -- if not findOne("战略帮助") then return true end
             if findAny({ "诡意行商投资", "诡意行商离开" }) then return true end
             tap("界园_商店进入")
-        end, 3) then
+        end, 5) then
         return zl_repos_path('界园_放弃探索')
     end
 
