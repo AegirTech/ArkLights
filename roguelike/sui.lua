@@ -785,12 +785,17 @@ path.界园前瞻投资 = function()
         end, 10) then
         return
     end
-
+    ssleep(0.5)
     if not wait(function(reset_wait_start_time)
             -- if findOne("界园_选择招募二阶段") then return true end
             if findOne("界园_选择招募最后阶段") then return true end
+            if findAny({
+                    "战略助战", "放弃招募", "剿灭说明", "界园_是否大于等于6希望"
+                }) then
+                return true
+            end
             tap("界园_下一步")
-            ssleep(0.5)
+            ssleep(0.1)
         end, 10) then
     end
     -- if not wait(function(reset_wait_start_time)
@@ -801,6 +806,7 @@ path.界园前瞻投资 = function()
     --     end, 10) then
     --     return
     -- end
+    ssleep(0.5)
     log(1064)
     if not wait(function(reset_wait_start_time)
             if findOne("界园_是否大于等于6希望") then
