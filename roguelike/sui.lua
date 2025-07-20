@@ -584,6 +584,7 @@ path.界园前瞻投资 = function()
     local in_fight_return = ''
     local restart = function()
         toast(in_fight_return or '重开')
+        restartapp(appid)
         ssleep(3)
         if not request_memory_clean() then
             path.界园前瞻投资()
@@ -608,7 +609,6 @@ path.界园前瞻投资 = function()
                 return true
             end
             tap("新战略确认")
-            ssleep(1)
         end, 20)
     end
 
@@ -790,7 +790,7 @@ path.界园前瞻投资 = function()
             -- if findOne("界园_选择招募二阶段") then return true end
             if findOne("界园_选择招募最后阶段") then return true end
             if findAny({
-                    "战略助战", "放弃招募", "剿灭说明", "界园_是否大于等于6希望"
+                    "战略助战", "放弃招募", "剿灭说明",
                 }) then
                 return true
             end
@@ -870,12 +870,13 @@ path.界园前瞻投资 = function()
         end, 15) then
         return
     end
+    ssleep(2)
 
     log(2700)
     --点击进入探索之后，有一段时间的加载界面，需要点击
     local xtime = time()
     if not wait(function()
-            if findOne("战略返回") then return true end
+            if findOne("界园_战略帮助") then return true end
             tap("战略确认")
             findTap("界园_每层通宝确认")
             appear("肉鸽_右上角希望", 0.3)
@@ -951,15 +952,12 @@ path.界园前瞻投资 = function()
         sui.战斗开始()
     end
     log(1055)
-    appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
-    if findOne("界园_戛然而止") then
-        log('戛然而止界面，准备返回')
-        return
-    end
-    if findOne("界园_作战失败结算") then
+    local r = appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
+    if r ~= "战略返回" then
         作战结算返回()
         if not appear("界园_常规行动", 5) then
             log(3303, "无法返回常规行动")
+            restart()
             return
         end
         return
