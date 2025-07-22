@@ -149,7 +149,7 @@ sui.招募处理 = function()
         log(1091, tj, "不招募")
         if not tj then
             log(1094, "没有招募卷")
-            return
+            break
         end
         if not wait(function()
                 tap(tj)
