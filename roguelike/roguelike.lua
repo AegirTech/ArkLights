@@ -1114,8 +1114,7 @@ end
 zl_shop_coin = function()
     log("肉鸽投币处理")
     -- if not appear("诡意行商投资", 1) then return goto_next_level() end
-    if not appear("诡意行商投资", 3) then return true end
-    ssleep(0.5) --等待界面稳定
+    if not appear("诡意行商投资", 5) then return true end
     if not wait(function()
             if findOne("诡意行商投币") then return true end
             tap("诡意行商投资")
@@ -1138,6 +1137,7 @@ zl_shop_coin = function()
     wait(function(reset_wait_start_time)
         -- 不能投情况
         if not findOne("诡意行商投资入口") then return true end
+        if not findOne("投资受限白") then return true end
         if findOne("正在提交反馈至神经") then
             reset_wait_start_time()
         end

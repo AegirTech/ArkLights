@@ -142,19 +142,21 @@ sui.战斗后领取 = function()
 end
 
 sui.招募处理 = function()
-    appear("界园_招募界面")
-    ssleep(0.5)
-    appear("肉鸽_右上角希望")
-    ssleep(1)
     log(1090)
     -- 第2人
-    log('不招募辅助')
-    if appear("界园_辅助招募卷", 1) then
+    for i = 1, 2 do
+        local tj = appear({ "界园_辅助招募卷", "界园_医疗招募卷" })
+        log(1091, tj, "不招募")
+        if not tj then
+            log(1094, "没有招募卷")
+            return
+        end
         if not wait(function()
-                tap("界园_辅助招募卷")
+                tap(tj)
                 tap("招募说明关闭")
                 if findOne("确认招募") then return true end
             end, 10) then
+            return
         end
         appear('战略助战')
         if not wait(function()
@@ -162,7 +164,6 @@ sui.招募处理 = function()
                 if findOne("剿灭说明") then tap("剿灭说明") end
                 if not findOne("确认招募") then return true end
             end, 10) then
-            log(1092)
             return
         end
 
@@ -171,7 +172,6 @@ sui.招募处理 = function()
                 if findOne("剿灭说明") then tap("剿灭说明") end
                 if findOne("肉鸽_右上角希望") then return true end
             end, 10) then
-            log(1093)
             return
         end
     end
@@ -216,40 +216,19 @@ sui.招募处理 = function()
         end, 120) then
         return
     end
-    ssleep(.1)
-    -- 第3人
-    log('不招募医疗')
-    if not wait(function()
-            tap("界园_医疗招募卷")
-            tap("招募说明关闭")
-            if findOne("确认招募") then return true end
-        end, 10) then
-    end
-    appear('战略助战')
-    if not wait(function()
-            tap("放弃招募")
-            if findOne("剿灭说明") then tap("剿灭说明") end
-            if not findOne("确认招募") then return true end
-        end, 10) then
-        return
-    end
-
-    if not wait(function()
-            tap("右右确认")
-            if findOne("剿灭说明") then tap("剿灭说明") end
-            if findOne("肉鸽_右上角希望") then return true end
-        end, 10) then
-        return
-    end
 end
 
 sui.不招募 = function()
-    ssleep(0.5)
     appear("肉鸽_右上角希望")
-    log('不招募辅助')
-    if appear("界园_辅助招募卷", 1) then
+    for i = 1, 3 do
+        local tj = appear({ "界园_辅助招募卷", "界园_近卫招募卷", "界园_医疗招募卷" })
+        log(1091, tj, "不招募")
+        if not tj then
+            log(1094, "没有招募卷")
+            return
+        end
         if not wait(function()
-                tap("萨卡兹_辅助招募券")
+                tap(tj)
                 tap("招募说明关闭")
                 if findOne("确认招募") then return true end
             end, 10) then
@@ -271,62 +250,6 @@ sui.不招募 = function()
             end, 10) then
             return
         end
-    end
-    ssleep(.1)
-
-    log('不招募近卫')
-    if not wait(function()
-            tap("近卫招募券")
-            tap("招募说明关闭")
-            if not findOne("肉鸽_右上角希望") and not findOne("战略返回") then
-                return true
-            end
-            ssleep(0.2)
-        end, 10) then
-        return
-    end
-    if not wait(function()
-            tap("放弃招募")
-            if findOne("剿灭说明") then tap("剿灭说明") end
-            if not findOne("确认招募") then return true end
-        end, 10) then
-        return
-    end
-
-    if not wait(function()
-            tap("右右确认")
-            if findOne("剿灭说明") then tap("剿灭说明") end
-            if findOne("肉鸽_右上角希望") then return true end
-        end, 10) then
-        return
-    end
-    ssleep(.1)
-    -- 第2人
-
-    -- 第3人
-    log('不招募医疗')
-    if not wait(function()
-            tap("界园_医疗招募券")
-            tap("招募说明关闭")
-            if findOne("确认招募") then return true end
-        end, 10) then
-        return
-    end
-    appear('战略助战')
-    if not wait(function()
-            tap("放弃招募")
-            if findOne("剿灭说明") then tap("剿灭说明") end
-            if not findOne("确认招募") then return true end
-        end, 10) then
-        return
-    end
-
-    if not wait(function()
-            tap("右右确认")
-            if findOne("剿灭说明") then tap("剿灭说明") end
-            if findOne("肉鸽_右上角希望") then return true end
-        end, 10) then
-        return
     end
 end
 
@@ -860,9 +783,8 @@ path.界园前瞻投资 = function()
         sui.招募处理()
     end
 
-    if not appear("肉鸽_右上角希望") then return end
     log(2698)
-
+    if not appear({ "肉鸽_右上角希望", "界园_进入探索", "界园_每层通宝确认" }, 20) then return end
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
             if not findOne("肉鸽_右上角希望") then return true end
@@ -964,7 +886,7 @@ path.界园前瞻投资 = function()
     end
     if not findOne("战略返回") then return end
 
-    if not sui.战斗后领取() then
+    if not zl_skip_fight and not sui.战斗后领取() then
         log("未能完成战斗后拾取")
         return false
     end
