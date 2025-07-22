@@ -285,8 +285,8 @@ zl.fight_name_ocr = function(rogueType)
     log(zl_fight_name)
     if not wait(function()
             fight1ocr = ocr_ret(rogueType .. "_作战检测范围")
+            log(4880, fight1ocr)
             if #fight1ocr > 1 then
-                log("4880", 4880, fight1ocr)
                 for name, chars in pairs(zl_fight_name) do
                     if string.finds(fight1ocr, chars) then
                         now_fight_name = name
@@ -295,6 +295,20 @@ zl.fight_name_ocr = function(rogueType)
                 end
                 log("不知道什么作战：" .. fight1ocr)
                 return
+            else
+                log("更换ocr")
+                fight1ocr = ocrex_ret(rogueType .. "_作战检测范围")
+                log(4882, fight1ocr)
+                if #fight1ocr > 1 then
+                    for name, chars in pairs(zl_fight_name) do
+                        if string.finds(fight1ocr, chars) then
+                            now_fight_name = name
+                            return true
+                        end
+                    end
+                    log("不知道什么作战2:" .. fight1ocr)
+                    return
+                end
             end
         end, 5, .2) then
         findTap('战略退出')
@@ -1143,7 +1157,7 @@ zl_shop_coin = function()
         end
         if not findOne(coin_no_notification) then reset_wait_start_time() end
         tap("诡意行商确认投资")
-    end, 6)
+    end, 7)
 end
 
 --肉鸽等级满了，放弃行动后回到首页再截个图

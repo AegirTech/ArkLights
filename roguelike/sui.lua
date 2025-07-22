@@ -859,10 +859,16 @@ path.界园前瞻投资 = function()
     end
 
     log("准备进入第一关作战")
+    local 右上角取样 = sample("投币提示")
     ssleep(.5)
     if not wait(function()
             tap("萨卡兹_第一列_作战列表" .. 第一列关卡)
             if findOne('界园_作战页面加载') then return true end
+            if not findOne(右上角取样) then
+                log(3209)
+                ssleep(0.5)
+                return true
+            end
         end, 10) then
         log(3301, "无法进入")
         zl_repos_path('界园_放弃探索')
