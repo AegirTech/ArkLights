@@ -1137,7 +1137,7 @@ zl_shop_coin = function()
     wait(function(reset_wait_start_time)
         -- 不能投情况
         if not findOne("诡意行商投资入口") then return true end
-        if not findOne("投资受限白") then return true end
+        if findOne("投资受限白") then return true end
         if findOne("正在提交反馈至神经") then
             reset_wait_start_time()
         end
