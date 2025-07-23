@@ -713,6 +713,38 @@ path.界园前瞻投资 = function()
         end, 10) then
         return
     end
+    local page = nil
+    if not zl_only_coin then
+        -- 会出额外藏品
+        log(1056)
+        if appear("界园_额外藏品选择页面", 5) and not appear("界园_选择招募卷阶段", 0.5) then
+            log(1058)
+            ssleep(str2int(zl_wait_time_jy, 200) / 1000)
+            appear("界园_藏品选择横线", 5)
+            ssleep(0.1)
+            page = sample("界园进度")
+            local best = 2
+            for i = 1, 3 do
+                local fret = find_color("界园_藏品范围" .. i, "C82A36")
+                log(1057, i, fret)
+                local fretb = find_color("界园_藏品范围" .. i, "28BFE5")
+                log(1058, fretb)
+                if not fret and fretb then
+                    best = i
+                    log(1059, best)
+                end
+            end
+            if not wait(function(reset_wait_start_time)
+                    if findOne("界园_选择招募卷阶段") then return true end
+                    if not findOne(page) then return true end
+                    tap('界园_藏品点击列表' .. best)
+                    tap('界园_藏品点击列表' .. best)
+                    ssleep(0.5)
+                end, 10) then
+            end
+        end
+    end
+
     ssleep(0.5)
     if not wait(function(reset_wait_start_time)
             -- if findOne("界园_选择招募二阶段") then return true end
@@ -737,9 +769,9 @@ path.界园前瞻投资 = function()
     ssleep(0.5)
     log(1064)
     if not wait(function(reset_wait_start_time)
-            if findOne("界园_是否大于等于6希望") then
+            if findOne("肉鸽_右上角希望") then
                 ssleep(1)
-                if findOne("界园_是否大于等于6希望") then
+                if findOne("肉鸽_右上角希望") then
                     return true
                 end
             end
@@ -768,12 +800,6 @@ path.界园前瞻投资 = function()
         return
     end
     log(1065)
-    if not findOne("界园_是否大于等于6希望") then
-        log(2695, "没有足够的希望")
-        back()
-        return
-    end
-
     -- if not wait(function(reset_wait_start_time)
     --         if findOne("界园_招募界面") then return true end
     --         appearTap("界园_近卫招募组合", 5)
@@ -989,13 +1015,15 @@ path.界园前瞻投资 = function()
         return true
     end
     --购买商品
-    if not wait(function()
-            if findOne("诡意行商离开") then return true end
-            tap("开包skip")
-        end, 5) then
-        return
+    if not zl_not_buy_jy then
+        if not wait(function()
+                if findOne("诡意行商离开") then return true end
+                tap("开包skip")
+            end, 5) then
+            return
+        end
+        for i = 1, 10 do if not zl_shop_buy() then break end end
     end
-    for i = 1, 10 do if not zl_shop_buy() then break end end
 
     wait(function()
         if not findOne("战略返回") then return true end
