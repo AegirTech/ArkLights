@@ -1423,9 +1423,14 @@ show_extra_ui = function()
     newRow(rouge_layout_界园)
     ui.addCheckBox(rouge_layout_界园, "zl_skip_coin_jy", "跳过投币", false)
     ui.addCheckBox(rouge_layout_界园, "zl_only_coin_jy", "投币完立刻退出", false)
+    ui.addCheckBox(rouge_layout_界园, "zl_not_buy_jy", "不购买商店藏品", false)
 
     newRow(rouge_layout_界园)
     ui.addCheckBox(rouge_layout_界园, "zl_fight_more", "第二列可作战", false)
+
+    newRow(rouge_layout_界园)
+    addTextView(rouge_layout_界园, [[部分界面等待时间(ms)]])
+    ui.addEditText(rouge_layout_界园, "zl_wait_time_jy", [[300]])
 
     newRow(rouge_layout_界园)
     addTextView(rouge_layout_界园, [[需求商品]])
