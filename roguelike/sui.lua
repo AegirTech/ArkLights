@@ -5,6 +5,184 @@
 
 sui = {}
 
+sui.跳转 = function()
+    zl_eight_daily()
+
+    local in_fight_return = ''
+    local restart = function()
+        toast(in_fight_return or '重开')
+        restartapp(appid)
+        ssleep(3)
+        if not request_memory_clean() then
+            path.界园前瞻投资()
+        else
+            path.跳转("首页")
+        end
+    end
+
+    local 作战结算返回 = function()
+        log("界园_作战失败，准备返回")
+        wait(function()
+            if findOne("界园_常规行动") then
+                ssleep(3)
+                if findOne("界园_常规行动") then
+                    return true
+                end
+            end
+            if findAny({
+                    "面板", "活动公告返回", "签到返回", "签到返回黄",
+                    "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                }) then
+                return true
+            end
+            tap("新战略确认")
+        end, 20)
+    end
+
+    --判断是否在其他界面
+    local jumpout
+    if findOne("战略返回") then path.fallback.战略返回() end
+    if findOne("暂停中") and findOne("生命值") then restartapp(appid) end
+    if findOne("界园_每层通宝确认") then
+        if not wait(function()
+                if findOne("界园_常规行动") then return true end
+                findTap("界园_每层通宝确认")
+                tap('战略返回')
+                tap("新战略确认")
+                ssleep(0.3)
+            end, 5) then
+            return restart()
+        end
+    end
+    if findOne("界园_主页干员详情") then back() end
+    if findOne("界园_作战失败结算") then
+        return 作战结算返回()
+    end
+    -- 先导航到常规行动
+    zl_navigation('界园_常规行动', '界园_进入主题')
+
+    --肉鸽 等级源石锭检查
+    界园肉鸽完成 = zl_level_coin_inquire('界园_常规行动', '界园_等级检测范围', '界园_源石锭检测范围')
+    if 界园肉鸽完成 then
+        return
+    end
+
+    -- 放弃探索
+    if findOne("界园_戛然而止") then
+        if not findOne("界园_放弃探索") then
+            if not wait(function()
+                    if not findOne("界园_戛然而止") then return true end
+                    tap("界园_探索开始")
+                end, 5) then
+                return
+            end
+            if not wait(function()
+                    if findOne("界园_常规行动") then return true end
+                    -- 第一次数据更新处理
+                    if findAny({
+                            "面板", "活动公告返回", "签到返回", "签到返回黄",
+                            "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                        }) then
+                        jumpout = true
+                        return true
+                    end
+                    tap("新战略确认")
+                end, 5) then
+                return
+            end
+            if jumpout then return end
+        else
+            if not wait(function()
+                    if findOne("返回确认界面") then return true end
+                    tap("界园_放弃探索")
+                end, 5) then
+                log(2608)
+                -- 无法直接放弃的情况 不处理
+                if not appear("界园_常规行动", 5) then
+                    log(2609)
+                    return
+                end
+
+                if not wait(function()
+                        if findOne("界园_常规行动") then return true end
+                        -- 第一次数据更新处理
+                        if findAny({
+                                "面板", "活动公告返回", "签到返回", "签到返回黄",
+                                "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                            }) then
+                            jumpout = true
+                            return true
+                        end
+                        tap("新战略确认")
+                    end, 5) then
+                    return
+                end
+                if jumpout then return end
+            end
+        end
+        if not wait(function(reset_wait_start_time)
+                if findOne("正在提交反馈至神经") then
+                    reset_wait_start_time()
+                end
+                if findOne("返回确认界面") then
+                    tap("右右确认")
+                    return
+                end
+                tap("新战略确认")
+                if findOne("界园_常规行动") and not findOne("界园_放弃探索") then
+                    return true
+                end
+                -- 第一次数据更新处理
+                if findAny({
+                        "面板", "活动公告返回", "签到返回", "签到返回黄",
+                        "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                    }) then
+                    jumpout = true
+                    return true
+                end
+            end, 30) then
+            return
+        end
+    end
+    if jumpout then return end
+
+    local t = time()
+    if not wait(function(reset_wait_start_time)
+            if findOne("战略返回") then return true end
+            -- 第二次数据更新处理
+            if findAny({
+                    "面板", "活动公告返回", "签到返回", "签到返回黄",
+                    "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+                }) then
+                jumpout = true
+                return true
+            end
+            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+
+            tap("新战略确认")
+            tap("继续探索")
+            if findOne("界园_主页干员详情") then
+                log(2690)
+                back()
+                ssleep(.5)
+            end
+            if time() - t > 2 * 1000 then --第一次时候，需要选择难度等级
+                ssleep(1)
+                t = time()
+                log('选择一次难度等级')
+                tap({ scale(1759), scale(567) })
+            end
+            ssleep(.8)
+        end, 60) then
+        -- 初始选难度
+        tap('难度选择确认')
+
+        return
+    end
+    if jumpout then return end
+    log("跳转界园完毕")
+end
+
 sui.点天赋 = function()
     if not wait(function()
             tap("战略确认")
@@ -502,180 +680,7 @@ end
 path.界园前瞻投资 = function()
     log('start 界园')
     -- 肉鸽每8小时做日常
-    zl_eight_daily()
-
-    local in_fight_return = ''
-    local restart = function()
-        toast(in_fight_return or '重开')
-        restartapp(appid)
-        ssleep(3)
-        if not request_memory_clean() then
-            path.界园前瞻投资()
-        else
-            path.跳转("首页")
-        end
-    end
-
-    local 作战结算返回 = function()
-        log("界园_作战失败，准备返回")
-        wait(function()
-            if findOne("界园_常规行动") then
-                ssleep(3)
-                if findOne("界园_常规行动") then
-                    return true
-                end
-            end
-            if findAny({
-                    "面板", "活动公告返回", "签到返回", "签到返回黄",
-                    "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
-                }) then
-                return true
-            end
-            tap("新战略确认")
-        end, 20)
-    end
-
-    --判断是否在其他界面
-    local jumpout
-    if findOne("战略返回") then path.fallback.战略返回() end
-    if findOne("暂停中") and findOne("生命值") then restartapp(appid) end
-    if findOne("界园_每层通宝确认") then
-        if not wait(function()
-                if findOne("界园_常规行动") then return true end
-                findTap("界园_每层通宝确认")
-                tap('战略返回')
-                tap("新战略确认")
-                ssleep(0.3)
-            end, 5) then
-            return restart()
-        end
-    end
-    if findOne("界园_主页干员详情") then back() end
-    if findOne("界园_作战失败结算") then
-        return 作战结算返回()
-    end
-    -- 先导航到常规行动
-    zl_navigation('界园_常规行动', '界园_进入主题')
-
-    --肉鸽 等级源石锭检查
-    界园肉鸽完成 = zl_level_coin_inquire('界园_常规行动', '界园_等级检测范围', '界园_源石锭检测范围')
-    if 界园肉鸽完成 then
-        return
-    end
-
-    -- 放弃探索
-    if findOne("界园_戛然而止") then
-        if not findOne("界园_放弃探索") then
-            if not wait(function()
-                    if not findOne("界园_戛然而止") then return true end
-                    tap("界园_探索开始")
-                end, 5) then
-                return
-            end
-            if not wait(function()
-                    if findOne("界园_常规行动") then return true end
-                    -- 第一次数据更新处理
-                    if findAny({
-                            "面板", "活动公告返回", "签到返回", "签到返回黄",
-                            "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
-                        }) then
-                        jumpout = true
-                        return true
-                    end
-                    tap("新战略确认")
-                end, 5) then
-                return
-            end
-            if jumpout then return end
-        else
-            if not wait(function()
-                    if findOne("返回确认界面") then return true end
-                    tap("界园_放弃探索")
-                end, 5) then
-                log(2608)
-                -- 无法直接放弃的情况 不处理
-                if not appear("界园_常规行动", 5) then
-                    log(2609)
-                    return
-                end
-
-                if not wait(function()
-                        if findOne("界园_常规行动") then return true end
-                        -- 第一次数据更新处理
-                        if findAny({
-                                "面板", "活动公告返回", "签到返回", "签到返回黄",
-                                "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
-                            }) then
-                            jumpout = true
-                            return true
-                        end
-                        tap("新战略确认")
-                    end, 5) then
-                    return
-                end
-                if jumpout then return end
-            end
-        end
-        if not wait(function(reset_wait_start_time)
-                if findOne("正在提交反馈至神经") then
-                    reset_wait_start_time()
-                end
-                if findOne("返回确认界面") then
-                    tap("右右确认")
-                    return
-                end
-                tap("新战略确认")
-                if findOne("界园_常规行动") and not findOne("界园_放弃探索") then
-                    return true
-                end
-                -- 第一次数据更新处理
-                if findAny({
-                        "面板", "活动公告返回", "签到返回", "签到返回黄",
-                        "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
-                    }) then
-                    jumpout = true
-                    return true
-                end
-            end, 30) then
-            return
-        end
-    end
-    if jumpout then return end
-
-    local t = time()
-    if not wait(function(reset_wait_start_time)
-            if findOne("战略返回") then return true end
-            -- 第二次数据更新处理
-            if findAny({
-                    "面板", "活动公告返回", "签到返回", "签到返回黄",
-                    "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
-                }) then
-                jumpout = true
-                return true
-            end
-            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
-
-            tap("新战略确认")
-            tap("继续探索")
-            if findOne("界园_主页干员详情") then
-                log(2690)
-                back()
-                ssleep(.5)
-            end
-            if time() - t > 2 * 1000 then --第一次时候，需要选择难度等级
-                ssleep(1)
-                t = time()
-                log('选择一次难度等级')
-                tap({ scale(1759), scale(567) })
-            end
-            ssleep(.8)
-        end, 60) then
-        -- 初始选难度
-        tap('难度选择确认')
-
-        return
-    end
-    if jumpout then return end
+    sui.跳转()
 
     -- 开始探索 一路按到 招募干员
     -- if not wait(function(reset_wait_start_time)
@@ -1041,4 +1046,273 @@ path.界园前瞻投资 = function()
         return
     end
     return
+end
+
+sui.招募并记录干员 = function(干员, 肉鸽白名单)
+    local idx, name = zl.招募干员(干员, 肉鸽白名单)
+    log(idx, name)
+    if table.findk(肉鸽参数["operators"], name) then
+        肉鸽参数["operators"][name] = 肉鸽参数["operators"][name] + 1
+    end
+    zl.选择干员(idx)
+end
+
+
+sui.普通作战1 = function()
+    log('界园肉鸽')
+    初始分队 = 1
+    初始小队 = 2
+    初始队员 = { "维什戴尔", "谷米", "卡达" }
+    到达层数 = 0
+    肉鸽商品评分 = {}
+    当前通宝 = {
+        花 = {},
+        衡 = {},
+        厉 = {},
+    }
+    已存招募券 = {}
+    钱盒内通宝 = {
+        花 = {},
+        衡 = {},
+        厉 = {},
+    }
+    肉鸽参数 = {
+        hp = 0,
+        hope = 0,
+        floor = 0,
+        collection = {},
+        operators = {
+            维什戴尔 = 1,
+            谷米 = 1,
+            卡达 = 1,
+            --[[ 电弧 = 1,
+            酒神 = 1,
+            罗小黑 = 1,
+            清流 = 1, ]]
+        },
+        ticket = 2,
+    }
+    --第五层暂停 = ReadUIConfig("第五层暂停")
+    招募开局干员 = 0
+    肉鸽白名单 = { "维什戴尔", "古米", "卡达", "电弧", "酒神", "新约能天使" }
+    肉鸽队员 = {}
+    sui.跳转()
+
+    -- 开始探索 一路按到 招募干员
+    -- local first_time_see_first_card = 0
+    local 分队位置 = 初始分队
+    if 分队位置 > 4 then
+        log("需要翻", 分队位置 // 4, "页")
+        for i = 1, 分队位置 // 4 do
+            ssleep(0.5)
+            path.swip_hd_shop(false, scale(1704))
+            ssleep(0.5)
+        end
+    end
+
+    local tapx = scale(258) + scale(414) * (分队位置 % 4 - 1)
+    local tapy = scale(904)
+    if not wait(function(reset_wait_start_time)
+            if findOne("界园_选择招募组合") then return true end
+            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+            tap({ tapx, tapy })
+            ssleep(.8)
+        end, 10) then
+        return
+    end
+
+    log("初始招募")
+    if not wait(function(reset_wait_start_time)
+            if findOne("界园_初始招募") then return true end
+            tap("界园_稳扎稳打分队")
+            ssleep(.8)
+        end, 10) then
+        return
+    end
+    log('招募狙击')
+    if not wait(function()
+            tap("界园_医疗招募券")
+            tap("招募说明关闭")
+            if findOne("确认招募") then return true end
+            ssleep(.2)
+        end, 10) then
+        return
+    end
+    log('招募维什戴尔')
+    sui.招募并记录干员("维什戴尔", 肉鸽白名单)
+
+    -- 第2人
+    --[[ if not wait(function(reset_wait_start_time)
+            if findOne("界园_初始招募") then return true end
+            tap("界园_近卫招募券")
+        end, 10) then
+        return
+    end ]]
+
+    log('招募第二个人')
+    if not wait(function()
+            tap("界园_近卫招募券")
+            tap("招募说明关闭")
+            if findOne("确认招募") then return true end
+            ssleep(.2)
+        end, 10) then
+        return
+    end
+    log('招募古米')
+    sui.招募并记录干员("古米", 肉鸽白名单)
+    --ssleep(1)
+    -- 第3人
+    log('招募第三个人')
+    if not wait(function()
+            tap("界园_近卫招募券")
+            tap("招募说明关闭")
+            if findOne("确认招募") then return true end
+            ssleep(.2)
+        end, 10) then
+        return
+    end
+    log('招募卡达')
+    sui.招募并记录干员("卡达", 肉鸽白名单)
+    log(肉鸽参数["operators"])
+    if not appear("界园_初始招募") then return end
+    log(2698)
+    -- 进入探索 必须分为两段，否则产生位移
+    if not wait(function()
+            if not findOne("界园_初始招募") then return true end
+            tap("界园_进入探索")
+        end, 5) then
+        return
+    end
+
+    log(2700)
+    --点击进入探索之后，有一段时间的加载界面，需要点击
+    local xtime = time()
+    if not wait(function()
+            if findOne("战略返回") then return true end
+            if findOne("界园_每层通宝确认") then return true end
+            tap("战略确认")
+            --第一次会弹出‘战略帮助’那个界面
+            if time() - xtime > 3 * 1000 then
+                xtime = time()
+                tap("招募说明关闭")
+            end
+        end, 20) then
+        return
+    end
+
+    if findOne("界园_每层通宝确认") then
+        当前通宝 = sui.判断投出通宝()
+        tap("界园_每层通宝确认")
+    end
+    ssleep(0.5) -- 右边第三列有概率加载过慢
+end
+
+sui.判断投出通宝 = function()
+    log("判断投出通宝")
+    local ret = ocrex("界园_掷出通宝ocr范围")
+    ret = sui.通宝ocr校正(ret)
+    -- 处理每个字符串并分类存储
+    local 已投出通宝 = {
+        花 = {},
+        衡 = {},
+        厉 = {},
+    }
+
+    for i = 1, #ret do
+        local text = ret[i]["text"]
+        local prefix, content
+
+        -- 尝试匹配三种情况
+        for _, p in ipairs({ "花", "衡", "厉" }) do
+            if text:sub(1, #p) == p then
+                prefix = p
+                -- 去除前缀和可能的"-"
+                content = text:sub(#p + 1):gsub("^%-", "")
+                break
+            end
+        end
+
+        -- 如果找到匹配的前缀，存入对应表
+        if prefix and 已投出通宝[prefix] then
+            table.insert(已投出通宝[prefix], content)
+        end
+    end
+    log(已投出通宝)
+    return 已投出通宝
+end
+
+sui.通宝ocr校正 = function(t)
+    for i = 1, #t do
+        -- 匹配t[i]["text"]最开头的"花"/"衡"/"厉"字符位置,并去掉该位置左侧的字符
+        t[i]["text"] = (function(s)
+            local p = math.min(s:find("花") or math.huge, s:find("衡") or math.huge, s:find("厉") or math.huge)
+            return p ~= math.huge and s:sub(p) or s
+        end)(t[i]["text"])
+        --[[ local 原文本 = (t[i]["text"])
+    print(原文本)
+    if 替换[原文本] then
+        t[i]["text"] = 替换[原文本]
+    elseif 原文本:match("^白面.*$") then
+        t[i]["text"] = "白面鸮"
+    elseif 原文本:find("纯") and 原文本:find("艾雅法拉") then
+        t[i]["text"] = "纯烬艾雅法拉"
+    elseif 原文本:find("默") and 原文本:find("德克萨斯") then
+        t[i]["text"] = "缄默德克萨斯"
+    elseif 原文本:find("荒芜") and 原文本:find("拉普") then
+        t[i]["text"] = "荒芜拉普兰德"
+    elseif 原文本:find("司霆") then
+        t[i]["text"] = "司霆惊蛰"
+    end ]]
+        print(t[i]["text"])
+    end
+    return t
+end
+
+sui.判断楼层 = function()
+    local floor = 1
+    local str = ocro("界园_楼层ocr范围")
+    if string.finds(str, { "洪", "陆", "楼" }) then
+        floor = 1
+    elseif string.finds(str, { "山", "水", "阁" }) then
+        floor = 2
+    elseif string.finds(str, { "云", "瓦", "亭" }) then
+        floor = 3
+    elseif string.finds(str, { "汝", "吾", "门" }) then
+        floor = 4
+    elseif string.finds(str, { "见", "字", "祠" }) then
+        floor = 5
+    elseif string.finds(str, { "始", "末", "陵" }) then
+        floor = 6
+    elseif string.finds(str, { "是", "非", "境" }) then
+        floor = 0
+    end
+    log("判断楼层", floor)
+    sleep(50)
+    return floor
+end
+
+sui.判断血量 = function()
+    local str = ocro("界园_血量ocr范围")
+    log("判断血量", str)
+    sleep(50)
+    return str
+end
+sui.判断希望 = function()
+    local str = ocro("界园_希望ocr范围") or 0
+    log("判断希望", str)
+    sleep(50)
+    return str
+end
+sui.判断源石锭 = function()
+    local str = ocro("界园_局内源石锭ocr范围") or 0
+    log("判断局内源石锭", str)
+    sleep(50)
+    return str
+end
+sui.判断票数 = function()
+    local str = ocro("界园_票ocr范围") or 0
+    str = str2int(str, 0)
+    log("判断票数", str)
+    sleep(50)
+    return str
 end
