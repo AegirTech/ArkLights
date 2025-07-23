@@ -554,7 +554,8 @@ end
 --reflashNum重新定位初始，初始给0
 --初始招募界面 例如'放弃本次探索' '萨米_放弃本次探索'
 --肉鸽类型  例如  '萨卡兹'  '萨米'  '水月'
-zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型)
+zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型, retry)
+    local retry = retry or 0
     local 招募界面 = 初始招募界面 or '放弃本次探索'
     local 肉鸽类型 = 肉鸽类型 or '默认'
     reflashNum = reflashNum or 0
@@ -626,7 +627,7 @@ zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型)
         tap("肉鸽刷新助战蓝")
         reflashNum = reflashNum + 1
         ssleep(2) --偶尔有机子卡死，给多一点延迟，稳！
-        return zl_help_fight(reflashNum, 招募界面, 肉鸽类型)
+        return zl_help_fight(reflashNum, 招募界面, 肉鸽类型, retry + 1)
     end
     -- log("best", best)
     -- if not best then return point.战略助战干员列表1, 0, 1 end
@@ -654,6 +655,10 @@ zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型)
         reflashNum = reflashNum + 1
         tap({ 141, 54 })
         ssleep(2) --偶尔有机子卡死，给多一点延迟，稳！
+        if retry > 6 then
+            log("助战刷新次数超过6次")
+            return false
+        end
         return zl_help_fight(reflashNum, 招募界面, 肉鸽类型)
     end
     reflashNum = 0

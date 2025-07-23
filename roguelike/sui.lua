@@ -713,14 +713,14 @@ path.界园前瞻投资 = function()
         -- 会出额外藏品
         log(1056)
         if appear("界园_额外藏品选择页面", 5) and not appear("界园_选择招募卷阶段", 0.5) then
-            log(1058)
+            log(10562)
             ssleep(str2int(zl_wait_time_jy, 200) / 1000)
             appear("界园_藏品选择横线", 5)
             ssleep(0.1)
             page = sample("界园进度")
             local best = 2
             for i = 1, 3 do
-                local fret = find_color("界园_藏品范围" .. i, "C82A36")
+                local fret = find_color("界园_藏品范围" .. i, "C82A36", 0, 0.8)
                 log(1057, i, fret)
                 local fretb = find_color("界园_藏品范围" .. i, "28BFE5")
                 log(1058, fretb)
