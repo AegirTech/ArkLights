@@ -35,6 +35,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
+release_date = "07.23 04:19"
 release_date = "07.23 12:47"
 update_announcement = '最近更新：界园/任务领取'
 ui_submit_color = "#ff0d47a1"
@@ -130,7 +131,12 @@ if use_local_dictionary then
 end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
-    ssleep(1)
+    --[[ sui.判断楼层()
+    sui.判断血量()
+    sui.判断希望()
+    sui.判断源石锭()
+    sui.判断票数() ]]
+    --log(ocrex("界园_地图ocr范围"))
     -- sui.战斗后领取()
     -- incident = ocr("界园_不期而遇关卡ocr范围")
     -- log("incident", incident)
@@ -138,6 +144,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     -- path.基建信息获取()
     -- path.办公室换班()
     -- path.bilibili_login.B服验证码刷新()
+    --exit()
 end
 
 load(before_account_hook or '')()
