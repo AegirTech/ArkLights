@@ -128,6 +128,15 @@ sui.跳转 = function()
                     tap("右右确认")
                     return
                 end
+
+                if findOne("界园_主页干员详情") then
+                    log(2634)
+                    back()
+                    ssleep(.5)
+                    jumpout = true
+                    return true
+                end
+
                 tap("新战略确认")
                 if findOne("界园_常规行动") and not findOne("界园_放弃探索") then
                     return true
@@ -165,6 +174,8 @@ sui.跳转 = function()
                 log(2690)
                 back()
                 ssleep(.5)
+                jumpout = true
+                return true
             end
             if time() - t > 2 * 1000 then --第一次时候，需要选择难度等级
                 ssleep(1)
