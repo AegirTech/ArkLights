@@ -1397,6 +1397,7 @@ show_extra_ui = function()
     newRow(rouge_layout_萨卡兹)
     ui.addCheckBox(rouge_layout_萨卡兹, "zl_skip_coin_skz", "跳过投币", false)
     ui.addCheckBox(rouge_layout_萨卡兹, "zl_only_coin_skz", "只是投币", false)
+    ui.addCheckBox(rouge_layout_萨卡兹, "zl_choose_meiyuan_skz", "相遇选美愿", false)
 
     newRow(rouge_layout_萨卡兹)
     ui.addCheckBox(rouge_layout_萨卡兹, "zl_blueprint", "使用蓝图/后勤分队,", false)
