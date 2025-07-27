@@ -1344,3 +1344,8 @@ sui.判断票数 = function()
     sleep(50)
     return str
 end
+sui.判断路径 = function()
+    local 横向间隔 = scale(675)
+    local 纵向间隔 = scale(91)
+    path.swip_hd_shop(false, scale(1704))
+end
