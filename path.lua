@@ -1058,8 +1058,10 @@ path.fallback = {
         if findOne("新春限时签到2025") then
             return path.fallback.新春限时签到2025()
         end
-        if findOne("集成战略回顾水月") then
-            tap("集成战略回顾水月")
+        if findTap("集成战略回顾水月") then
+            return path.fallback.签到返回()
+        end
+        if findTap("太鼓达人活动领取") then
             return path.fallback.签到返回()
         end
         findTap("集成战略签到活动领取")

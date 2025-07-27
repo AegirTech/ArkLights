@@ -128,6 +128,15 @@ sui.跳转 = function()
                     tap("右右确认")
                     return
                 end
+
+                if findOne("界园_主页干员详情") then
+                    log(2634)
+                    back()
+                    ssleep(.5)
+                    jumpout = true
+                    return true
+                end
+
                 tap("新战略确认")
                 if findOne("界园_常规行动") and not findOne("界园_放弃探索") then
                     return true
@@ -165,6 +174,8 @@ sui.跳转 = function()
                 log(2690)
                 back()
                 ssleep(.5)
+                jumpout = true
+                return true
             end
             if time() - t > 2 * 1000 then --第一次时候，需要选择难度等级
                 ssleep(1)
@@ -718,14 +729,14 @@ path.界园前瞻投资 = function()
         -- 会出额外藏品
         log(1056)
         if appear("界园_额外藏品选择页面", 5) and not appear("界园_选择招募卷阶段", 0.5) then
-            log(1058)
+            log(10562)
             ssleep(str2int(zl_wait_time_jy, 200) / 1000)
             appear("界园_藏品选择横线", 5)
             ssleep(0.1)
             page = sample("界园进度")
             local best = 2
             for i = 1, 3 do
-                local fret = find_color("界园_藏品范围" .. i, "C82A36")
+                local fret = find_color("界园_藏品范围" .. i, "C82A36", 0, 0.8)
                 log(1057, i, fret)
                 local fretb = find_color("界园_藏品范围" .. i, "28BFE5")
                 log(1058, fretb)

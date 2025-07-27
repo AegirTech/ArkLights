@@ -892,7 +892,7 @@ sarkaz.蓝图分队 = function()
     end
     if jumpout then return end
 
-    相遇选美愿 = false
+    相遇选美愿 = (zl_choose_meiyuan_skz == nil) and false or zl_choose_meiyuan_skz
 
     local t = time()
     if not wait(function(reset_wait_start_time)
