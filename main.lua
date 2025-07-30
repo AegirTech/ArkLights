@@ -36,7 +36,6 @@ dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
 release_date = "07.25 21:09"
-release_date = "07.25 21:09"
 update_announcement = '最近更新：界园/任务领取'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
