@@ -1204,7 +1204,7 @@ show_extra_ui = function()
         nil)
 
     newRow(layout)
-    addTextView(layout, "关于特殊模式或玩法的功能\n以下功能将沿用脚本主页设置")
+    addTextView(layout, "以下功能将沿用脚本主页设置")
 
     -- newRow(layout)
     -- addButton(layout, nil, "生息演算(仅720p)",
@@ -1287,24 +1287,18 @@ show_extra_ui = function()
     -- newRow(layout)
     ---------------------------------------------------------------------
     addTitle(layout, "集成战略")
-    addInfo(layout, "重复刷第一层以获得源石锭和经验。最好单选主题，多选未测试")
+    addInfo(layout, "重复刷第一层以获得源石锭和经验")
+    newRow(layout)
+    addTextView(layout, "需要刷哪个肉鸽，先勾选，然后点击【肉鸽任务开始】，多选为依次刷")
 
     newRow(layout)
     ui.addCheckBox(layout, "zl_ky", "【傀影】", false)
     ui.addCheckBox(layout, "zl_mizuki", "【水月】", false)
-    addTextView(layout, "| 已经勉强可以刷")
-    newRow(layout)
     ui.addCheckBox(layout, "zl_sami", "【萨米】", false)
-    addTextView(layout, "| 已经勉强可以刷")
     ui.addCheckBox(layout, "zl_skz", "【萨卡兹】", false)
-    newRow(layout)
     ui.addCheckBox(layout, "zl_jy", "【界园】", false)
-    addTextView(layout, "| 测试阶段(有问题请加群反馈 891819123 / 629618641)")
-
     newRow(layout)
-    addButton(layout, nil, "肉鸽任务开始",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='肉鸽任务';lock:remove(main_ui_lock)"))
+    addTextView(layout, "界园肉鸽已完善(有问题请加群反馈 891819123)")
     newRow(layout)
     addTextView(layout, "通用选项")
     addTextView(layout, [[选第]])
@@ -1322,10 +1316,10 @@ show_extra_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "zl_disable_inspect_level",
         "禁用检测等级源石锭(崩溃请打开)", false) --有些手机cpu不能使用ocr插件
-
     newRow(layout)
-    addTextView(layout, "需要刷哪个肉鸽，去勾选启用，然后点击上面的【肉鸽任务开始】")
-
+    addButton(layout, nil, "肉鸽任务开始",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='肉鸽任务';lock:remove(main_ui_lock)"))
     newRow(layout)
     ui.addTabView(layout, "extra_tab")
     ------------------------------------------------------------
