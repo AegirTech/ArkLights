@@ -78,6 +78,7 @@ path.base = {
             -- 单账号直接停，多账号跳过
             stop("账号或密码为空", account_idx and 'next' or '')
         end
+        快速切号功能状态 = false
         if #username > 0 then
             log(44)
             if not wait(function()
@@ -475,6 +476,7 @@ path.bilibili_login = {
         else
             stop("账号或密码为空", account_idx and 'next' or '')
         end
+        快速切号功能状态 = false
         tap("bilibili_login")
         disappear("bilibili_login", 15)
         tap("bilibili_login")

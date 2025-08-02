@@ -258,6 +258,23 @@ official_set_login_user = function(data)
         log("data为空")
         return false
     end
+    -- check
+    local data_token = data:gsub('&quot;', '"')
+    local staus, data_token = pcall(JsonDecode, data_token)
+    if not staus then
+        log("数据解析失败", data_token)
+        return false
+    end
+    local token = data_token[1]["token"]
+    local url = "https://as.hypergryph.com/user/info/v1/basic?token=" .. token
+    local ret, code = httpGet(url)
+    if code == 200 then
+        log("获取用户信息成功")
+    else
+        log("获取用户信息失败", ret, code)
+        return false
+    end
+
     exec2(string.format(
         [[su root sh -c "cp '/data/user/0/com.hypergryph.arknights/shared_prefs/HypergryphSdkPreferences.xml' '%s'"]],
         getWorkPath() .. "/HypergryphSdkPreferences.xml"))

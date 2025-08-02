@@ -217,7 +217,7 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
             job = { extra_mode }
         end
 
-        switch_account()
+        pcall(switch_account)
 
         if 快速切号功能状态 == false then
             table.insert(job, "账户数据保存")
