@@ -3,6 +3,7 @@
 
 import requests
 import json
+import os
 
 # 泰迪解包库
 # url = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/character_table.json"
@@ -48,12 +49,21 @@ def remove_key(json_obj, key_to_remove):
 
 def save_to_json(file_path, data):
     try:
+        # 创建目录（如果不存在）
+        directory = os.path.dirname(file_path)
+        if not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
+
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False)
         print(f"JSON数据获取成功并保存为{file_path}")
     except IOError as e:
         print(f"无法写入文件: {file_path}. 错误: {e}")
 
+
+# 确保输出目录存在
+if not os.path.exists("./res/char_type/"):
+    os.makedirs("./res/char_type/", exist_ok=True)
 
 def convert_to_lua_table(data, indent=0):
     lua_table = "{\n"
