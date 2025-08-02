@@ -1153,6 +1153,13 @@ path.fallback = {
             if appear("面板", 1) then return true end
         end, 5)
     end,
+    夏日嘉年华领取页面 = function()
+        wait(function()
+            tap("夏日嘉年华领取按钮")
+            tap("夏日嘉年华返回")
+            if appear("面板", 1) then return true end
+        end, 5)
+    end,
     祈愿牌返回 = function()
         -- "158|157|92928A,728|577|876E3D,1016|619|B38375"
         for w = 237, 1092 + 100, 225 do
