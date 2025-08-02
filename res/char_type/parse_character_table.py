@@ -1,9 +1,9 @@
-# https://github.com/yuanyan3060/ArknightsGameResource/tree/main/gamedata/excel/character_table.json
-# 去除character_table中不需要的字段
-
 import requests
 import json
 import os
+
+# 获取当前脚本所在目录
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 泰迪解包库
 # url = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/character_table.json"
@@ -47,8 +47,11 @@ def remove_key(json_obj, key_to_remove):
     return json_obj
 
 
-def save_to_json(file_path, data):
+# 修改后的保存函数
+def save_to_json(file_name, data):
     try:
+        file_path = os.path.join(SCRIPT_DIR, file_name)
+
         # 创建目录（如果不存在）
         directory = os.path.dirname(file_path)
         if not os.path.exists(directory):
@@ -56,14 +59,9 @@ def save_to_json(file_path, data):
 
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False)
-        print(f"JSON数据获取成功并保存为{file_path}")
+        print(f"JSON数据保存成功: {file_path}")
     except IOError as e:
         print(f"无法写入文件: {file_path}. 错误: {e}")
-
-
-# 确保输出目录存在
-if not os.path.exists("./res/char_type/"):
-    os.makedirs("./res/char_type/", exist_ok=True)
 
 def convert_to_lua_table(data, indent=0):
     lua_table = "{\n"
@@ -104,15 +102,15 @@ response = requests.get(url)
 character_type_list = {}
 char_table = {}
 character_equip_list = {}
+
 if response.status_code == 200:
     character_table_dict = json.loads(response.text)
     """# 本地
-with open('./character_table.json', 'r', encoding='utf-8') as f:
+with open('character_table.json', 'r', encoding='utf-8') as f:
     character_table_dict = json.load(f)
     """
 
     # 干员职业类别,自动战斗用
-
     for character_name in character_table_dict.keys():
         character_data = character_table_dict[character_name]
         if character_data["name"] in character_type_list and (
@@ -136,8 +134,9 @@ with open('./character_table.json', 'r', encoding='utf-8') as f:
             char_table[character_id] = selected_data
             char_table[character_id]["name"] = character_data["name"]
 
-    save_to_json("./res/char_type/character_type_list.json", character_type_list)
-    save_to_json("./res/char_type/char_table.json", char_table)
+    # 修改保存调用 - 只传文件名，不要路径前缀
+    save_to_json("character_type_list.json", character_type_list)
+    save_to_json("char_table.json", char_table)
 
 else:
     print("无法获取JSON数据")
@@ -146,7 +145,7 @@ response2 = requests.get(url2)
 if response2.status_code == 200:
     character_equipment_dict = json.loads(response2.text)
     """# 本地
-with open("./res/char_type/uniequip_table.json", "r", encoding="utf-8") as f:
+with open("uniequip_table.json", "r", encoding="utf-8") as f:
     character_equipment_dict = json.load(f)
     """
 
@@ -172,7 +171,8 @@ with open("./res/char_type/uniequip_table.json", "r", encoding="utf-8") as f:
             ][1]
             character_equip_list[char_name][i] = equip_name
 
-    save_to_json("./res/char_type/equip_table.json", character_equip_list)
+    # 修改保存调用 - 只传文件名，不要路径前缀
+    save_to_json("equip_table.json", character_equip_list)
 else:
     print("无法获取模组JSON数据")
 
