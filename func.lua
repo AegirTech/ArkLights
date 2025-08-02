@@ -1213,7 +1213,7 @@ check_server_is_close = function()
             return
         elseif code == 210 then
             saveConfig("last_check_server", curtime)
-            saveConfig("server_close", str(close_time))
+            saveConfig("server_close", str(res))
             log("检测到方舟服务器处于关闭状态")
             return wait_s()
         end
