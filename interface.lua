@@ -1070,7 +1070,7 @@ show_debug_ui = function()
     newRow(debug_layout_其他)
     ui.addCheckBox(debug_layout_其他, "auto_update_gameclient",
         "自动更新游戏客户端", false)
-    ui.addSpinner(debug_layout_其他, "auto_update_mode", { "方式一", "方式二" }, 1)
+    ui.addSpinner(debug_layout_其他, "auto_update_mode", { "curl下载", "懒人下载", "系统下载器" }, 0)
     ui.addSpinner(debug_layout_其他, "auto_update_game_select", { "官服和B服", "只更新官服", "只更新B服" }, 0)
 
     newRow(debug_layout_其他)

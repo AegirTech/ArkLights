@@ -35,7 +35,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "08.02 09:57"
+release_date = "08.02 18:27"
 update_announcement = '最近更新：界园肉鸽领取'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -135,15 +135,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     sui.判断希望()
     sui.判断源石锭()
     sui.判断票数() ]]
-    --log(ocrex("界园_地图ocr范围"))
-    -- sui.战斗后领取()
-    -- incident = ocr("界园_不期而遇关卡ocr范围")
-    -- log("incident", incident)
-    -- sui.战斗后领取()
-    -- path.基建信息获取()
-    -- path.办公室换班()
-    -- path.bilibili_login.B服验证码刷新()
-    --exit()
+    -- exit()
 end
 
 load(before_account_hook or '')()
@@ -152,15 +144,17 @@ no_extra_job = {}
 transfer_global_variable("multi_account_user1", "multi_account_user0")
 saveConfig("continue_account", '')
 saveConfig("continue_extra_mode", extra_mode or '')
+
+-- 清理download文件夹
+if delete_download_floder == true then delele_download_file() end
+
+if auto_update_gameclient == true then auto_update_game() end
+
 if not dev_mode then
     check_server_is_close()
     pcall(upload_device_info)
     pcall(upload_launch_info, "launch")
 end
--- 清理download文件夹
-if delete_download_floder == true then delele_download_file() end
-
-if auto_update_gameclient == true then auto_update_game() end
 
 -- log("100",cloud.enabled(),cloud_task)
 if cloud.getTaskEnabled() and not cloud_task then
