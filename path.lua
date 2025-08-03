@@ -10817,3 +10817,180 @@ end
         return 争锋频道循环.支持左侧()
     end
 }
+
+
+相谈室活动 = function(是否继续)
+    if not 是否继续 then
+        if not findOne("相谈室进入") then
+            return
+        end
+        if not wait(function()
+                tap("相谈室进入")
+                if findOne("相谈室首页") then return true end
+            end, 10) then
+            return
+        end
+        if findOne("相谈室任务领取") then
+            tap("相谈室任务领取")
+            appearTap("相谈室任务领取按钮", 4)
+
+            if not wait(function()
+                    back()
+                    ssleep(0.3)
+                    if findOne("相谈室首页") then return true end
+                end, 10) then
+                return
+            end
+        end
+        if not wait(function()
+                tap("相谈室开始营业")
+                if findOne("相谈室开始交谈") then return true end
+            end, 10) then
+            return
+        end
+    else
+        if findOne("相谈室开始营业") then
+            return
+        end
+    end
+
+
+    if not wait(function()
+            tap("相谈室开始交谈")
+            ssleep(0.8)
+            if findOne("相谈室当前回合页面") then return true end
+            if findOne("相谈室结束对话") then return true end
+        end, 10) then
+        return
+    end
+    信任 = 0
+    兴趣 = 0
+    local 选项转换 = {
+        喋喋不休 = {
+            信任 = 3,
+            兴趣 = -1
+        },
+        花言巧语 = {
+            信任 = -1,
+            兴趣 = 3
+        },
+        言之有据 = {
+            信任 = 2,
+            兴趣 = 1
+        },
+        口吐珠玑 = {
+            信任 = 1,
+            兴趣 = 2
+        },
+        随想畅聊 = {
+            信任 = 1,
+            兴趣 = 1
+        },
+    }
+
+    local 获取选项文字 = function(area)
+        local ret1 = ocr_ret(area)
+        log(6198, ret1)
+        if string.finds(ret1, { "不休", "不", "休" }) then
+            return "喋喋不休"
+        elseif string.finds(ret1, { "巧语", "花言巧语", }) then
+            return "花言巧语"
+        elseif string.finds(ret1, { "言之", "言之有据" }) then
+            return "言之有据"
+        elseif string.finds(ret1, { "口吐珠玑", "口吐" }) then
+            return "口吐珠玑"
+        elseif string.finds(ret1, { "畅聊", "想" }) then
+            return "随想畅聊"
+        else
+            log("未知选项", ret1)
+            return nil
+        end
+    end
+    local 选哪个好点 = function(选项1, 选项2, is_max)
+        if not 选项1 or not 选项2 then
+            log("选项1未识别")
+            return 1
+        end
+        local 选项1结果 = {
+            信任 = 信任 + 选项转换[选项1].信任,
+            兴趣 = 兴趣 + 选项转换[选项1].兴趣
+        }
+        log("选项1结果", 选项1结果)
+        local 选项2结果 = {
+            信任 = 信任 + 选项转换[选项2].信任,
+            兴趣 = 兴趣 + 选项转换[选项2].兴趣
+        }
+        log("选项2结果", 选项2结果)
+        if is_max then
+            if 选项1结果.信任 + 选项1结果.兴趣 > 选项2结果.信任 + 选项2结果.兴趣 then
+                return 1
+            else
+                return 2
+            end
+        else
+            if math.abs(选项1结果.信任 - 选项1结果.兴趣) > math.abs(选项2结果.信任 - 选项2结果.兴趣) then
+                return 2
+            else
+                return 1
+            end
+        end
+    end
+
+    local 进行游戏回合 = function()
+        local 选项1 = 获取选项文字("相谈室选项1ocr范围")
+        local 选项2 = 获取选项文字("相谈室选项2ocr范围")
+        local 选择结果 = 选哪个好点(选项1, 选项2)
+        log(6205, 选项1, 选项2, 选择结果)
+        if 选择结果 == 1 and 选项1 ~= nil then
+            信任 = 信任 + 选项转换[选项1].信任
+            兴趣 = 兴趣 + 选项转换[选项1].兴趣
+        elseif 选择结果 == 2 and 选项2 ~= nil then
+            信任 = 信任 + 选项转换[选项2].信任
+            兴趣 = 兴趣 + 选项转换[选项2].兴趣
+        end
+        log(6206, 信任, 兴趣)
+        if not wait(function()
+                tap("相谈室选项" .. 选择结果)
+                ssleep(0.5)
+                if not findOne("相谈室当前回合页面") then return true end
+            end, 15) then
+            log("相谈室选项点击失败")
+            return
+        end
+        log(6207)
+        if not wait(function()
+                tap("相谈室下一轮")
+                ssleep(0.8)
+                if findAny({ "相谈室当前回合页面", "相谈室结单按钮" }) then return true end
+                if findOne("相谈室结束对话") then return true end
+            end, 15) then
+            log("相谈室选项点击失败")
+            return
+        end
+    end
+
+    for i = 1, 9 do
+        进行游戏回合()
+        local x = appear({ "相谈室当前回合页面", "相谈室结单按钮" }, 5)
+        if x == "相谈室结单按钮" then
+            log("相谈室结单按钮")
+            tap("相谈室结单按钮")
+            break
+        end
+        ssleep(0.3)
+    end
+
+    -- 终止游戏
+    appearTap("相谈室结束对话", 5)
+    if not wait(function()
+            tap("相谈室结束确认选择")
+            if findAny({ "相谈室开始交谈", "相谈室开始营业" }) then return true end
+            ssleep(0.5)
+        end, 30) then
+        log("相谈室终止游戏点击失败")
+        return
+    end
+    if findOne("相谈室开始交谈") then
+        相谈室活动(true)
+    end
+end

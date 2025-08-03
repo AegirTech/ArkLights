@@ -35,7 +35,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "08.03 10:17"
+release_date = "08.03 12:05"
 update_announcement = '最近更新：界园肉鸽领取'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -130,8 +130,10 @@ if use_local_dictionary then
 end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
-    --[[ sui.判断楼层()
-    sui.判断血量()
+    disable_game_up_check = truepredebug
+    相谈室活动(true)
+    exit()
+    --[[sui.判断血量()
     sui.判断希望()
     sui.判断源石锭()
     sui.判断票数() ]]
