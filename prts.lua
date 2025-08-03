@@ -1415,9 +1415,18 @@ end
             if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "生息演算剧情上" }) then
                 tap("剧情中")
                 --迷宫饭适配
-                tap({ scale(1040), scale(384) })
+                --[[ tap({ scale(1040), scale(384) })
                 tap({ scale(1306), scale(608) })
-                tap({ scale(713), scale(370) })
+                tap({ scale(713), scale(370) }) ]]
+                --墟适配
+                tap({ scale(708), scale(219) })
+                tap({ scale(1218), scale(595) })
+                tap({ scale(1156), scale(682) })
+                tap({ scale(638), scale(829) })
+                tap({ scale(1213), scale(590) })
+                tap({ scale(578), scale(709) })
+                tap({ scale(1221), scale(597) })
+
                 print("跳过无按钮剧情")
                 appear("作战中", 2)
                 加速()
@@ -2411,7 +2420,7 @@ end
             t[i]["text"] = "缄默德克萨斯"
         elseif 原文本:find("荒芜") and 原文本:find("拉普") then
             t[i]["text"] = "荒芜拉普兰德"
-        elseif 原文本:find("司霆") then
+        elseif 原文本:find("司") and 原文本:find("惊蛰") then
             t[i]["text"] = "司霆惊蛰"
         end
         -- 去除开头的书名号
