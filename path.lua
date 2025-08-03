@@ -5870,9 +5870,16 @@ path.活动 = function(x)
     end
 
     --car_check() --有些大型活动会自带一些任务
-    if not car_checked then
+    if not car_checked and not dev_mode then
         相谈室活动()
         car_checked = true
+        if not wait(function()
+                if findOne("活动导航0") then return true end
+                back()
+            end, 10) then
+            log("活动导航0未找到")
+            return
+        end
     end
     -- path.烟花委员会()
     log("skip_guide", skip_guide)
@@ -10875,6 +10882,20 @@ end
             return
         end
     end
+    local 过新手教程 = function()
+        if not wait(function()
+                tap("相谈室选项1")
+                ssleep(0.1)
+                tap("相谈室使用")
+                ssleep(0.1)
+                findTap("相谈室下一轮")
+                ssleep(0.1)
+                if findOne("相谈室结单按钮") then return true end
+            end, 40) then
+            return
+        end
+    end
+
     local 需要新手教程 = false
     if not wait(function()
             tap("相谈室开始交谈")
@@ -10883,13 +10904,7 @@ end
             if findOne("相谈室结束对话") then return true end
             if findOne("相谈室新手教程回合暗") then
                 if not wait(function()
-                        tap("相谈室选项1")
-                        ssleep(0.1)
-                        tap("相谈室使用")
-                        ssleep(0.1)
-                        findTap("相谈室下一轮")
-                        ssleep(0.1)
-                        if findOne("相谈室结单按钮") then return true end
+                        过新手教程()
                     end, 40) then
                     return
                 end
@@ -11016,8 +11031,13 @@ end
                 ssleep(0.8)
                 if findAny({ "相谈室当前回合页面", "相谈室结单按钮" }) then return true end
                 if findOne("相谈室结束对话") then return true end
+                if findOne("相谈室新手教程回合暗") then
+                    过新手教程()
+                    需要新手教程 = true
+                    return true
+                end
             end, 25) then
-            log("相谈室选项点击失败")
+            log(6229)
             return
         end
     end
@@ -11029,6 +11049,12 @@ end
         if x == "相谈室结单按钮" then
             log("相谈室结单按钮")
             tap("相谈室结单按钮")
+            break
+        elseif x ~= "相谈室当前回合页面" then
+            log(6265)
+            return
+        end
+        if 需要新手教程 then
             break
         end
         ssleep(0.3)
