@@ -5930,7 +5930,7 @@ path.活动 = function(x)
 
     swip(x)
     ssleep(.5)
-    exit() --活动手动取点时取消注释
+    --exit() --活动手动取点时取消注释
     if x:includes({ "ST-", "TR-", "-P-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
         --剧情关/教学观/剿灭关只打一遍
         log("剧情关/教学观/剿灭关")
