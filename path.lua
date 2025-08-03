@@ -5930,8 +5930,8 @@ path.活动 = function(x)
 
     swip(x)
     ssleep(.5)
-    --exit() --活动手动取点时取消注释
-    if x:includes({ "ST-", "TR-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
+    exit() --活动手动取点时取消注释
+    if x:includes({ "ST-", "TR-", "-P-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
         --剧情关/教学观/剿灭关只打一遍
         log("剧情关/教学观/剿灭关")
         if findOne("作战列表" .. x) then return true end
