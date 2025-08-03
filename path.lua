@@ -5862,6 +5862,10 @@ path.活动 = function(x)
     end
 
     --car_check() --有些大型活动会自带一些任务
+    if not car_checked then
+        相谈室活动()
+        car_checked = true
+    end
     -- path.烟花委员会()
     log("skip_guide", skip_guide)
     if not skip_guide then
@@ -10822,6 +10826,7 @@ end
 相谈室活动 = function(是否继续)
     if not 是否继续 then
         if not findOne("相谈室进入") then
+            log("6001")
             return
         end
         if not wait(function()
@@ -10939,7 +10944,7 @@ end
     local 进行游戏回合 = function()
         local 选项1 = 获取选项文字("相谈室选项1ocr范围")
         local 选项2 = 获取选项文字("相谈室选项2ocr范围")
-        local 选择结果 = 选哪个好点(选项1, 选项2)
+        local 选择结果 = 选哪个好点(选项1, 选项2, true)
         log(6205, 选项1, 选项2, 选择结果)
         if 选择结果 == 1 and 选项1 ~= nil then
             信任 = 信任 + 选项转换[选项1].信任
@@ -10984,6 +10989,9 @@ end
     appearTap("相谈室结束对话", 5)
     if not wait(function()
             tap("相谈室结束确认选择")
+            if findOne("相谈室营业结束") then
+                return true
+            end
             if findAny({ "相谈室开始交谈", "相谈室开始营业" }) then return true end
             ssleep(0.5)
         end, 30) then
@@ -10991,6 +10999,17 @@ end
         return
     end
     if findOne("相谈室开始交谈") then
-        相谈室活动(true)
+        return 相谈室活动(true)
+    end
+    if findOne("相谈室营业结束") then
+        if not wait(function()
+                back()
+                ssleep(0.5)
+                if findAny({ "活动导航0" }) then return true end
+            end, 30) then
+            log("相谈室终止游戏点击失败")
+            return
+        end
+        return true
     end
 end
