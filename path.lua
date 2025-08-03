@@ -10849,9 +10849,16 @@ end
         end
         if not wait(function()
                 tap("相谈室开始营业")
+                if findOne("相谈室钱币不够弹窗") then
+                    return true
+                end
                 if findOne("相谈室开始交谈") then return true end
             end, 10) then
             return
+        end
+        if findOne("相谈室钱币不够弹窗") then
+            back()
+            return true
         end
     else
         if findOne("相谈室开始营业") then
