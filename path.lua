@@ -1535,10 +1535,6 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
         back()
     end
 
-    if findOne("相谈室活动左上角返回") then
-        back()
-    end
-
     -- 生息演算页面适配
     if extra_mode == "生息沙洲遗闻" and findOne("生息底栏烹饪按钮") then
         log("生息")
@@ -1547,6 +1543,14 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
                 tap("生息演算_全局_返回")
             end, 5) then
         end
+    end
+
+
+    if findOne("相谈室活动左上角返回") then
+        wait(function()
+            if not findOne("相谈室活动左上角返回") then return true end
+            tap("相谈室活动左上角返回")
+        end, 3)
     end
 
     -- if findOne("争锋频道首页") then
