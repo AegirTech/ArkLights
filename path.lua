@@ -5870,7 +5870,7 @@ path.活动 = function(x)
     end
 
     --car_check() --有些大型活动会自带一些任务
-    if not car_checked and not dev_mode then
+    if not car_checked and not dev_mode and not copy_homework then
         相谈室活动()
         car_checked = true
         if not wait(function()
