@@ -10825,12 +10825,13 @@ end
 
 相谈室活动 = function(是否继续)
     if not 是否继续 then
-        if not findOne("相谈室进入") then
+        if not findAny({ "相谈室进入", "相谈室交谈进行中" }) then
             log("6001")
             return
         end
         if not wait(function()
-                tap("相谈室进入")
+                findTap("相谈室进入")
+                findTap("相谈室交谈进行中")
                 if findOne("相谈室首页") then return true end
             end, 10) then
             return
@@ -10877,6 +10878,7 @@ end
     end
     信任 = 0
     兴趣 = 0
+    回合数 = 0
     local 选项转换 = {
         喋喋不休 = {
             信任 = 3,
@@ -10951,7 +10953,7 @@ end
     local 进行游戏回合 = function()
         local 选项1 = 获取选项文字("相谈室选项1ocr范围")
         local 选项2 = 获取选项文字("相谈室选项2ocr范围")
-        local 选择结果 = 选哪个好点(选项1, 选项2, true)
+        local 选择结果 = 选哪个好点(选项1, 选项2, true and 回合数 < 5 or false)
         log(6205, 选项1, 选项2, 选择结果)
         if 选择结果 == 1 and 选项1 ~= nil then
             信任 = 信任 + 选项转换[选项1].信任
@@ -10982,6 +10984,7 @@ end
     end
 
     for i = 1, 9 do
+        回合数 = i
         进行游戏回合()
         local x = appear({ "相谈室当前回合页面", "相谈室结单按钮" }, 5)
         if x == "相谈室结单按钮" then
