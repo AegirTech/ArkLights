@@ -1012,12 +1012,14 @@ path.界园前瞻投资 = function()
             -- if not findOne("战略帮助") then return true end
             if findAny({ "诡意行商投资", "诡意行商离开" }) then return true end
             tap("界园_商店进入")
+            if findOne("肉鸽弹出窗口") then
+                tap("左取消")
+                ssleep(0.2)
+            end
         end, 5) then
-        return zl_repos_path('界园_放弃探索')
     end
 
     --投币
-
     if not zl_skip_coin then zl_shop_coin() end
     if zl_only_coin then
         log('只是投币，准备退出')
