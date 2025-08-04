@@ -5870,7 +5870,7 @@ path.活动 = function(x)
     end
 
     --car_check() --有些大型活动会自带一些任务
-    if not car_checked and not dev_mode then
+    if not car_checked and not dev_mode and not copy_homework then
         相谈室活动()
         car_checked = true
         if findOne("相谈室新手教程回合暗") then
@@ -5947,7 +5947,7 @@ path.活动 = function(x)
     swip(x)
     ssleep(.5)
     --exit() --活动手动取点时取消注释
-    if x:includes({ "ST-", "TR-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
+    if x:includes({ "ST-", "TR-", "-P-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
         --剧情关/教学观/剿灭关只打一遍
         log("剧情关/教学观/剿灭关")
         if findOne("作战列表" .. x) then return true end
