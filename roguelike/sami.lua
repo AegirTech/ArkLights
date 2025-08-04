@@ -352,9 +352,13 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
             if findOne("战略返回") then return true end
             tap("诡意行商离开")
         end, 10)
-        appear('战略返回')
-        findTap('战略返回')
-        appear('萨米_常规行动', 5)
+        if not wait(function()
+                if findOne("萨米_常规行动") then return true end
+                tap("战略返回")
+                ssleep(0.3)
+            end, 5) then
+            return false
+        end
     end
 
     -- 商店

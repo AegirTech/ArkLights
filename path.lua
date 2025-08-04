@@ -3188,19 +3188,29 @@ path.办公室换班 = function(stationType)
     --if 1 then return end
     stationType = stationType or "办公室"
     local p = stationType
-    if findOne("基建总览发电站") then
-        log(3082, "在总览换办公室")
-    else
-        log(3089, "不在总览") -- 不在总览有概率直接点到活动室
-        path.跳转("基建")
+    -- if findOne("基建总览发电站") then
+    --     log(3082, "在总览换办公室")
+    -- else
+    --     log(3089, "不在总览") -- 不在总览有概率直接点到活动室
+    --     path.跳转("基建")
 
-        if not wait(function()
-                if findOne("基建总览工作区") then return true end
-                tap("进驻总览")
-                ssleep(.2)
-            end, 10) then
-            return
-        end
+    --     if not wait(function()
+    --             if findOne("基建总览工作区") then return true end
+    --             tap("进驻总览")
+    --             ssleep(.2)
+    --         end, 10) then
+    --         return
+    --     end
+    -- end
+    log(3089, "不在总览")
+    path.跳转("基建")
+    if not wait(function()
+            if findOne("基建总览工作区") then return true end
+            tap("进驻总览")
+            ssleep(.2)
+        end, 10) then
+        log(3102)
+        return
     end
     for i = 1, 7 do -- 可能设备会卡 多滑动几次
         path.基建总览翻页()
@@ -3219,6 +3229,7 @@ path.办公室换班 = function(stationType)
             end
             tap(p)
         end) then
+        log(3104)
         return
     end
 
@@ -3228,6 +3239,7 @@ path.办公室换班 = function(stationType)
             if findOne("确认蓝") then return true end
             tap("制造站进度")
         end, 10) then
+        log(3105)
         return
     end
     ssleep(.5)
@@ -3255,6 +3267,7 @@ path.办公室换班 = function(stationType)
             ssleep(.8)
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
         end, 3) then
+        log(3109)
         return
     end
 end
