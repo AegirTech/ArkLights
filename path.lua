@@ -5873,6 +5873,20 @@ path.活动 = function(x)
     if not car_checked and not dev_mode then
         相谈室活动()
         car_checked = true
+        if findOne("相谈室新手教程回合暗") then
+            if not wait(function()
+                    tap("相谈室选项1")
+                    ssleep(0.1)
+                    tap("相谈室使用")
+                    ssleep(0.1)
+                    findTap("相谈室下一轮")
+                    ssleep(0.1)
+                    tap("相谈室结束确认选择")
+                    if findAny({ "相谈室开始交谈", "相谈室开始营业" }) then return true end
+                end, 40) then
+                return
+            end
+        end
         if not wait(function()
                 if findOne("活动导航0") then return true end
                 back()
@@ -5880,6 +5894,8 @@ path.活动 = function(x)
             log("活动导航0未找到")
             return
         end
+        path.跳转("首页")
+        path.活动页面寻找(1)
     end
     -- path.烟花委员会()
     log("skip_guide", skip_guide)
@@ -10854,7 +10870,6 @@ end
         if findOne("相谈室任务领取") then
             tap("相谈室任务领取")
             appearTap("相谈室任务领取按钮", 4)
-
             if not wait(function()
                     back()
                     ssleep(0.3)
@@ -10865,7 +10880,6 @@ end
         end
         if not wait(function()
                 tap("相谈室开始营业")
-                if findOne("相谈室新手教程回合暗") then return true end
                 if findOne("相谈室钱币不够弹窗") then
                     return true
                 end
@@ -10882,53 +10896,15 @@ end
             return
         end
     end
-    local 过新手教程 = function()
-        if not wait(function()
-                tap("相谈室选项1")
-                ssleep(0.1)
-                tap("相谈室使用")
-                ssleep(0.1)
-                findTap("相谈室下一轮")
-                ssleep(0.1)
-                if findOne("相谈室结单按钮") then return true end
-            end, 40) then
-            return
-        end
-    end
 
-    local 需要新手教程 = false
     if not wait(function()
             tap("相谈室开始交谈")
             ssleep(0.8)
             if findOne("相谈室当前回合页面") then return true end
             if findOne("相谈室结束对话") then return true end
-            if findOne("相谈室新手教程回合暗") then
-                if not wait(function()
-                        过新手教程()
-                    end, 40) then
-                    return
-                end
-                需要新手教程 = true
-                return true
-            end
-        end, 60) then
+        end, 35) then
+        return
     end
-
-    if 需要新手教程 then
-        if not wait(function()
-                tap("相谈室结束确认选择")
-                if findOne("相谈室开始营业") then return true end
-                if findOne("教程关闭") then
-                    tap("教程关闭")
-                    ssleep(.2)
-                end
-                ssleep(0.6)
-            end, 35) then
-            log("相谈室终止游戏点击失败")
-        end
-        return 相谈室活动()
-    end
-
 
     信任 = 0
     兴趣 = 0
@@ -11031,11 +11007,6 @@ end
                 ssleep(0.8)
                 if findAny({ "相谈室当前回合页面", "相谈室结单按钮" }) then return true end
                 if findOne("相谈室结束对话") then return true end
-                if findOne("相谈室新手教程回合暗") then
-                    过新手教程()
-                    需要新手教程 = true
-                    return true
-                end
             end, 25) then
             log(6229)
             return
@@ -11053,9 +11024,6 @@ end
         elseif x ~= "相谈室当前回合页面" then
             log(6265)
             return
-        end
-        if 需要新手教程 then
-            break
         end
         ssleep(0.3)
     end
