@@ -3714,9 +3714,8 @@ tapCard = function(k)
 end
 
 path.会客室信用收集 = function()
-    -- 每周4/7 做
-    local dayOfWeek = tonumber(os.date("%w"))
-    if dayOfWeek ~= 2 and dayOfWeek ~= 6 then return end
+    -- 每周1 做
+    if get_day_of_week() ~= 1 then return end
 
     log("会客室信用收集")
     path.跳转("基建")
@@ -3741,15 +3740,16 @@ path.会客室信用收集 = function()
 
     local ret = find_color("会客室信用家具查找范围", "FFE30A", 0, 0.9)
     if not ret then return end
-
+    log(1037, ret)
     if not wait(function()
             if findOne("会客室信用右上角橙") then return true end
             tap(ret)
             ssleep(.5)
         end, 5) then
+        log(1099)
         return
     end
-
+    log(1038)
     if findOne("会客室信用领取橙") then
         tap("会客室信用领取橙")
     end
