@@ -1462,7 +1462,7 @@ path.基建收获 = function()
 
     wait(function()
         log(132)
-        if findAny({ "小蓝圈", "基建收获干员休整", "进驻总览" }) then return true end
+        if findAny({ "小蓝圈", "基建收获干员休整", "进驻总览", "训练室完成小蓝圈", "会客室线索小蓝圈" }) then return true end
         log(133)
         tap("点击全部收取2")
         ssleep(.2)
