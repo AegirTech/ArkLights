@@ -5883,7 +5883,7 @@ path.活动 = function(x)
     end
 
     --car_check() --有些大型活动会自带一些任务
-    if not car_checked and not dev_mode and not copy_homework then
+    if not car_checked and not copy_homework then
         相谈室活动()
         car_checked = true
         if findOne("相谈室新手教程回合暗") then
@@ -11010,17 +11010,19 @@ end
                 tap("相谈室选项" .. 选择结果)
                 ssleep(0.5)
                 if not findOne("相谈室当前回合页面") then return true end
-            end, 25) then
+            end, 10) then
             log("相谈室选项点击失败")
             return
         end
+        back()
         log(6207)
         if not wait(function()
+                findTap("相谈室开始营业", 5)
                 tap("相谈室下一轮")
                 ssleep(0.8)
                 if findAny({ "相谈室当前回合页面", "相谈室结单按钮" }) then return true end
                 if findOne("相谈室结束对话") then return true end
-            end, 25) then
+            end, 15) then
             log(6229)
             return
         end
