@@ -54,7 +54,7 @@ sui.跳转 = function()
             return restart()
         end
     end
-    if findOne("界园_主页干员详情") then back() end
+    if findAny({ "界园_主页干员详情", "界园_主页干员详情蓝色" }) then back() end
     if findOne("界园_作战失败结算") then
         return 作战结算返回()
     end
@@ -129,12 +129,10 @@ sui.跳转 = function()
                     return
                 end
 
-                if findOne("界园_主页干员详情") then
+                if findAny({ "界园_主页干员详情", "界园_主页干员详情蓝色" }) then
                     log(2634)
                     back()
                     ssleep(.5)
-                    jumpout = true
-                    return true
                 end
 
                 tap("新战略确认")
@@ -170,12 +168,10 @@ sui.跳转 = function()
 
             tap("新战略确认")
             tap("继续探索")
-            if findOne("界园_主页干员详情") then
+            if findAny({ "界园_主页干员详情", "界园_主页干员详情蓝色" }) then
                 log(2690)
                 back()
                 ssleep(.5)
-                jumpout = true
-                return true
             end
             if time() - t > 2 * 1000 then --第一次时候，需要选择难度等级
                 ssleep(1)
