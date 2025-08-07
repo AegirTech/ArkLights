@@ -3204,27 +3204,25 @@ path.办公室换班 = function(stationType)
     -- end
     log(3089, "不在总览")
     path.跳转("基建")
-    if not wait(function()
-            if findOne("基建总览工作区") then return true end
-            tap("进驻总览")
-            ssleep(.2)
-        end, 10) then
-        log(3102)
-        return
-    end
-    for i = 1, 7 do -- 可能设备会卡 多滑动几次
-        path.基建总览翻页()
-        ssleep(.5)
-        if findOne("基建总览翻到最后一页") then
-            break
-        end
-    end
+    -- if not wait(function()
+    --         if findOne("基建总览工作区") then return true end
+    --         tap("进驻总览")
+    --         ssleep(.2)
+    --     end, 10) then
+    --     log(3102)
+    --     return
+    -- end
+    -- for i = 1, 7 do -- 可能设备会卡 多滑动几次
+    --     path.基建总览翻页()
+    --     ssleep(.5)
+    --     if findOne("基建总览翻到最后一页") then
+    --         break
+    --     end
+    -- end
     ssleep(0.5)
-    p = "基建总览办公室"
-
     -- 进办公室
     if not wait(function()
-            if findAny({ "进驻信息", "进驻信息选中", "筛选" }) then
+            if not findOne("进驻总览") or not findOne("缩放结束") then
                 return true
             end
             tap(p)
