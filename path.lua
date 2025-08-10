@@ -1235,6 +1235,10 @@ path.fallback = {
     愚人节窗口关闭 = function()
         tap("愚人节窗口关闭")
     end,
+    相谈室活动左上角返回 = function()
+        tap("相谈室活动左上角返回")
+        ssleep(.3)
+    end,
     返回 = function()
         -- 基建内返回太快会卡
         local x = appear({
