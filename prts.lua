@@ -646,6 +646,7 @@ end
             for _, item in ipairs(干员) do
                 if 干员职业[item["name"]] == 干员类别[i] then
                     干员名字字符串 = 干员名字字符串 .. item["name"]
+                    item["skill"] = item["skill"] or 1
                     table.insert(干员目录, item["name"] .. item["skill"])
                 end
             end
