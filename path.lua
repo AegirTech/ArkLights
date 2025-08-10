@@ -10889,6 +10889,10 @@ end
                 return
             end
         end
+        if appear("相谈室全部完成", 2) then
+            log("小活动已完成")
+            return true
+        end
         if not wait(function()
                 tap("相谈室开始营业")
                 if findOne("相谈室钱币不够弹窗") then
@@ -11068,5 +11072,11 @@ end
             return
         end
         return true
+    end
+end
+
+path.活动小游戏 = function(活动)
+    while true do
+        相谈室活动()
     end
 end

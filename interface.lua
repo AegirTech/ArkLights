@@ -1225,6 +1225,11 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
 
+    addTitle(layout, "活动小游戏(限时-无限循环)")
+    newRow(layout)
+    addButton(layout, nil, "活动小游戏开始",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='活动小游戏';lock:remove(main_ui_lock)"))
     ------------------------------------------------------------
     -- addTitle(layout, "争锋频道(限时)")
     -- newRow(layout)
