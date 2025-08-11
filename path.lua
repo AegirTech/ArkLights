@@ -9145,6 +9145,9 @@ path.森空岛签到 = function()
             table.insert(qqmessage, "不符合签到条件跳过")
         end
         return true
+    elseif root_mode then
+        log("root模式从本地获取token")
+        skland_daily_checkin("local", "local")
     end
 end
 

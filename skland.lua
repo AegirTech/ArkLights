@@ -122,6 +122,21 @@ end
 
 -- 登录获取cred，并直接设置Headers
 skland.get_cred = function(account, password)
+    if account == "local" then
+        local token_data = official_get_last_login()
+        data_token = token_data:gsub('&quot;', '"')
+        local staus, data_token = pcall(JsonDecode, data_token)
+        if not staus then
+            log("数据解析失败", data_token)
+            return false
+        end
+        local token = data_token[1]["token"]
+        log("local token", token)
+        cred = skland_get_cred_by_token(get_grant_code(token))
+        Headers["cred"] = cred
+        log("cred", cred)
+        return cred
+    end
     cred = skland_get_cred_by_token(get_grant_code(arknights_login(account, password)))
     Headers["cred"] = cred
     return cred
