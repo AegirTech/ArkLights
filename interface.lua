@@ -822,6 +822,10 @@ show_debug_ui = function()
     addTextView(debug_layout_云控, "审判庭设备标识")
     ui.addEditText(debug_layout_云控, "cloud_device_token", "")
 
+    addInfo(debug_layout_云控, [[已知审判庭的开源版本存在重大漏洞，可能导致账户密码被窃取。
+不建议将审判庭服务开放在公网上。
+如有需求可联系开发者部署私有化版本。]])
+
     newRow(debug_layout_云控)
     ui.addCheckBox(debug_layout_云控, "log_login_to_cloud", "上报登录流程", false)
 

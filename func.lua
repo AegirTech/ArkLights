@@ -1144,6 +1144,7 @@ upload_device_info = function()
         captcha_username = c_username,
         apk_version = str(getApkVerInt()),
         script_version = release_date,
+        device_token = cloud_device_token,
     }
     local headers = [[Content-Type: application/json]]
     local res, code = httpPost(url, JsonEncode(data), 10, headers)
