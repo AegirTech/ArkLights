@@ -1118,9 +1118,9 @@ upload_device_info = function()
     -- 上传时间检查
     local curtime = os.date('%y%m%d')
     local last_time = loadConfig("last_upd", "")
-    -- if last_time == curtime then
-    --     return
-    -- end
+    if last_time == curtime then
+        return
+    end
 
     local url = ark_api_base .. "/statistic/device/update?verify=arklights&device_id=" .. device_id
     local c_type = "未知"

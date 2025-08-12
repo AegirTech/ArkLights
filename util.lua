@@ -3976,6 +3976,7 @@ update_state_from_debugui = function()
     multi_account_use_abyssal_hunter = expand_number_config(
         multi_account_use_abyssal_hunter or '')
 
+    training_check_time = str2int(training_check_time, 1.5)
     if multiple_proxy_commander == nil then multiple_proxy_commander = true end
     max_use_number_drug = str2int(max_use_number_drug, 3)
     max_jmfight_times = str2int(max_jmfight_times, 1)
