@@ -2336,8 +2336,8 @@ check_hot_update = function()
         update_source .. "/checkUpdate?lr_md5=" .. tostring(file_md5) ..
         "&skill_md5=" .. tostring(skill_md5) .. "&apk_ver=" .. tostring(apk_v), 5)
     if code ~= 200 then
-        toast("无法连接到热更新服务器")
-        ssleep(3)
+        toast("无法连接到热更新服务器，更换备用更新源")
+        ssleep(1)
         return false
     end
     local status, data = pcall(JsonDecode, res)
@@ -2443,16 +2443,18 @@ hotUpdate = function()
         return true
     end
     local update_info
-    if math.random() < 0.5 then
-        update_info = check_hot_update()
-        if not update_info then
-            update_info = check_hot_update_backup()
-        end
-    else
-        update_info = check_hot_update_backup()
-    end
+    -- if math.random() < 0.2 then
+    --     update_info = check_hot_update()
+    --     if not update_info then
+    --         update_info = check_hot_update_backup()
+    --     end
+    -- else
+    --     update_info = check_hot_update_backup()
+    -- end
+    update_info = check_hot_update_backup()
 
     if not update_info then
+        log("热更新检查失败")
         return false
     end
 

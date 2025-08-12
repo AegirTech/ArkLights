@@ -91,17 +91,18 @@ if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
 end
 
 if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
+    --local PaddLeOCR = require("PaddLeOCRPluGin")
+    if not fileExist("mnt/sdcard/Pictures/ppocr.zip") then
+        toast("未找到飞浆ocr模型文件，正在尝试下载。")
+        if not download_from_alist("ppocr.zip", "/sdcard/Pictures") then
+            toast("飞浆ocr模型下载失败,已禁用")
+            disable_paddleocr = true
+            return
+        end
+    end
     if not fileExist("mnt/sdcard/Pictures/PaddLeOCR.apk") then
         extractAssets("main.rc", "mnt/sdcard/Pictures/", "ppocr.zip")
         unZip("mnt/sdcard/Pictures/ppocr.zip", "mnt/sdcard/Pictures")
-    end
-    --local PaddLeOCR = require("PaddLeOCRPluGin")
-    if not fileExist("mnt/sdcard/Pictures/ppocr.zip") then
-        toast("请确保ppocr.zip在sdcard/Pictures/目录下")
-        disable_paddleocr = true
-        console.show()
-        ssleep(10)
-        console.dismiss()
     end
 
     -- 加载插件 有时会加载不上插件 加载不上时请把APK删除重新释放即可

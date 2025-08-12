@@ -498,7 +498,13 @@ server=]] .. server
     if taskType == 'rogue' then
         hook = hook .. [[;extra_mode="战略前瞻投资"]]
     elseif taskType == 'rogue2' then
-        hook = hook .. [[;extra_mode="水月与深蓝之树"]]
+        hook = hook .. [[;extra_mode="水月战略前瞻投资"]]
+    elseif taskType == 'rogue3' then
+        hook = hook .. [[;extra_mode="萨米战略前瞻投资"]]
+    elseif taskType == 'rogue4' then
+        hook = hook .. [[;extra_mode="萨卡兹战略前瞻投资"]]
+    elseif taskType == 'rogue5' then
+        hook = hook .. [[;extra_mode="界园战略前瞻投资"]]
     elseif taskType == 'sand_fire' then
         hook = hook .. [[;extra_mode="生息沙洲遗闻wrapper"]]
     end

@@ -8220,6 +8220,10 @@ path.前瞻投资 = function(lighter)
 end
 
 path.战略前瞻投资 = never_end_wrapper(path.前瞻投资)
+path.水月战略前瞻投资 = never_end_wrapper(path.水月与深蓝之树前瞻投资)
+path.萨米战略前瞻投资 = never_end_wrapper(path.探索者的银淞止境前瞻投资)
+path.萨卡兹战略前瞻投资 = never_end_wrapper(path.萨卡兹的无终奇语前瞻投资)
+path.界园战略前瞻投资 = never_end_wrapper(path.界园前瞻投资)
 
 path.肉鸽任务 = function()
     pcall(upload_launch_info, "rouge")

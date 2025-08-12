@@ -246,9 +246,13 @@ def upload(md5, type, force):
     payload = {}
     files = [("file", (fileName, open(upFile, "rb"), "application/octet-stream"))]
     headers = {"User-Agent": "Apifox/1.0.0 (https://apifox.com)"}
-
-    response = requests.request("POST", url, headers=headers, data=payload, files=files)
-    print(response.json().get("msg"))
+    try:
+        response = requests.request(
+            "POST", url, headers=headers, data=payload, files=files
+        )
+        print(response.json().get("msg"))
+    except Exception as e:
+        print("上传主更新服务器失败:", e)
     upload_to_backup_server(type)
 
 
