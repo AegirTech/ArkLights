@@ -35,7 +35,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "08.12 15:18"
+release_date = "08.14 10:26"
 update_announcement = '最近更新：夏活小游戏/导航等'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -152,7 +152,7 @@ if delete_download_floder == true then delele_download_file() end
 
 if auto_update_gameclient == true then auto_update_game() end
 
-if not dev_mode then
+if getPackageName() == "com.bilabila.arknightsspeedrun2" then
     check_server_is_close()
     pcall(upload_device_info)
     pcall(upload_launch_info, "launch")
