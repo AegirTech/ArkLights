@@ -6087,7 +6087,7 @@ path.商店搬空 = function()
     end
     log("商店清空任务")
 
-    if not path.活动页面寻找(1) then return end
+    if not path.活动页面寻找(2) then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
@@ -6272,11 +6272,14 @@ path.商店搬空 = function()
             log("滑动到底部,退出")
             return
         end
+        log(1052)
         商店滑动前采样 = sample("商店")
-        if find_color("商店第四列货币范围", point["商店主题色"], 0, 0.9) then
+        if find_color("商店第四列货币范围", point["商店菜单钱币颜色"], 0, 0.85) then
+            log(1054)
             path.swip_hd_shop()
         else
             -- 如果第四列不存在，则退出重进商店，自动进入下一列表
+            log(1056)
             back()
             ssleep(1)
             if not appear("活动商店导航", 5) then
