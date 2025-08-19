@@ -5741,7 +5741,8 @@ path.剿灭 = function(x)
     if not appear("主页") then return end
     if not wait(function()
             tap("当期委托")
-            if findOne("剿灭内左下角合成玉") or findOne("剿灭内左下角合成玉下") then return true end
+            if not findOne("主页") then return true end
+            -- if findOne("剿灭内左下角合成玉") or findOne("剿灭内左下角合成玉下") then return true end
         end, 5) then
         return
     end
