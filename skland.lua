@@ -150,6 +150,17 @@ skland.request = function(method, url, data)
     end
     skland.sign(url, data)
     if method == "GET" then
+        local params = ''
+        for k, v in pairs(data) do
+            if params == '' then
+                params = k .. '=' .. v
+            else
+                params = params .. '&' .. k .. '=' .. v
+            end
+        end
+        if params ~= '' then
+            url = url .. '?' .. params
+        end
         local ret = curl_get(API .. url, Headers, 5, nil)
         log(method, url, ret)
         return ret
@@ -181,24 +192,6 @@ skland.get_bind_info = function()
     end
 end
 
-skland.account_check = function()
-    -- local result = skland.request("GET", "/game/player/binding")
-    -- local status, result = pcall(JsonDecode, result)
-    -- if status then
-    --     -- local code = get(result, "code")
-    --     local msg = get(result, "message")
-    --     if string.find(msg, "用户未登录") then
-    --         return false
-    --     else
-    --         return true
-    --     end
-    -- else
-    --     log("json解析失败")
-    --     return false
-    -- end
-    return true
-end
-
 -- 森空岛签到接口 成功返回0，重复签到返回1，其他各种失败原因返回2
 skland.checkin = function(uid, server)
     local data = {}
@@ -224,14 +217,11 @@ end
 
 -- 获取绑定的游戏信息
 skland.get_game_info = function(uid)
-    local url = API .. "/game/player/info"
     local params = {
         ["uid"] = uid
     }
-    skland.sign("/game/player/info", "uid=" .. uid)
-    local ret = curl_get(url .. "?uid=" .. uid, Headers, 10, nil)
-    local status
-    status, ret = pcall(JsonDecode, ret)
+    local ret = skland.request("GET", "/game/player/info", params)
+    local status, ret = pcall(JsonDecode, ret)
     if status then
         if get(ret, 'code') == 0 then
             return ret
@@ -246,15 +236,12 @@ end
 
 -- 获取干员和材料
 skland.cultivate = function(uid)
-    local url = API .. "/game/cultivate/player"
-    params = {
+    local params = {
         ["uid"] = uid
     }
-    skland.sign("/game/cultivate/player", "uid=" .. uid)
-    local ret = curl_get(url .. "?uid=" .. uid, Headers, 10, nil)
+    local ret = skland.request("GET", "/game/cultivate/player", params)
     log(ret)
-    local status
-    status, ret = pcall(JsonDecode, ret)
+    local status, ret = pcall(JsonDecode, ret)
     if status then
         if get(ret, 'code') == 0 then
             return ret
@@ -410,20 +397,8 @@ skland_init = function(account, password)
     else
         log("从配置中读取cred", cred)
         Headers["cred"] = cred
-        if skland.account_check() then
-            log("森空岛初始化完成")
-            return true
-        else
-            log("cred无效")
-            cred = skland.get_cred(account, password)
-            if cred ~= 0 then
-                account_data[account]["cred"] = cred
-                log("cred获取完成", cred)
-            else
-                log("cred登录存在错误")
-                return false
-            end
-        end
+        log("森空岛初始化完成")
+        return true
     end
     Headers["cred"] = cred
     save_local_config()
