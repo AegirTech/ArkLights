@@ -1133,7 +1133,16 @@ end
 zl_shop_coin = function()
     log("肉鸽投币处理")
     -- if not appear("诡意行商投资", 1) then return goto_next_level() end
-    if not appear("诡意行商投资", 5) then return true end
+    if not wait(function()
+            if findOne("诡意行商投资") then return true end
+            if findOne("肉鸽弹出窗口") then
+                tap("左取消")
+                ssleep(0.2)
+            end
+        end, 5) then
+        return
+    end
+
     if not wait(function()
             if findOne("诡意行商投币") then return true end
             if findOne("诡意行商投资入口") then return true end

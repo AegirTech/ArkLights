@@ -1005,9 +1005,9 @@ path.界园前瞻投资 = function()
     商店关卡寻找()
 
     if not wait(function()
-            -- if not findOne("战略帮助") then return true end
             if findAny({ "诡意行商投资", "诡意行商离开" }) then return true end
             tap("界园_商店进入")
+            ssleep(0.2)
             if findOne("肉鸽弹出窗口") then
                 tap("左取消")
                 ssleep(0.2)

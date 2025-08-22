@@ -35,7 +35,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "08.18 11:29"
+release_date = "08.20 08:40"
 update_announcement = '最近更新：夏活小游戏/导航等'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -214,10 +214,6 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
         end
 
         pcall(switch_account)
-
-        if 快速切号功能状态 == false then
-            table.insert(job, "账户数据保存")
-        end
 
         if #username > 0 and #password > 0 and 快速切号功能状态 ~= true then
             table.insert(job, 1, "退出账号")
