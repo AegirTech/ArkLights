@@ -5817,7 +5817,7 @@ end
 path.活动 = function(x)
     log("检测活动开放时间")
     local t = parse_time()
-    if t >= hd_open_time_end or t < hd_open_time_start then
+    if t >= hd_open_time_end then
         clean_hdfight()
         return
     end
