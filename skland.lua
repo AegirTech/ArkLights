@@ -145,21 +145,19 @@ end
 skland.request = function(method, url, data)
     local data = data or ""
     local method = method or "GET"
+    local params = ''
     if type(data) == "table" then
+        for k, v in pairs(data) do
+            if params == '' then
+                params = k .. '=' .. v
+            else
+                params = params .. '&' .. k .. '=' .. v
+            end
+        end
         data = JsonEncode(data)
     end
     skland.sign(url, data)
     if method == "GET" then
-        local params = ''
-        if type(data) == "table" then
-            for k, v in pairs(data) do
-                if params == '' then
-                    params = k .. '=' .. v
-                else
-                    params = params .. '&' .. k .. '=' .. v
-                end
-            end
-        end
         if params ~= '' then
             url = url .. '?' .. params
         end
