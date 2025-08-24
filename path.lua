@@ -5817,7 +5817,7 @@ end
 path.活动 = function(x)
     log("检测活动开放时间")
     local t = parse_time()
-    if t >= hd_open_time_end then
+    if t >= hd_open_time_end or t < hd_open_time_start then
         clean_hdfight()
         return
     end
@@ -6034,30 +6034,16 @@ hd_wrapper = function(func)
 end
 
 path.活动页面寻找 = function(n)
-    local check_time = function()                         -- 离活动结束只有1星期时自动点击下面活动
-        local current_time = os.time()                    -- 当前时间
-        local time_diff = hd_open_time_end - current_time -- 时间差（秒）
-        log("距离活动结束还有" .. time_diff / (24 * 3600) .. "天")
-        local n
-        -- 如果时间差小于7天（7天 * 24小时/天 * 60分钟/小时 * 60秒/分钟）
-        if time_diff < 7 * 24 * 60 * 60 then
-            n = 2
-        else
-            n = 1 -- 如果时间差大于等于7天，可以设置为其他值，这里假设为1
-        end
-        return n
-    end
-
     local n = n or 1
     if n > 3 then return false end
     path.跳转("首页")
     local l = { "面板活动", "面板活动2", "面板作战" }
     tap(l[n])
     disappear("主页", 2)
-    if hd_mod ~= "故事集" then
-        ssleep(5) --六周年庆活动进入时候容易触发"跳过剧情"，加点延迟
-        log(5992)
-    end
+    -- if hd_mod ~= "故事集" then
+    --     ssleep(5) --六周年庆活动进入时候容易触发"跳过剧情"，加点延迟
+    --     log(5992)
+    -- end
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if l[n] == "面板作战" then

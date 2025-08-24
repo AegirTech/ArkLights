@@ -2966,11 +2966,12 @@ update_state_from_ui = function()
     job = parse_from_ui("now_job_ui", all_job)
 
     -- 活动开放时间段
-    hd_nickname = "AT"
-    hd_max_stage = 8
-    hd_exclude = {}                                --排除哪些关卡不刷，例如{9}
-    hd_open_time_end = parse_time("202508230400")
-    hd2_open_time_end = parse_time("202507150400") -- 故事集开放时间段
+    hd_nickname = "AS"
+    hd_max_stage = 9
+    hd_exclude = {}                                 --排除哪些关卡不刷，例如{9}
+    hd_open_time_start = parse_time("202508240400") -- os.time() - 1 -- 默认为当前时间（某些复刻活动可以提前准备）
+    hd_open_time_end = parse_time("202509080400")
+    hd2_open_time_end = parse_time("202507150400")  -- 故事集开放时间段
     hd_mod = "SS"
     log("fight_ui", fight_ui)
     fight = parse_fight_config(fight_ui)
