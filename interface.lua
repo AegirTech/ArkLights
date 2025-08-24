@@ -1228,12 +1228,17 @@ show_extra_ui = function()
     ui.addEditText(layout, "extra_single_account", "")
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
-
-    addTitle(layout, "活动小游戏(限时-无限循环)")
+    ------------------------------------------------------------
+    addTitle(layout, "宝石铭刻")
+    addInfo(layout, "最好是1080p，平板模式")
     newRow(layout)
-    addButton(layout, nil, "活动小游戏开始",
+    addButton(layout, nil, "宝石铭刻启动",
         make_jump_ui_command(layout, nil,
-            "extra_mode='活动小游戏';lock:remove(main_ui_lock)"))
+            "extra_mode='宝石铭刻活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addTextView(layout, "放牌延迟(ms)")
+    ui.addEditText(layout, "宝石铭刻_放牌延迟", "100")
+    newRow(layout)
     ------------------------------------------------------------
     -- addTitle(layout, "争锋频道(限时)")
     -- newRow(layout)
@@ -1284,16 +1289,7 @@ show_extra_ui = function()
         make_jump_ui_command(layout, nil,
             "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     ]]
-    -- newRow(layout)
-    -- addTextView(layout, "===========宝石铭刻===========")
-    -- newRow(layout)
-    -- addButton(layout, nil, "宝石铭刻——夏活小游戏(最好是1080p，平板模式)",
-    --     make_jump_ui_command(layout, nil,
-    --         "extra_mode='宝石铭刻活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    -- newRow(layout)
-    -- addTextView(layout, [[放牌延迟(ms)]]
-    -- ui.addEditText(layout, "宝石铭刻_放牌延迟", [[100]])
-    -- newRow(layout)
+
     ---------------------------------------------------------------------
     addTitle(layout, "集成战略")
     addInfo(layout, "重复刷第一层以获得源石锭和经验")
