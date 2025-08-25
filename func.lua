@@ -61,53 +61,90 @@ auto_update_game = function()
         return
     end
     log("开始检查游戏更新")
-    log('使用方式' .. auto_update_mode .. '更新游戏客户端，更新 ' .. auto_update_game_select)
+    log('更新游戏客户端，更新 ' .. auto_update_game_select)
     if (auto_update_game_select ~= 2) and game_check_version("com.hypergryph.arknights") == false then
         toast("官服更新开始")
         local url = "https://ak.hypergryph.com/downloads/android_lastest"
         local red1 = parse_download_url(url)
         local red2 = parse_download_url(red1)
-        if auto_update_mode == 0 then
-            install_game(red2)  --使用curl下载并安装
-        else
-            install_game2(red2) --用自带的更新
-        end
+        install_game(red2) --使用curl下载并安装
     end
     if (auto_update_game_select ~= 1) and game_check_version("com.hypergryph.arknights.bilibili") == false then
         toast("b服更新开始")
-        if auto_update_mode == 0 then
-            install_game(get_bilibili_url())  --使用curl下载并安装
-        else
-            install_game2(get_bilibili_url()) --用自带的更新
-        end
+        install_game(get_bilibili_url()) --使用curl下载并安装
     end
+end
+
+install_new_game = function(server)
+    ui.saveProfile('debug')
+    ui.dismiss('debug')
+    console.show()
+    if server == 0 then
+        toast("官服")
+        local url = "https://ak.hypergryph.com/downloads/android_lastest"
+        local red1 = parse_download_url(url)
+        local red2 = parse_download_url(red1)
+        install_game(red2) --用自带的更新
+    else
+        toast("b服")
+        install_game(get_bilibili_url())
+    end
+    console.dismiss()
 end
 
 -- 使用curl下载并安装
 install_game = function(url)
+    local shpath = "/sdcard/pictures/smart_curl.sh"
+    if not fileExist(shpath) then
+        extractAssets("main.rc", "/sdcard/Pictures/", "smart_curl.sh")
+    end
+    setFilePremission(shpath, 777)
+
     console.show()
     -- exec("mkdir " .. getWorkPath() .. '/apk/')
 
-    local downloadpath = "/storage/emulated/0/" .. package .. '/arknights.apk'
-    local log_file = "/storage/emulated/0/" .. package .. '/log/curl.log'
-    local curlCommand = curlpath .. ' -C - -o "' .. downloadpath .. '" "' .. url .. '" > "' .. log_file .. '" 2>&1 &'
-    if (folder_exists("/data/user/0/com.hypergryph.arknights/files/AB")) then
-        exec("su root sh -c 'rm -rf /data/user/0/com.hypergryph.arknights/files/'")
-    end
-    log("开始下载", url, downloadpath)
-    log(curlCommand)
-    exec(curlCommand)
+    local downloadpath = "/sdcard/" .. package .. '/apk/arknights.apk'
+    local log_file = "/sdcard/" .. package .. '/apk/curl.log'
+    local shcommand =
+        [[sh -c 'setsid nohup /sdcard/pictures/smart_curl.sh "]] ..
+        url .. [[" "]] .. downloadpath .. [[" ]] .. curlpath .. ">/dev/null 2>&1 &'"
+    log(shcommand)
+    exec(shcommand)
     ssleep(2)
+    log(1952)
     while true do
         local file = io.open(log_file, "r")
         local log_file = file:read("*a")
         file:close()
-        if string.find(log_file, " 100 ") then
+        if string.find(log_file, "完成") then
             log("下载完成")
             break
         end
-        ssleep(3)
+        local size = fileSize(downloadpath)
+        log("当前下载大小" .. str(str2int(size, 0) / 1024 / 1024) .. "MB")
+        ssleep(10)
     end
+    -- local log_file = "/storage/emulated/0/" .. package .. '/log/curl.log'
+    -- local curlCommand = curlpath ..
+    --     ' -C - -o "' ..
+    --     downloadpath .. '" "' .. url .. '" > "' .. log_file .. '" 2>&1 &'
+    -- if (folder_exists("/data/user/0/com.hypergryph.arknights/files/AB")) then
+    --     exec("su root sh -c 'rm -rf /data/user/0/com.hypergryph.arknights/files/'")
+    -- end
+    -- log("开始下载", url, downloadpath)
+    -- log(curlCommand)
+    -- exec(curlCommand)
+    -- ssleep(2)
+    -- while true do
+    --     local file = io.open(log_file, "r")
+    --     local log_file = file:read("*a")
+    --     file:close()
+    --     if string.find(log_file, " 100 ") then
+    --         log("下载完成")
+    --         break
+    --     end
+    --     ssleep(3)
+    -- end
     ssleep(2)
     --使用root权限安装
     exec("su root sh -c 'pm install -r " .. downloadpath .. "'")

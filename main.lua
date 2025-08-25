@@ -35,7 +35,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "08.25 11:09"
+release_date = "08.25 20:43"
 update_announcement = '最近更新：夏活小游戏/导航等'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -130,6 +130,8 @@ if use_local_dictionary then
 end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
+    install_game("https://pkg.biligame.com/games/mrfz_2.6.21_20250724_045549_b53f0.apk")
+    exit()
     -- disable_game_up_check = true
     -- 相谈室活动(true)
     -- exit()
