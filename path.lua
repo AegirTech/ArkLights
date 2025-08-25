@@ -9165,7 +9165,9 @@ end
 
 path.宝石铭刻活动 = function()
     第九关打完了 = false
-    forever(path.宝石铭刻寻找课程)
+    while 第九关打完了 == false do
+        path.宝石铭刻寻找课程()
+    end
 end
 
 path.宝石铭刻寻找课程 = function()
@@ -9207,7 +9209,7 @@ path.宝石铭刻寻找课程 = function()
         wait(function()
             tap('宝石铭刻_结业奖励全部领取')
         end, 3, .1)
-        exit()
+        return
     end
     --准备进入【宝石铭刻】
     if not wait(function()
