@@ -1795,6 +1795,8 @@ update_state = function()
     基建黑屏卡住时间 = nil
     基建白屏卡住时间 = nil
 
+    save_token = false
+
     -- 禁用重复刷模式
     repeat_fight_mode = false
     pre_fight = nil
@@ -4754,9 +4756,9 @@ XinPian = {
 path.开始游戏 = function(x, disable_ptrs_check)
     -- 记录石头数量
     save_run_state()
-    if new_change_account_plan then
+    if new_change_account_plan and not save_token then
         path.账户数据保存()
-        快速切号功能状态 = true
+        save_token = true
     end
     local need_copy_homework = nil
     log("开始游戏", fight_tick, x)
