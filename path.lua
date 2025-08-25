@@ -6170,8 +6170,6 @@ path.商店搬空 = function()
                 end
                 回到商店主页()
                 if not findOne("商店主页") then return end -- 防止跳到其他页面
-                ssleep(0.1)
-
                 if cmpColorEx(col_data, 0.9) == 1 then
                     log("商品找到")
                     商店采样判断 = sample("商店")
@@ -6182,15 +6180,19 @@ path.商店搬空 = function()
                 end
 
                 -- 点击购买
-                if not wait(function()
-                        if not findOne(商店采样判断) then return true end
-                        ssleep(.5)
-                    end, 10) then
+                if not disappear(商店采样判断, 10) then
                     log("未能进入购买页面")
                     sd_retry = sd_retry + 1
                     goto startshop
                 end
-                ssleep(.5)
+
+                -- if not wait(function()
+                --         if not findOne(商店采样判断) then return true end
+                --     end, 10) then
+                --     log("未能进入购买页面")
+                --     sd_retry = sd_retry + 1
+                --     goto startshop
+                -- end
                 -- 商品名称 = ocr("商店物品名字范围")
 
                 -- if #商品名称 > 0 and 商品名称[1].text:includes(商品购买黑名单) then
@@ -6209,7 +6211,7 @@ path.商店搬空 = function()
                 wait(function()
                     tap_x = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
                     if tap_x then return true end
-                    ssleep(.3)
+                    ssleep(.1)
                 end, 2)
                 if not tap_x then
                     log("未找到购买按钮")
@@ -6243,18 +6245,15 @@ path.商店搬空 = function()
                 end
 
                 if not wait(function()
-                        if findOne("获得物资") then
-                            tap("获得物资")
-                            ssleep(.6)
-                        end
+                        findTap("获得物资")
                         if findOne("商店主页") then return true end
-                        tap("商店购买页面")
-                        ssleep(.3)
+                        findTap("商店购买页面")
+                        tap("商店顶栏")
+                        ssleep(.1)
                     end, 2) then
                 end
                 disappear("正在提交反馈至神经", network_timeout)
                 回到商店主页()
-                ssleep(1)
                 log(998)
                 goto startshop
                 ::continue::
