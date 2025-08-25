@@ -4754,8 +4754,10 @@ XinPian = {
 path.开始游戏 = function(x, disable_ptrs_check)
     -- 记录石头数量
     save_run_state()
-    path.账户数据保存()
-    快速切号功能状态 = true
+    if new_change_account_plan then
+        path.账户数据保存()
+        快速切号功能状态 = true
+    end
     local need_copy_homework = nil
     log("开始游戏", fight_tick, x)
     if copy_homework_only then pre_fight = x end
