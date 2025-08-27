@@ -7038,6 +7038,7 @@ path.前瞻投资 = function(lighter)
 
     -- 检测等级
     local zl_level_check = function()
+        if zl_disable_inspect_level then return -1 end
         if not (str2int(zl_max_level, 0) > 0) then return end
         if not findOne("常规行动") then return end
         -- if not wait(function()
@@ -7083,6 +7084,7 @@ path.前瞻投资 = function(lighter)
 
     -- 检测源石锭
     local zl_coin_check = function()
+        if zl_disable_inspect_level then return -1 end
         if not (str2int(zl_max_coin, 0) > 0) then return end
         if str2int(zl_max_coin, 0) >= 999 then return end
 
