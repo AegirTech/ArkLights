@@ -2286,15 +2286,17 @@ unpacking_library = function()
         _G.curlpath = "curl"
     else
         --sqlite3
-        if not fileExist("/sdcard/Pictures/sqlite3") then
+        if not fileExist("/data/local/tmp/sqlite3") then
             local ret = download_from_alist("sqlite3", "/sdcard/Pictures")
             if ret then
-                sqlite3path = "/sdcard/Pictures/sqlite3"
+                copy_file_su("/sdcard/Pictures/sqlite3", "/data/local/tmp/sqlite3")
+                sqlite3path = "/data/local/tmp/sqlite3"
+                setFilePremission(sqlite3path, "777")
             else
                 sqlite3path = "sqlite3"
             end
         else
-            sqlite3path = "/sdcard/Pictures/sqlite3"
+            sqlite3path = "/data/local/tmp/sqlite3"
         end
 
         local curl_file = "curl_" .. get_cpu_arch()
@@ -2308,15 +2310,17 @@ unpacking_library = function()
             curl_file = "curl_arm64-v8a"
         end
 
-        if not fileExist("/sdcard/Pictures/" .. curl_file) then
+        if not fileExist("/data/local/tmp/" .. curl_file) then
             ret = download_from_alist(curl_file, "/sdcard/Pictures")
             if ret then
-                curlpath = "/sdcard/Pictures/" .. curl_file
+                copy_file_su("/sdcard/Pictures/" .. curl_file, "/data/local/tmp/" .. curl_file)
+                curlpath = "/data/local/tmp/" .. curl_file
+                setFilePremission(curlpath, "777")
             else
                 curlpath = "curl"
             end
         else
-            curlpath = "/sdcard/Pictures/" .. curl_file
+            curlpath = "/data/local/tmp/" .. curl_file
         end
     end
     log("sqlite3path", sqlite3path, "curlpath", curlpath)

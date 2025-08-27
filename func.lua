@@ -94,25 +94,26 @@ end
 
 -- 使用curl下载并安装
 install_game = function(url)
-    local shpath = "/sdcard/pictures/smart_curl.sh"
-    if not fileExist(shpath) then
-        extractAssets("main.rc", "/sdcard/Pictures/", "smart_curl.sh")
-    end
+    local shpath = "/data/local/tmp/smart_curl.sh"
+    extractAssets("main.rc", "/sdcard/pictures/", "smart_curl.sh")
+    copy_file_su("/sdcard/Pictures/smart_curl.sh", shpath)
     setFilePremission(shpath, 777)
 
     console.show()
     -- exec("mkdir " .. getWorkPath() .. '/apk/')
 
-    local downloadpath = "/sdcard/" .. package .. '/apk/arknights.apk'
-    local log_file = "/sdcard/" .. package .. '/apk/curl.log'
+    local downloadpath = "/storage/emulated/0/" .. package .. '/apk/arknights.apk'
+    local log_file = "/storage/emulated/0/" .. package .. '/apk/curl.log'
+    delfile(downloadpath)
     local shcommand =
-        [[sh -c 'setsid nohup /sdcard/pictures/smart_curl.sh "]] ..
+        [[sh -c 'setsid nohup /data/local/tmp/smart_curl.sh "]] ..
         url .. [[" "]] .. downloadpath .. [[" ]] .. curlpath .. ">/dev/null 2>&1 &'"
     log(shcommand)
     exec(shcommand)
     ssleep(2)
     log(1952)
     while true do
+        log(1954)
         local file = io.open(log_file, "r")
         local log_file = file:read("*a")
         file:close()
@@ -146,12 +147,14 @@ install_game = function(url)
     --     ssleep(3)
     -- end
     ssleep(2)
+    log(1954)
     --使用root权限安装
     exec("su root sh -c 'pm install -r " .. downloadpath .. "'")
     --删除apk
     exec("su root rm -rf " .. downloadpath)
     log("安装完成", downloadpath)
     console.dismiss()
+    exit()
 end
 
 --用懒人自带的下载并安装游戏
@@ -1073,6 +1076,10 @@ end
 
 copy_file_exec = function(src, dest)
     exec("cp '" .. src .. "' '" .. dest .. "'")
+end
+
+copy_file_su = function(src, dest)
+    exec("su root sh -c 'cp " .. src .. " " .. dest .. "'")
 end
 
 clear_cache = function()
