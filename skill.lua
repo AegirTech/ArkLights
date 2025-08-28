@@ -116,33 +116,6 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
             end
         end
         log(129, idx, operator, mood, name)
-        --[[
-        -- 异格将心情设为负值
-        local yg1 = { v[1] + scale(7), v[2] - scale(219) }
-        local yg2 = { v[1] + scale(7), v[2] - scale(205) }
-        local yg3 = { v[1] + scale(15), v[2] - scale(264) }
-
-        -- "1276|801|898989,1291|537|272727"
-        log("yg1", yg1)
-        log("yg2", yg2)
-        log("yg3", yg3)
-        yg1 = getPixelColor(yg1[1], yg1[2])
-        yg2 = getPixelColor(yg2[1], yg2[2])
-        yg3 = getPixelColor(yg3[1], yg3[2])
-        log("yg1", yg1)
-        log("yg2", yg2)
-        log("yg3", yg3)
-        if math.abs(colorDiff(yg1, yg2)) < 36 and table.any(ygStaitonColor,
-                function(color)
-                    return math.abs(colorDiff(yg1, color)) < 36
-                end) and (math.abs(colorDiff(yg3, "ff003030")) < 75) then
-            -- ffffbb22
-            log("异格干员")
-            mood = -mood
-            if mood == 0 then mood = -1 end
-        end
-        -- exit()
-        ]]
         table.insert(operators, { png, png2, mood, icon1, pageid, name })
     end
     -- sleep(max(0, delay - (time() - start_time)))
@@ -327,12 +300,14 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
         for _, icon in pairs(table.flatten(icons)) do
             all[icon] = (all[icon] or 0) + 1
             -- log(266, icon, goodType, base)
-            if icon == 'bskill_tra_spd3' then
+            if icon == 'bskill_tra_spd3' then             -- 能天使2
                 base = base + 0.35
             elseif icon == 'bskill_tra_spd&formula1' then --石英
                 base = base + 0.3 + 0.04                  -- 近似两种产物
             elseif icon == 'bskill_tra_spd&meet1' then    --伺夜
                 base = base + 0.4                         -- 近似满级会客厅
+            elseif icon == 'bskill_tra_share3' then       --吉星2
+                base = base + 0.2 * (level - 1)
             elseif icon == 'bskill_tra_spd&cost' then
                 base = base + 0.3
             elseif icon == 'bskill_tra_spd&limit7' then
@@ -348,6 +323,8 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                     base = base - 0.15
                     storage = storage + 6
                 end
+            elseif icon == 'bskill_tra_share2' then     --吉星0
+                base = base + 0.1 * (level - 1)
             elseif icon == 'bskill_tra_spd&limit5' then --蕾缪安2
                 base = base + 0.20
             elseif icon == 'bskill_tra_spd_bd2' then    --黑键2
