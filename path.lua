@@ -945,6 +945,10 @@ path.fallback = {
         end
         if x then return tap(path.fallback[x]) end
     end,
+    争锋频道首页 = function()
+        tap("争锋频道回到游戏首页")
+        ssleep(0.6)
+    end,
     回归返回 = function()
         tap("回归返回")
         ssleep(1)
@@ -10813,7 +10817,7 @@ end
 path.争锋频道活动 = function()
     if not findOne("争锋频道首页") then
         path.跳转("首页")
-        tap("面板活动2")
+        tap("面板活动")
     end
     if not appear("争锋频道首页", 5) then return end
     wait(function()

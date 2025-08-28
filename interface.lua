@@ -1244,23 +1244,23 @@ show_extra_ui = function()
     ui.addEditText(layout, "宝石铭刻_放牌延迟", "100")
     newRow(layout)
     ------------------------------------------------------------
-    -- addTitle(layout, "争锋频道(限时)")
-    -- newRow(layout)
-    -- addTextView(layout, "匹配模式")
-    -- ui.addSpinner(layout, "duel_channel_mode", { "礼物对决" }, 0)
-    -- newRow(layout)
-    -- addTextView(layout, "策略")
-    -- ui.addSpinner(layout, "duel_channel_game_mode", { "保持观望", "随大流" }, 0)
+    addTitle(layout, "争锋频道(限时)")
+    newRow(layout)
+    addTextView(layout, "匹配模式")
+    ui.addSpinner(layout, "duel_channel_mode", { "礼物对决" }, 0)
+    newRow(layout)
+    addTextView(layout, "策略")
+    ui.addSpinner(layout, "duel_channel_game_mode", { "保持观望", "随大流" }, 0)
 
-    -- newRow(layout)
-    -- ui.addCheckBox(layout, "duel_auto_stop", "代币不增加则停止", false)
+    newRow(layout)
+    ui.addCheckBox(layout, "duel_auto_stop", "代币不增加则停止", false)
 
-    -- addInfo(layout, "注意：默认不会选择all，分辨率只支持720/1080p")
+    addInfo(layout, "注意：默认不会选择all，分辨率只支持720/1080p")
 
-    -- newRow(layout)
-    -- addButton(layout, nil, "赌博开始",
-    --     make_jump_ui_command(layout, nil,
-    --         "extra_mode='争锋频道活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addButton(layout, nil, "赌博开始",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='争锋频道活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     --[[ newRow(layout)
     addTextView(layout, "===========促融共竞(1080p)===========")
     newRow(layout)
