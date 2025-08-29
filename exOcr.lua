@@ -96,7 +96,7 @@ if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
         toast("未找到飞浆ocr模型文件，正在尝试下载。")
         if not download_from_alist("ppocr.zip", "/sdcard/Pictures") then
             toast("飞浆ocr模型下载失败,已禁用")
-            disable_paddleocr = true
+            paddleocr_loadfailed = true
             return
         end
     end
@@ -111,6 +111,7 @@ if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
     local Err = PaddLeOCR.IniTiaLModeL(Loader)
     if Err ~= nil then
         print(string.format("初始化OCR插件失败 原因: %s", Err))
+        paddleocr_loadfailed = true
     end
 
     -- 加载模型 公共模型在ZIP文件里
@@ -208,7 +209,7 @@ else
             return ocr(r)
         end
         if type(r) == "string" then r = point[r] end
-        print("ocrinput", r)
+        log("ocrinput", r)
         local BitMap = LuaEngine.snapShot(r[1], r[2], r[3], r[4])
         local ret = ocr1.DetectJson(BitMap, 0.3, 0.5)
         local res = {}

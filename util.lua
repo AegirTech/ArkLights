@@ -4041,6 +4041,10 @@ update_state_from_debugui = function()
 
     sss_weekend_auto = (sss_weekend_auto == nil) and true or sss_weekend_auto
     sss_only_complete = (sss_only_complete == nil) and true or sss_only_complete
+
+    if paddleocr_loadfailed or disable_paddleocr then
+        ocrex = ocr
+    end
 end
 
 hy_exec = function(x)
