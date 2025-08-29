@@ -10864,15 +10864,21 @@ end
         if duel_channel_game_mode == 1 then
             local zuotext = (ocr("左边支持人数ocr范围")[1] or {}).text or ""
             local youtext = (ocr("右边支持人数ocr范围")[1] or {}).text or ""
-            local zuonumber = int(string.match(zuotext, "%d+")) or 0
-            local younumber = int(string.match(youtext, "%d+")) or 0
+            local zuonumber = str2int(string.match(zuotext, "%d+"), 0)
+            local younumber = str2int(string.match(youtext, "%d+"), 0)
             log("左边支持人数", zuotext, zuonumber)
             log("右边支持人数", youtext, younumber)
-            if zuonumber > 0 and younumber > 0 then
+            if zuonumber > 0 or younumber > 0 then
                 if zuonumber > younumber then
+                    log("支持左侧")
                     tap("支持左侧按钮")
                     ssleep(0.5)
                 elseif younumber > zuonumber then
+                    log("支持右侧")
+                    tap("支持右侧按钮")
+                    ssleep(0.5)
+                else
+                    log("相同")
                     tap("支持右侧按钮")
                     ssleep(0.5)
                 end
