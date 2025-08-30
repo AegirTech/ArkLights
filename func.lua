@@ -618,6 +618,7 @@ trySolveSlipCaptcha = function(retry)
         end, 10)
     elseif findAny({ "滑块验证节点", "滑块验证节点2" }) then -- 旧版滑块->b服
         log("find 旧版滑块box", box)
+        ssleep(0.5)
         if findOne("官服点选验证节点") then
             log("find 旧版滑块box -> 官服点选验证节点", box)
             ssleep(0.5)
@@ -628,10 +629,10 @@ trySolveSlipCaptcha = function(retry)
         log("box", box)
         if not box then return end
         box = box.bounds
-        if retry > 1 then
-            SolveSlipCaptcha(box, 2)
-        else
+        if retry % 2 == 0 then
             SolveSlipCaptcha(box, 1)
+        else
+            SolveSlipCaptcha(box, 3)
         end
     end
     log("验证码处理完毕，等待游戏")
