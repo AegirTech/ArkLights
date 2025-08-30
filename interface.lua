@@ -1434,10 +1434,6 @@ show_extra_ui = function()
     ui.addCheckBox(rouge_layout_界园, "zl_fight_more", "第二列可作战", false)
 
     newRow(rouge_layout_界园)
-    addTextView(rouge_layout_界园, [[部分界面等待时间(ms)]])
-    ui.addEditText(rouge_layout_界园, "zl_wait_time_jy", [[300]])
-
-    newRow(rouge_layout_界园)
     addTextView(rouge_layout_界园, [[需求商品]])
     ui.addEditText(rouge_layout_界园, "zl_need_goods_jy", [[]])
     addTextView(rouge_layout_界园, [[等级]])

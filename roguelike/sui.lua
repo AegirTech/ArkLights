@@ -726,7 +726,7 @@ path.界园前瞻投资 = function()
         log(1056)
         if appear("界园_额外藏品选择页面", 5) and not appear("界园_选择招募卷阶段", 0.5) then
             log(10562)
-            ssleep(str2int(zl_wait_time_jy, 200) / 1000)
+            ssleep(0.2)
             appear("界园_藏品选择横线", 5)
             ssleep(0.1)
             page = sample("界园进度")
