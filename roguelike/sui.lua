@@ -327,7 +327,7 @@ sui.战斗后领取 = function()
     return true
 end
 
-sui.重置路径 = zl_repos_path('界园_放弃探索')
+sui.重置路径 = function() zl_repos_path('界园_放弃探索') end
 
 sui.招募处理 = function()
     log(1090)
