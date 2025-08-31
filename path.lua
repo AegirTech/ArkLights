@@ -1273,6 +1273,11 @@ path.限时活动 = function(retry)
     retry = retry or 0
     if retry > 10 then return end
     path.跳转("首页")
+    if notify_sub_expire and findOne("月卡即将到期") and not 月卡到期状态 then
+        captureqqimagedeliver("WARNING", "月卡到期提醒", "月卡即将到期，请及时续费")
+        月卡到期状态 = true
+    end
+
     local p = findAny({
         "面板限时活动", "面板限时活动2", "面板限时活动3",
         "面板限时活动4", "面板限时活动5", "面板限时活动6",
@@ -1801,6 +1806,8 @@ update_state = function()
     启动界面卡住的时间 = nil
     基建黑屏卡住时间 = nil
     基建白屏卡住时间 = nil
+
+    月卡到期状态 = false
 
     save_token = false
 

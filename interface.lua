@@ -957,9 +957,6 @@ show_debug_ui = function()
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_nofight", "QQ通知不显示作战信息",
         false)
-    newRow(debug_layout_通知)
-    ui.addCheckBox(debug_layout_通知, "qqnotify_noruntime", "QQ通知不显示耗时信息",
-        false)
 
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_beforemail",
@@ -972,6 +969,10 @@ show_debug_ui = function()
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_beforeleaving",
         "QQ通知显示基建退出前情况", false)
+
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "notify_sub_expire",
+        "月卡到期通知", true)
 
     local debug_layout_基建 = "debug_tab_base"
     ui.addTab("debug_tab", debug_layout_基建, "基建")
