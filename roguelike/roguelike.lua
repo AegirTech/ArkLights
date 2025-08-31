@@ -449,6 +449,14 @@ end
 
 -- 退出重进
 zl.重置大地图 = function()
+    findTap("战略返回")
+    ssleep(.2)
+    wait(function()
+        tap({ scale(1708), scale(900) }) --采用固定的坐标，一直点击直到出现 '战略返回'
+        ssleep(.2)
+        if findOne("战略返回") then return true end
+    end, 5)
+    ssleep(.1)
 end
 
 zl.创建大地图二维数组 = function(nrows, ncols, initialValue)

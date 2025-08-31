@@ -35,7 +35,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "09.01 02:51"
+release_date = "09.01 06:26"
 update_announcement = '最近更新：争锋频道等'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -100,7 +100,6 @@ require("exOcr")
 require("raise")
 
 load(after_require_hook or '')()
-
 consoleInit()
 showControlBar(true)
 setControlBar() -- 非唤起游戏，不会设置按钮
@@ -132,7 +131,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     sleep(1000)
 
-    -- 大地图数据
+    -- --大地图数据
     -- 横向间隔 = scale(675)
     -- 纵向间隔 = scale(91)
     -- 第1列横坐标 = scale(524)
@@ -169,6 +168,9 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     --     [10] = 2,
     --     [11] = 1
     -- }
+
+    -- local 作战名 = sui.作战名ocr校正(ocro("界园_作战检测范围"))
+    -- log(作战名)
 
     -- exit()
 end

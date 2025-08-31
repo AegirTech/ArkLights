@@ -5,7 +5,6 @@
 
 sui = {}
 
-
 sui.跳转 = function()
     zl_eight_daily()
 
@@ -327,8 +326,6 @@ sui.战斗后领取 = function()
     return true
 end
 
-sui.重置路径 = function() zl_repos_path('界园_放弃探索') end
-
 sui.招募处理 = function()
     log(1090)
     -- 第2人
@@ -515,7 +512,7 @@ sui.战斗开始 = function()
             tap("界园_作战_进入")
         end, 5) then
         log(3302, "无法进入")
-        sui.重置路径()
+        zl_repos_path('界园_放弃探索')
     end
     log(3307)
     if not wait(function()
@@ -638,7 +635,7 @@ sui.放弃作战 = function()
             tap("界园_作战_进入")
         end, 5) then
         log(3302, "无法进入")
-        sui.重置路径()
+        zl_repos_path('界园_放弃探索')
     end
 
     -- 开始游戏
@@ -912,7 +909,7 @@ path.界园前瞻投资 = function()
             end
         end, 10) then
         log(3301, "无法进入")
-        sui.重置路径()
+        zl_repos_path('界园_放弃探索')
     end
     log(3305)
     if zl_skip_fight then
@@ -1283,8 +1280,18 @@ sui.普通作战1 = function()
         tap("界园_每层通宝确认")
     end
     ssleep(0.5) -- 右边第三列有概率加载过慢
-    sui.判断路径()
-    sui.重置路径()
+    local best_path = sui.判断路径()
+    zl.重置大地图()
+    local 当前列 = 1
+    log(best_path[当前列][1])
+    tap({ 第1列横坐标, 第1行纵坐标 + 纵向间隔 * best_path[当前列][1] })
+    local 当前节点类型 = 大地图[best_path[当前列][1]][当前列]["NodeType"]
+    log(当前节点类型)
+    ssleep(1)
+    if 当前节点类型 == 1 then
+        local 作战名 = sui.作战名ocr校正(ocro("界园_作战检测范围"))
+        log(作战名)
+    end
 end
 
 sui.判断投出通宝 = function()
@@ -1390,7 +1397,7 @@ end
 sui.判断路径 = function()
     log("判断路径")
     local floor = sui.判断楼层()
-    local 总列数 = { 4, 5, 5, 5, 5, 5, 5 }
+    local 总列数 = { 4, 5, 5, 5, 5, 5, 5 } -- 每一层的列数
     大地图 = zl.创建大地图二维数组(7, 总列数[floor], 0)
     local 起始行号 = sui.第1列判断()
     for i = 2, 总列数[floor] - 1 do
@@ -1467,8 +1474,14 @@ sui.第1列判断 = function()
         if cmpColor(第1列横坐标, 第1行纵坐标 + i * 纵向间隔, "9C6EBC", 0.85) == 1
             and cmpColor(第1列横坐标 - scale(36), 第1行纵坐标 - scale(49) + i * 纵向间隔, "9E6CD6", 0.85) == 1 then
             大地图[i][1] = {
-                NodeType = 节点类型["普通战斗"],
-                NextNode = {}
+                NodeType = 节点类型["作战"],
+                NextNode = {},
+            }
+        elseif cmpColor(第1列横坐标, 第1行纵坐标 + i * 纵向间隔, "9C6EBC", 0.85) == 1
+            and cmpColor(第1列横坐标 - scale(36), 第1行纵坐标 - scale(49) + i * 纵向间隔, "9E6CD6", 0.85) == 1 then
+            大地图[i][1] = {
+                NodeType = 节点类型["不期而遇"],
+                NextNode = {},
             }
         end
     end
@@ -1491,7 +1504,7 @@ sui.第2列判断 = function(列, 起始行号, 是否最后一列)
         log(str)
         大地图[i][列] = {
             NodeType = 节点类型[str],
-            NextNode = {}
+            NextNode = {},
         }
     end
 
@@ -1519,4 +1532,26 @@ sui.第2列判断 = function(列, 起始行号, 是否最后一列)
         end
     end
     return 第2列起始行号
+end
+
+sui.作战名ocr校正 = function(t)
+    if t == nil then return end
+    local 替换 = {
+        ["狡三窟"] = "狡鼷三窟",
+    }
+
+    local 原文本 = t
+    --print(原文本)
+    if 替换[原文本] then
+        t = 替换[原文本]
+        -- elseif 原文本:match("^白面.*$") then
+        --     t = "白面鸮"
+        -- elseif 原文本:find("纯") and 原文本:find("艾雅法拉") then
+        --     t = "纯烬艾雅法拉"
+        -- elseif 原文本:find("默") and 原文本:find("德克萨斯") then
+        --     t = "缄默德克萨斯"
+        -- elseif 原文本:find("荒芜") and 原文本:find("拉普") then
+        --     t = "荒芜拉普兰德"
+    end
+    return t
 end
