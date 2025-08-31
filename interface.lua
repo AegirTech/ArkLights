@@ -1319,6 +1319,7 @@ show_extra_ui = function()
     ui.addEditText(layout, "zl_skill_idx", [[1]])
     addTextView(layout, [[技能]])
     addInfo(layout, "第几个可不填。为从左往右从上往下数，即第5个是第2列第一个")
+    addInfo(layout, " 填写-1表示借助战")
     newRow(layout)
     ui.addCheckBox(layout, "zl_no_waste", "每8小时日常", false)
     ui.addCheckBox(layout, "zl_disable_lighter",
