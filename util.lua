@@ -1362,7 +1362,7 @@ end
 
 qqnotify_after_run = function(run_start_time)
     local qqmessage_bak = shallowCopy(qqmessage)
-    if not qqnotify_noruntime and run_start_time then
+    if run_start_time then
         table.insert(qqmessage,
             math.floor((time() - run_start_time) / 1000 / 60) .. "分钟")
     end
@@ -4018,6 +4018,7 @@ update_state_from_debugui = function()
     end
     qqimagedeliver = (qqimagedeliver or ''):trim()
     pushplus_token = (pushplus_token or ''):trim()
+    notify_sub_expire = (notify_sub_expire == nil) and true or notify_sub_expire
     for i = 1, 7 do
         local k = 'max_drug_times_' .. i .. 'day'
         _G[k] = str2int(_G[k], 0)

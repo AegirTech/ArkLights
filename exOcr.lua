@@ -136,6 +136,7 @@ if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
         false, nil, nil)
     if Err ~= nil then
         log(string.format("加载模型错误 原因: %s", Err))
+        paddleocr_loadfailed = true
     end
     log("当前机器cpu核心数:", PaddLeOCR.GetCPUCoreNumBer())
     ocrex = function(r)

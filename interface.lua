@@ -957,9 +957,6 @@ show_debug_ui = function()
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_nofight", "QQ通知不显示作战信息",
         false)
-    newRow(debug_layout_通知)
-    ui.addCheckBox(debug_layout_通知, "qqnotify_noruntime", "QQ通知不显示耗时信息",
-        false)
 
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_beforemail",
@@ -972,6 +969,10 @@ show_debug_ui = function()
     newRow(debug_layout_通知)
     ui.addCheckBox(debug_layout_通知, "qqnotify_beforeleaving",
         "QQ通知显示基建退出前情况", false)
+
+    newRow(debug_layout_通知)
+    ui.addCheckBox(debug_layout_通知, "notify_sub_expire",
+        "月卡到期通知", true)
 
     local debug_layout_基建 = "debug_tab_base"
     ui.addTab("debug_tab", debug_layout_基建, "基建")
@@ -1319,6 +1320,7 @@ show_extra_ui = function()
     ui.addEditText(layout, "zl_skill_idx", [[1]])
     addTextView(layout, [[技能]])
     addInfo(layout, "第几个可不填。为从左往右从上往下数，即第5个是第2列第一个")
+    addInfo(layout, " 填写-1表示借助战")
     newRow(layout)
     ui.addCheckBox(layout, "zl_no_waste", "每8小时日常", false)
     ui.addCheckBox(layout, "zl_disable_lighter",
