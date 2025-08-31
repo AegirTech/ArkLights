@@ -5,6 +5,7 @@
 
 sui = {}
 
+
 sui.跳转 = function()
     zl_eight_daily()
 
@@ -326,6 +327,8 @@ sui.战斗后领取 = function()
     return true
 end
 
+sui.重置路径 = zl_repos_path('界园_放弃探索')
+
 sui.招募处理 = function()
     log(1090)
     -- 第2人
@@ -512,7 +515,7 @@ sui.战斗开始 = function()
             tap("界园_作战_进入")
         end, 5) then
         log(3302, "无法进入")
-        zl_repos_path('界园_放弃探索')
+        sui.重置路径()
     end
     log(3307)
     if not wait(function()
@@ -635,7 +638,7 @@ sui.放弃作战 = function()
             tap("界园_作战_进入")
         end, 5) then
         log(3302, "无法进入")
-        zl_repos_path('界园_放弃探索')
+        sui.重置路径()
     end
 
     -- 开始游戏
@@ -909,7 +912,7 @@ path.界园前瞻投资 = function()
             end
         end, 10) then
         log(3301, "无法进入")
-        zl_repos_path('界园_放弃探索')
+        sui.重置路径()
     end
     log(3305)
     if zl_skip_fight then
@@ -1094,14 +1097,52 @@ sui.招募并记录干员 = function(干员, 肉鸽白名单)
     zl.选择干员(idx)
 end
 
-
 sui.普通作战1 = function()
     log('界园肉鸽')
+    -- 大地图数据
+    横向间隔 = scale(675)
+    纵向间隔 = scale(91)
+    第1列横坐标 = scale(524)
+    第1行纵坐标 = scale(191)
+    节点类型 = {
+        作战 = 1,
+        ["%作战"] = 1,
+        x作战 = 1,
+        X作战 = 1,
+        紧急作战 = 2,
+        ["%紧急作战"] = 2,
+        x紧急作战 = 2,
+        X紧急作战 = 2,
+        险路恶敌 = 3,
+        安全屋 = 4,
+        诡意行商 = 5,
+        不期而遇 = 6,
+        失与得 = 7,
+        误入奇境 = 8,
+        指点迷津 = 9,
+        先行一步 = 10,
+        狭路相逢 = 11,
+    }
+    --局内数据
+    节点评分 = {
+        [1] = 2, --作战
+        [2] = 3, -- 紧急作战
+        [3] = 2,
+        [4] = 1,
+        [5] = 5,
+        [6] = 1,
+        [7] = 0,
+        [8] = 15,
+        [9] = 10,
+        [10] = 2,
+        [11] = 1
+    }
     初始分队 = 1
     初始小队 = 2
     初始队员 = { "维什戴尔", "谷米", "卡达" }
     到达层数 = 0
     肉鸽商品评分 = {}
+    大地图 = {}
     当前通宝 = {
         花 = {},
         衡 = {},
@@ -1242,6 +1283,8 @@ sui.普通作战1 = function()
         tap("界园_每层通宝确认")
     end
     ssleep(0.5) -- 右边第三列有概率加载过慢
+    sui.判断路径()
+    sui.重置路径()
 end
 
 sui.判断投出通宝 = function()
@@ -1290,15 +1333,6 @@ sui.通宝ocr校正 = function(t)
     if 替换[原文本] then
         t[i]["text"] = 替换[原文本]
     elseif 原文本:match("^白面.*$") then
-        t[i]["text"] = "白面鸮"
-    elseif 原文本:find("纯") and 原文本:find("艾雅法拉") then
-        t[i]["text"] = "纯烬艾雅法拉"
-    elseif 原文本:find("默") and 原文本:find("德克萨斯") then
-        t[i]["text"] = "缄默德克萨斯"
-    elseif 原文本:find("荒芜") and 原文本:find("拉普") then
-        t[i]["text"] = "荒芜拉普兰德"
-    elseif 原文本:find("司霆") then
-        t[i]["text"] = "司霆惊蛰"
     end ]]
         print(t[i]["text"])
     end
@@ -1323,7 +1357,7 @@ sui.判断楼层 = function()
     elseif string.finds(str, { "是", "非", "境" }) then
         floor = 0
     end
-    log("判断楼层", floor)
+    log("当前楼层:", floor)
     sleep(50)
     return floor
 end
@@ -1354,7 +1388,135 @@ sui.判断票数 = function()
     return str
 end
 sui.判断路径 = function()
-    local 横向间隔 = scale(675)
-    local 纵向间隔 = scale(91)
-    path.swip_hd_shop(false, scale(1704))
+    log("判断路径")
+    local floor = sui.判断楼层()
+    local 总列数 = { 4, 5, 5, 5, 5, 5, 5 }
+    大地图 = zl.创建大地图二维数组(7, 总列数[floor], 0)
+    local 起始行号 = sui.第1列判断()
+    for i = 2, 总列数[floor] - 1 do
+        zl.大地图右滑()
+        起始行号 = sui.第2列判断(i, 起始行号, i == 总列数[floor] - 1)
+    end
+    log(大地图)
+    local path, score = zl.find_best_path(大地图, 节点评分)
+    if path then
+        log("找到最佳路径", path, "总分", score)
+        return path
+    else
+        log("未找到最佳路径")
+        return {}
+    end
+end
+
+sui.判断通路 = function(列, 起始行号1, 起始行号2, 偏移坐标)
+    log("判断第", 列, "列通路")
+    --log(大地图)
+    local 查找通路 = function(横坐标, 起始行号)
+        local 通路行号 = {}
+        for i = 起始行号, 8 - 起始行号, 2 do
+            local 上界 = scale(74) + i * scale(91)
+            local 下界 = scale(142) + 上界
+            local BY = 上界
+            while BY < 下界 do
+                local _, intY = findMultiColor(横坐标, BY, 横坐标 + 1, 下界, "FFFFFF", "0|3|FFFFFF", 0, 0.95)
+                if intY < 0 then break end
+                BY = intY + scale(9)
+                table.insert(通路行号, i)
+            end
+        end
+        return 通路行号
+    end
+    local 出路横坐标 = scale(760) - 偏移坐标 --+ (列 - 1) * 横向间隔
+    local 入路横坐标 = scale(1100) - 偏移坐标 --+ (列 - 1) * 横向间隔
+
+    local 出路 = 查找通路(出路横坐标, 起始行号1)
+    local 入路 = 查找通路(入路横坐标, 起始行号2)
+    log(出路, 入路)
+    if #出路 == #入路 then
+        for i = 1, #出路 do
+            --log(出路[i], 列)
+            table.insert(大地图[出路[i]][列]["NextNode"], { 入路[i], 列 + 1 })
+        end
+    else
+        log("通路判断失败")
+    end
+end
+sui.第1列判断 = function()
+    local 起始行号 = 1
+    local 第2列起始行号 = 1
+    -- 判断第1列起始行号
+    for i = 1, 4 do
+        if cmpColor(第1列横坐标, 第1行纵坐标 + i * 纵向间隔, "9C6EBC|9C6EBC", 0.85) == 1
+            and cmpColor(第1列横坐标 - scale(36), 第1行纵坐标 - scale(49) + i * 纵向间隔, "9E6CD6|9C6EBC", 0.85) == 1 then
+            起始行号 = i
+            break
+        end
+    end
+    log(起始行号)
+    -- 判断第2列起始行号
+    for i = 1, 4 do
+        if cmpColor(第1列横坐标 + 横向间隔, 第1行纵坐标 + i * 纵向间隔, "2D2D2E", 0.85) == 1
+            and cmpColor(第1列横坐标 + 横向间隔 - scale(36), 第1行纵坐标 - scale(49) + i * 纵向间隔, "5E5E5E", 0.85) == 1 then
+            第2列起始行号 = i
+            break
+        end
+    end
+    log(第2列起始行号)
+    -- 判断节点类型
+    for i = 起始行号, 8 - 起始行号, 2 do
+        if cmpColor(第1列横坐标, 第1行纵坐标 + i * 纵向间隔, "9C6EBC", 0.85) == 1
+            and cmpColor(第1列横坐标 - scale(36), 第1行纵坐标 - scale(49) + i * 纵向间隔, "9E6CD6", 0.85) == 1 then
+            大地图[i][1] = {
+                NodeType = 节点类型["普通战斗"],
+                NextNode = {}
+            }
+        end
+    end
+    sui.判断通路(1, 起始行号, 第2列起始行号)
+    return 第2列起始行号
+end
+sui.第2列判断 = function(列, 起始行号, 是否最后一列)
+    log("第2列判断", 起始行号)
+    local 第2列起始行号 = 1
+    -- 判断偏移坐标
+    local intX = findMultiColor(scale(251), 第1行纵坐标 + 起始行号 * 纵向间隔, scale(535), 第1行纵坐标 + 起始行号 * 纵向间隔 + 1, "32272A",
+        scale(65) .. "|0|31272A", 0, 0.95)
+    local 偏移坐标 = scale(431) - intX
+    local 第一列横坐标 = scale(524) - 偏移坐标
+    log(起始行号)
+    -- 判断节点类型
+    for i = 起始行号, 8 - 起始行号, 2 do
+        point["节点类型ocr范围"] = { 第一列横坐标 + scale(65), scale(174) + i * 纵向间隔, 第一列横坐标 + scale(210), scale(202) + i * 纵向间隔 }
+        local str = ocro("节点类型ocr范围")
+        log(str)
+        大地图[i][列] = {
+            NodeType = 节点类型[str],
+            NextNode = {}
+        }
+    end
+
+    -- 判断第2列起始行号
+    for i = 1, 4 do
+        if cmpColor(第1列横坐标 + 横向间隔, 第1行纵坐标 + i * 纵向间隔, "2D2D2E", 0.85) == 1
+            and cmpColor(第1列横坐标 + 横向间隔 - scale(36), 第1行纵坐标 - scale(49) + i * 纵向间隔, "5E5E5E", 0.85) == 1 then
+            第2列起始行号 = i
+            break
+        end
+    end
+    log(第2列起始行号)
+    sui.判断通路(列, 起始行号, 第2列起始行号, 偏移坐标)
+    if 是否最后一列 then
+        -- 判断节点类型
+        for i = 第2列起始行号, 8 - 第2列起始行号, 2 do
+            point["节点类型ocr范围"] = { 第一列横坐标 + 横向间隔 + scale(65), scale(174) + i * 纵向间隔, 第一列横坐标 + 横向间隔 + scale(210), scale(202) +
+            i * 纵向间隔 }
+            local str = ocro("节点类型ocr范围")
+            log(str)
+            大地图[i][列 + 1] = {
+                NodeType = 节点类型[str],
+                NextNode = {}
+            }
+        end
+    end
+    return 第2列起始行号
 end
