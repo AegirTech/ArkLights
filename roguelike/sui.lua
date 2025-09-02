@@ -1534,6 +1534,19 @@ sui.第2列判断 = function(列, 起始行号, 是否最后一列)
     return 第2列起始行号
 end
 
+sui.进入作战 = function()
+    local 作战名 = sui.作战名ocr校正(ocro("界园_作战检测范围"))
+    log(作战名)
+    if not wait(function()
+            if findOne("快捷编队") then return true end
+            tap("进入节点")
+            ssleep(.2)
+        end, 5) then
+        log(3302, "无法进入")
+        --zl_repos_path('界园_放弃探索')
+    end
+end
+
 sui.作战名ocr校正 = function(t)
     if t == nil then return end
     local 替换 = {

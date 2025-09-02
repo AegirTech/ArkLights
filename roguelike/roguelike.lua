@@ -225,41 +225,39 @@ end
 
 --肉鸽作战名字检测 type是肉鸽类型，是作战关卡名字检测的范围
 zl.fight_name_ocr = function(rogueType)
-    local rogueType = rogueType or '萨卡兹'
+    local rogueType = rogueType or '界园'
     local fight1ocr = {}
     --zl_fight_name 这个可修改替换为不同肉鸽的作战关卡名字
     log('rogueType: ', rogueType)
-    if rogueType == '萨卡兹' then
-        zl_fight_name = {
+    local fight_name = {
+        ['萨卡兹'] = {
             ["坏邻居"] = { "坏", "邻", "居" },
             ["安全检查"] = { "安", "全", "检", "熔", "炉" },
             ["夺路而逃"] = { "夺", "路", "逃" },
             ["公害"] = { "公", "害" }
-        }
-    elseif rogueType == '萨米' then
-        zl_fight_name = {
+        },
+        ['萨米'] = {
             ["待宰的兽群"] = { "待", "宰", "兽", '群' },
             ["死囚之夜"] = { "囚", "死" },
             ["度假村冤魂"] = { "度", "假", "村", "冤", "魂" },
             ["事不过四"] = { "事", "过", "四" },
             ["苔手"] = { "苔", "手" },
-        }
-    elseif rogueType == '水月' then
-        zl_fight_name = {
+        },
+        ['水月'] = {
             ["蓄水池"] = { "池", "水", "池" },
             ["虫群横行"] = { "虫", "群", "横", "行" },
             ["射手部队"] = { "射", "手", "部", "队" },
             ["共生"] = { "共", "生" },
             ["互助"] = { "互", "助" },
-        }
-    elseif rogueType == '界园' then
-        zl_fight_name = {
+        },
+        ['界园'] = {
             ["老戏骨"] = { "老", "戏", "骨" },
             ["正经生意"] = { "正", "经", "生", "意" },
             ["赶集"] = { "赶", "集" },
             ["狡鼷三窟"] = { "狡", "三", "窟" },
-        }
-    end
+        },
+    }
+    zl_fight_name = fight_name[rogueType]
     log(zl_fight_name)
     if not wait(function()
             fight1ocr = ocr_ret(rogueType .. "_作战检测范围")
@@ -559,7 +557,6 @@ zl.find_best_path = function(map, score_table)
     return path, max_score
 end
 
-
 --肉鸽挑选节点，改关卡类型和坐标位置，可以适应其他肉鸽
 zl.selection_node = function(select_number, rogueType)
     local rogueType = rogueType or '萨卡兹'
@@ -634,6 +631,10 @@ zl.selection_node = function(select_number, rogueType)
     else
         return -1, -1
     end
+end
+
+zl.快捷编队() = function()
+
 end
 
 --不期而遇事件处理
@@ -872,7 +873,6 @@ zl_repos_path = function(放弃本次探索)
         if findOne("战略返回") then return true end
     end, 5)
 end
-
 
 zl_swip = function(left, swip_dis, nodelay)
     --活动商店滑动,滑动三个商品的距离
