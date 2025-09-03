@@ -633,7 +633,7 @@ zl.selection_node = function(select_number, rogueType)
     end
 end
 
-zl.快捷编队() = function()
+zl.快捷编队 = function()
 
 end
 
