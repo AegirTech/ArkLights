@@ -100,7 +100,6 @@ require("exOcr")
 require("raise")
 
 load(after_require_hook or '')()
-
 consoleInit()
 showControlBar(true)
 setControlBar() -- 非唤起游戏，不会设置按钮
@@ -130,14 +129,49 @@ if use_local_dictionary then
 end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
+    sleep(1000)
 
-    -- disable_game_up_check = true
-    -- 相谈室活动(true)
-    -- exit()
-    --[[sui.判断血量()
-    sui.判断希望()
-    sui.判断源石锭()
-    sui.判断票数() ]]
+    -- --大地图数据
+    -- 横向间隔 = scale(675)
+    -- 纵向间隔 = scale(91)
+    -- 第1列横坐标 = scale(524)
+    -- 第1行纵坐标 = scale(191)
+    -- 节点类型 = {
+    --     作战 = 1,
+    --     ["%作战"] = 1,
+    --     x作战 = 1,
+    --     X作战 = 1,
+    --     紧急作战 = 2,
+    --     ["%紧急作战"] = 2,
+    --     x紧急作战 = 2,
+    --     X紧急作战 = 2,
+    --     险路恶敌 = 3,
+    --     安全屋 = 4,
+    --     诡意行商 = 5,
+    --     不期而遇 = 6,
+    --     失与得 = 7,
+    --     误入奇境 = 8,
+    --     指点迷津 = 9,
+    --     先行一步 = 10,
+    --     狭路相逢 = 11,
+    -- }
+    -- 节点评分 = {
+    --     [1] = 2, --作战
+    --     [2] = 2, -- 紧急作战
+    --     [3] = 2,
+    --     [4] = 1,
+    --     [5] = 5,
+    --     [6] = 1,
+    --     [7] = 0,
+    --     [8] = 15,
+    --     [9] = 10,
+    --     [10] = 2,
+    --     [11] = 1
+    -- }
+
+    -- local 作战名 = sui.作战名ocr校正(ocro("界园_作战检测范围"))
+    -- log(作战名)
+
     -- exit()
 end
 

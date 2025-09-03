@@ -143,28 +143,6 @@ zl.选择干员 = function(idx)
     end
 end
 
-zl.map_swipe = function(left)
-    if left then
-        gesture({
-            {
-                point = { { scale(300), scale(116) }, { 1000000, scale(116) } },
-                start = 0,
-                duration = 250,
-            },
-        })
-        sleep(250)
-    else
-        gesture({
-            {
-                point = { { scale(1842), scale(116) }, { scale(1842 - 1350), scale(116) } },
-                start = 0,
-                duration = 200,
-            },
-        })
-        sleep(250)
-    end
-end
-
 zl.shop_get_coin = function()
     if not wait(function()
             tap({ scale(244), scale(536) })
@@ -247,41 +225,39 @@ end
 
 --肉鸽作战名字检测 type是肉鸽类型，是作战关卡名字检测的范围
 zl.fight_name_ocr = function(rogueType)
-    local rogueType = rogueType or '萨卡兹'
+    local rogueType = rogueType or '界园'
     local fight1ocr = {}
     --zl_fight_name 这个可修改替换为不同肉鸽的作战关卡名字
     log('rogueType: ', rogueType)
-    if rogueType == '萨卡兹' then
-        zl_fight_name = {
+    local fight_name = {
+        ['萨卡兹'] = {
             ["坏邻居"] = { "坏", "邻", "居" },
             ["安全检查"] = { "安", "全", "检", "熔", "炉" },
             ["夺路而逃"] = { "夺", "路", "逃" },
             ["公害"] = { "公", "害" }
-        }
-    elseif rogueType == '萨米' then
-        zl_fight_name = {
+        },
+        ['萨米'] = {
             ["待宰的兽群"] = { "待", "宰", "兽", '群' },
             ["死囚之夜"] = { "囚", "死" },
             ["度假村冤魂"] = { "度", "假", "村", "冤", "魂" },
             ["事不过四"] = { "事", "过", "四" },
             ["苔手"] = { "苔", "手" },
-        }
-    elseif rogueType == '水月' then
-        zl_fight_name = {
+        },
+        ['水月'] = {
             ["蓄水池"] = { "池", "水", "池" },
             ["虫群横行"] = { "虫", "群", "横", "行" },
             ["射手部队"] = { "射", "手", "部", "队" },
             ["共生"] = { "共", "生" },
             ["互助"] = { "互", "助" },
-        }
-    elseif rogueType == '界园' then
-        zl_fight_name = {
+        },
+        ['界园'] = {
             ["老戏骨"] = { "老", "戏", "骨" },
             ["正经生意"] = { "正", "经", "生", "意" },
             ["赶集"] = { "赶", "集" },
             ["狡鼷三窟"] = { "狡", "三", "窟" },
-        }
-    end
+        },
+    }
+    zl_fight_name = fight_name[rogueType]
     log(zl_fight_name)
     if not wait(function()
             fight1ocr = ocr_ret(rogueType .. "_作战检测范围")
@@ -456,6 +432,131 @@ zl.放弃招募辅助 = function(type)
     return true
 end
 
+zl.大地图右滑 = function()
+    gesture({
+        {
+            point = { { scale(1831), scale(864) }, { scale(915), scale(864) } },
+            start = 0,
+            duration = 500,
+        },
+    })
+    ssleep(.5)
+    tap({ scale(894), scale(864) })
+    ssleep(.3)
+end
+
+-- 退出重进
+zl.重置大地图 = function()
+    findTap("战略返回")
+    ssleep(.2)
+    wait(function()
+        tap({ scale(1708), scale(900) }) --采用固定的坐标，一直点击直到出现 '战略返回'
+        ssleep(.2)
+        if findOne("战略返回") then return true end
+    end, 5)
+    ssleep(.1)
+end
+
+zl.创建大地图二维数组 = function(nrows, ncols, initialValue)
+    local matrix = {}
+    for i = 1, nrows do
+        matrix[i] = {}
+        for j = 1, ncols do
+            matrix[i][j] = initialValue or 0 -- 使用默认值0或者指定的初始值
+        end
+    end
+    return matrix
+end
+
+zl.find_best_path = function(map, score_table)
+    local rows = #map
+    local cols = #map[1]
+
+    -- 初始化dp和prev表
+    local dp = {}
+    local prev = {}
+    for i = 1, rows do
+        dp[i] = {}
+        prev[i] = {}
+        for j = 1, cols do
+            dp[i][j] = -math.huge -- 负无穷大表示不可达
+            prev[i][j] = nil
+        end
+    end
+
+    -- 处理第一列
+    for i = 1, rows do
+        if map[i][1] ~= 0 then
+            local node = map[i][1]
+            local score_val = score_table[node.NodeType]
+            if score_val then
+                dp[i][1] = score_val
+            else
+                -- 如果score_table中未定义NodeType，使用0分
+                dp[i][1] = 0
+            end
+        end
+    end
+
+    -- 处理第2列到最后一列
+    for j = 2, cols do
+        for i = 1, rows do
+            if map[i][j] ~= 0 then
+                local current_node = map[i][j]
+                local current_score = score_table[current_node.NodeType] or 0
+
+                -- 检查前一列的所有节点
+                for k = 1, rows do
+                    if map[k][j - 1] ~= 0 then
+                        local prev_node = map[k][j - 1]
+                        local nextNodes = prev_node.NextNode
+                        -- 检查NextNode中是否包含当前节点坐标[i, j]
+                        for _, coord in ipairs(nextNodes) do
+                            if coord[1] == i and coord[2] == j then
+                                local total_score = dp[k][j - 1] + current_score
+                                if total_score > dp[i][j] then
+                                    dp[i][j] = total_score
+                                    prev[i][j] = k -- 记录前驱节点的行号
+                                end
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    -- 在最后一列找到最大分数和对应的行号
+    local max_score = -math.huge
+    local best_row = nil
+    for i = 1, rows do
+        if dp[i][cols] > max_score then
+            max_score = dp[i][cols]
+            best_row = i
+        end
+    end
+
+    if best_row == nil then
+        return nil, nil -- 没有路径
+    end
+
+    -- 回溯路径
+    local path = {}
+    local j = cols
+    local i = best_row
+    while j >= 1 do
+        table.insert(path, 1, { i, j }) -- 在头部插入，保持顺序从第一列到最后一列
+        if j == 1 then
+            break
+        end
+        i = prev[i][j]
+        j = j - 1
+    end
+
+    return path, max_score
+end
+
 --肉鸽挑选节点，改关卡类型和坐标位置，可以适应其他肉鸽
 zl.selection_node = function(select_number, rogueType)
     local rogueType = rogueType or '萨卡兹'
@@ -530,6 +631,10 @@ zl.selection_node = function(select_number, rogueType)
     else
         return -1, -1
     end
+end
+
+zl.快捷编队() = function()
+
 end
 
 --不期而遇事件处理
@@ -768,7 +873,6 @@ zl_repos_path = function(放弃本次探索)
         if findOne("战略返回") then return true end
     end, 5)
 end
-
 
 zl_swip = function(left, swip_dis, nodelay)
     --活动商店滑动,滑动三个商品的距离
