@@ -35,7 +35,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "08.31 19:50"
+release_date = "09.03 18:34"
 update_announcement = '最近更新：争锋频道等'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -52,7 +52,7 @@ max_log_time = 15
 max_log_count = 1000
 console.clearLog()
 
-ark_api_base = "https://arkapi.enlysure.com:33033"
+ark_api_base = "https://arkapi.enlysure.com"
 update_source = 'http://ark.aegirtech.com:8080'
 new_script_path = getWorkPath() .. '/newscript.lr'
 skill_path = getWorkPath() .. '/skill.zip'
