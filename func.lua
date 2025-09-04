@@ -105,6 +105,11 @@ install_game = function(url)
     local downloadpath = "/storage/emulated/0/" .. package .. '/apk/arknights.apk'
     local log_file = "/storage/emulated/0/" .. package .. '/apk/curl.log'
     delfile(downloadpath)
+    mkdir("/storage/emulated/0/" .. package .. '/apk/')
+    if not fileExist(shpath) then
+        log("curl脚本不存在，下载任务无法创建")
+        return
+    end
     local shcommand =
         [[sh -c 'setsid nohup /data/local/tmp/smart_curl.sh "]] ..
         url .. [[" "]] .. downloadpath .. [[" ]] .. curlpath .. ">/dev/null 2>&1 &'"
@@ -112,8 +117,16 @@ install_game = function(url)
     exec(shcommand)
     ssleep(2)
     log(1952)
+    if not fileExist(downloadpath) then
+        log("没有检测到下载文件，下载任务创建失败")
+        return
+    end
     while true do
         log(1954)
+        if not fileExist(log_file) then
+            log("创建下载任务失败")
+            return
+        end
         local file = io.open(log_file, "r")
         local log_file = file:read("*a")
         file:close()
