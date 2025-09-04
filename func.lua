@@ -1248,6 +1248,7 @@ check_server_is_close = function()
         console.println(3, "明日方舟服务器处于关闭状态，需要休眠至下午4点启动，" .. str(sleep_time))
         console.show()
         local last_check_update_time = 0
+        cloud.stopHeartBeat()
         while true do
             if os.time() >= sleep_time then break end
             ssleep(5)
@@ -1260,6 +1261,7 @@ check_server_is_close = function()
             end
         end
         console.dismiss()
+        cloud.startHeartBeat()
         return
     end
     local current_hour = tonumber(os.date("%H"))
