@@ -154,7 +154,6 @@ install_game = function(url)
     exec("su root rm -rf " .. downloadpath)
     log("安装完成", downloadpath)
     console.dismiss()
-    exit()
 end
 
 --用懒人自带的下载并安装游戏
