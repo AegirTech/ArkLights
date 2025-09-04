@@ -5873,34 +5873,38 @@ path.活动 = function(x)
     end
 
     --car_check() --有些大型活动会自带一些任务
-    if not car_checked and not copy_homework then
-        相谈室活动()
-        car_checked = true
-        if findOne("相谈室新手教程回合暗") then
-            if not wait(function()
-                    tap("相谈室选项1")
-                    ssleep(0.1)
-                    tap("相谈室使用")
-                    ssleep(0.1)
-                    findTap("相谈室下一轮")
-                    ssleep(0.1)
-                    tap("相谈室结束确认选择")
-                    if findAny({ "相谈室开始交谈", "相谈室开始营业" }) then return true end
-                end, 40) then
-                return
-            end
-        end
-        if not wait(function()
-                if findOne("活动导航0") then return true end
-                back()
-            end, 10) then
-            log("活动导航0未找到")
-            return
-        end
-        path.跳转("首页")
-        path.活动页面寻找(1)
-    end
-    -- path.烟花委员会()
+    -- 25年夏活 相谈室
+    -- if not car_checked and not copy_homework then
+    --     相谈室活动()
+    --     car_checked = true
+    --     if findOne("相谈室新手教程回合暗") then
+    --         if not wait(function()
+    --                 tap("相谈室选项1")
+    --                 ssleep(0.1)
+    --                 tap("相谈室使用")
+    --                 ssleep(0.1)
+    --                 findTap("相谈室下一轮")
+    --                 ssleep(0.1)
+    --                 tap("相谈室结束确认选择")
+    --                 if findAny({ "相谈室开始交谈", "相谈室开始营业" }) then return true end
+    --             end, 40) then
+    --             return
+    --         end
+    --     end
+    --     if not wait(function()
+    --             if findOne("活动导航0") then return true end
+    --             back()
+    --         end, 10) then
+    --         log("活动导航0未找到")
+    --         return
+    --     end
+    --     path.跳转("首页")
+    --     path.活动页面寻找(1)
+    -- end
+
+    -- ave联动
+    联动活动邮件领取()
+
     log("skip_guide", skip_guide)
     if not skip_guide then
         if not findOne("活动导航0") then return end
@@ -5947,7 +5951,8 @@ path.活动 = function(x)
         ssleep(.5)
     end
 
-    swip(x)
+    -- swip(x)
+    swipnew(x)
     ssleep(.5)
     --exit() --活动手动取点时取消注释
     if x:includes({ "ST-", "TR-", "-P-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
@@ -11073,5 +11078,62 @@ end
             return
         end
         return true
+    end
+end
+
+
+联动活动邮件领取 = function()
+
+end
+
+
+-- 这次联动用的 左下角不能点到
+swipenew = function(x)
+    -- 作战中第一次右滑容易错位，先做一次
+    if first_time_swipe then
+        first_time_swipe = false
+        -- swip("9-2")
+    end
+
+    -- tap({scale(300), scale(150)})
+    log("swipenew", x)
+    if x == 'right' then
+        -- 15章滑动修复
+        gesture({
+            {
+                point = { { scale(370), scale(573) }, { 1000000, scale(573) } },
+                start = 0,
+                duration = 250,
+            },
+        })
+        sleep(150 + 50)
+    end
+end
+
+
+swipnew = function(dis)
+    if type(dis) == "string" then dis = distance[dis] end
+    if type(dis) ~= "table" then dis = { dis } end
+    if not dis then return end
+
+    -- 懒人单次手势不能添加过多定时点，理想是在插入finger时处理，偷懒直接手动切分下距离
+    -- 只处理作战关卡导航中的情况
+    log(700)
+    log(dis)
+    local max_dis_one_gesture = 5000
+    if #dis == 2 and math.abs(dis[1]) == swip_right_max and dis[2] <
+        -max_dis_one_gesture then
+        table.insert(dis, dis[2] + max_dis_one_gesture)
+        dis[2] = -max_dis_one_gesture
+    end
+    log(701)
+    log(dis)
+    for i, d in pairs(dis) do
+        if i ~= 1 then ssleep(0.1) end
+        if math.abs(d) == swip_right_max then
+            swipenew("right")
+        else
+            swipu(d)
+        end
     end
 end

@@ -35,7 +35,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "09.04 17:34"
+release_date = "09.04 18:14"
 update_announcement = '最近更新：争锋频道等'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -130,7 +130,8 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     sleep(1000)
-
+    -- swipnew("HD-7")
+    -- exit()
     -- --大地图数据
     -- 横向间隔 = scale(675)
     -- 纵向间隔 = scale(91)
