@@ -1716,45 +1716,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
                 return
             end
         end,
-        -- 基建全白判断 = function()
-        --     log('基建全白判断')
-        --     if not 基建白屏卡住时间 then
-        --         基建白屏卡住时间 = time()
-        --         log(基建白屏卡住时间)
-        --     end
-        --     if time() - 基建白屏卡住时间 > 15 * 1000 then
-        --         log('15s timeout')
-        --         if findOne('启动卡黑屏界面') then
-        --             restartapp(appid)
-        --             基建白屏卡住时间 = nil
-        --         end
-        --     else
-        --         log(time() - 基建白屏卡住时间)
-        --     end
-        --     ssleep(.1)
-        -- end,
-        -- 基建全黑判断 = function()
-        --     log('基建全黑')
-        --     if not 基建黑屏卡住时间 then
-        --         基建黑屏卡住时间 = time()
-        --         log(基建黑屏卡住时间)
-        --     end
-        --     if time() - 基建黑屏卡住时间 > 15 * 1000 then
-        --         log('15s timeout')
-        --         if findOne('启动卡黑屏界面') then
-        --             restartapp(appid)
-        --             基建黑屏卡住时间 = nil
-        --         end
-        --     else
-        --         log(time() - 基建黑屏卡住时间)
-        --     end
-        --     ssleep(.1)
-        -- end,
     })
-    -- if x ~= "基建" then
-    --     p["基建全白判断"] = nil
-    --     p["基建全黑判断"] = nil
-    -- end
     if x == prev_jump and x ~= "首页" or disable_quick_jump then p.主页 = nil end
     p[target] = function()
         if prev_jump == "基建" and x == "基建" and not leaving_jump then
@@ -1784,6 +1746,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
     -- 1分钟跳转失败
     log(230, target, x)
     auto(p, path.fallback, 0, default_auto_timeout_second, true)
+    log(231)
 
     -- post processing especially for 基建
     if x == "基建" and not disable_postprocess then zoom() end
@@ -1799,6 +1762,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
 
     -- disable repeat fight after any jump complete
     repeat_fight_mode = false
+    log(233)
 end
 
 start_time = parse_time("202101010400")
@@ -3964,9 +3928,8 @@ end
 
 path.任务收集 = function()
     path.跳转("任务")
+    log(9012)
     appear({ "任务未选中列表2", "任务有列表2", "任务无列表2" })
-
-
     for _ = 1, #point.任务有列表 do
         local p = appear(point.任务有列表, 0.5)
         if not p then break end
