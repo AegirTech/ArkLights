@@ -1706,7 +1706,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     end
 
     --检查作战关卡名字
-    if not zl.fight_name_ocr() then return end
+    if not zl.fight_name_ocr("萨卡兹") then return end
     toast(now_fight_name)
     ssleep(1)
     if not wait(function()
@@ -1900,7 +1900,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     if maxIndex <= 3 then
         --进入战斗
         --检测作战关卡名字
-        zl.fight_name_ocr()
+        zl.fight_name_ocr("萨卡兹")
 
         log("进入战斗")
         if not wait(function()
