@@ -11083,7 +11083,13 @@ end
 
 
 联动活动邮件领取 = function()
-
+    if findOne("新的来信") then
+        tap("新的来信")
+        wait(function()
+            tap("信件领取")
+            if appear("新的来信右上角酣眠", 0.5) then return true end
+        end, 5)
+    end
 end
 
 
