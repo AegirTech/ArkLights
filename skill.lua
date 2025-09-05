@@ -55,7 +55,7 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
         --log("icon1", icon1, v[1], v[2])
         local name = "干员名未进行识别"
         if dev_mode or (not not_use_ocr and not mood_only and
-                table.findv({ "制造站", "发电站", "宿舍" }, stationType)) then
+                table.findv({ "制造站", "发电站", "宿舍", "控制中枢" }, stationType)) then
             local status, charName = pcall(ocro, {
                 v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
             })
@@ -306,7 +306,10 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 base = base + 0.3 + 0.04                  -- 近似两种产物
             elseif icon == 'bskill_tra_spd&meet1' then    --伺夜
                 base = base + 0.4                         -- 近似满级会客厅
-            elseif icon == 'bskill_tra_share3' then       --吉星2
+                if isCharExsit["八幡海铃"] then
+                    base = base + 0.05
+                end
+            elseif icon == 'bskill_tra_share3' then --吉星2
                 base = base + 0.2 * (level - 1)
             elseif icon == 'bskill_tra_spd&cost' then
                 base = base + 0.3
@@ -455,10 +458,16 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 storage = storage + 2
                 base = base + 0.65
             end
+            if isCharExsit["八幡海铃"] then
+                base = base + 0.05
+            end
         elseif all['bskill_tra_lappland2'] then
             if texas then
                 storage = storage + 4
                 base = base + 0.65
+            end
+            if isCharExsit["八幡海铃"] then
+                base = base + 0.05
             end
         end
 
@@ -1171,6 +1180,8 @@ initPngdata = function()
             pngdata = meetingPngdata
         elseif v:startsWith("bskill_ctrl") then
             pngdata = controlPngdata
+        elseif v:startsWith("bskill_token_prod_spd3") then
+            pngdata = controlPngdata
         elseif v:startsWith("bskill_hire") then
             pngdata = officePngdata
         elseif v:startsWith("bskill_pow") then
@@ -1545,7 +1556,7 @@ meetingStationOperatorBest = function(operator)
             table.insert(best, 1, o)
         elseif o[1] == "bskill_meet_spdnotowned2" or o[2] ==
             "bskill_meet_spdnotowned2" then
-            -- 晓歌有人评测过吗
+            -- 晓歌
             table.insert(best, o)
         elseif o[1] == "bskill_meet_exchange" or o[2] == "bskill_meet_exchange" then -- 跃跃
             table.insert(best, 1, o)
@@ -1643,6 +1654,24 @@ controlStationOperatorBest = function(operator)
     local mood_reduce = false -- 其他设施心情减免
     local office_acc = false  -- 办公室加速
 
+    if #best < 2 and not not_use_ocr then
+        for _, o in pairs(operator) do
+            if table.findv({ "诗怀雅" }, o[6]) then
+                table.insert(best, o)
+                trading_acc = true
+            elseif table.includes({ o[1], o[2] }, "bskill_token_prod_spd3_lungmenguard") then
+                table.insert(best, o)
+                manu_acc = true
+            end
+        end
+        if not trading_acc or not manu_acc then
+            --重置
+            best = {}
+            manu_acc = false
+            trading_acc = false
+        end
+    end
+
     if #best <= 2 and not manu_acc and not trading_acc then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, "bskill_ctrl_token_p_spd2") and
@@ -1672,19 +1701,19 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best <= 3 then
+    if #best <= 3 and not trading_acc then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_spd') then -- 阿米娅/诗怀雅
-                if not trading_acc then
-                    trading_acc = true
-                    table.insert(best, o)
-                    break
-                end
+            -- 阿米娅/诗怀雅
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_spd') then
+                trading_acc = true
+                table.insert(best, o)
+                break
             end
         end
     end
 
-    if #best <= 4 and not not_use_ocr then                            --不使用ocr时无法区分松鼠团和标准化
+    --不使用ocr时无法区分松鼠团和标准化
+    if #best <= 4 and not not_use_ocr then
         for _, o in pairs(operator) do
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_psk') then -- 焰尾
                 table.insert(best, o)
@@ -1696,17 +1725,19 @@ controlStationOperatorBest = function(operator)
         end
     end
 
+    -- 夕
     if #best < 5 and isCharExsit["絮雨"] then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then --夕
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then
                 table.insert(best, o)
             end
         end
     end
 
+    -- 令
     if #best < 5 and isCharExsit["桑葚"] then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1&bd2') then --令
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1&bd2') then
                 table.insert(best, o)
                 isCharExsit["令"] = true
                 break
@@ -1714,10 +1745,13 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best < 5 and not not_use_ocr and use_abyssal_hunter and -- 不使用ocr时无法选择深海
-        not (isCharExsit["承曦格雷伊"] and isCharExsit["焰尾"] and isCharExsit["薇薇安娜"]) then -- 这几个全齐的时候位置不够
+    -- 不使用ocr时无法选择深海
+    if #best < 5 and not not_use_ocr and use_abyssal_hunter and
+        -- 这几个全齐的时候位置不够
+        not (isCharExsit["承曦格雷伊"] and isCharExsit["焰尾"] and isCharExsit["薇薇安娜"]) then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') and o[3] > 22 then -- 精二歌蕾蒂娅,高心情才使用
+            -- 精二歌蕾蒂娅,高心情才使用
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') and o[3] > 22 then
                 table.insert(best, o)
                 isCharExsit["歌蕾蒂娅"] = true
                 break
@@ -1725,31 +1759,10 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best < 5 and isCharExsit["桑葚"] then
-        log("寻找重岳")
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, "bskill_ctrl_cost_bd3") then --重岳
-                table.insert(best, o)
-                mood_reduce = true
-                isCharExsit["重岳"] = true
-                break
-            end
-        end
-    end
-
-    if #best < 5 and isCharExsit["重岳"] then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then --夕
-                table.insert(best, o)
-                isCharExsit["夕"] = true
-                break
-            end
-        end
-    end
-
+    -- 人间烟火和感知信息都要补琴柳
     if #best < 5 and (isCharExsit["絮雨"] or isCharExsit["桑葚"]) then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_h_spd') and (isCharExsit["絮雨"] or isCharExsit["桑葚"]) then --琴柳
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_h_spd') and (isCharExsit["絮雨"] or isCharExsit["桑葚"]) then
                 if not office_acc then
                     office_acc = true
                     table.insert(best, o)
@@ -1759,9 +1772,49 @@ controlStationOperatorBest = function(operator)
         end
     end
 
+    if #best < 5 and not office_acc then
+        for _, o in pairs(operator) do
+            --八幡海铃0
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_hire_tmoris') then
+                office_acc = true
+                table.insert(best, o)
+                --八幡海铃2,影响叙拉古干员效率计算
+                if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_limit&spd_tmoris') then
+                    isCharExsit["八幡海铃"] = true
+                end
+                break
+            end
+        end
+    end
+
+    --重岳
+    if #best < 5 and isCharExsit["桑葚"] then
+        log("寻找重岳")
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, "bskill_ctrl_cost_bd3") then
+                table.insert(best, o)
+                mood_reduce = true
+                isCharExsit["重岳"] = true
+                break
+            end
+        end
+    end
+
+    --人间烟火组有重岳再考虑夕
+    if #best < 5 and isCharExsit["重岳"] then
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then
+                table.insert(best, o)
+                isCharExsit["夕"] = true
+                break
+            end
+        end
+    end
+
+    --凯尔希
     if #best < 5 and not manu_acc then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') then --凯尔希
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') then
                 manu_acc = true
                 table.insert(best, o)
                 break
@@ -1769,9 +1822,48 @@ controlStationOperatorBest = function(operator)
         end
     end
 
+    --丰川祥子1,2技能一样,可以和制造加速类技能叠加
+    if #best < 5 then
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_p_oblvns') then
+                table.insert(best, o)
+                isCharExsit["丰川祥子"] = true
+                break
+            end
+        end
+    end
+    -- 若叶睦
+    if #best < 5 and isCharExsit["丰川祥子"] then
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_trade_mortis') then
+                table.insert(best, o)
+                break
+            end
+        end
+    end
+    -- 三角初华
+    if #best < 5 and isCharExsit["丰川祥子"] then
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_dorm_uika1') then
+                table.insert(best, o)
+                break
+            end
+        end
+    end
+    -- 祐天寺若麦
+    if #best < 5 and isCharExsit["丰川祥子"] then
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_meet_amoris1') then
+                table.insert(best, o)
+                break
+            end
+        end
+    end
+
+    -- 布丁
     if #best < 5 and not manu_acc and (isCharExsit["作业平台"] and isCharExsit["作业平台"] > 1) then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_token_p_spd') then --布丁
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_token_p_spd') then
                 manu_acc = true
                 table.insert(best, o)
                 break
@@ -1779,9 +1871,10 @@ controlStationOperatorBest = function(operator)
         end
     end
 
+    --灵知
     if #best < 5 and not (isCharExsit["絮雨"] or isCharExsit["桑葚"]) then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_limit&spd') then --灵知
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_limit&spd') then
                 table.insert(best, o)
                 isCharExsit["灵知"] = true
                 break
@@ -1819,30 +1912,29 @@ controlStationOperatorBest = function(operator)
             end
         end
     end
-
+    --涤火杰西卡2
     if #best < 5 and not not_use_ocr then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_bd_spd') then --涤火杰西卡2
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_bd_spd') then
                 table.insert(best, o)
                 isCharExsit["涤火杰西卡"] = true
                 break
             end
         end
     end
-
-    if #best < 5 and not office_acc and isCharExsit["维什戴尔"] then
+    -- 魔王
+    if #best < 5 and isCharExsit["维什戴尔"] then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_c_spd1') then -- 魔王
-                office_acc = true
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_c_spd1') then
                 table.insert(best, o)
                 break
             end
         end
     end
-
+    --艾拉
     if #best < 5 and not isCharExsit["歌蕾蒂娅"] then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_ela') then --艾拉
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_ela') then
                 table.insert(best, o)
                 break
             end
@@ -1852,8 +1944,10 @@ controlStationOperatorBest = function(operator)
     if #best < 5 then
         for _, o in pairs(operator) do
             if not table.includes(best, o) and isCharExsit["玛恩纳"]
-                and table.includes({ o[1], o[2] }, 'bskill_ctrl_cost')      -- 笑脸
-                and not table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') --排除m3,不要跟凯尔希一起上班
+                -- 笑脸
+                and table.includes({ o[1], o[2] }, 'bskill_ctrl_cost')
+                --排除m3,不要跟凯尔希一起上班
+                and not table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd')
             then
                 table.insert(best, o)
             end
