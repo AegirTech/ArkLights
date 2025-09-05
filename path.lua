@@ -11099,7 +11099,7 @@ end
             ssleep(0.1)
             back()
             if appear("活动导航0", 0.5) then return true end
-        end, 5)
+        end, 30)
     end
 end
 
