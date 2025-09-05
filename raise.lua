@@ -1112,7 +1112,7 @@ raise.buy_32001 = function(numb)
     end
     -- 点击购买
     if not wait(function()
-            if findOne("购买物品面板", 3) then
+            if findOne("购买物品面板") then
                 for i = 1, numb - 1 do
                     tap("交易所商品加")
                     ssleep(0.5)
@@ -1125,7 +1125,7 @@ raise.buy_32001 = function(numb)
             if not findOne("购买物品面板") then return true end
         end, 3) then
     end
-    if findOne("购买物品面板", 3) then
+    if findOne("购买物品面板") then
         log("胶水购买失败，大抵是没钱了吧~")
         return true
     end

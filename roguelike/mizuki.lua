@@ -2090,7 +2090,7 @@ path.水月与深蓝之树前瞻投资 = function()
         log('水月_生态谱系')
         wait(function()
             tap("战略确认")
-            if findOne("水月_常规行动", 1) then return true end
+            if findOne("水月_常规行动") then return true end
         end, 8)
 
         return

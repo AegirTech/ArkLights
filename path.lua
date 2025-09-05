@@ -4229,7 +4229,7 @@ path.采购中心商店 = function()
         end
         -- 点击购买
         if not wait(function()
-                if findOne("购买物品面板", 3) then
+                if findOne("购买物品面板") then
                     tap("交易所商品最多")
                     ssleep(0.3)
                     tap("采购商店支付")
@@ -4241,17 +4241,23 @@ path.采购中心商店 = function()
                 if not findOne("购买物品面板") then return true end
             end, 4) then
         end
-
+        ssleep(0.5)
         -- 购买后判断
-        if findOne("购买物品面板", 3) then
+        if findOne("购买物品面板") then
             log("购买失败，大抵是没钱了吧~")
             return true
         end
         disappear("正在提交反馈至神经", network_timeout)
-        if appear("获得物资", 3) then
-            --加点间隔,有时候点太快会点不到卡死
-            ssleep(.5)
+        if not wait(function()
+                if findOne("获得物资", .9) then
+                    ssleep(0.2)
+                    tap("获得物资")
+                    ssleep(0.2)
+                    return true
+                end
+            end, 7) then
             tap("获得物资")
+            ssleep(0.2)
         end
         ssleep(.2)
     end
@@ -4345,7 +4351,7 @@ path.采购中心商店 = function()
 
             -- 点击购买
             if not wait(function()
-                    if findOne("购买物品面板", 3) then
+                    if findOne("购买物品面板") then
                         tap("交易所商品最多")
                         ssleep(0.5)
                         tap("采购商店支付")
@@ -4358,7 +4364,7 @@ path.采购中心商店 = function()
             end
             disappear("正在提交反馈至神经", network_timeout)
             -- 购买后判断
-            if findOne("购买物品面板", 3) then
+            if findOne("购买物品面板") then
                 log("购买失败，大抵是没钱了吧~")
                 return true
             end
@@ -4427,7 +4433,7 @@ path.采购中心商店 = function()
             end
             -- 点击购买
             if not wait(function()
-                    if findOne("购买物品面板", 3) then
+                    if findOne("购买物品面板") then
                         tap("交易所商品最多")
                         ssleep(0.5)
                         tap("采购商店支付")
@@ -4438,7 +4444,7 @@ path.采购中心商店 = function()
                     if not findOne("购买物品面板") then return true end
                 end, 3) then
             end
-            if findOne("购买物品面板", 3) then
+            if findOne("购买物品面板") then
                 log("购买失败，大抵是没钱了吧~")
                 return true
             end
