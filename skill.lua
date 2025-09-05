@@ -1787,6 +1787,17 @@ controlStationOperatorBest = function(operator)
         end
     end
 
+    --凯尔希
+    if #best < 5 and not manu_acc then
+        for _, o in pairs(operator) do
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') then
+                manu_acc = true
+                table.insert(best, o)
+                break
+            end
+        end
+    end
+
     --重岳
     if #best < 5 and isCharExsit["桑葚"] then
         log("寻找重岳")
@@ -1806,17 +1817,6 @@ controlStationOperatorBest = function(operator)
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then
                 table.insert(best, o)
                 isCharExsit["夕"] = true
-                break
-            end
-        end
-    end
-
-    --凯尔希
-    if #best < 5 and not manu_acc then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') then
-                manu_acc = true
-                table.insert(best, o)
                 break
             end
         end
