@@ -4243,8 +4243,8 @@ path.采购中心商店 = function()
         end
         ssleep(0.5)
         -- 购买后判断
-        if findOne("购买物品面板") then
-            log("购买失败，大抵是没钱了吧~")
+        if findOne("购买物品面板", .97) then
+            log("购买失败，大概是没钱了吧~")
             return true
         end
         disappear("正在提交反馈至神经", network_timeout)
