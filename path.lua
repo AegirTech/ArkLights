@@ -5906,6 +5906,7 @@ path.活动 = function(x)
     联动活动邮件领取()
 
     log("skip_guide", skip_guide)
+    appear("活动导航0", 3)
     if not skip_guide then
         if not findOne("活动导航0") then return end
         log("已进入活动页面,根据" .. x .. "选择入口")
@@ -11083,11 +11084,15 @@ end
 
 
 联动活动邮件领取 = function()
-    if findOne("新的来信") then
-        tap("新的来信")
+    log(9925)
+    if appear({ "新的来信列表1", "新的来信列表2" }, 1) then
+        local x = findAny({ "新的来信列表1", "新的来信列表2" })
+        tap(x)
         wait(function()
             tap("信件领取")
-            if appear("新的来信右上角酣眠", 0.5) then return true end
+            ssleep(0.1)
+            back()
+            if appear("活动导航0", 0.5) then return true end
         end, 5)
     end
 end
