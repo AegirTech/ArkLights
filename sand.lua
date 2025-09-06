@@ -897,6 +897,7 @@ Tales_within_the_sand.下一天 = function(check_point)
     Tales_within_the_sand.掉线状态判断()
 
     if not appear("生息底栏烹饪按钮", 5) then
+        toast("生息底栏烹饪按钮未找到")
         return
     end
     log(findOne("生息演算消磨时间"))
@@ -904,6 +905,7 @@ Tales_within_the_sand.下一天 = function(check_point)
         tap("生息演算右上角生息日")
         ssleep(.2)
     end
+    log(7402)
     开启今日 = false
     if not wait(function()
             if findOne("生息演算消磨时间") or findOne("生息演算消磨时间2") then tap("生息演算消磨时间") end

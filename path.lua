@@ -1069,10 +1069,10 @@ path.fallback = {
         -- end, 10) then stop(217) end
     end,
     限时幸运签 = function()
-        if findOne("ave联动活动领取") then
-            tap("ave联动活动领取")
-            return path.fallback.签到返回()
-        end
+        -- if findOne("ave联动活动领取") then
+        --     tap("ave联动活动领取")
+        --     return path.fallback.签到返回()
+        -- end
         if findOne("新春限时签到2025") then
             return path.fallback.新春限时签到2025()
         end
@@ -11090,12 +11090,18 @@ end
     if appear({ "新的来信列表1", "新的来信列表2" }, 1) then
         local x = findAny({ "新的来信列表1", "新的来信列表2" })
         tap(x)
+        log(9926)
         wait(function()
             tap("信件领取")
             ssleep(0.1)
             back()
             if appear("活动导航0", 0.5) then return true end
         end, 30)
+        log(9928)
+        if not appear("活动导航0", 1) then
+            path.跳转("首页")
+        end
+        log(9929)
     end
 end
 

@@ -2340,7 +2340,7 @@ check_hot_update = function()
         update_source .. "/checkUpdate?lr_md5=" .. tostring(file_md5) ..
         "&skill_md5=" .. tostring(skill_md5) .. "&apk_ver=" .. tostring(apk_v), 5)
     if code ~= 200 then
-        toast("无法连接到热更新服务器，更换备用更新源")
+        toast("无法连接到审判庭热更新服务器，即将更换")
         ssleep(1)
         return false
     end
@@ -2424,7 +2424,7 @@ check_hot_update_backup = function()
 
     local res, code = httpGet(ark_api_base .. "/ark/script/update", 5)
     if code ~= 200 then
-        toast("无法连接到热更新服务器2")
+        toast("无法连接到主热更新服务器，即将切换")
         return false
     end
     local status, data = pcall(JsonDecode, res)
@@ -2455,7 +2455,17 @@ hotUpdate = function()
     -- else
     --     update_info = check_hot_update_backup()
     -- end
-    update_info = check_hot_update_backup()
+    for i = 1, 3 do
+        if i == 1 then
+            update_info = check_hot_update_backup()
+        elseif i == 2 then
+            ark_api_base = "https://enlysure.avemujica.org"
+            update_info = check_hot_update_backup()
+        elseif i == 3 then
+            update_info = check_hot_update()
+        end
+        if update_info then break end
+    end
 
     if not update_info then
         log("热更新检查失败")
