@@ -844,6 +844,14 @@ path.fallback = {
         wait(function() tap("月饼右") end, 2)
         wait(function() tap("月饼确认") end, 2)
     end,
+    庆祝完结页面 = function()
+        wait(function()
+            tap("庆祝完结领取确认")
+            if not appear("面板") then tap("开包skip") end
+            findTap("右上角关闭白色")
+            if appear("面板") then return true end
+        end, 15)
+    end,
     -- 主题曲已开放 = function()
     --   tap("主题曲已开放")
     --   ssleep(1)
