@@ -1966,7 +1966,6 @@ path.宿舍清空 = function()
 end
 
 path.宿舍换班 = function()
-    if disable_dorm_shift then return end
     local f
     local fiammetta_used = false
     f = function(i)
@@ -2157,7 +2156,7 @@ path.基建信息获取new = function()
     manufacturingStation = {}
     manufacturingStationLevel = {}
 
-    isCharExsit = {}
+    isCharExsit = {} -- 跨设施组合验证
     path.跳转("基建")
     if not wait(function()
             if findOne("基建总览工作区") then return true end
@@ -2294,7 +2293,7 @@ path.基建信息获取 = function(retry)
     manufacturingStation = {}
     manufacturingStationLevel = {}
 
-    isCharExsit = {}
+    isCharExsit = {} -- 跨设施组合验证
 
     path.跳转("基建")
     -- 再执行一次
@@ -2423,8 +2422,6 @@ end
 
 ---@param trading any 是否是贸易站
 path.制造换班 = function(trading)
-    if disable_manu_shift and not trading then return end
-
     -- if not debug then return end
     local station_color = trading and "#33CCFF" or "#FFCC00"
     local type
@@ -2657,13 +2654,10 @@ path.制造换班 = function(trading)
 end
 
 path.贸易换班 = function()
-    if disable_trading_shift then return end
     return path.制造换班(true)
 end
 
 path.总览换班 = function()
-    if disable_overview_shift then return end
-
     path.跳转("基建")
     if not wait(function()
             if findOne("基建总览工作区") then return true end
@@ -3052,14 +3046,10 @@ path.基建换班 = function()
 end
 
 path.控制中枢换班 = function(force_change)
-    if disable_control_shift then return end
     return path.会客厅换班("控制中枢", force_change)
 end
 
 path.发电站换班 = function()
-    if disable_manu_shift and not trading then return end
-
-    -- if not debug then return end
     local station_color = "#CCFF66"
     local type
     local good
@@ -3180,7 +3170,6 @@ path.发电站换班 = function()
 end
 
 path.办公室换班 = function(stationType)
-    if disable_office_shift then return end
     --if 1 then return end
     stationType = stationType or "办公室"
     local p = stationType
@@ -3361,8 +3350,6 @@ end
 
 -- 2025基建更新之后改为在基建总览换班
 path.会客厅换班 = function(stationType, force_change)
-    if disable_meeting_shift and not stationType then return end
-
     stationType = stationType or "会客厅"
     log(2946, stationType)
 

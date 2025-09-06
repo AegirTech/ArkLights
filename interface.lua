@@ -995,32 +995,16 @@ show_debug_ui = function()
     addTextView(debug_layout_基建, "基建换班心情阈值")
     ui.addEditText(debug_layout_基建, "shift_min_mood", '12')
 
-    newRow(debug_layout_基建)
-    ui.addCheckBox(debug_layout_基建, "disable_dorm_shift", "基建换班禁用宿舍换班",
-        false)
-    newRow(debug_layout_基建)
-    ui.addCheckBox(debug_layout_基建, "disable_control_shift",
-        "基建换班禁用控制中枢换班", false)
-    newRow(debug_layout_基建)
-    ui.addCheckBox(debug_layout_基建, "disable_meeting_shift",
-        "基建换班禁用会客厅换班", false)
-    newRow(debug_layout_基建)
-    ui.addCheckBox(debug_layout_基建, "disable_office_shift",
-        "基建换班禁用办公室换班", false)
-    newRow(debug_layout_基建)
-    ui.addCheckBox(debug_layout_基建, "disable_manu_shift",
-        "基建换班禁用制造站换班", false)
+    -- ui.addCheckBox(debug_layout_基建, "disable_control_shift",
+    --     "基建换班禁用控制中枢换班", false)
+
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "manu_shift_short_circuit",
         "制造站单个干员平均效率大于", false)
     ui.addEditText(debug_layout_基建, "manu_shift_short_circuit_threshold", '0.38')
     addTextView(debug_layout_基建, "时跳过")
     newRow(debug_layout_基建)
-    ui.addCheckBox(debug_layout_基建, "disable_trading_shift",
-        "基建换班禁用贸易站换班", false)
-    newRow(debug_layout_基建)
-    ui.addCheckBox(debug_layout_基建, "disable_overview_shift",
-        "基建换班禁用总览换班", false)
+
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "only_change_assistant_at_Monday",
         "副手换人仅在周一执行", true)
@@ -1102,8 +1086,6 @@ show_debug_ui = function()
     --                "保活模式(需关root通知与“X正在运行”通知)",
     --                false)
 
-    -- newRow(layout)
-    -- ui.addCheckBox(layout, "disable_shift_mood", "高产换班忽略心情", false)
     newRow(debug_layout_调试)
     addButton(debug_layout_调试, nil, "清除缓存", "clear_cache()")
 
