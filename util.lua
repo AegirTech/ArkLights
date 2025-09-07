@@ -2418,7 +2418,7 @@ end
 
 
 check_hot_update_backup = function()
-    toast("备用更新...")
+    toast("正在获取更新数据...")
     local file_md5 = loadConfig("lr_md5", "null")
     local skill_md5 = loadConfig("skill_md5", "null")
 

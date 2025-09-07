@@ -11086,8 +11086,10 @@ end
 
 
 联动活动邮件领取 = function()
+    if car_checked then return end
     log(9925)
     if appear({ "新的来信列表1", "新的来信列表2" }, 1) then
+        car_checked = true
         local x = findAny({ "新的来信列表1", "新的来信列表2" })
         tap(x)
         log(9926)
