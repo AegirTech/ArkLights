@@ -1,6 +1,6 @@
 # 必读
 
-下载：[蓝奏云](https://asdqp.lanzout.com/iO2G033d4mhi) [Github Release](https://github.com/AegirTech/ArkLights/releases)
+下载：[蓝奏云](https://asdqp.lanzout.com/iHPX735p9mmh) [Github Release](https://github.com/AegirTech/ArkLights/releases)
 
 QQ问题反馈群：[891819123](https://qm.qq.com/q/6PfI7NWFC8)
 
@@ -363,4 +363,5 @@ pr1 => pr-b-1 pr-a-1 pr-c-1 pr-d-1 pr-b-1 ...
 #### 什么是限时活动
 
 限时签到、限时抽签、赠送寻访
+
 
