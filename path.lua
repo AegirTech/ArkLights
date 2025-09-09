@@ -5906,6 +5906,10 @@ path.活动 = function(x)
 
     -- ave联动
     联动活动邮件领取()
+    if not appear({ "活动导航0", "活动商店导航" }, 5) then
+        log("未找到活动导航")
+        return
+    end
 
     log("skip_guide", skip_guide)
     appear("活动导航0", 3)
@@ -11090,6 +11094,7 @@ end
     log(9925)
     if appear({ "新的来信列表1", "新的来信列表2" }, 1) then
         car_checked = true
+        fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
         local x = findAny({ "新的来信列表1", "新的来信列表2" })
         tap(x)
         log(9926)
@@ -11097,12 +11102,13 @@ end
             tap("信件领取")
             ssleep(0.1)
             back()
-            if appear("活动导航0", 0.5) then return true end
+            if appear({ "新的来信右上角清醒", "新的来信右上角酣眠" }, 1) then return true end
         end, 30)
         log(9928)
-        if not appear("活动导航0", 1) then
-            path.跳转("首页")
-        end
+        back()
+        back()
+        path.跳转("首页")
+        path.活动页面寻找()
         log(9929)
     end
 end
