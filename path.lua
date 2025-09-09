@@ -11160,7 +11160,76 @@ swipnew = function(dis)
         if math.abs(d) == swip_right_max then
             swipenew("right")
         else
-            swipu(d)
+            swipunew(d)
+        end
+    end
+end
+
+
+swipunew = function(dis)
+    log('swipu2', dis)
+    -- preprocess distance
+    if type(dis) == "string" then dis = distance[dis] end
+    if type(dis) ~= "table" then dis = { dis } end
+    if not dis then return end
+    log(705)
+    -- flatten to one depth
+    -- local max_once_dis = 1080
+    -- local freey = scale(150)
+    local freey = scale(150)              -- 避开14章右上角
+    local freex = scale(360 / 720 * 1080) -- 第12章左上角
+    local max_once_dis = screen.width - scale(300) - freex
+
+    for _, d in pairs(dis) do
+        local sign = d > 0 and 1 or -1
+        if math.abs(d) == swip_right_max then
+            swipe(sign > 0 and "right" or "left")
+        else
+            -- 只实现了右移
+            if sign > 0 then stop("swipu左移未实现") end
+            local finger = {
+                {
+                    point = { { freex, freey }, { freex, screen.height - 1 } },
+                    start = 0,
+                    duration = 0,
+                },
+            }
+            local start = 0
+            local duration = 300
+            local interval = 100
+            local end_delay = 150
+            local flipy = swipu_flipy or 0
+            local flipx = swipu_flipx or 0
+            d = math.abs(d)
+            while d > 0 do
+                if d > max_once_dis then
+                    table.insert(finger, {
+                        point = {
+                            { freex + max_once_dis, freey + flipx },
+                            { freex + max_once_dis, freey + flipy },
+                        },
+                        start = start,
+                        duration = duration,
+                    })
+                else
+                    table.insert(finger, {
+                        point = { { freex + d, freey }, { freex + d + flipx, freey + flipy } },
+                        start = start,
+                        duration = duration,
+                    })
+                end
+                d = d - max_once_dis
+                start = start + duration + interval
+                -- log(finger[#finger])
+            end
+            local last_finger = finger[#finger]
+            finger[1].duration = last_finger.start + last_finger.duration + end_delay
+            log("finger", finger)
+            gesture(finger)
+            if type(swipp_wait_time) == "string" and swipp_wait_time ~= "" then
+                sleep(tonumber(swipp_wait_time))
+            end
+            sleep(finger[1].duration + 50)
         end
     end
 end
