@@ -541,10 +541,12 @@ set_auto_run_state = function()
     if state then
         ui.setButton("auto_run_button", "启用脚本自动运行")
         saveConfig('auto_run', 'false')
+        auto_run = false
         toast("您需要退出脚本/或等待下次脚本启动才能生效")
     else
         ui.setButton("auto_run_button", "禁用脚本自动运行")
         saveConfig('auto_run', 'true')
+        auto_run = true
     end
 end
 
@@ -1897,7 +1899,6 @@ show_gesture_capture_ui = function()
 end
 
 showUI = function(last_layout)
-    local is_auto_start = loadConfig('auto_run', 'false') == 'true'
     if loadConfig("hideUIOnce", "false") ~= "false" then
         saveConfig("hideUIOnce", "false")
     else
@@ -1908,9 +1909,11 @@ showUI = function(last_layout)
         local start_ui_time = os.time()
         if not wait(function()
                 sleep(500)
+                local is_auto_start = loadConfig('auto_run', 'false') == 'true'
                 if is_auto_start and (os.time() - start_ui_time) > 10 then
-                    ui.saveProfile(getUIConfigPath(last_layout))
-                    ui.dismiss(last_layout)
+                    local cur_layout = loadConfig("last_layout", "main")
+                    ui.saveProfile(getUIConfigPath(cur_layout))
+                    ui.dismiss(cur_layout)
                     lock:remove(main_ui_lock)
                 end
                 return not lock:exist(main_ui_lock)

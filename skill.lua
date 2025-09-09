@@ -2101,6 +2101,7 @@ end
 
 powerStationOperatorBest = function(operator)
     -- 过滤心情小于阈值的干员
+    log(1925)
     local minAllowedMood = shift_min_mood
     if disable_shift_mood then minAllowedMood = -1 end
     operator = table.filter(operator,
@@ -2169,6 +2170,7 @@ powerStationOperatorBest = function(operator)
         end
         table.insert(best, { s, o })
     end
+    log(1927, best)
     table.sort(best, function(a, b) return a[1] > b[1] end)
     best = best[1][2]
     return { best }, best_score
