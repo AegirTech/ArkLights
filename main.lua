@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "09.12 06:28"
+release_date = "09.12 23:10"
 update_announcement = '最近更新: AVE联动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -127,48 +127,7 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     sleep(1000)
-    -- swipnew("HD-7")
-    -- exit()
-    -- --大地图数据
-    -- 横向间隔 = scale(675)
-    -- 纵向间隔 = scale(91)
-    -- 第1列横坐标 = scale(524)
-    -- 第1行纵坐标 = scale(191)
-    -- 节点类型 = {
-    --     作战 = 1,
-    --     ["%作战"] = 1,
-    --     x作战 = 1,
-    --     X作战 = 1,
-    --     紧急作战 = 2,
-    --     ["%紧急作战"] = 2,
-    --     x紧急作战 = 2,
-    --     X紧急作战 = 2,
-    --     险路恶敌 = 3,
-    --     安全屋 = 4,
-    --     诡意行商 = 5,
-    --     不期而遇 = 6,
-    --     失与得 = 7,
-    --     误入奇境 = 8,
-    --     指点迷津 = 9,
-    --     先行一步 = 10,
-    --     狭路相逢 = 11,
-    -- }
-    -- 节点评分 = {
-    --     [1] = 2, --作战
-    --     [2] = 2, -- 紧急作战
-    --     [3] = 2,
-    --     [4] = 1,
-    --     [5] = 5,
-    --     [6] = 1,
-    --     [7] = 0,
-    --     [8] = 15,
-    --     [9] = 10,
-    --     [10] = 2,
-    --     [11] = 1
-    -- }
-
-    -- local 作战名 = sui.作战名ocr校正(ocro("界园_作战检测范围"))
-    -- log(作战名)
+    -- log(findOne("开始突袭"))
 
     -- exit()
 end

@@ -4537,24 +4537,24 @@ same_page_fight = function(pre, cur)
     -- if get_fight_type(cur) == '活动' then return end
 
     if removeTrailingDigits(pre) == removeTrailingDigits(cur) then
-        log("same page fight", pre, cur)
+        log("是同一页的作战", pre, cur)
         return true
     end
 
     -- pattern before last - should be same
     -- PR-A-1 == PR-A-2, PR-A-1 != PR-A-2
     if pre:gsub("(.*)-.*$", "%1") == cur:gsub("(.*)-.*$", "%1") then
-        log("same page fight", pre, cur)
+        log("是同一页的作战", pre, cur)
         return true
     end
 
     -- number before last - should be same
     if pre:gsub(".*(%d+)-.*$", "%1") == cur:gsub(".*(%d+)-.*$", "%1") then
-        log("same page fight", pre, cur)
+        log("是同一页的作战", pre, cur)
         return true
     end
 
-    log("not same page fight", pre, cur)
+    log("不是同一页的作战", pre, cur)
 end
 
 path.轮次作战 = function()
@@ -4757,9 +4757,10 @@ path.开始游戏 = function(x, disable_ptrs_check)
     -- log(findOne("开始行动"))
     -- safeexit()
 
-    log(4552, copy_homework, homework[x])
+    log(4552, "抄作业模式", copy_homework, "作业代码", homework[x])
     if not appear("代理指挥开", .5) then
         if copy_homework and findOne("突袭模式") then
+            log("进入突袭难度")
             tap("突袭模式")
             appear("开始突袭", 3)
             ssleep(.5)
@@ -5906,7 +5907,7 @@ path.活动 = function(x)
 
     -- ave联动
     联动活动邮件领取()
-    if not appear({ "活动导航0", "活动商店导航" }, 5) then
+    if not skip_guide and not appear({ "活动导航0", "活动商店导航" }, 5) then
         log("未找到活动导航")
         return
     end
@@ -5954,6 +5955,7 @@ path.活动 = function(x)
             end
         end
     else
+        log("跳过返回主页导航")
         tap("取消开始行动")
         ssleep(.5)
     end
@@ -11091,6 +11093,7 @@ end
 
 联动活动邮件领取 = function()
     if car_checked then return end
+    if copy_homework then return end
     log(9925)
     if appear({ "新的来信列表1", "新的来信列表2" }, 1) then
         car_checked = true
