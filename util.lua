@@ -535,8 +535,10 @@ table.findv = function(t, f)
     for k, v in pairs(t) do
         if type(f) == "string" then
             if v == f then return true end
-        elseif f(v) then
-            return v
+        elseif type(f) == "function" then
+            if f(v) then
+                return v
+            end
         end
     end
 end
