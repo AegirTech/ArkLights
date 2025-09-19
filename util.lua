@@ -1077,7 +1077,7 @@ swipe = function(x)
         -- 15章滑动修复
         gesture({
             {
-                point = { { scale(370), scale(873) }, { 1000000, scale(873) } },
+                point = { { scale(370), scale(850) }, { 1000000, scale(850) } },
                 start = 0,
                 duration = 250,
             },
