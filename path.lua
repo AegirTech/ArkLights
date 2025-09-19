@@ -4870,25 +4870,28 @@ path.开始游戏 = function(x, disable_ptrs_check)
         if findOne("多倍代理按钮") and get_fight_type(x) ~= "剿灭" then
             log("多倍处理开始")
             wait(function()
-                if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 2) then return true end
                 tap("多倍代理按钮")
+                if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 1) then return true end
             end, 10)
+            log(4721)
             -- 出现面板后给一点时间等待展开
-            ssleep(.6)
+            ssleep(0.1)
             battle_times = 1
+            log(4722)
             if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
-                if findOne("多倍代理处于选择状态") then -- 首先清空到1倍状态再判断
-                    tap("多倍代理次数列表1")
-                    wait(function()
-                        if (not findOne("多倍代理次数面板")) and (not findOne("多倍代理次数面板2")) then return true end
-                    end, 4)
-                    wait(function()
-                        if not multiple_proxy_commander then return true end
-                        if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 2) then return true end
-                        tap("多倍代理按钮")
-                    end, 10)
-                    ssleep(.5)
-                end
+                -- if findOne("多倍代理处于选择状态") then -- 首先清空到1倍状态再判断
+                --     tap("多倍代理次数列表1")
+                --     wait(function()
+                --         if (not findOne("多倍代理次数面板")) and (not findOne("多倍代理次数面板2")) then return true end
+                --     end, 4)
+                --     wait(function()
+                --         if not multiple_proxy_commander then return true end
+                --         if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 2) then return true end
+                --         tap("多倍代理按钮")
+                --     end, 10)
+                --     ssleep(.5)
+                -- end
+                log(4724)
                 if multiple_proxy_commander then
                     ssleep(1)
                     battle_times = 6
@@ -5905,8 +5908,6 @@ path.活动 = function(x)
     --     path.活动页面寻找(1)
     -- end
 
-    -- ave联动
-    联动活动邮件领取()
     if not skip_guide and not appear({ "活动导航0", "活动商店导航" }, 5) then
         log("未找到活动导航")
         return
@@ -5960,8 +5961,7 @@ path.活动 = function(x)
         ssleep(.5)
     end
 
-    -- swip(x)
-    swipnew(x)
+    swip(x)
     ssleep(.5)
     --exit() --活动手动取点时取消注释
     if x:includes({ "ST-", "TR-", "-P-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
@@ -11090,149 +11090,122 @@ end
     end
 end
 
+-- -- 这次联动用的 左下角不能点到
+-- swipenew = function(x)
+--     -- 作战中第一次右滑容易错位，先做一次
+--     if first_time_swipe then
+--         first_time_swipe = false
+--         -- swip("9-2")
+--     end
 
-联动活动邮件领取 = function()
-    if car_checked then return end
-    if copy_homework then return end
-    log(9925)
-    if appear({ "新的来信列表1", "新的来信列表2" }, 1) then
-        car_checked = true
-        fight_failed_times[cur_fight] = (fight_failed_times[cur_fight] or 0) - 1
-        local x = findAny({ "新的来信列表1", "新的来信列表2" })
-        tap(x)
-        log(9926)
-        wait(function()
-            tap("信件领取")
-            ssleep(0.1)
-            back()
-            if appear({ "新的来信右上角清醒", "新的来信右上角酣眠" }, 1) then return true end
-        end, 30)
-        log(9928)
-        back()
-        back()
-        path.跳转("首页")
-        path.活动页面寻找()
-        log(9929)
-    end
-end
+--     -- tap({scale(300), scale(150)})
+--     log("swipenew", x)
+--     if x == 'right' then
+--         -- 15章滑动修复
+--         gesture({
+--             {
+--                 point = { { scale(370), scale(573) }, { 1000000, scale(573) } },
+--                 start = 0,
+--                 duration = 250,
+--             },
+--         })
+--         sleep(150 + 50)
+--     end
+-- end
 
 
--- 这次联动用的 左下角不能点到
-swipenew = function(x)
-    -- 作战中第一次右滑容易错位，先做一次
-    if first_time_swipe then
-        first_time_swipe = false
-        -- swip("9-2")
-    end
+-- swipnew = function(dis)
+--     if type(dis) == "string" then dis = distance[dis] end
+--     if type(dis) ~= "table" then dis = { dis } end
+--     if not dis then return end
 
-    -- tap({scale(300), scale(150)})
-    log("swipenew", x)
-    if x == 'right' then
-        -- 15章滑动修复
-        gesture({
-            {
-                point = { { scale(370), scale(573) }, { 1000000, scale(573) } },
-                start = 0,
-                duration = 250,
-            },
-        })
-        sleep(150 + 50)
-    end
-end
-
-
-swipnew = function(dis)
-    if type(dis) == "string" then dis = distance[dis] end
-    if type(dis) ~= "table" then dis = { dis } end
-    if not dis then return end
-
-    -- 懒人单次手势不能添加过多定时点，理想是在插入finger时处理，偷懒直接手动切分下距离
-    -- 只处理作战关卡导航中的情况
-    log(700)
-    log(dis)
-    local max_dis_one_gesture = 5000
-    if #dis == 2 and math.abs(dis[1]) == swip_right_max and dis[2] <
-        -max_dis_one_gesture then
-        table.insert(dis, dis[2] + max_dis_one_gesture)
-        dis[2] = -max_dis_one_gesture
-    end
-    log(701)
-    log(dis)
-    for i, d in pairs(dis) do
-        if i ~= 1 then ssleep(0.1) end
-        if math.abs(d) == swip_right_max then
-            swipenew("right")
-        else
-            swipunew(d)
-        end
-    end
-end
+--     -- 懒人单次手势不能添加过多定时点，理想是在插入finger时处理，偷懒直接手动切分下距离
+--     -- 只处理作战关卡导航中的情况
+--     log(700)
+--     log(dis)
+--     local max_dis_one_gesture = 5000
+--     if #dis == 2 and math.abs(dis[1]) == swip_right_max and dis[2] <
+--         -max_dis_one_gesture then
+--         table.insert(dis, dis[2] + max_dis_one_gesture)
+--         dis[2] = -max_dis_one_gesture
+--     end
+--     log(701)
+--     log(dis)
+--     for i, d in pairs(dis) do
+--         if i ~= 1 then ssleep(0.1) end
+--         if math.abs(d) == swip_right_max then
+--             swipenew("right")
+--         else
+--             swipunew(d)
+--         end
+--     end
+-- end
 
 
-swipunew = function(dis)
-    log('swipu2', dis)
-    -- preprocess distance
-    if type(dis) == "string" then dis = distance[dis] end
-    if type(dis) ~= "table" then dis = { dis } end
-    if not dis then return end
-    log(705)
-    -- flatten to one depth
-    -- local max_once_dis = 1080
-    -- local freey = scale(150)
-    local freey = scale(150)              -- 避开14章右上角
-    local freex = scale(360 / 720 * 1080) -- 第12章左上角
-    local max_once_dis = screen.width - scale(300) - freex
+-- swipunew = function(dis)
+--     log('swipu2', dis)
+--     -- preprocess distance
+--     if type(dis) == "string" then dis = distance[dis] end
+--     if type(dis) ~= "table" then dis = { dis } end
+--     if not dis then return end
+--     log(705)
+--     -- flatten to one depth
+--     -- local max_once_dis = 1080
+--     -- local freey = scale(150)
+--     local freey = scale(150)              -- 避开14章右上角
+--     local freex = scale(360 / 720 * 1080) -- 第12章左上角
+--     local max_once_dis = screen.width - scale(300) - freex
 
-    for _, d in pairs(dis) do
-        local sign = d > 0 and 1 or -1
-        if math.abs(d) == swip_right_max then
-            swipe(sign > 0 and "right" or "left")
-        else
-            -- 只实现了右移
-            if sign > 0 then stop("swipu左移未实现") end
-            local finger = {
-                {
-                    point = { { freex, freey }, { freex, screen.height - 1 } },
-                    start = 0,
-                    duration = 0,
-                },
-            }
-            local start = 0
-            local duration = 300
-            local interval = 100
-            local end_delay = 150
-            local flipy = swipu_flipy or 0
-            local flipx = swipu_flipx or 0
-            d = math.abs(d)
-            while d > 0 do
-                if d > max_once_dis then
-                    table.insert(finger, {
-                        point = {
-                            { freex + max_once_dis, freey + flipx },
-                            { freex + max_once_dis, freey + flipy },
-                        },
-                        start = start,
-                        duration = duration,
-                    })
-                else
-                    table.insert(finger, {
-                        point = { { freex + d, freey }, { freex + d + flipx, freey + flipy } },
-                        start = start,
-                        duration = duration,
-                    })
-                end
-                d = d - max_once_dis
-                start = start + duration + interval
-                -- log(finger[#finger])
-            end
-            local last_finger = finger[#finger]
-            finger[1].duration = last_finger.start + last_finger.duration + end_delay
-            log("finger", finger)
-            gesture(finger)
-            if type(swipp_wait_time) == "string" and swipp_wait_time ~= "" then
-                sleep(tonumber(swipp_wait_time))
-            end
-            sleep(finger[1].duration + 50)
-        end
-    end
-end
+--     for _, d in pairs(dis) do
+--         local sign = d > 0 and 1 or -1
+--         if math.abs(d) == swip_right_max then
+--             swipe(sign > 0 and "right" or "left")
+--         else
+--             -- 只实现了右移
+--             if sign > 0 then stop("swipu左移未实现") end
+--             local finger = {
+--                 {
+--                     point = { { freex, freey }, { freex, screen.height - 1 } },
+--                     start = 0,
+--                     duration = 0,
+--                 },
+--             }
+--             local start = 0
+--             local duration = 300
+--             local interval = 100
+--             local end_delay = 150
+--             local flipy = swipu_flipy or 0
+--             local flipx = swipu_flipx or 0
+--             d = math.abs(d)
+--             while d > 0 do
+--                 if d > max_once_dis then
+--                     table.insert(finger, {
+--                         point = {
+--                             { freex + max_once_dis, freey + flipx },
+--                             { freex + max_once_dis, freey + flipy },
+--                         },
+--                         start = start,
+--                         duration = duration,
+--                     })
+--                 else
+--                     table.insert(finger, {
+--                         point = { { freex + d, freey }, { freex + d + flipx, freey + flipy } },
+--                         start = start,
+--                         duration = duration,
+--                     })
+--                 end
+--                 d = d - max_once_dis
+--                 start = start + duration + interval
+--                 -- log(finger[#finger])
+--             end
+--             local last_finger = finger[#finger]
+--             finger[1].duration = last_finger.start + last_finger.duration + end_delay
+--             log("finger", finger)
+--             gesture(finger)
+--             if type(swipp_wait_time) == "string" and swipp_wait_time ~= "" then
+--                 sleep(tonumber(swipp_wait_time))
+--             end
+--             sleep(finger[1].duration + 50)
+--         end
+--     end
+-- end
