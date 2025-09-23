@@ -410,6 +410,7 @@ m.sanReport = function()
     else
         san[2] = tonumber(san[2]) > 45 and (tonumber(san[2]) - 45) or 100
     end
+    if cloud_use_custom_san_max then san[2] = str2int(cloud_custom_san_max, 180) end
     local res, code = httpPost(m.server .. "/sanReport?san=" .. san[1] ..
         "&maxSan=" .. san[2] .. "&deviceToken=" ..
         m.deviceToken, '', 30,

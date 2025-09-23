@@ -838,6 +838,10 @@ show_debug_ui = function()
 不勾选此选项则所有的请求全在本地完成
 部分设备（如光速虚拟机）内无法使用curl，故本地签到会失败]])
 
+    newRow(debug_layout_云控)
+    ui.addCheckBox(debug_layout_云控, "cloud_use_custom_san_max", "自定义上报理智的上限值", false)
+    ui.addEditText(debug_layout_云控, "cloud_custom_san_max", "180") --自定义云控上报的理智最大值
+
     local debug_layout_账户 = "debug_tab_account"
     ui.addTab("debug_tab", debug_layout_账户, "账户日常")
 
