@@ -4875,23 +4875,25 @@ path.开始游戏 = function(x, disable_ptrs_check)
             end, 10)
             log(4721)
             -- 出现面板后给一点时间等待展开
-            ssleep(0.1)
+            ssleep(0.5)
             battle_times = 1
             log(4722)
+            appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 3)
             if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
-                -- if findOne("多倍代理处于选择状态") then -- 首先清空到1倍状态再判断
-                --     tap("多倍代理次数列表1")
-                --     wait(function()
-                --         if (not findOne("多倍代理次数面板")) and (not findOne("多倍代理次数面板2")) then return true end
-                --     end, 4)
-                --     wait(function()
-                --         if not multiple_proxy_commander then return true end
-                --         if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 2) then return true end
-                --         tap("多倍代理按钮")
-                --     end, 10)
-                --     ssleep(.5)
-                -- end
+                if findOne("多倍代理处于选择状态") then -- 首先清空到1倍状态再判断
+                    tap("多倍代理次数列表1")
+                    wait(function()
+                        if (not findOne("多倍代理次数面板")) and (not findOne("多倍代理次数面板2")) then return true end
+                    end, 4)
+                    wait(function()
+                        if not multiple_proxy_commander then return true end
+                        if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 2) then return true end
+                        tap("多倍代理按钮")
+                    end, 10)
+                    ssleep(.5)
+                end
                 log(4724)
+                ssleep(0.2)
                 if multiple_proxy_commander then
                     ssleep(1)
                     battle_times = 6
