@@ -2761,6 +2761,14 @@ parse_fight_config = function(fight_ui)
             local cur_fight, secret_code = v:match('(.+)&MAA://(%d+)')
             if secret_code then
                 copy_homework = true
+
+                if table.find({ '活动', hd_nickname, }, startsWithX(cur_fight)) then
+                    local idx = cur_fight:gsub(".-(%d+)$", '%1')
+                    idx = tonumber(idx) or 0
+                    cur_fight = "HD-" .. (idx or '')
+                    log(2731, cur_fight, idx)
+                end
+
                 homework[cur_fight] = secret_code
                 table.insert(expanded_fight, cur_fight)
             else
