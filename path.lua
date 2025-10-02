@@ -3923,6 +3923,7 @@ path.线索传递 = function()
 end
 
 path.任务收集 = function()
+    次生活动领取()
     path.跳转("任务")
     log(9012)
     appear({ "任务未选中列表2", "任务有列表2", "任务无列表2" })
@@ -4875,23 +4876,25 @@ path.开始游戏 = function(x, disable_ptrs_check)
             end, 10)
             log(4721)
             -- 出现面板后给一点时间等待展开
-            ssleep(0.1)
+            ssleep(0.5)
             battle_times = 1
             log(4722)
+            appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 3)
             if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
-                -- if findOne("多倍代理处于选择状态") then -- 首先清空到1倍状态再判断
-                --     tap("多倍代理次数列表1")
-                --     wait(function()
-                --         if (not findOne("多倍代理次数面板")) and (not findOne("多倍代理次数面板2")) then return true end
-                --     end, 4)
-                --     wait(function()
-                --         if not multiple_proxy_commander then return true end
-                --         if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 2) then return true end
-                --         tap("多倍代理按钮")
-                --     end, 10)
-                --     ssleep(.5)
-                -- end
+                if findOne("多倍代理处于选择状态") then -- 首先清空到1倍状态再判断
+                    tap("多倍代理次数列表1")
+                    wait(function()
+                        if (not findOne("多倍代理次数面板")) and (not findOne("多倍代理次数面板2")) then return true end
+                    end, 4)
+                    wait(function()
+                        if not multiple_proxy_commander then return true end
+                        if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 2) then return true end
+                        tap("多倍代理按钮")
+                    end, 10)
+                    ssleep(.5)
+                end
                 log(4724)
+                ssleep(0.2)
                 if multiple_proxy_commander then
                     ssleep(1)
                     battle_times = 6
@@ -5821,7 +5824,7 @@ path.活动 = function(x)
     if not skip_guide then
         path.跳转("首页")
         --tap("面板活动2")
-        path.活动页面寻找(1)
+        path.活动页面寻找(2)
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -6075,7 +6078,7 @@ path.商店搬空 = function()
     end
     log("商店清空任务")
 
-    if not path.活动页面寻找(1) then return end
+    if not path.活动页面寻找(2) then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
@@ -11209,3 +11212,26 @@ end
 --         end
 --     end
 -- end
+
+
+次生活动领取 = function()
+    path.跳转("首页")
+    tap("面板作战")
+    if not appear("主页", 3) then return end
+    if not appear("主页面蚀刻章黄", 3) then
+        log("没有蚀刻章")
+        return
+    end
+    tap("主页面蚀刻章黄")
+    if not appear("次生主页", 5) then return end
+    if not appear("次生主页橙点", 5) then
+        log("次生活动已完成")
+        return
+    end
+    tap("次生主页橙点")
+    if not appear("次生采集页面", 5) then return end
+    tap("次生采集")
+    ssleep(1)
+    log("任务完成")
+    return true
+end
