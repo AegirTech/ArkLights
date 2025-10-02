@@ -1476,8 +1476,9 @@ show_extra_ui = function()
             "extra_mode='生息沙洲遗闻商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     newRow(layout)
     addTextView(layout, "刷点数模式")
-    ui.addSpinner(layout, "sand_mode", { "标准:从4-7天开始循环(手动过1-3天)",
-        "标准:从0开始,自动过1-3天,4-7天循环",
+    ui.addSpinner(layout, "sand_mode", {
+        "标准:从4-7天开始循环(手动过1-3天)",
+        "标准:从0开始,自动过1-3天,4-7天循环(建议这个)",
         -- "注意：如果无法过第三天的战斗,那么手动打一下,然后选4-7循环",
         "休养:从0升至三本198木",
         "休养:手动开完奇遇后升至三本198木",

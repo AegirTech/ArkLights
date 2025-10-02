@@ -364,56 +364,10 @@ end
 
 Tales_within_the_sand.检查代币数量 = function()
     if not Prosperity_same_number then
-        -- 未声明变量时候为第一次启动
         captureqqimagedeliver("INFO", "生息任务开始", "生息任务开始", true)
-    end
-    Prosperity_same_number = Prosperity_same_number or 0
-    prosperity_temp = prosperity_temp or 0
-    if sand_nostop then return end
-    log("获取代币数量")
-    if not findOne("生息演算主页进入") then
-        return false
-    end
-    local nx = 0
-    local text = ocro("生息演算代币范围")
-    if text ~= nil then
-        text = text:gsub(" ", "")
-        text = text:gsub("O", "0")
-        text = text:gsub("l", "1")
-        nx = str2int(text:match("%d+"))
-        --log("识别结果：" .. text)
-    else
-        x = -1
-        return false
-    end
-    log("代币数量：" .. nx)
-    --繁荣度和上一次一样的话，记录
-    if prosperity_temp == nx then
-        Prosperity_same_number = Prosperity_same_number + 1
-    else
         Prosperity_same_number = 0
     end
-    prosperity_temp = nx
-    -- 连续5次没有繁荣增长,认为已打满,防止部分客户提前消耗了代币,无法打到82500,导致无法提前结束,释放设备
-    local current_month = os.date("*t").month
-    local maxpoint = 63700 + current_month * 24400
-
-    if nx > maxpoint then
-        nx = 0 -- 识别错误
-    end
-    if nx == maxpoint then
-        log("代币数量大于" .. maxpoint)
-        if cloud_get_task then
-            log("云控上报")
-            captureqqimagedeliver("INFO", "生息任务结束1", "繁荣值" .. nx, true)
-            cloud.releaseDeviceByTaskInfo()
-        else
-            log("非云控")
-            log("生息演算任务完成,繁荣值" .. nx)
-        end
-        return true
-    end
-
+    if sand_nostop then return end
     if sand_noincrease_stop and Prosperity_same_number > 5 then
         log("连续5次未增加")
         if cloud_get_task then
@@ -592,9 +546,9 @@ Tales_within_the_sand.生息演算奇遇 = function(关卡)
                 ssleep(.2)
             end
             if findOne("生息演算完成生存周期") then
-                ssleep(1)
+                ssleep(2)
                 local text = ocro("沙洲遗闻转化繁荣点数")
-                log(text)
+                log(9998, text)
                 if text == "MAX" or (text ~= nil and tonumber(text) == nil) then
                     log("繁荣点数已满")
                     Prosperity_same_number = 6
@@ -639,16 +593,18 @@ Tales_within_the_sand.敌袭1 = function()
     ssleep(.1)
     tap("沙洲遗闻敌袭1")
     appearTap("沙洲遗闻敌袭开始行动", 5)
-    appear("生息演算开始行动", 0.8)
+    appear("生息演算开始行动", 3)
+    ssleep(1)
     if not wait(function()
             tap("沙洲遗闻快捷编队")
             if not findOne("沙洲遗闻快捷编队") then return true end
-        end, 3) then
+        end, 5, .1) then
         return
     end
-    appear("沙洲遗闻编入队伍", 1)
+    appear("沙洲遗闻编入队伍", 3)
+    ssleep(1)
     tap("生息演算编队清空选择")
-    ssleep(.2)
+    ssleep(1)
     if not findOne("生息演算职业选择") then tap("生息演算职业选择") end
     if not appear("生息演算近卫选择", .5) then
         tap("生息演算近卫选择")
@@ -659,7 +615,7 @@ Tales_within_the_sand.敌袭1 = function()
     for i = 1, 8 do
         tap("生息演算干员选择列表" .. i)
         oper_selected = oper_selected + 1
-        ssleep(.1)
+        ssleep(.3)
         if findOne("生息演算干员选择阻挡1") then
             tap("生息演算干员选择列表" .. i)
             oper_selected = oper_selected - 1
@@ -669,7 +625,7 @@ Tales_within_the_sand.敌袭1 = function()
     if not wait(function()
             if not findOne("沙洲遗闻编入队伍") then return true end
             tap("沙洲遗闻编入队伍")
-        end, 3) then
+        end, 5) then
         return
     end
     appear("生息演算开始行动")
