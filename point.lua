@@ -183,9 +183,9 @@ point = {
 
     b服年度报告 = { package = "com.hypergryph.arknights.bilibili", text = "该内容不再展示" },
     b服年度报告关闭 = { class = "android.widget.ImageView", id = "com.hypergryph.arknights.bilibili:id/iv_gs_announcement_close", level = "5", package = "com.hypergryph.arknights.bilibili" },
-    月饼确认 = "1012|967|FF6411",
-    月饼右 = "1450|568|FF4C02",
-    月饼 = "902|152|FF4200,861|173|FF4100",
+    月饼确认 = "1081|975|FF4D01",
+    月饼右 = "1457|552|FF4B00,1450|554|FF4C00",
+    月饼 = "1460|554|FF4A00,1438|533|FF5000,784|535|FF4F00,777|547|FF4E00",
     剩余理智 = { 1695, 22, 1899, 95 },
     寻访右 = "1843|580|3162A5",
     fullscreen = { 0, 0, screen.width - 1, screen.height - 1 },

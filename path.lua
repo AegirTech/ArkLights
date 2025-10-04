@@ -841,6 +841,7 @@ path.fallback = {
         -- disappear("产业合作洽谈会")
     end,
     月饼 = function()
+        ssleep(1)
         wait(function() tap("月饼右") end, 2)
         wait(function() tap("月饼确认") end, 2)
     end,
