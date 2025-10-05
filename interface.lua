@@ -814,6 +814,9 @@ show_debug_ui = function()
     ui.addTab("debug_tab", debug_layout_云控, "云控")
 
     newRow(debug_layout_云控)
+    ui.addCheckBox(debug_layout_云控, "cloud_v2_enable", "启用审判庭V2(实验性)", false)
+
+    newRow(debug_layout_云控)
     ui.addCheckBox(debug_layout_云控, "cloud_get_task", "审判庭接受任务", false)
 
     newRow(debug_layout_云控)
