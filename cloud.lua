@@ -108,7 +108,7 @@ m.addLog = function(log_level, log_title, log_detail, img_url)
     local res, code = httpPost(
         m.server .. "/addLog?deviceToken=" .. m.deviceToken,
         JsonEncode(data), 30, 'Content-Type: application/json')
-    -- log("res,code", res, code)
+    log("云控上传日志", res, code)
     return res, code
 end
 
@@ -124,6 +124,7 @@ m.uploadImgToInquisition = function(img_path)
         status, data = pcall(JsonDecode, res)
         if data.code == 200 then
             log("云控日志", "截图上传成功")
+            log("云控日志", "截图地址: ", data.data)
             return data.data
         else
             log("云控日志", "截图上传失败")
@@ -324,6 +325,7 @@ m.failTask = function(imageUrl, type)
         m.deviceToken .. "&imageUrl=" ..
         encodeUrl(imageUrl) .. "&type=" .. type, '', 30,
         'Content-Type: application/json')
+    log("云控失败任务", res, code)
     return res, code
 end
 
@@ -335,6 +337,7 @@ m.completeTask = function(imageUrl)
         m.deviceToken .. "&imageUrl=" ..
         encodeUrl(imageUrl), '', 30,
         'Content-Type: application/json')
+    log("云控完成任务", res, code)
     return res, code
 end
 
@@ -358,6 +361,10 @@ m.fetchSolveTask = function()
         status, data = pcall(JsonDecode, res)
         log("云控", data)
         if type(data) == 'table' and type(data.data) == 'table' and data.code ~= 500 then
+            if cloud_v2_enable then
+                -- V2
+                m.startTask(data.data)
+            end
             m.solveTask(data.data)
         end
         m.setStatus(1)
@@ -424,6 +431,24 @@ m.releaseDeviceByTaskInfo = function()
         JsonEncode(data), 30,
         "Content-Type: application/json;charset=UTF-8")
     log(ret, code)
+end
+
+-- V2
+m.startTask = function(data)
+    local res, code = httpGet(m.server .. "/startTask?" .. "deviceToken=" ..
+        m.deviceToken .. "&taskId=" .. data.id, 30,
+        'Content-Type: application/json')
+    if code == 200 then
+        status, data2 = pcall(JsonDecode, res)
+        if data2.code == 200 then
+            log("开始云控任务: ", data.id)
+        else
+            log("云控任务启动失败: ", data2.msg .. data.id)
+            return ""
+        end
+    else
+        return ""
+    end
 end
 
 restartSimpleMode = function(data)
