@@ -544,6 +544,7 @@ def screencap_distance(path="screencap"):
         print("x", x)
         visible_point = defaultdict(int)
         for loc, text, confidence in x:
+            text = text.replace("16", "HD")
             text = text.replace(" G", "-6")
             text = text.replace("CI -2", "CW-2")
             text = text.replace("-G", "-6")
@@ -563,6 +564,10 @@ def screencap_distance(path="screencap"):
             text = text.replace("1", "-1")
             text = text.replace("UR", "")
             text = text.replace("--", "-")
+            text = text.replace("1-4", "14")
+            text = text.replace("1-1", "11")
+            text = text.replace("-HD", "-16")
+            print("m0", text)
             m = re.search("^.?.-(\d+)$", text)
             print("m", m)
             if not m:

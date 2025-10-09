@@ -1001,7 +1001,7 @@ swipu = function(dis)
     -- flatten to one depth
     -- local max_once_dis = 1080
     -- local freey = scale(150)
-    local freey = scale(160)              -- 避开14章右上角
+    local freey = scale(180)              -- 避开14章右上角
     local freex = scale(360 / 720 * 1080) -- 第12章左上角
     local max_once_dis = screen.width - scale(300) - freex
     if type(swipp_max_len) == "string" and swipp_max_len ~= "" then
@@ -2992,10 +2992,10 @@ update_state_from_ui = function()
     -- 活动开放时间段
     hd_nickname = "16"
     hd_max_stage = 19
-    hd_exclude = {}                                --排除哪些关卡不刷，例如{9}
+    hd_exclude = { 18, 19, 9, 1 }                  --排除哪些关卡不刷，例如{9}
     hd_open_time_end = parse_time("202510230400")
     hd2_open_time_end = parse_time("202507150400") -- 故事集开放时间段
-    hd_mod = "主线"
+    hd_mod = "SS"
     log("fight_ui", fight_ui)
     fight = parse_fight_config(fight_ui)
 

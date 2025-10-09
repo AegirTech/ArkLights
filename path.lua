@@ -4804,12 +4804,16 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 need_copy_homework = true
                 log("准备抄作业")
                 --ssleep (6)--等待右上角提示消失
-            elseif get_fight_type(cur_fight) == "主线" then
+            elseif get_fight_type(cur_fight) == "主线" or get_fight_type(cur_fight) == "活动" then
                 local chapter = x:find("-")
                 chapter = x:sub(1, chapter - 1)
                 chapter = chapter:sub(chapter:find("%d+"))
-                if chapter == "15" then
-                    log("15章难度切换")
+                if chapter == "HD" then -- 下次活动记得删掉
+                    chapter = 16
+                end
+                chapter = str2int(chapter, 0)
+                if chapter >= 15 then
+                    log("15章+难度切换")
                     appear({ "切换到险地作战", "切换到常规作战", }, 3)
                     local st = findAny({ "切换到险地作战", "切换到常规作战" })
                     if not st then
@@ -5252,12 +5256,13 @@ path.主线 = function(x)
     local next_tap_index = 0
     if chapter_index > 15 then
         next_tap_index = chapter_index - 15
-        chapter_index = 15
+        chapter_index = 15 -- 固定点击14章，然后点击下一章进行跳转
     end
     log("111", chapter_index, next_tap_index)
     local p
     p = {
         [state_with_home("当前进度列表" .. chapter_index)] = function()
+            log(929, chapter_index)
             go()
             return true
         end,
@@ -5287,6 +5292,7 @@ path.主线 = function(x)
     -- log("chapter",chapter)
     -- exit()
 
+    -- chapter_index 比实际章节index大1，因为有第零章
     log(1040, chapter_index)
     if not findAny(table.keys(p)) then
         log(1041)
@@ -5828,7 +5834,7 @@ path.活动 = function(x)
     if not skip_guide then
         path.跳转("首页")
         --tap("面板活动2")
-        path.活动页面寻找(2)
+        path.活动页面寻找(1)
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
