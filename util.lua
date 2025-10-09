@@ -2825,6 +2825,10 @@ parse_fight_config = function(fight_ui)
             for _ = 1, 99 do
                 table.extend(expand_fight, { "PR-B-1", "PR-A-1", "PR-C-1", "PR-D-1" })
             end
+        elseif table.includes({ 'PR2' }, v) then
+            for _ = 1, 99 do
+                table.extend(expand_fight, { "PR-B-2", "PR-A-2", "PR-C-2", "PR-D-2" })
+            end
         elseif table.includes({ 'PR1' }, v) then
             for _ = 1, 99 do
                 table.extend(expand_fight, { "PR-B-1", "PR-A-1", "PR-C-1", "PR-D-1" })
