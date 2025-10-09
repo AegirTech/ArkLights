@@ -5816,7 +5816,7 @@ path.活动 = function(x)
         clean_hdfight()
         return
     end
-    if hd_mod == "故事集" and (not copy_homework) then
+    if hd_mod ~= "SS" and (not copy_homework) then
         clean_hdfight()
         return
     end
@@ -6055,7 +6055,7 @@ path.活动页面寻找 = function(n)
             end
             if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
             if findOne("教程关闭") then tap("教程关闭") end
-        end, 5) then
+        end, 15) then
         path.活动页面寻找(n + 1)
     end
     if findOne("活动导航0") or findOne("活动商店导航") then return true end
@@ -6079,7 +6079,7 @@ path.商店搬空 = function()
     end
     log("商店清空任务")
 
-    if not path.活动页面寻找(2) then return end
+    if not path.活动页面寻找(1) then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end

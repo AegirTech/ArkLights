@@ -2993,9 +2993,9 @@ update_state_from_ui = function()
     hd_nickname = "GO"
     hd_max_stage = 9
     hd_exclude = {}                                --排除哪些关卡不刷，例如{9}
-    hd_open_time_end = parse_time("202509290400")
+    hd_open_time_end = parse_time("202510230400")
     hd2_open_time_end = parse_time("202507150400") -- 故事集开放时间段
-    hd_mod = "SS"
+    hd_mod = "主线"
     log("fight_ui", fight_ui)
     fight = parse_fight_config(fight_ui)
 
