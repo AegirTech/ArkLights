@@ -5293,17 +5293,19 @@ path.主线 = function(x)
         path.跳转("首页")
         tap("面板作战")
         if not appear("主页") then return end
+        log(1042)
         if not wait(function()
                 if findOne("主题曲界面") then return true end
                 tap("主题曲")
             end) then
             return
         end
-
+        log(1043)
         ssleep(.3)
         appearTap("乐章收录按钮")
         ssleep(.4)
         appear("主题曲白色圆点", 1)
+        log(1044)
         if not wait(function()
                 if appear("主题曲白色圆点", 1) then return true end
                 -- tap("乐章收录")
@@ -5314,6 +5316,7 @@ path.主线 = function(x)
             log("跳转失败3")
             return
         end
+        log(1045)
         local tap_chat_index = chapter_index - 1
         local wa_x, wa_y = point["主线第零章点击位置"][1] + tap_chat_index % 5 * scale(315),
             point["主线第零章点击位置"][2] + math.floor(tap_chat_index / 5) * scale(310)
