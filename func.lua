@@ -1252,6 +1252,7 @@ end
 check_server_is_close = function()
     local wait_s = function()
         log("服务器处于关闭状态")
+        wait_game_up()
         local sleep_time = tonumber(loadConfig("server_close", 0))
         if sleep_time < 1 then
             saveConfig("server_close", "0")
