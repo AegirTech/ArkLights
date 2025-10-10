@@ -47,7 +47,7 @@ get_bilibili_url = function()
     local ret = httpGet(url)
     local status
     status, ret = pcall(JsonDecode, ret)
-    ret = get(ret, 'data', 'android_download_link2')
+    ret = get(ret, 'data', 'android_download_link')
     if type(ret) == 'string' and #ret > 0 then
         return ret
     end
