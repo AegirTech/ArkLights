@@ -1315,10 +1315,12 @@ end
             sleep(500)
             if findAny({ "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "生息演算剧情上" }) then
                 tap("剧情中")
+                tap({ scale(1218), scale(601) }) --点放技能
+                --教学关适配，剧情要点的坐标一直点
                 --迷宫饭适配
                 --[[ tap({ scale(1040), scale(384) })
                 tap({ scale(1306), scale(608) })
-                tap({ scale(713), scale(370) }) ]]
+                tap({ scale(713), scale(370) })
                 --墟适配
                 tap({ scale(708), scale(219) })
                 tap({ scale(1218), scale(595) })
@@ -1326,7 +1328,9 @@ end
                 tap({ scale(638), scale(829) })
                 tap({ scale(1213), scale(590) })
                 tap({ scale(578), scale(709) })
-                tap({ scale(1221), scale(597) })
+                tap({ scale(1221), scale(597) })]]
+                --16章适配
+                tap({ scale(522), scale(248) })
 
                 print("跳过无按钮剧情")
                 appear("作战中", 2)
@@ -2034,87 +2038,10 @@ end
     end
 end
 
---[===[查找技能=function ()
-local 技能表 = {}
-local t
-
-技能表 = Image.FindMultiColor(182, 167, 1080, 1740, "F29F02-101010","-21|-21|F6A516-101010|5|-10|280500-101010|21|-21|E4932E-101010|-6|-8|2E1501-101010", 0, 0.9)
-local 下标 = #技能表
-print("找到", 下标, "就绪技能")
-点战斗()
-t = time()
-for i = 1, 下标 do
-技能表[i][1] = 技能表[i][1] - 155
-技能表[i][2] = 技能表[i][2] - 20
-tap(技能表[i][1], 技能表[i][2])
-sleep(200)
-技能表[i][3] = 战斗识别干员(1)
-tap(560, 1828)
-sleep(200)
-print("干员" .. 技能表[i][3] .. "技能准备就绪,坐标:" .. 技能表[i][1], 技能表[i][2])
-end
-
-if findOne("战斗中") == true then
-tap("作战中")
-end
-print("耗时" .. time() - t)
-return 技能表
-end]===]
-
 释放技能 = function(干员)
     local 技能表 = {}
     local t
-    ---还没改
 
-    --[===[技能表 = Image.FindMultiColor(167,182, 1740,1080, "F29F02-101010","-21|-21|F6A516-101010|5|-10|280500-101010|21|-21|E4932E-101010|-6|-8|2E1501-101010", 0, 0.9)
-	local 下标 = #技能表
-	print(下标 + 1 .. "个技能准备好了")
-	if 下标 > -1 then
-	点战斗()
-	t = TickCount()
-	for i = 1, 下标 do
-	技能表[i][1] = 技能表[i][1] - 155
-	技能表[i][2] = 技能表[i][2] - 20
-	if i > 1 and math.abs(技能表[i][1] - 技能表[i - 1][1]) < 20 and math.abs(技能表[i][2] - 技能表[i - 1][2]) < 20 then
-	-- Do nothing if the coordinates are too close to the previous skill
-	else
-	tap(技能表[i][1], 技能表[i][2])
-	sleep(350)
-	技能表[i][3] = 战斗识别干员()
-	if 干员 == "all" then
-	tap(465, 1271)
-	sleep(100)
-	tap(296, 1814)
-	技能未就绪 = 0
-	elseif 技能表[i][3] == 干员 then
-	tap(465, 1271)
-	sleep(100)
-	tap(296, 1814)
-	技能未就绪 = 0
-	波数依赖顺序 = 波数依赖顺序 + 1
-	break
-	elseif 技能表[i][3] == "桃金娘" then
-	tap(465, 1271)
-	技能未就绪 = 0
-	sleep(100)
-	tap(296, 1814)
-	break
-	else
-	tap(296, 1814)
-	技能未就绪 = 技能未就绪 + 1
-	if 技能未就绪 > 40 then
-	技能未就绪 = 0
-	波数依赖顺序 = 波数依赖顺序 + 1
-	end
-	sleep(100)
-	end
-	end
-	sleep(50)
-	end
-	if 干员 == "all" then
-	波数依赖顺序 = 波数依赖顺序 + 1
-	end
-	end]===]
     波数依赖顺序 = 波数依赖顺序 + 1
     if 波数依赖顺序 <= 波数依赖命令数 then
         return 波数依赖[波数依赖顺序]
