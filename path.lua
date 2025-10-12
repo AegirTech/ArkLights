@@ -6164,7 +6164,8 @@ path.商店搬空 = function()
         for x = 0, 购买方阵 do -- 3*3商品进行购买
             for y = 0, 购买方阵 do
                 log(x, y)
-                local tap_x
+                local tap_x, tmp_col
+                local 没钱计数 = 0
                 local 商品x, 商品y = 初始物品[1] + 物品横间距 * x, 初始物品[2] + 物品纵间距 * y
                 local col_str_data = { string.format("%d|%d|595959", 商品x, 商品y), string.format("%d|%d|595959",
                     商品x + scale(100), 商品y) }
@@ -6193,28 +6194,6 @@ path.商店搬空 = function()
                     sd_retry = sd_retry + 1
                     goto startshop
                 end
-
-                -- if not wait(function()
-                --         if not findOne(商店采样判断) then return true end
-                --     end, 10) then
-                --     log("未能进入购买页面")
-                --     sd_retry = sd_retry + 1
-                --     goto startshop
-                -- end
-                -- 商品名称 = ocr("商店物品名字范围")
-
-                -- if #商品名称 > 0 and 商品名称[1].text:includes(商品购买黑名单) then
-                --     log("商品黑名单")
-                --     商品名称 = sample("商店")
-                --     wait(function()
-                --         if not findOne(商品名称) then return true end
-                --         tap("商店顶栏")
-                --         ssleep(0.5)
-                --     end, 10)
-                --     ssleep(1)
-                --     goto continue
-                -- end
-
                 log(989)
                 wait(function()
                     tap_x = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
@@ -6229,8 +6208,8 @@ path.商店搬空 = function()
                 log("tapx", tap_x)
                 tap_x = { tap_x[1] + scale(10), tap_x[2] + scale(10) }
                 appear("商店最多", 0.5)
-                商店购买前采样 = sample("商店")
                 log(994)
+                商店购买前采样 = sample("商店")
                 if not wait(function()
                         tap("商店最多")
                         ssleep(0.2)
@@ -6239,12 +6218,25 @@ path.商店搬空 = function()
                             log("没钱了，终止任务2")
                             return true
                         end
+                        tmp_col = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
+                        if tmp_col then
+                            log("购买失败，没钱2")
+                            没钱计数 = 没钱计数 + 1
+                        end
+                        if 没钱计数 > 4 then
+                            log("没钱了，终止任务3")
+                            return true
+                        end
                         if not findOne(商店购买前采样) then
                             log(999)
                             return true
                         end
                     end, 5) then
                     log("没钱了，终止任务")
+                    return
+                end
+                if 没钱计数 > 3 then
+                    log("没钱了，终止任务1")
                     return
                 end
                 if findOne("货币不足提示框") then
