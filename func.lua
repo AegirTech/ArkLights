@@ -863,6 +863,11 @@ end
 hidden_front_navigation = function()
     log('准备导航到 隐秘战线')
 
+    if paddleocr_loadfailed or disable_paddleocr then
+        stop("缺少飞浆ocr，不能使用此功能")
+        return
+    end
+
     --启动脚本在 隐秘战线里面时候，path.跳转("首页")会出不去，额外弄个
     if findOne("隐秘战线暂时离开") then
         --已经在小队选择界面时候退出
@@ -884,7 +889,7 @@ hidden_front_navigation = function()
         end
         return true
     end
-
+    log(1020)
     path.跳转("首页")
     tap("面板作战")
     if not appear("主页") then return end
@@ -894,10 +899,12 @@ hidden_front_navigation = function()
         end) then
         return
     end
+    log(1021)
     wait(function()
         tap("作战主线章节列表" .. 8)
         if not findOne("主题曲界面") then return true end
     end)
+    log(1022)
 
     if not wait(function()
             tap("隐秘战线在第14章入口")

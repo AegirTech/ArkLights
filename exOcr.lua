@@ -97,14 +97,10 @@ if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
         toast("未找到飞浆ocr模型文件，正在尝试下载。")
         -- 模型存储目录 = getWorkPath() .. "/model"
         -- mkdir(模型存储目录)
-        if not download_from_alist("ppocr.zip", getWorkPath()) then
+        if not download_from_alist("ppocr.zip", 模型存储目录) then
             toast("飞浆ocr模型下载失败,已禁用")
             paddleocr_loadfailed = true
             return
-        end
-        copy_file_exec(getWorkPath() .. "/ppocr.zip", 模型存储目录 .. "/ppocr.zip")
-        if not fileExist(模型存储目录 .. "/PaddLeOCR.apk") then
-            copy_file_su(getWorkPath() .. "/ppocr.zip", 模型存储目录 .. "/ppocr.zip")
         end
     end
     if not fileExist(模型存储目录 .. "/PaddLeOCR.apk") then
