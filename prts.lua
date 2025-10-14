@@ -299,6 +299,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
             return
         end
         tap("沙盘推演确定")
+        ssleep(.8)
         if not appear("开始险地作战") then
             log("沙盘推演选择错误")
         end
