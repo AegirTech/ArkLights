@@ -92,21 +92,28 @@ end
 
 if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
     --local PaddLeOCR = require("PaddLeOCRPluGin")
-    if not fileExist("mnt/sdcard/Pictures/ppocr.zip") then
+    local 模型存储目录 = "mnt/sdcard/Pictures"
+    if not fileExist(模型存储目录 .. "/ppocr.zip") then
         toast("未找到飞浆ocr模型文件，正在尝试下载。")
-        if not download_from_alist("ppocr.zip", "/sdcard/Pictures") then
+        -- 模型存储目录 = getWorkPath() .. "/model"
+        -- mkdir(模型存储目录)
+        if not download_from_alist("ppocr.zip", getWorkPath()) then
             toast("飞浆ocr模型下载失败,已禁用")
             paddleocr_loadfailed = true
             return
         end
+        copy_file_exec(getWorkPath() .. "/ppocr.zip", 模型存储目录 .. "/ppocr.zip")
+        if not fileExist(模型存储目录 .. "/PaddLeOCR.apk") then
+            copy_file_su(getWorkPath() .. "/ppocr.zip", 模型存储目录 .. "/ppocr.zip")
+        end
     end
-    if not fileExist("mnt/sdcard/Pictures/PaddLeOCR.apk") then
-        extractAssets("main.rc", "mnt/sdcard/Pictures/", "ppocr.zip")
-        unZip("mnt/sdcard/Pictures/ppocr.zip", "mnt/sdcard/Pictures")
+    if not fileExist(模型存储目录 .. "/PaddLeOCR.apk") then
+        extractAssets("main.rc", 模型存储目录, "ppocr.zip")
+        unZip(模型存储目录 .. "/ppocr.zip", 模型存储目录)
     end
 
     -- 加载插件 有时会加载不上插件 加载不上时请把APK删除重新释放即可
-    local Loader = LuaEngine.loadApk("mnt/sdcard/Pictures/PaddLeOCR.apk")
+    local Loader = LuaEngine.loadApk(模型存储目录 .. "/PaddLeOCR.apk")
     -- 初始化OCR插件 需要把 LuaEngine.loadApk函数返回的插件对象传递过去
     local Err = PaddLeOCR.IniTiaLModeL(Loader)
     if Err ~= nil then
@@ -118,18 +125,18 @@ if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
 
     -- 文本检测模型 文件名带有Db的文件 数组下标1为param文件 下标2为bin文件
     local DbModeL = {
-        "mnt/sdcard/Pictures/PaddLeOCR/Db/PaddLeOCR_Db.param",
-        "mnt/sdcard/Pictures/PaddLeOCR/Db/PaddLeOCR_Db.bin"
+        模型存储目录 .. "/PaddLeOCR/Db/PaddLeOCR_Db.param",
+        模型存储目录 .. "/PaddLeOCR/Db/PaddLeOCR_Db.bin"
     }
 
     -- 文本识别模型 文件名带有Rec的文件 数组下标1为param文件 下标2为bin文件
     local RecModeL = {
-        "mnt/sdcard/Pictures/PaddLeOCR/Rec/PaddLeOCR_Rec.param",
-        "mnt/sdcard/Pictures/PaddLeOCR/Rec/PaddLeOCR_Rec.bin"
+        模型存储目录 .. "/PaddLeOCR/Rec/PaddLeOCR_Rec.param",
+        模型存储目录 .. "/PaddLeOCR/Rec/PaddLeOCR_Rec.bin"
     }
 
     -- 生成数据时创建的txt文件 又名: 标签文件 字典文件
-    local LaBeL = "mnt/sdcard/Pictures/PaddLeOCR/Rec/Label.txt"
+    local LaBeL = 模型存储目录 .. "/PaddLeOCR/Rec/Label.txt"
 
     -- 加载模型
     local Err = PaddLeOCR.LoadModeL(LaBeL, DbModeL, RecModeL, 640, math.floor(2, PaddLeOCR.GetCPUCoreNumBer()),
@@ -183,12 +190,12 @@ else
     local work = "mnt/sdcard/Pictures"
     local ocrzipfile = work .. "/ppocrv4.zip" --飞桨ocr模型地址
 
-    if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
+    if not fileExist(work .. "/yoloppv4.apk") then
         extractAssets("main.rc", work, "yoloppv4.apk")
         extractAssets("main.rc", work, "ppocrv4.zip")
     end
 
-    if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
+    if not fileExist(work .. "/yoloppv4.apk") then
         toast("飞桨ocr加载失败,请重新安装或者禁用飞桨ocr")
         console.show()
         ssleep(10)
