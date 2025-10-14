@@ -1300,6 +1300,12 @@ auto = function(p, fallback, timeout, total_timeout, total_timeout_restart)
     local start_time = time()
     while true do
         if total_timeout and time() - start_time > total_timeout * 1000 then
+            if not 登录完成状态 then
+                log("登录未完成，尝试重启游戏再试一次")
+                restartapp(appid)
+                登录完成状态 = true
+            end
+
             if total_timeout_restart then
                 -- should be a hook, by defualt restartapp
 

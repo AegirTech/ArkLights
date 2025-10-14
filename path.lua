@@ -1418,6 +1418,7 @@ path.邮件收取 = function()
     end
 
     path.跳转("邮件")
+    登录完成状态 = true
     local state = sample("邮件提示")
     if not wait(function()
             tap("收取所有邮件")
@@ -1785,6 +1786,8 @@ update_state = function()
     基建白屏卡住时间 = nil
 
     月卡到期状态 = false
+
+    登录完成状态 = false
 
     save_token = false
 
