@@ -4808,13 +4808,8 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 log("准备抄作业")
                 --ssleep (6)--等待右上角提示消失
             elseif get_fight_type(cur_fight) == "主线" or get_fight_type(cur_fight) == "活动" then
-                local chapter = x:find("-")
-                chapter = x:sub(1, chapter - 1)
-                chapter = chapter:sub(chapter:find("%d+"))
-                if chapter == "HD" then -- 下次活动记得删掉
-                    chapter = 16
-                end
-                chapter = str2int(chapter, 0)
+                local chapter = x:match("^[^-]+")
+                chapter = (chapter == "HD" and 16 or str2int(chapter, 0))
                 if chapter >= 15 then
                     log("15章+难度切换")
                     appear({ "切换到险地作战", "切换到常规作战", }, 3)
@@ -5837,7 +5832,7 @@ path.活动 = function(x)
     if not skip_guide then
         path.跳转("首页")
         --tap("面板活动2")
-        path.活动页面寻找(1)
+        path.活动页面寻找(2)
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -6091,7 +6086,7 @@ path.商店搬空 = function()
     end
     log("商店清空任务")
 
-    if not path.活动页面寻找(1) then return end
+    if not path.活动页面寻找(2) then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
