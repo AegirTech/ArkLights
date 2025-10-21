@@ -2726,6 +2726,7 @@ path.总览换班 = function()
 
     local f2 = function() -- 迷迭香配套换班,换上塑心爱丽丝车尔尼
         -- 进入最后一间宿舍
+        log(800, "迷迭香宿舍换班")
         if not wait(function()
                 if findOne("确认蓝") then return true end
                 if findOne("基建总览非工作区") then
@@ -2827,7 +2828,7 @@ path.总览换班 = function()
         -- local timeout = (first_look and .5 or .25)
         local timeout = .25
         local p
-        log(800, p)
+        log(800, "普通宿舍换班")
         总次数 = 总次数 + 1
         -- first_look = false
         -- 至少做两次"入驻干员"检测，慢机只靠timeout不够可能，强制加一次
@@ -2870,7 +2871,9 @@ path.总览换班 = function()
             end
             tap("基建心情排序")
         end, 5)
+
         tap("清空选择")
+        ssleep(.2)
         --选前5
         local operator = map(function(x) return "干员选择列表" .. x end,
             range(1, 5))
@@ -2884,6 +2887,7 @@ path.总览换班 = function()
                     training_check_time = training_check_time or 0.15
                     ssleep(training_check_time)
                     if disable_training_shift and is_training() then -- 训练室干员跳过
+                        log("训练室干员跳过")
                         tap(v)
                     end
                 end
@@ -2924,7 +2928,7 @@ path.总览换班 = function()
             f2()
         else
             if findOne("宿舍未满员列表" .. i) then
-                log(2687, i)
+                log(2687, "换第" .. i .. "间宿舍")
                 wait(function()
                     if findOne("确认蓝") then return true end
                     tap("宿舍未满员列表" .. i)
@@ -2935,10 +2939,6 @@ path.总览换班 = function()
         end
         log(476)
         appear("基建总览非工作区", 3)
-        -- tap("宿舍未满员" .. i)
-        -- disappear(bottom, 1)
-        -- ssleep(.5)
-        -- f()
         if findOne("确认蓝") then
             back()
             appear("基建总览非工作区", 3)
