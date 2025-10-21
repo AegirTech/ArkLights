@@ -869,7 +869,7 @@ point = {
     ib_进入备赛红 = "1520|931|D2284A",
     ib_复制房间号 = { 1812, 46 },
     --参加者
-    ib_加入 = "1561|401|20A1B2",
+    ib_加入 = "1561|401|24393C",
     ib_输入框 = { class = "android.widget.EditText" },
     ib_输入确认 = { class = "android.widget.Button" },
     ib_搜索加入 = "1541|900|D32C49",

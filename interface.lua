@@ -1188,8 +1188,9 @@ show_extra_ui = function()
     -- addButton(layout, nil, "赌博开始",
     --     make_jump_ui_command(layout, nil,
     --         "extra_mode='争锋频道活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    --[[ newRow(layout)
-    addTextView(layout, "===========促融共竞(1080p)===========")
+    ---------------------------------------------------------------------
+    addTitle(layout, "促融共竞#2(1080p)")
+    addInfo(layout, "要自己过一下教程,开两个模拟器一个当房主一个当参与者")
     newRow(layout)
     addTextView(layout, "组队选择")
     ui.addSpinner(layout, "ib_grouping_method", { "参与方", "房主" }, 0)
@@ -1212,14 +1213,14 @@ show_extra_ui = function()
     addTextView(layout, "难度")
     ui.addSpinner(layout, "ib_difficulty", { "初级", "高级", "特级" }, 0)
     addTextView(layout, "项目")
-    ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5",
-        "6", "7", "8", "9", "10", "11", "12", "13", "14" }, 0)
+    ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5", "6", "7"
+        -- "8", "9", "10", "11", "12", "13", "14"
+    }, 0)
 
     newRow(layout)
     addButton(layout, nil, "促融共竞开始",
         make_jump_ui_command(layout, nil,
             "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    ]]
 
     ---------------------------------------------------------------------
     addTitle(layout, "集成战略")
