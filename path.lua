@@ -5832,7 +5832,7 @@ path.活动 = function(x)
     if not skip_guide then
         path.跳转("首页")
         --tap("面板活动2")
-        path.活动页面寻找(2)
+        path.活动页面寻找(3)
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -6086,7 +6086,7 @@ path.商店搬空 = function()
     end
     log("商店清空任务")
 
-    if not path.活动页面寻找(2) then return end
+    if not path.活动页面寻找(3) then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
@@ -6293,7 +6293,7 @@ path.商店搬空 = function()
 end
 
 path.活动商店购买 = function()
-    if not path.活动页面寻找() then return end
+    if not path.活动页面寻找(3) then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
