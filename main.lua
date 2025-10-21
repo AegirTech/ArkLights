@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "10.21 15:12"
+release_date = "10.21 19:32"
 update_announcement = '最近更新: 修复界园肉鸽天赋扩园篇'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -127,8 +127,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     sleep(1000)
     -- log(findOne("开始突袭"))
-
-    -- exit()
+    --exit()
 end
 
 load(before_account_hook or '')()
