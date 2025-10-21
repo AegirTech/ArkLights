@@ -716,7 +716,7 @@ path.界园前瞻投资 = function()
             if findOne("界园_选择招募一阶段完成") then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
             tap('萨卡兹_蓝图分队位置列表' .. t_position)
-            ssleep(0.9)
+            ssleep(1)--太快了直接选错招募券组合
         end, 10) then
         return
     end
