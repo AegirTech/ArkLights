@@ -1077,6 +1077,8 @@ path.fallback = {
             return path.fallback.签到返回()
         end
         if findTap("促融共竞目标板领取") then
+            disappear("促融共竞目标板领取", 3)
+            tap("右确认")
             return path.fallback.签到返回()
         end
         tapAll(point.限时幸运签列表)
