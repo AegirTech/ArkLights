@@ -1070,20 +1070,15 @@ path.fallback = {
         -- end, 10) then stop(217) end
     end,
     限时幸运签 = function()
-        -- if findOne("ave联动活动领取") then
-        --     tap("ave联动活动领取")
-        --     return path.fallback.签到返回()
-        -- end
         if findOne("新春限时签到2025") then
             return path.fallback.新春限时签到2025()
         end
         if findTap("集成战略回顾水月") then
             return path.fallback.签到返回()
         end
-        if findTap("太鼓达人活动领取") then
+        if findTap("促融共竞目标板领取") then
             return path.fallback.签到返回()
         end
-        findTap("集成战略签到活动领取")
         tapAll(point.限时幸运签列表)
         ssleep(.25)
         tap("限时幸运签抽取")
