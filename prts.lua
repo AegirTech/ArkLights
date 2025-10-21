@@ -2233,8 +2233,6 @@ end
         ["灰亳"] = "灰毫",
         ["势"] = "芬",
         ["淫灭之相"] = "湮灭之相",
-        ["伊伊内丝"] = "伊内丝",
-        ["德德克萨斯"] = "德克萨斯",
     }
 
     if t == nil or #t == 0 then return "" end
@@ -2243,6 +2241,9 @@ end
         print(原文本)
         if 替换[原文本] then
             t[i]["text"] = 替换[原文本]
+        elseif #原文本 >= 9 and 原文本:sub(1, 3) == 原文本:sub(4, 6) then
+            -- 如果原文本开头的两个汉字相同,则去掉开头第一个汉字
+            t[i]["text"] = 原文本:sub(4)
         elseif 原文本:match("^白面.*$") then
             t[i]["text"] = "白面鸮"
         elseif 原文本:find("纯") and 原文本:find("艾雅法拉") then
