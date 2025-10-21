@@ -1370,10 +1370,11 @@ show_extra_ui = function()
     ui.addEditText(rouge_layout_界园, "zl_max_coin_jy", [[]])
 
     newRow(rouge_layout_界园)
-    ui.addCheckBox(rouge_layout_界园, "zl_skip_fight", "跳过战斗(适用时光之末)", false)
+    ui.addCheckBox(rouge_layout_界园, "zl_skip_fight", "跳过战斗(适用时光之末),不可点扩园篇天赋", false)
     addTextView(rouge_layout_界园, [[分队位置]])
     ui.addEditText(rouge_layout_界园, "zl_team_position_sui", [[1]]) --分队位置
-
+    newRow(rouge_layout_界园)
+    ui.addCheckBox(rouge_layout_界园, "zl_big_map", "已点扩园篇天赋", false)
     -- newRow(layout)
     -- addTextView(layout, "===========肉鸽相关===========")
 
