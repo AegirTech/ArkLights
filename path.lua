@@ -6158,6 +6158,7 @@ path.商店搬空 = function()
     ssleep(1)
     appear("商店主页", 3)
     local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], scale(515), scale(240)
+    local 滑动翻页 = false
     if not findOne("商店主页") then return end
     while true do
         if os.time() - t > 3 * 60 then -- 任务总时长3分钟
@@ -6179,6 +6180,12 @@ path.商店搬空 = function()
         log("商品黑名单", 商品购买黑名单)
         local sd_retry = 0
         local 商店滑动前采样
+
+        if findAny({ "活动商店无限池", "活动商店无限池2", "活动商店无限池3" }) then
+            log("滑动到底")
+            break
+        end
+
         for x = 0, 购买方阵 do -- 3*3商品进行购买
             for y = 0, 购买方阵 do
                 log(x, y)
@@ -6288,10 +6295,12 @@ path.商店搬空 = function()
         end
         log(1052)
         商店滑动前采样 = sample("商店")
-        if find_color("商店第四列货币范围", point["商店菜单钱币颜色"], 0, 0.85) then
+        if find_color("商店第四列货币范围", point["商店菜单钱币颜色"], 0, 0.8) and not 滑动翻页 then
             log(1054)
             path.swip_hd_shop()
+            滑动翻页 = true
         else
+            滑动翻页 = false
             -- 如果第四列不存在，则退出重进商店，自动进入下一列表
             log(1056)
             back()
