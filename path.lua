@@ -1078,7 +1078,30 @@ path.fallback = {
         end
         if findTap("促融共竞目标板领取") then
             disappear("促融共竞目标板领取", 3)
+            ssleep(.5)
             tap("右确认")
+            return path.fallback.签到返回()
+        end
+        -- 存在好友邀请的红点
+        if findTap("促融共竞组队红") then
+            if not wait(function()
+                    tap("促融共竞组队红")
+                    ssleep(.5)
+                    if findOne("促融共竞查看邀请") then return true end
+                end, 5) then
+                return path.fallback.签到返回()
+            end
+            wait(function()
+                tap("促融共竞查看邀请")
+                ssleep(.5)
+                if not findOne("促融共竞查看邀请") then return true end
+            end, 5)
+
+            wait(function()
+                back()
+                ssleep(1)
+                if findOne("促融共竞查看邀请") then return true end
+            end, 5)
             return path.fallback.签到返回()
         end
         tapAll(point.限时幸运签列表)
