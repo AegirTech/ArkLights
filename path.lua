@@ -6088,6 +6088,239 @@ path.活动页面寻找 = function(n)
     if findOne("活动导航0") or findOne("活动商店导航") then return true end
 end
 
+-- path.商店搬空 = function()
+--     local t = os.time()
+--     if not shop_period then shop_period = 0 end
+--     if not shop_day then shop_day = 0 end
+
+--     local hd_open_time_end = hd_mod == "故事集" and hd2_open_time_end or hd_open_time_end
+
+--     -- 搬商店时间
+--     local interval = t - hd_open_time_end
+--     if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) then
+--         return
+--     elseif shop_period == 1 and not (interval > 0 and t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day) then
+--         return
+--     elseif shop_period == 2 and not ((t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) or (t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day)) then
+--         return
+--     end
+--     log("商店清空任务")
+
+--     if not path.活动页面寻找(3) then return end
+
+--     if not wait(function()
+--             if findOne("活动商店导航") then return true end
+--         end, 10) then
+--         return
+--     end
+--     if appear("活动任务导航", 2) then
+--         tap("活动任务导航")
+--         ssleep(.2)
+--         if appear("活动任务页面", 2) then
+--             if findOne("活动任务一键领取") then
+--                 tap("活动任务一键领取")
+--                 ssleep(.5)
+--                 if not wait(function()
+--                         tap("活动任务一键领取")
+--                         ssleep(0.2)
+--                         if findOne("活动任务页面") then return true end
+--                     end, 7) then
+--                 end
+--             end
+--             ssleep(0.2)
+--             wait(function()
+--                 tap("返回")
+--                 ssleep(0.8)
+--                 if findOne("活动商店导航") then return true end
+--             end, 7)
+--             appear("活动商店导航", 1.5)
+--         end
+--     end
+
+--     if not wait(function()
+--             tap("活动商店导航")
+--             if findOne("商店主页") then return true end
+--         end, 5) then
+--     end
+--     ssleep(0.5)
+--     disappear("正在提交反馈至神经", network_timeout)
+--     -- 防止各种掉帧等导致卡在领取等页面
+--     local 回到商店主页 = function()
+--         if not wait(function()
+--                 if findOne("商店主页") then return true end
+--                 tap("商店顶栏")
+--                 ssleep(0.2)
+--             end, 10) then
+--             return
+--         end
+--     end
+--     回到商店主页()
+--     ssleep(1)
+--     appear("商店主页", 3)
+--     local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], scale(515), scale(240)
+--     local 滑动翻页 = false
+--     if not findOne("商店主页") then return end
+--     while true do
+--         if os.time() - t > 3 * 60 then -- 任务总时长3分钟
+--             log("商店任务超时")
+--             return
+--         end
+--         local 每页购买次数 = 0
+--         local 购买方阵 = 2
+--         if findOne("商店最后一列判断") then
+--             log("已经滑动到底部,只买2*2的")
+--             购买方阵 = 1
+--             初始物品 = { scale(386), scale(535) }
+--         end
+--         local 商品购买黑名单 = {}
+--         -- 存在bug，临时禁用
+--         -- if type(shop_buy_black) == 'string' and #shop_buy_black > 0 then
+--         --     商品购买黑名单 = shop_buy_black:filterSplit()
+--         -- end
+--         log("商品黑名单", 商品购买黑名单)
+--         local sd_retry = 0
+--         local 商店滑动前采样
+
+--         if findAny({ "活动商店无限池", "活动商店无限池2", "活动商店无限池3" }) then
+--             log("滑动到底")
+--             break
+--         end
+
+--         for x = 0, 购买方阵 do -- 3*3商品进行购买
+--             for y = 0, 购买方阵 do
+--                 log(x, y)
+--                 local tap_x, tmp_col
+--                 local 没钱计数 = 0
+--                 local 商品x, 商品y = 初始物品[1] + 物品横间距 * x, 初始物品[2] + 物品纵间距 * y
+--                 local col_str_data = { string.format("%d|%d|595959", 商品x, 商品y), string.format("%d|%d|595959",
+--                     商品x + scale(100), 商品y) }
+--                 local col_data = table.join(col_str_data, ",")
+--                 local 商店采样判断, 商店购买前采样, 商品名称
+--                 log(col_data)
+--                 ::startshop::
+--                 if sd_retry > 10 then
+--                     log("商店重试次数过多")
+--                     return
+--                 end
+--                 回到商店主页()
+--                 if not findOne("商店主页") then return end -- 防止跳到其他页面
+--                 if cmpColorEx(col_data, 0.9) == 1 then
+--                     log("商品找到")
+--                     商店采样判断 = sample("商店")
+--                     tap({ 商品x, 商品y }) --点击商品
+--                 else
+--                     log(979)
+--                     goto continue
+--                 end
+
+--                 -- 点击购买
+--                 if not disappear(商店采样判断, 10) then
+--                     log("未能进入购买页面")
+--                     sd_retry = sd_retry + 1
+--                     goto startshop
+--                 end
+--                 log(989)
+--                 wait(function()
+--                     tap_x = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
+--                     if tap_x then return true end
+--                     ssleep(.1)
+--                 end, 2)
+--                 if not tap_x then
+--                     log("未找到购买按钮")
+--                     sd_retry = sd_retry + 1
+--                     goto continue
+--                 end
+--                 log("tapx", tap_x)
+--                 tap_x = { tap_x[1] + scale(10), tap_x[2] + scale(10) }
+--                 appear("商店最多", 0.5)
+--                 log(994)
+--                 商店购买前采样 = sample("商店")
+--                 if not wait(function()
+--                         tap("商店最多")
+--                         ssleep(0.2)
+--                         tap(tap_x)
+--                         if appear("货币不足提示框", 0.7) then
+--                             log("没钱了，终止任务2")
+--                             return true
+--                         end
+--                         tmp_col = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
+--                         if tmp_col then
+--                             log("购买失败，没钱2")
+--                             没钱计数 = 没钱计数 + 1
+--                         end
+--                         if 没钱计数 > 4 then
+--                             log("没钱了，终止任务3")
+--                             return true
+--                         end
+--                         if not findOne(商店购买前采样) then
+--                             log(999)
+--                             return true
+--                         end
+--                     end, 5) then
+--                     log("没钱了，终止任务")
+--                     return
+--                 end
+--                 if 没钱计数 > 3 then
+--                     log("没钱了，终止任务1")
+--                     return
+--                 end
+--                 if findOne("货币不足提示框") then
+--                     log("没钱了，终止任务2")
+--                     return
+--                 end
+
+--                 if not wait(function()
+--                         findTap("获得物资")
+--                         if findOne("商店主页") then return true end
+--                         findTap("商店购买页面")
+--                         tap("商店顶栏")
+--                         ssleep(.1)
+--                     end, 2) then
+--                 end
+--                 disappear("正在提交反馈至神经", network_timeout)
+--                 回到商店主页()
+--                 log(998)
+--                 goto startshop
+--                 ::continue::
+--                 回到商店主页()
+--                 log("开始下一个商品")
+--             end
+--         end
+--         回到商店主页()
+--         appear("商店主页", 3)
+--         if not findOne("商店主页") then return end -- 防止跳到其他页面
+--         if findOne("商店最后一列判断") then
+--             log("滑动到底部,退出")
+--             return
+--         end
+--         log(1052)
+--         商店滑动前采样 = sample("商店")
+--         if find_color("商店第四列货币范围", point["商店菜单钱币颜色"], 0, 0.8) and not 滑动翻页 then
+--             log(1054)
+--             path.swip_hd_shop()
+--             滑动翻页 = true
+--         else
+--             滑动翻页 = false
+--             -- 如果第四列不存在，则退出重进商店，自动进入下一列表
+--             log(1056)
+--             back()
+--             ssleep(1)
+--             if not appear("活动商店导航", 5) then
+--                 log(952)
+--                 return
+--             end
+--             appear("活动商店导航", 3)
+--             tap("活动商店导航")
+--             appear("商店主页", 3)
+--         end
+--         ssleep(1)
+--         if findOne(商店滑动前采样) then
+--             log("已经滑动到底")
+--             return
+--         end
+--     end
+-- end
+
 path.商店搬空 = function()
     local t = os.time()
     if not shop_period then shop_period = 0 end
@@ -6106,222 +6339,6 @@ path.商店搬空 = function()
     end
     log("商店清空任务")
 
-    if not path.活动页面寻找(3) then return end
-
-    if not wait(function()
-            if findOne("活动商店导航") then return true end
-        end, 10) then
-        return
-    end
-    if appear("活动任务导航", 2) then
-        tap("活动任务导航")
-        ssleep(.2)
-        if appear("活动任务页面", 2) then
-            if findOne("活动任务一键领取") then
-                tap("活动任务一键领取")
-                ssleep(.5)
-                if not wait(function()
-                        tap("活动任务一键领取")
-                        ssleep(0.2)
-                        if findOne("活动任务页面") then return true end
-                    end, 7) then
-                end
-            end
-            ssleep(0.2)
-            wait(function()
-                tap("返回")
-                ssleep(0.8)
-                if findOne("活动商店导航") then return true end
-            end, 7)
-            appear("活动商店导航", 1.5)
-        end
-    end
-
-    if not wait(function()
-            tap("活动商店导航")
-            if findOne("商店主页") then return true end
-        end, 5) then
-    end
-    ssleep(0.5)
-    disappear("正在提交反馈至神经", network_timeout)
-    -- 防止各种掉帧等导致卡在领取等页面
-    local 回到商店主页 = function()
-        if not wait(function()
-                if findOne("商店主页") then return true end
-                tap("商店顶栏")
-                ssleep(0.2)
-            end, 10) then
-            return
-        end
-    end
-    回到商店主页()
-    ssleep(1)
-    appear("商店主页", 3)
-    local 初始物品, 物品横间距, 物品纵间距 = point["商店初始物品"], scale(515), scale(240)
-    local 滑动翻页 = false
-    if not findOne("商店主页") then return end
-    while true do
-        if os.time() - t > 3 * 60 then -- 任务总时长3分钟
-            log("商店任务超时")
-            return
-        end
-        local 每页购买次数 = 0
-        local 购买方阵 = 2
-        if findOne("商店最后一列判断") then
-            log("已经滑动到底部,只买2*2的")
-            购买方阵 = 1
-            初始物品 = { scale(386), scale(535) }
-        end
-        local 商品购买黑名单 = {}
-        -- 存在bug，临时禁用
-        -- if type(shop_buy_black) == 'string' and #shop_buy_black > 0 then
-        --     商品购买黑名单 = shop_buy_black:filterSplit()
-        -- end
-        log("商品黑名单", 商品购买黑名单)
-        local sd_retry = 0
-        local 商店滑动前采样
-
-        if findAny({ "活动商店无限池", "活动商店无限池2", "活动商店无限池3" }) then
-            log("滑动到底")
-            break
-        end
-
-        for x = 0, 购买方阵 do -- 3*3商品进行购买
-            for y = 0, 购买方阵 do
-                log(x, y)
-                local tap_x, tmp_col
-                local 没钱计数 = 0
-                local 商品x, 商品y = 初始物品[1] + 物品横间距 * x, 初始物品[2] + 物品纵间距 * y
-                local col_str_data = { string.format("%d|%d|595959", 商品x, 商品y), string.format("%d|%d|595959",
-                    商品x + scale(100), 商品y) }
-                local col_data = table.join(col_str_data, ",")
-                local 商店采样判断, 商店购买前采样, 商品名称
-                log(col_data)
-                ::startshop::
-                if sd_retry > 10 then
-                    log("商店重试次数过多")
-                    return
-                end
-                回到商店主页()
-                if not findOne("商店主页") then return end -- 防止跳到其他页面
-                if cmpColorEx(col_data, 0.9) == 1 then
-                    log("商品找到")
-                    商店采样判断 = sample("商店")
-                    tap({ 商品x, 商品y }) --点击商品
-                else
-                    log(979)
-                    goto continue
-                end
-
-                -- 点击购买
-                if not disappear(商店采样判断, 10) then
-                    log("未能进入购买页面")
-                    sd_retry = sd_retry + 1
-                    goto startshop
-                end
-                log(989)
-                wait(function()
-                    tap_x = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
-                    if tap_x then return true end
-                    ssleep(.1)
-                end, 2)
-                if not tap_x then
-                    log("未找到购买按钮")
-                    sd_retry = sd_retry + 1
-                    goto continue
-                end
-                log("tapx", tap_x)
-                tap_x = { tap_x[1] + scale(10), tap_x[2] + scale(10) }
-                appear("商店最多", 0.5)
-                log(994)
-                商店购买前采样 = sample("商店")
-                if not wait(function()
-                        tap("商店最多")
-                        ssleep(0.2)
-                        tap(tap_x)
-                        if appear("货币不足提示框", 0.7) then
-                            log("没钱了，终止任务2")
-                            return true
-                        end
-                        tmp_col = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
-                        if tmp_col then
-                            log("购买失败，没钱2")
-                            没钱计数 = 没钱计数 + 1
-                        end
-                        if 没钱计数 > 4 then
-                            log("没钱了，终止任务3")
-                            return true
-                        end
-                        if not findOne(商店购买前采样) then
-                            log(999)
-                            return true
-                        end
-                    end, 5) then
-                    log("没钱了，终止任务")
-                    return
-                end
-                if 没钱计数 > 3 then
-                    log("没钱了，终止任务1")
-                    return
-                end
-                if findOne("货币不足提示框") then
-                    log("没钱了，终止任务2")
-                    return
-                end
-
-                if not wait(function()
-                        findTap("获得物资")
-                        if findOne("商店主页") then return true end
-                        findTap("商店购买页面")
-                        tap("商店顶栏")
-                        ssleep(.1)
-                    end, 2) then
-                end
-                disappear("正在提交反馈至神经", network_timeout)
-                回到商店主页()
-                log(998)
-                goto startshop
-                ::continue::
-                回到商店主页()
-                log("开始下一个商品")
-            end
-        end
-        回到商店主页()
-        appear("商店主页", 3)
-        if not findOne("商店主页") then return end -- 防止跳到其他页面
-        if findOne("商店最后一列判断") then
-            log("滑动到底部,退出")
-            return
-        end
-        log(1052)
-        商店滑动前采样 = sample("商店")
-        if find_color("商店第四列货币范围", point["商店菜单钱币颜色"], 0, 0.8) and not 滑动翻页 then
-            log(1054)
-            path.swip_hd_shop()
-            滑动翻页 = true
-        else
-            滑动翻页 = false
-            -- 如果第四列不存在，则退出重进商店，自动进入下一列表
-            log(1056)
-            back()
-            ssleep(1)
-            if not appear("活动商店导航", 5) then
-                log(952)
-                return
-            end
-            appear("活动商店导航", 3)
-            tap("活动商店导航")
-            appear("商店主页", 3)
-        end
-        ssleep(1)
-        if findOne(商店滑动前采样) then
-            log("已经滑动到底")
-            return
-        end
-    end
-end
-
-path.活动商店购买 = function()
     if not path.活动页面寻找(3) then return end
 
     if not wait(function()

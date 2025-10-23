@@ -222,6 +222,9 @@ def upload(md5, type, force):
         upFile = pkgPath
     elif type == "SKILL":
         upFile = r"res\skill.zip"
+    elif type == "MAPS":
+        upFile = r"res\maps.zip"
+    print(f"upload file {upFile}")
     md5 = hashlib.md5()
     with open(upFile, "rb") as f:
         md5.update(f.read())
@@ -266,7 +269,7 @@ def upload_to_backup_server(type):
         upFile = r"res\skill.zip"
     elif type == "MAPS":
         upFile = r"res\maps.zip"
-
+    print(f"upload file {upFile}")
     headers = {
         "Authorization": "Bearer " + bearer_token,
         "Connection": "keep-alive",
@@ -275,7 +278,7 @@ def upload_to_backup_server(type):
         (
             "file",
             (
-                "script" if type == "RELEASE" else "skill",
+                {"RELEASE": "script", "SKILL": "skill", "MAPS": "maps"}.get(type),
                 open(upFile, "rb"),
                 "application/octet-stream",
             ),
