@@ -1,6 +1,6 @@
 -- 促融共竞通用函数
 ib = {}
-local 角色编队作业 = { 72223, 72224 }
+local 角色编队作业 = { 72223, 72224, 72341 }
 local 关卡作业 = {
     ["IG-1"] = 72215,
     ["IG-2"] = 72216,
@@ -1092,4 +1092,85 @@ ib.battle = function(作业名, 是否自带)
         return
     end
     sleep(3000)
+end
+
+
+ib.促融共竞重复IG7 = function()
+    local 关卡名
+    local looping = {
+        ib_选择项目红 = function()
+            if ib_grouping_method == 0 then return end
+            wait(function()
+                tap("ib_选择项目")
+                ssleep(0.3)
+                if findOne("ib_随机项目", .9) then return true end
+            end, 10)
+            wait(function()
+                    tap("ib_项目列表" .. 7)
+                ssleep(0.3)
+                if findOne("ib_进入备赛灰") then return true end
+            end, 10)
+        end,
+        ib_准备参赛 = function()
+            tap("ib_准备参赛")
+            disappear("ib_准备参赛", 5)
+        end,
+        ib_下一步确认配置 = function()
+            tap("ib_下一步确认配置")
+            disappear("ib_准备参赛", 5)
+        end,
+        ib_准备就绪 = function()
+            tap("ib_准备就绪")
+            disappear("ib_准备就绪", 5)
+        end,
+        ib_干员协调页面 = function()
+            tap("ib_干员拿取")
+            ssleep(1)
+        end,
+        ib_倒计时 = function()
+            if not wait(function()
+                    关卡名 = ocro("ib_关卡名识别范围")
+                    ssleep(1)
+                    log(关卡名)
+                    if 关卡作业[关卡名] then
+                        log("关卡名匹配成功")
+                        ib.battle(72341)
+                        return true
+                    end
+                    if findOne("ib_下一步") or findOne("ib_返回房间") then return false end
+                end, 1000) then
+                return
+            end
+        end,
+        ib_下一步 = function()
+            tap("ib_下一步")
+            ssleep(2)
+        end,
+        ib_返回房间 = function()
+            if ib_auto_like then
+                ssleep(.8)
+                tap("ib_点赞")
+            end
+            tap("ib_返回房间")
+            ssleep(1)
+        end,
+        ib_关卡内部顶部标识 = function()
+            if agree_cost_request_automaticlly and findOne("ib_费用请求同意") then
+                tap("ib_费用请求同意")
+            end
+            if findOne("ib_二倍速开启") then return end
+            if not wait(function()
+                    if findOne("ib_二倍速开启") then return end
+                    tap("ib_二倍速")
+                    ssleep(1)
+                end, 5) then
+            end
+            ssleep(3)
+        end,
+        --start黄框 = function()
+            --ib.start()
+        --end
+    }
+    log("促融共竞循环开始")
+    auto(looping, nil, 0, nil, false)
 end
