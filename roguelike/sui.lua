@@ -815,7 +815,7 @@ path.界园前瞻投资 = function()
     --     end, 15) then
     --     return
     -- end
-    if zl_skip_fight then
+    if zl_skip_fight and not zl_big_map then
         sui.不招募()
     else
         sui.招募处理()
