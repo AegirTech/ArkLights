@@ -1,9 +1,9 @@
 -- 促融共竞通用函数
 ib = {}
-local 角色编队作业 = { 72223, 72224, 72341 }
+local 角色编队作业 = { 72362, 72363, 72341 }
 local 关卡作业 = {
-    ["IG-1"] = 72215,
-    ["IG-2"] = 72216,
+    ["IG-1"] = 72364,
+    ["IG-2"] = 72367,
     ["IG-3"] = 72217,
     ["IG-4"] = 72218,
     ["IG-5"] = 72219,
@@ -17,8 +17,8 @@ local 关卡作业 = {
     -- ["IG-13"] = 49145,
     -- ["IG-14"] = 49146,
 
-    ["IG-EX-1"] = 72215,
-    ["IG-EX-2"] = 72216,
+    ["IG-EX-1"] = 72364,
+    ["IG-EX-2"] = 72367,
     ["IG-EX-3"] = 72217,
     ["IG-EX-4"] = 72218,
     ["IG-EX-5"] = 72219,
@@ -1106,7 +1106,7 @@ ib.促融共竞重复IG7 = function()
                 if findOne("ib_随机项目", .9) then return true end
             end, 10)
             wait(function()
-                    tap("ib_项目列表" .. 7)
+                tap("ib_项目列表" .. 7)
                 ssleep(0.3)
                 if findOne("ib_进入备赛灰") then return true end
             end, 10)
@@ -1168,7 +1168,7 @@ ib.促融共竞重复IG7 = function()
             ssleep(3)
         end,
         --start黄框 = function()
-            --ib.start()
+        --ib.start()
         --end
     }
     log("促融共竞循环开始")
