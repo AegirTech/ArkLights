@@ -646,7 +646,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
     local base, disable_moon_effect, storage, storages, standard, all, station,
     station_only, only_need, robot, abyssal_hunter
 
-    ---@param icons table [[技能1,技能2,name1],[技能1,技能2,name2],[技能1,技能2,name3]]
+    ---@param icons table {[技能1,技能2,name1],[技能1,技能2,name2],[技能1,技能2,name3]}
     local score = function(icons)
         base = 0
         robot = 0            -- 工程机器人
@@ -707,6 +707,8 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                     -- base = base + 0.20 * tradingStationNum
                     station = station + 0.20 * tradingStationNum
                 end
+            elseif icon == 'bskill_man_spd_manu1' then
+                -- 冬时0不考虑
             elseif icon == 'bskill_man_spd&trade1' then
                 -- 引星棘刺2，使用贸易站数量
                 if goodType == '贵金属' then
@@ -732,7 +734,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 -- 迷迭香1不考虑
             elseif icon == 'bskill_man_spd_bd2' then --迷迭香2
                 if isCharExsit["絮雨"] then
-                    base = base + 0.45
+                    base = base + 0.40999
                 end
             elseif icon == "bskill_man_cost_room1" then
                 -- 排除黍1
@@ -947,6 +949,11 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
             station_only = true
             station = station + 0.06 * powerStationNum * all['bskill_man_spd&power1']
             table.extend(only_need, { 'bskill_man_spd&power1' })
+        end
+        if all['bskill_man_spd_manu2'] then -- 冬时1，仓库加成不考虑
+            station_only = true
+            station = station + 0.1 * level
+            table.extend(only_need, { 'bskill_man_spd_manu2' })
         end
         if all['bskill_man_skill_spd'] then
             -- 水月，标准化技能数量
