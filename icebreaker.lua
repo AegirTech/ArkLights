@@ -203,8 +203,14 @@ ib.促融共竞循环 = function()
                     log(关卡名)
                     if 关卡作业[关卡名] then
                         log("关卡名匹配成功")
-                        ib.battle(关卡作业[关卡名])
-                        return true
+                        if ib_team_role == 3 then
+                            log("重复刷ig-7")
+                            ib.battle(72341)
+                            return true
+                        else
+                            ib.battle(关卡作业[关卡名])
+                            return true
+                        end 
                     end
                     if findOne("ib_下一步") or findOne("ib_返回房间") then return false end
                 end, 240) then
