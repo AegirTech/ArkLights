@@ -632,16 +632,16 @@ ib.释放坐标技能 = function(坐标)
         for i = 1, 6 do
             keepCapture()
             local intX, intY = findMultiColor(scale(地图坐标[1] - 10), scale(地图坐标[2] - 180), scale(地图坐标[1] + 10),
-                scale(地图坐标[2] - 80), "EBA22F-101010",
+                scale(地图坐标[2] - 80), "F29F02-101010",
                 scale(-21) ..
                 "|" ..
                 scale(-21) ..
-                "|F6A516-101010|" ..
+                "|F0A102-101010|" ..
                 scale(5) ..
                 "|" ..
-                scale(-10) ..
+                scale(-11) ..
                 "|280500-101010|" ..
-                scale(21) .. "|" .. scale(-21) .. "|E4932E-101010|" .. scale(-6) .. "|" .. scale(-8) .. "|2E1501-101010",
+                scale(21) .. "|" .. scale(-21) .. "|F3A901-101010|" .. scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
                 0, 0.87)
             print(intX, intY)
             if intX > -1 then
