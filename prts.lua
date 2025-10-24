@@ -971,6 +971,23 @@ swipe_next_page = function(left, nodelay)
     return nodelay and delay or 0
 end
 
+查找技能 = function(地图坐标1, 地图坐标2)
+    local intX, intY = findMultiColor(scale(地图坐标1 - 10), scale(地图坐标2 - 180), scale(地图坐标1 + 10),
+        scale(地图坐标2 - 80), "F29F02-101010",
+        scale(-21) ..
+        "|" ..
+        scale(-21) ..
+        "|F0A102-101010|" ..
+        scale(5) ..
+        "|" ..
+        scale(-11) ..
+        "|280500-101010|" ..
+        scale(21) ..
+        "|" .. scale(-21) .. "|F3A901-101010|" .. scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
+        0, 0.87)
+    return intX, intY
+end
+
 选择技能 = function(a)
     --print("选择技能", a)
     if a == 3 then
@@ -1072,19 +1089,7 @@ end
             if table.search(无限放技能干员, k) or (技能指定次数干员[k] and 技能指定次数干员[k][2] < 技能指定次数干员[k][1]) then
                 地图坐标 = 地图数据0[v[2] + 1][v[1] + 1]
                 print("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
-                local intX, intY = findMultiColor(scale(地图坐标[1] - 10), scale(地图坐标[2] - 180), scale(地图坐标[1] + 10),
-                    scale(地图坐标[2] - 80), "F29F02-101010",
-                    scale(-21) ..
-                    "|" ..
-                    scale(-21) ..
-                    "|F0A102-101010|" ..
-                    scale(5) ..
-                    "|" ..
-                    scale(-11) ..
-                    "|280500-101010|" ..
-                    scale(21) ..
-                    "|" .. scale(-21) .. "|F3A901-101010|" .. scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
-                    0, 0.87)
+                local intX, intY = 查找技能(地图坐标[1], 地图坐标[2])
                 if intX > -1 then
                     print("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                     tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
@@ -1423,19 +1428,7 @@ end
             if table.search(无限放技能干员, k) or (技能指定次数干员[k] and 技能指定次数干员[k][2] < 技能指定次数干员[k][1]) then
                 地图坐标 = 地图数据0[v[2] + 1][v[1] + 1]
                 print("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
-                local intX, intY = findMultiColor(scale(地图坐标[1] - 10), scale(地图坐标[2] - 180), scale(地图坐标[1] + 10),
-                    scale(地图坐标[2] - 80), "F29F02-101010",
-                    scale(-21) ..
-                    "|" ..
-                    scale(-21) ..
-                    "|F0A102-101010|" ..
-                    scale(5) ..
-                    "|" ..
-                    scale(-11) ..
-                    "|280500-101010|" ..
-                    scale(21) ..
-                    "|" .. scale(-21) .. "|F3A901-101010|" .. scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
-                    0, 0.87)
+                local intX, intY = 查找技能(地图坐标[1], 地图坐标[2])
                 if intX > -1 then
                     print("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                     tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
@@ -2092,18 +2085,7 @@ end
     else
         for i = 1, 6 do
             keepCapture()
-            local intX, intY = findMultiColor(scale(地图坐标[1] - 10), scale(地图坐标[2] - 180), scale(地图坐标[1] + 10),
-                scale(地图坐标[2] - 80), "F29F02-101010",
-                scale(-21) ..
-                "|" ..
-                scale(-21) ..
-                "|F0A102-101010|" ..
-                scale(5) ..
-                "|" ..
-                scale(-11) ..
-                "|280500-101010|" ..
-                scale(21) .. "|" .. scale(-21) .. "|F3A901-101010|" .. scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
-                0, 0.87)
+            local intX, intY = 查找技能(地图坐标[1], 地图坐标[2])
             print(intX, intY)
             if intX > -1 then
                 tap({ scale(地图坐标[1]), scale(地图坐标[2]) })

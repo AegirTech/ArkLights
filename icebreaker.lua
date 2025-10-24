@@ -631,18 +631,7 @@ ib.释放坐标技能 = function(坐标) --相比较原函数去掉了暂停点�
     else
         for i = 1, 6 do
             keepCapture()
-            local intX, intY = findMultiColor(scale(地图坐标[1] - 10), scale(地图坐标[2] - 180), scale(地图坐标[1] + 10),
-                scale(地图坐标[2] - 80), "F29F02-101010",
-                scale(-21) ..
-                "|" ..
-                scale(-21) ..
-                "|F0A102-101010|" ..
-                scale(5) ..
-                "|" ..
-                scale(-11) ..
-                "|280500-101010|" ..
-                scale(21) .. "|" .. scale(-21) .. "|F3A901-101010|" .. scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
-                0, 0.87)
+            local intX, intY = 查找技能(地图坐标[1], 地图坐标[2])
             print(intX, intY)
             if intX > -1 then
                 tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
@@ -762,11 +751,7 @@ ib.抄作业 = function(作业, maptype)
             if table.search(无限放技能干员, k) or (技能指定次数干员[k] and 技能指定次数干员[k][2] < 技能指定次数干员[k][1]) then
                 地图坐标 = 地图数据0[v[2] + 1][v[1] + 1]
                 print("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
-                local intX, intY = findMultiColor(scale(地图坐标[1] - 10), scale(地图坐标[2] - 180), scale(地图坐标[1] + 10),
-                    scale(地图坐标[2] - 80), "EBA22F-101010", scale(-21) .. "|" .. scale(-21) ..
-                    "|F6A516-101010|" .. scale(5) .. "|" .. scale(-10) .. "|280500-101010|" .. scale(21) .. "|"
-                    .. scale(-21) .. "|E4932E-101010|" .. scale(-6) .. "|" .. scale(-8) .. "|2E1501-101010",
-                    0, 0.87)
+                local intX, intY = 查找技能(地图坐标[1], 地图坐标[2])
                 if intX > -1 then
                     print("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                     tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
