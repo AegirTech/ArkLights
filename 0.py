@@ -278,7 +278,7 @@ def upload_to_backup_server(type):
         (
             "file",
             (
-                {"RELEASE": "script", "SKILL": "skill", "MAPS": "maps"}.get(type),
+                {"RELEASE": "script", "SKILL": "skill", "MAPS": "maps.zip"}.get(type),
                 open(upFile, "rb"),
                 "application/octet-stream",
             ),
