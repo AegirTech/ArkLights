@@ -1198,7 +1198,7 @@ show_extra_ui = function()
         "自动同意费用请求", true)
     newRow(layout)
     addTextView(layout, "角色")
-    ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)", "角色B(ew叔叔+陷阱师)","IG7大号带躺" }, 0)
+    ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)", "角色B(ew叔叔+陷阱师)","IG-7大号带躺" }, 0)
     ui.addCheckBox(layout, "ib_auto_team_format",
         "自动编队", true)
     newRow(layout)
@@ -1222,10 +1222,7 @@ show_extra_ui = function()
         make_jump_ui_command(layout, nil,
             "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     newRow(layout)
-    addButton(layout, nil, "促融共竞重复IG7",
-    make_jump_ui_command(layout, nil,
-            "extra_mode='促融共竞重复IG7';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    addTextView(layout, "←手动编队进房，大号带小号重复刷拿奖励")
+
     ---------------------------------------------------------------------
     addTitle(layout, "集成战略")
     addInfo(layout, "重复刷第一层以获得源石锭和经验")
