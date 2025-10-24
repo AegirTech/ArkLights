@@ -912,11 +912,12 @@ path.界园前瞻投资 = function()
         zl_repos_path('界园_放弃探索')
     end
     log(3305)
-    if zl_skip_fight then
+    if zl_skip_fight and not zl_big_map then
         sui.放弃作战()
     else
         sui.战斗开始()
     end
+    --有时光之末但没点《扩园篇》天赋
     log(1055)
     local r = appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
     if r ~= "战略返回" then
@@ -1064,7 +1065,12 @@ path.界园前瞻投资 = function()
       if 界园路线选择结果[1][2] == "作战" then
           log("准备进入第2关作战")
           ssleep(.5)
-          sui.战斗开始()
+            if zl_skip_fight and not zl_big_map then
+                sui.放弃作战()
+            else
+                sui.战斗开始()
+            end
+            --有时光之末而且点《扩园篇》天赋
           appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
           if findOne("界园_戛然而止") then
               log('戛然而止界面，准备返回')
