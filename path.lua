@@ -10850,6 +10850,10 @@ path.促融共竞 = function()
     ib.start()
 end
 
+path.促融共竞重复IG7 = function()
+    never_end_wrapper(ib.促融共竞重复IG7())
+end
+
 
 path.争锋频道活动 = function()
     if not findOne("争锋频道首页") then
