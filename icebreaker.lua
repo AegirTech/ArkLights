@@ -211,7 +211,7 @@ ib.促融共竞循环 = function()
         ib_返回房间 = function()
             log(ib_auto_like)
             if ib_auto_like then
-                ssleep(.8)
+                ssleep(1.8)
                 tap("ib_点赞")
             end
             tap("ib_返回房间")
