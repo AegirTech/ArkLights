@@ -1192,8 +1192,22 @@ show_extra_ui = function()
     addTitle(layout, "促融共竞#2(1080p)")
     addInfo(layout, "要自己过一下教程,开两个模拟器一个当房主一个当参与者")
     newRow(layout)
+
+    ibSettingVisiblity = function()
+        local grouping_method = ui.getValue("ib_grouping_method")
+        toast(grouping_method)
+        if grouping_method == 0 then --参与方
+            ui.setRowVisibleByGid(layout, "房主", 8)
+            ui.setRowVisibleByGid(layout, "参与者", 0)
+        else
+            ui.setRowVisibleByGid(layout, "房主", 0)
+            ui.setRowVisibleByGid(layout, "参与者", 8)
+        end
+    end
+
     addTextView(layout, "组队选择")
     ui.addSpinner(layout, "ib_grouping_method", { "参与方", "房主" }, 0)
+    ui.setOnChange("ib_grouping_method", "ibSettingVisiblity()")
     ui.addCheckBox(layout, "agree_cost_request_automaticlly",
         "自动同意费用请求", true)
     newRow(layout)
@@ -1204,11 +1218,12 @@ show_extra_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, " ib_auto_like",
         "自动点赞", true)
-    addButton(layout, randomString(32), "粘贴房间号", "import_room_id()")
-    newRow(layout)
-    addTextView(layout, "房间号")
-    ui.addEditText(layout, "extra_crgj_room", "", 700)
-    newRow(layout)
+
+    ui.newRow(layout, "参与者", -1, -2, "参与者")
+    addButton(layout, "ib_copy_room_id", "粘贴房间号", "import_room_id()")
+    ui.addEditText(layout, "extra_crgj_room", "复制后单击左侧按钮粘贴房间号", 700)
+
+    ui.newRow(layout, "房主", -1, -2, "房主")
     addTextView(layout, "房主选择")
     addTextView(layout, "难度")
     ui.addSpinner(layout, "ib_difficulty", { "初级", "高级", "特级" }, 0)
