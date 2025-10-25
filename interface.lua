@@ -1198,7 +1198,7 @@ show_extra_ui = function()
         "自动同意费用请求", true)
     newRow(layout)
     addTextView(layout, "角色")
-    ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)", "角色B(ew叔叔+陷阱师)","IG-7大号带躺" }, 0)
+    ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)", "角色B(ew叔叔+陷阱师)", "IG-7大号带躺" }, 0)
     ui.addCheckBox(layout, "ib_auto_team_format",
         "自动编队", true)
     newRow(layout)
@@ -1213,8 +1213,8 @@ show_extra_ui = function()
     addTextView(layout, "难度")
     ui.addSpinner(layout, "ib_difficulty", { "初级", "高级", "特级" }, 0)
     addTextView(layout, "项目")
-    ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5", "6", "7"
-        -- "8", "9", "10", "11", "12", "13", "14"
+    ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5", "6", "7",
+        "8", "9", "10", "11", "12", "13", "14"
     }, 0)
 
     newRow(layout)
