@@ -1210,7 +1210,7 @@ show_extra_ui = function()
     ui.setOnChange("ib_grouping_method", "ibSettingVisiblity()")
     ui.addCheckBox(layout, "agree_cost_request_automaticlly",
         "自动同意费用请求", true)
-    ui.addCheckBox(layout, " ib_auto_like", "自动点赞", true)
+    ui.addCheckBox(layout, "ib_auto_like", "自动点赞", true)
     newRow(layout)
     addTextView(layout, "角色")
     ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)", "角色B(ew叔叔+陷阱师)", "IG-7大号带躺" }, 0)
