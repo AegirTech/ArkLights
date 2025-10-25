@@ -1334,6 +1334,10 @@ path.限时活动 = function(retry)
             tap("红包")
             back()
         end
+        if findOne('特别公开招募前往') then
+            back()
+            return
+        end
     elseif findOne("面板赠送一次") and not disable_free_draw then
         tap("面板干员寻访")
         if not appear("赠送一次") then tap("寻访右") end
