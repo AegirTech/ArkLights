@@ -1195,7 +1195,6 @@ show_extra_ui = function()
 
     ibSettingVisiblity = function()
         local grouping_method = ui.getValue("ib_grouping_method")
-        toast(grouping_method)
         if grouping_method == 0 then --参与方
             ui.setRowVisibleByGid(layout, "房主", 8)
             ui.setRowVisibleByGid(layout, "参与者", 0)
@@ -1208,12 +1207,26 @@ show_extra_ui = function()
     addTextView(layout, "组队选择")
     ui.addSpinner(layout, "ib_grouping_method", { "参与方", "房主" }, 0)
     ui.setOnChange("ib_grouping_method", "ibSettingVisiblity()")
-    ui.addCheckBox(layout, "agree_cost_request_automaticlly",
-        "自动同意费用请求", true)
     ui.addCheckBox(layout, "ib_auto_like", "自动点赞", true)
+
+    ibSettingVisiblity2 = function()
+        local team_role = ui.getValue("ib_team_role")
+        toast(team_role)
+        if team_role == 0 then --躺赢狗
+            ui.setVisiblity("agree_cost_request_automaticlly", 0)
+            ui.setVisiblity("ib_auto_team_format", 3)
+        else
+            ui.setVisiblity("agree_cost_request_automaticlly", 3)
+            ui.setVisiblity("ib_auto_team_format", 0)
+        end
+    end
+
     newRow(layout)
     addTextView(layout, "角色")
-    ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)", "角色B(ew叔叔+陷阱师)", "IG-7大号带躺" }, 0)
+    ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)", "角色B(ew叔叔+陷阱师)", "IG-7单号带躺" }, 0)
+    ui.setOnChange("ib_team_role", "ibSettingVisiblity2()")
+    ui.addCheckBox(layout, "agree_cost_request_automaticlly",
+        "自动同意费用请求", true)
     ui.addCheckBox(layout, "ib_auto_team_format",
         "自动编队", true)
 
