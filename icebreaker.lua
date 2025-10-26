@@ -221,7 +221,10 @@ ib.促融共竞循环 = function()
             if agree_cost_request_automaticlly and findOne("ib_费用请求同意") then
                 tap("ib_费用请求同意")
             end
-            if findOne("ib_二倍速开启") then return end
+            if findOne("ib_二倍速开启") then
+                ssleep(3)
+                return
+            end
             if not wait(function()
                     if findOne("ib_二倍速开启") then return end
                     tap("ib_二倍速")
