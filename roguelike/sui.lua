@@ -525,9 +525,10 @@ sui.战斗开始 = function()
     if not wait(function()
             if findOne("攻击范围") and
                 (zl_skill_idx ~= 2 or zl_skill_idx == 2 and findOne("战略二技能")) then
-                tap("近卫招募列表2") --第2个干员
-                ssleep(.2)
-                tap("近卫招募列表3") --第3个干员
+                --tap("近卫招募列表2") --第2个干员
+                --ssleep(.2)
+                --tap("近卫招募列表3") --第3个干员
+                --会把二战新招募的干员带上，如果招募了高费的导致下错人
                 return true
             end
             tap("近卫招募列表1")
