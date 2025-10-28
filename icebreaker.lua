@@ -755,7 +755,7 @@ ib.抄作业 = function(作业, maptype)
                     sleep(550)
                     keepCapture()
                     local p = findOne("技能ready")
-                    local skill_name = ocro("技能名称范围")
+                    local skill_name = ocro("ib_技能名称范围")
                     if p then
                         tap({ p[1] - 20, p[2] - 50 })
                     else
