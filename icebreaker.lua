@@ -753,7 +753,7 @@ ib.抄作业 = function(作业, maptype)
                     print("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                     tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
                     sleep(30)
-                    sleep(300)
+                    sleep(500)
                     keepCapture()
                     local p = findOne("技能ready")
                     local skill_name = ocro("技能名称范围")
@@ -762,13 +762,13 @@ ib.抄作业 = function(作业, maptype)
                     else
                         tap("开技能")
                     end
-                    sleep(300)
+                    sleep(600)
                     releaseCapture()
                     if not findOne("子弹时间", 0.85) then
                         if 技能指定次数干员[k] then 技能指定次数干员[k][2] = 技能指定次数干员[k][2] + 1 end
 
                         sleep(150)
-                        if skill_name ~= nil and table.includes(延迟消失技能, skill_name) then sleep(1100) end
+                        if skill_name ~= nil and table.includes(延迟消失技能, skill_name) then sleep(500) end
                     else
                         tap("点cost")
                         --sleep(50)
