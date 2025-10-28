@@ -680,7 +680,7 @@ SolveSlipCaptcha = function(rect, p_type)
     if p_type == 1 then
         local param = "img=" .. encodeUrl(base64(img))
         log("免费服务器准备发送")
-        ret = httpPost("http://175.178.58.160:8899/yolo_new/", param)
+        ret = httpPost("http://124.222.3.24:8899/yolo_new/", param)
         local status, data = pcall(JsonDecode, ret)
         if not status then return end
         distance = str2int(data.target[1].distance, 0)
