@@ -356,6 +356,10 @@ path.base = {
         end
         local next_fight_tick = fight_tick % #fight + battle_times -- 多倍代理次数
         local next_fight = fight[next_fight_tick]
+        if next_fight == nil then
+            next_fight = "BREAK"
+            return
+        end
         log(cur_fight, next_fight)
 
         if table.includes({ "剿灭" }, get_fight_type(cur_fight)) then
@@ -4569,6 +4573,8 @@ same_page_fight = function(pre, cur)
         log("是同一页的作战", pre, cur)
         return true
     end
+
+    if pre == nil or cur == nil then return end
 
     -- pattern before last - should be same
     -- PR-A-1 == PR-A-2, PR-A-1 != PR-A-2
