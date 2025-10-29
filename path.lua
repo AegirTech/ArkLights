@@ -354,7 +354,8 @@ path.base = {
             log("fight is empty, return to home")
             return
         end
-        local next_fight_tick = fight_tick % #fight + battle_times -- 多倍代理次数
+        fight_tick = fight_tick + battle_times
+        local next_fight_tick = fight_tick % #fight + 1 -- 多倍代理次数
         local next_fight = fight[next_fight_tick]
         if next_fight == nil then
             next_fight = "BREAK"
