@@ -357,10 +357,6 @@ path.base = {
         fight_tick = fight_tick + battle_times
         local next_fight_tick = fight_tick % #fight + 1 -- 多倍代理次数
         local next_fight = fight[next_fight_tick]
-        if next_fight == nil then
-            next_fight = "BREAK"
-            return
-        end
         log(cur_fight, next_fight)
 
         if table.includes({ "剿灭" }, get_fight_type(cur_fight)) then
