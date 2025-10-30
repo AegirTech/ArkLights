@@ -1044,7 +1044,7 @@ path.界园前瞻投资 = function()
         end
 
         if not wait(function()
-                if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入", "界园_作战页面加载", "界园_作战页面加载" }) then return true end
+                if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入", "界园_作战页面加载", "界园_紧急作战页面加载" }) then return true end
                 if 第二列数量 == 3 then
                     tap("萨卡兹_3节点_作战列表" .. str(界园路线选择结果[1][1]))
                 else
