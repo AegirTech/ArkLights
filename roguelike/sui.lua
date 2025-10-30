@@ -973,7 +973,11 @@ path.界园前瞻投资 = function()
     if 界园路线选择结果[1][2] == "作战" then
         log("准备进入第2关作战")
         ssleep(.5)
-        sui.战斗开始()
+        if zl_skip_fight and zl_big_map then
+            sui.放弃作战()
+        else
+            sui.战斗开始()
+        end
         appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
         if findOne("界园_戛然而止") then
             log('戛然而止界面，准备返回')
@@ -988,6 +992,11 @@ path.界园前瞻投资 = function()
             return
         end
         if not findOne("战略返回") then return end
+        if not zl_skip_fight and not sui.战斗后领取() then
+            log("未能完成战斗后拾取")
+            return false
+        end
+        log("完成战斗")
     else
         sui.不期而遇处理()
     end
