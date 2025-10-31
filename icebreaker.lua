@@ -85,7 +85,7 @@ end
 ib.start = function()
     if findOne("ib_选择项目红") and ib_grouping_method == 1 then
         log("已经建好房间")
-    elseif findOne("ib_准备就绪") and ib_grouping_method == 1 then
+    elseif findOne("ib_准备就绪") and ib_grouping_method == 0 then
         log("已经加入房间")
     else
         path.跳转("首页")
