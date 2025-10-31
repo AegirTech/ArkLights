@@ -972,7 +972,7 @@ swipe_next_page = function(left, nodelay)
 end
 
 查找技能 = function(地图坐标1, 地图坐标2)
-    local intX, intY = findMultiColor(scale(地图坐标1 - 10), scale(地图坐标2 - 180), scale(地图坐标1 + 10),
+    local intX, intY = findMultiColor(scale(地图坐标1 - 15), scale(地图坐标2 - 180), scale(地图坐标1 + 15),
         scale(地图坐标2 - 80), "F29F02-101010",
         scale(-21) ..
         "|" ..

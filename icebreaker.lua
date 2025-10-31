@@ -672,7 +672,7 @@ ib.释放坐标技能 = function(坐标) --相比较原函数去掉了暂停点�
     else
         for i = 1, 6 do
             keepCapture()
-            local intX, intY = 查找技能(地图坐标[1], 地图坐标[2])
+            local intX, intY = 查找技能(地图坐标[1], 地图坐标[2],5)
             print(intX, intY)
             if intX > -1 then
                 tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
@@ -792,7 +792,7 @@ ib.抄作业 = function(作业, maptype)
             if table.search(无限放技能干员, k) or (技能指定次数干员[k] and 技能指定次数干员[k][2] < 技能指定次数干员[k][1]) then
                 地图坐标 = 地图数据0[v[2] + 1][v[1] + 1]
                 print("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
-                local intX, intY = 查找技能(地图坐标[1], 地图坐标[2])
+                local intX, intY = 查找技能(地图坐标[1], 地图坐标[2],5)
                 if intX > -1 then
                     print("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                     tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
