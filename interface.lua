@@ -1239,7 +1239,7 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "agree_cost_request_automaticlly",
         "自动同意费用请求", true)
     ui.addCheckBox(layout, "agree_cost_ask_automaticlly",
-        "自动请求费用", true)
+        "自动请求费用", false)
     ui.addCheckBox(layout, "ib_auto_team_format",
         "自动编队", true)
 
