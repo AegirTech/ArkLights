@@ -1,6 +1,6 @@
 -- 促融共竞通用函数
 ib = {}
-local 角色编队作业 = { 72362, 72363, 72341 }
+local 角色编队作业 = { 72362, 72363, 72341 ,73042 , 73063}
 local 关卡作业 = {
     ["IG-1"] = 72364,
     ["IG-2"] = 72367,
@@ -34,6 +34,42 @@ local 关卡作业 = {
 
     -- ["IG-S-1"] = 49120,
     ["IG-S-2"] = 72378,
+    -- ["IG-S-3"] = 49147,
+}
+
+local 关卡作业单人 = {
+    ["IG-1"] = 73048,
+    ["IG-2"] = 73049,
+    -- ["IG-3"] = 72373,
+    ["IG-4"] = 73046,
+    ["IG-5"] = 73070,
+    ["IG-6"] = 73051,
+    ["IG-7"] = 73052,
+    ["IG-8"] = 73055,
+    -- ["IG-9"] = 72423,
+    ["IG-10"] = 73055,
+    ["IG-11"] = 73058,
+    ["IG-12"] = 73059,
+    ["IG-13"] = 73060,
+    ["IG-14"] = 73061,
+
+    ["IG-EX-1"] = 73048,
+    ["IG-EX-2"] = 73049,
+    -- ["IG-EX-3"] = 72373,
+    ["IG-EX-4"] = 73046,
+    ["IG-EX-5"] = 73070,
+    ["IG-EX-6"] = 73051,
+    ["IG-EX-7"] = 73052,
+    ["IG-EX-8"] = 73055,
+    --["IG-EX-9"] = 72423,
+    ["IG-EX-10"] = 73055,
+    ["IG-EX-11"] = 73058,
+    ["IG-EX-12"] = 73059,
+    ["IG-EX-13"] = 73060,
+    ["IG-EX-14"] = 73061,
+
+    -- ["IG-S-1"] = 49120,
+    -- ["IG-S-2"] = 72378,
     -- ["IG-S-3"] = 49147,
 }
 
@@ -188,6 +224,13 @@ ib.促融共竞循环 = function()
                     关卡名 = ocro("ib_关卡名识别范围")
                     ssleep(1)
                     log(关卡名)
+                    if ib_team_role == 4 then
+                        if 关卡作业单人[关卡名] then
+                            log("单人作业关卡名匹配成功")
+                            ib.battle(关卡作业单人[关卡名])
+                            return true
+                        end
+                    end
                     if 关卡作业[关卡名] then
                         log("关卡名匹配成功")
                         if ib_team_role == 3 then
@@ -207,7 +250,7 @@ ib.促融共竞循环 = function()
         ib_下一步 = function()
             tap("ib_下一步")
             ssleep(2)
-        end,
+        end,h
         ib_返回房间 = function()
             log(ib_auto_like)
             if ib_auto_like then
@@ -790,6 +833,9 @@ ib.抄作业 = function(作业, maptype)
     end
 
     while true do
+        if agree_cost_ask_automaticlly and findOne("ib_费用请求") then
+                tap("ib_费用请求")
+        end
         cost = tonumber(获得cost(cost) or cost) or cost
         wavetxt = ib.当前阶段() or 1
         print("当前阶段", wavetxt)

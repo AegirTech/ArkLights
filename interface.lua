@@ -1219,17 +1219,24 @@ show_extra_ui = function()
             ui.setVisiblity("agree_cost_request_automaticlly", 3)
             ui.setVisiblity("ib_auto_team_format", 0)
         end
+        if team_role == 4 or team_role == 3 then --单人大号
+            ui.setVisiblity("agree_cost_ask_automaticlly", 0)
+        else
+            ui.setVisiblity("agree_cost_ask_automaticlly", 3)
+        end
     end
 
     newRow(layout)
     addTextView(layout, "角色")
     ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)",
-        "角色B(ew叔叔+陷阱师)", "IG-7单号带躺(酒神夜莺阿斯卡纶黍奶羊)" }, 0)
+        "角色B(ew叔叔+陷阱师)", "IG-7单号带躺(酒神夜莺阿斯卡纶黍奶羊)","单人(天有四时+双御械)不打3/9","工具人(桃金娘+低星)给单人回费" }, 0)
     ui.setOnChange("ib_team_role", "ibSettingVisiblity2()")
     ui.addCheckBox(layout, "agree_cost_request_automaticlly",
         "自动同意费用请求", true)
     ui.addCheckBox(layout, "ib_auto_team_format",
         "自动编队", true)
+    ui.addCheckBox(layout, "agree_cost_ask_automaticlly",
+        "自动请求费用", true)
 
     ui.newRow(layout, "参与者", -1, -2, "参与者")
     addButton(layout, "ib_copy_room_id", "粘贴房间号", "import_room_id()")
