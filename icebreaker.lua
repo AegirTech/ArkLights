@@ -224,7 +224,7 @@ ib.促融共竞循环 = function()
                     关卡名 = ocro("ib_关卡名识别范围")
                     ssleep(1)
                     log(关卡名)
-                    if ib_team_role == 4 then
+                    if ib_team_role == 4 or ib_team_role == 5 then
                         if 关卡作业单人[关卡名] then
                             log("单人作业关卡名匹配成功")
                             ib.battle(关卡作业单人[关卡名])
@@ -250,7 +250,7 @@ ib.促融共竞循环 = function()
         ib_下一步 = function()
             tap("ib_下一步")
             ssleep(2)
-        end,h
+        end,
         ib_返回房间 = function()
             log(ib_auto_like)
             if ib_auto_like then
