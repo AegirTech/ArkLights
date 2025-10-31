@@ -1,6 +1,6 @@
 -- 促融共竞通用函数
 ib = {}
-local 角色编队作业 = { 72362, 72363, 72341 ,73042 , 73063}
+local 角色编队作业 = { 72362, 72363, 72341, 73042, 73063}
 local 关卡作业 = {
     ["IG-1"] = 72364,
     ["IG-2"] = 72367,
@@ -341,6 +341,7 @@ ib.自动编队 = function(干员, 群组)
     local 未编入干员 = {}
     local 干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
     local 未编入数量 = 0
+    log(3030)
 
     local 干员职业 = JsonDecode(readFile("character_type_list.json"))
     log("读取干员职业成功")
@@ -835,6 +836,9 @@ ib.抄作业 = function(作业, maptype)
     while true do
         if agree_cost_ask_automaticlly and findOne("ib_费用请求") then
                 tap("ib_费用请求")
+        end
+        if agree_cost_request_automaticlly and findOne("ib_费用请求同意") then
+                tap("ib_费用请求同意")
         end
         cost = tonumber(获得cost(cost) or cost) or cost
         wavetxt = ib.当前阶段() or 1
