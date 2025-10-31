@@ -1,6 +1,6 @@
 -- 促融共竞通用函数
 ib = {}
-local 角色编队作业 = { 72362, 72363, 72341, 73042, 73063}
+local 角色编队作业 = { 72362, 72363, 72341, 73042, 73063 }
 local 关卡作业 = {
     ["IG-1"] = 72364,
     ["IG-2"] = 72367,
@@ -834,11 +834,11 @@ ib.抄作业 = function(作业, maptype)
     end
 
     while true do
-        if agree_cost_ask_automaticlly and findOne("ib_费用请求") then
-                tap("ib_费用请求")
+        if ask_cost_automaticlly and findOne("ib_费用请求") then
+            tap("ib_费用请求")
         end
         if agree_cost_request_automaticlly and findOne("ib_费用请求同意") then
-                tap("ib_费用请求同意")
+            tap("ib_费用请求同意")
         end
         cost = tonumber(获得cost(cost) or cost) or cost
         wavetxt = ib.当前阶段() or 1

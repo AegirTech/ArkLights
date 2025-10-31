@@ -1210,6 +1210,7 @@ show_extra_ui = function()
     ui.addCheckBox(layout, "ib_auto_like", "自动点赞", true)
 
     ibSettingVisiblity2 = function()
+        -- 0: 躺赢狗 1: 角色A 2: 角色B 3:单人大号  4:单人大号  5: 回费工具人
         local team_role = ui.getValue("ib_team_role")
         toast(team_role)
         if team_role == 0 then --躺赢狗
@@ -1220,11 +1221,11 @@ show_extra_ui = function()
             ui.setVisiblity("ib_auto_team_format", 0)
         end
         if team_role == 4 or team_role == 3 then --单人大号
-            ui.setVisiblity("agree_cost_ask_automaticlly", 0)
+            ui.setVisiblity("ask_cost_automaticlly", 0)
         else
-            ui.setVisiblity("agree_cost_ask_automaticlly", 3)
+            ui.setVisiblity("ask_cost_automaticlly", 3)
         end
-        if team_role == 5 then --回费工具人
+        if team_role == 5 or team_role == 0 then --回费工具人
             ui.setVisiblity("agree_cost_request_automaticlly", 0)
         else
             ui.setVisiblity("agree_cost_request_automaticlly", 3)
@@ -1238,7 +1239,7 @@ show_extra_ui = function()
     ui.setOnChange("ib_team_role", "ibSettingVisiblity2()")
     ui.addCheckBox(layout, "agree_cost_request_automaticlly",
         "自动同意费用请求", true)
-    ui.addCheckBox(layout, "agree_cost_ask_automaticlly",
+    ui.addCheckBox(layout, "ask_cost_automaticlly",
         "自动请求费用", false)
     ui.addCheckBox(layout, "ib_auto_team_format",
         "自动编队", true)
