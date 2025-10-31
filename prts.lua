@@ -972,8 +972,9 @@ swipe_next_page = function(left, nodelay)
 end
 
 查找技能 = function(地图坐标1, 地图坐标2, x)
-    local x=x or 0
-    local intX, intY = findMultiColor(scale(地图坐标1 - 10 - 5), scale(地图坐标2 - 180), scale(地图坐标1 + 10 + 5),
+    local x = x or 0 --其他模式的技能图标横向偏移
+    --local y = y or 0
+    local intX, intY = findMultiColor(scale(地图坐标1 - 10 - x), scale(地图坐标2 - 180), scale(地图坐标1 + 10 + x),
         scale(地图坐标2 - 80), "F29F02-101010",
         scale(-21) ..
         "|" ..
@@ -986,7 +987,7 @@ end
         scale(21) ..
         "|" .. scale(-21) .. "|F3A901-101010|" .. scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
         0, 0.87)
-    return intX, intY
+    return intX, intY --中心点坐标
 end
 
 选择技能 = function(a)
