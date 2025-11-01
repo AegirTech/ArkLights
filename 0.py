@@ -1,8 +1,11 @@
 import datetime
 import hashlib
 import os
+import random
 import re
+import string
 import sys
+from pathlib import Path
 from time import sleep
 
 import requests
@@ -77,11 +80,149 @@ class WindowMgr:
         return self._handle
 
 
+def upload_to_image_hosting(file_path: Path, host="gitcode") -> str | None:
+    """上传图片到图床 返回链接"""
+
+    def generate_random_string(length=16):
+        return "".join(random.choices(string.ascii_letters, k=length))
+
+    image_host = {
+        "gitcode": {
+            "cors": False,
+            "params": {"filename": "ciallo", "mimeType": "image/jpeg"},
+            "max": 104857600,
+        },
+        "udesk": {"cors": False, "params": {}, "max": 104857600},
+        "kgqq": {"cors": True, "params": {}},
+        "yuanbao": {"cors": True, "params": {}},
+        "xinkaoyun": {
+            "cors": False,
+            "params": {"filename": "ciallo"},
+            "max": 1047527424,
+        },
+        "xingye": {
+            "cors": False,
+            "params": {"filename": "ciallo", "mimeType": "image/jpeg"},
+        },
+        "skland": {"cors": False, "params": {}, "max": 20971520},
+        "hupu": {
+            "cors": True,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+        "keep": {
+            "cors": False,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+            "max": 1047527424,
+        },
+        "weights": {"cors": True, "params": {}},
+        "qiyukf": {
+            "cors": False,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+            "max": 104857600,
+        },
+        "nuanpaper": {
+            "cors": True,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+        "qqsonglist": {
+            "cors": True,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+        "ukaka": {
+            "cors": False,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+            "max": 1047527424,
+        },
+        "snssdk": {
+            "cors": False,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+        "58tc": {
+            "cors": False,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+        "yyimgs": {
+            "cors": False,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+        "aippt": {
+            "cors": False,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+        "tyqw": {
+            "cors": False,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+        "168play": {
+            "cors": True,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+        "logosc": {
+            "cors": False,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+        "logosc1": {
+            "cors": False,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+        "beisu": {
+            "cors": False,
+            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
+        },
+    }
+
+    max_size = image_host[host].get("max", 104857600)
+    if os.path.getsize(file_path) > max_size:
+        print(f"文件大小超过限制，最大支持{max_size / 1048576}MB，请更换图床源")
+        return None
+    filename = generate_random_string()
+    file_type = file_path.suffix
+    if file_type == "":
+        file_type = ".jpeg"
+    mime = "image/jpeg"
+    url = f"https://bed-sign.vercel.0013107.xyz/sign?module={host}&filename={filename}{file_type}&mimeType={mime}"
+    content_type = image_host[host]["params"].get("mimeType", mime)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0",
+        "X-Obs-Acl": "public-read",
+        "Content-Type": content_type,
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "origin": "https://bed.vercel.0013107.xyz",
+        "sec-fetch-mode": "cors",
+    }
+    print("正在上传至文件托管服务器")
+    response = requests.get(url, headers=headers, timeout=25)
+    # print(response.text)
+    file_url = response.json().get("url")
+    cdn_url = response.json().get("resourceUrl")
+    body = response.json().get("body", {})
+    dict.pop(body, "file", None)
+    module = response.json().get("module", "POST")
+    with open(file_path, "rb") as f:
+        payload = f.read()
+        files = {"file": (file_path.name, payload, "application/octet-stream")}
+        if module == "PUT":
+            response = requests.put(
+                file_url, headers=headers, data=payload, timeout=200
+            )
+        else:
+            response = requests.request(
+                module, file_url, files=files, data=body, timeout=20
+            )
+    if response.status_code == 200:
+        if "gitcode.com" in cdn_url:
+            cdn_url = cdn_url.replace("gitcode.com", "gitcode.host")
+        return cdn_url
+    else:
+        return None
+
+
 def run(now=True):
     """自动运行调试 需提前打开任意lua文件"""
     myWindowMgr = WindowMgr()
     hwnd = myWindowMgr.find_window_wildcard(None, ".*?懒人精灵 - .*?")
-    if hwnd != None:
+    if hwnd is not None:
         win32gui.BringWindowToTop(hwnd)
         # 先发送一个alt事件，否则会报错导致后面的设置无效：pywintypes.error: (0, 'SetForegroundWindow', 'No error message is available')
         shell = win32com.client.Dispatch("WScript.Shell")
@@ -179,115 +320,112 @@ def saverun():
     run()
 
 
-def release(type):
+def release(file_type):
     with open("main.lua", "r", encoding="utf-8") as f:
         lines = f.readlines()
         for line in lines:
             if re.match("--\s*hotUpdate\(\)", line):
                 print("检测到热更新被注释,请重新打包")
                 return
-    if type == "RELEASE":
+    if file_type == "RELEASE":
         print(
             """
 1.请验证文件大小,在1.5m左右或以内
 2.请将res/char_type/里的json和res/ui/里的png放在懒人脚本资源/main.rc里面"""
         )
-        newLrMD5 = input("请输入md5值: ")
+        new_lr_md5 = input("请输入md5值: ")
         # 输出pkgPath的文件的md5
-        md5 = hashlib.md5()
-        with open(pkgPath, "rb") as f:
-            md5.update(f.read())
-        md5Text = md5.hexdigest()
-
+        md5_text = hashlib.md5(open(pkgPath, "rb").read()).hexdigest()
         # 判断输入值是否与md5Text相等
-        if newLrMD5 == md5Text:
+        if new_lr_md5 == md5_text:
             print("md5值正确")
             # 上传
-            upload(md5Text, type, "false")
+            # upload(md5_text, file_type, "False")
+            upload_to_backup_server(file_type)
         else:
             print("md5值错误")
-    elif type == "SKILL":
-        upload("", type, "false")
-    elif type == "MAPS":
-        upload_to_backup_server(type)
+    elif file_type == "SKILL":
+        # upload("", file_type, "False")
+        upload_to_backup_server(file_type)
+    elif file_type == "MAPS":
+        upload_to_backup_server(file_type)
 
 
-def upload(md5, type, force):
+def upload(md5_text, file_type, force):
     token = lc.token
     if token == "":
         print("token未配置，请配置token")
         exit()
-    upFile = ""
-    if type == "RELEASE":
-        upFile = pkgPath
-    elif type == "SKILL":
-        upFile = r"res\skill.zip"
-    elif type == "MAPS":
-        upFile = r"res\maps.zip"
-    print(f"upload file {upFile}")
-    md5 = hashlib.md5()
-    with open(upFile, "rb") as f:
-        md5.update(f.read())
-    md5Text = md5.hexdigest()
-    url = (
-        API
-        + "/uploadHotUpdatePackage?token="
-        + token
-        + "&md5="
-        + md5Text
-        + "&type="
-        + type
-        + "&force="
-        + force
-    )
-    fileName = ""
-    if type == "RELEASE":
-        fileName = "script.lr"
-    elif type == "SKILL":
-        fileName = "skill.zip"
+    up_file = ""
+    if file_type == "RELEASE":
+        up_file = pkgPath
+    elif file_type == "SKILL":
+        up_file = r"res\skill.zip"
+    elif file_type == "MAPS":
+        up_file = r"res\maps.zip"
+    if not md5_text or md5_text == "":
+        md5_text = hashlib.md5(open(up_file, "rb").read()).hexdigest()
+    url = f"{API}/uploadHotUpdatePackage?token={token}&md5={md5_text}&type={file_type}&force={force}"
+    file_name = ""
+    if file_type == "RELEASE":
+        file_name = "script.lr"
+    elif file_type == "SKILL":
+        file_name = "skill.zip"
 
     payload = {}
-    files = [("file", (fileName, open(upFile, "rb"), "application/octet-stream"))]
+    files = [("file", (file_name, open(up_file, "rb"), "application/octet-stream"))]
     headers = {"User-Agent": "Apifox/1.0.0 (https://apifox.com)"}
     try:
         response = requests.request(
-            "POST", url, headers=headers, data=payload, files=files
+            "POST", url, headers=headers, data=payload, files=files, timeout=10
         )
         print(response.json().get("msg"))
     except Exception as e:
-        print("上传主更新服务器失败:", e)
-    upload_to_backup_server(type)
+        print("上传审判庭服务器失败:", e)
+    upload_to_backup_server(file_type)
 
 
-def upload_to_backup_server(type):
+def upload_to_backup_server(file_type):
     bearer_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlbmx5c3VyZSJ9.AoDoOVosfVJUl-mAE1G-KneyrZcnkcFeWfRwyTtaX74"
-    url = "https://arkapi.enlysure.com:33033/ark/upload_file?cache=true"
-    upFile = ""
-    if type == "RELEASE":
-        upFile = pkgPath
-    elif type == "SKILL":
-        upFile = r"res\skill.zip"
-    elif type == "MAPS":
-        upFile = r"res\maps.zip"
-    print(f"upload file {upFile}")
+    # url = "https://arkapi.enlysure.com/ark/upload_file?cache=True"
+    up_file = ""
+    if file_type == "RELEASE":
+        up_file = pkgPath
+    elif file_type == "SKILL":
+        up_file = r"res\skill.zip"
+    elif file_type == "MAPS":
+        up_file = r"res\maps.zip"
     headers = {
         "Authorization": "Bearer " + bearer_token,
         "Connection": "keep-alive",
     }
-    files = [
-        (
-            "file",
-            (
-                {"RELEASE": "script", "SKILL": "skill", "MAPS": "maps.zip"}.get(type),
-                open(upFile, "rb"),
-                "application/octet-stream",
-            ),
-        )
-    ]
-    response = requests.post(url, headers=headers, files=files, timeout=6000)
+    # files = [
+    #     (
+    #         "file",
+    #         (
+    #             {"RELEASE": "script", "SKILL": "skill", "MAPS": "maps.zip"}.get(type),
+    #             open(upFile, "rb"),
+    #             "application/octet-stream",
+    #         ),
+    #     )
+    # ]
+    cdn_url = upload_to_image_hosting(Path(up_file), host="skland")
+    if cdn_url is None:
+        print("上传至文件服务器失败。")
+        return
+    url = "https://arkapi.enlysure.com/ark/set_file_url"
+    print(f"CDN地址: {cdn_url}")
+    params = {
+        "file_name": {"RELEASE": "script", "SKILL": "skill", "MAPS": "maps.zip"}.get(
+            file_type
+        ),
+        "url": cdn_url,
+        "md5": hashlib.md5(open(up_file, "rb").read()).hexdigest(),
+        "cache": {"RELEASE": True, "SKILL": True, "MAPS": False}.get(file_type),
+    }
+    response = requests.post(url, headers=headers, params=params, timeout=6000)
     # print(response.text)
-    print("备用更新服务器上传：", "成功" if response.status_code == 200 else "失败")
-    print(response.text)
+    print("新加坡服务器上传：", "成功" if response.status_code == 200 else "失败")
 
 
 def statistician():
@@ -322,64 +460,27 @@ def update_version():
     print(response.json().get("msg"))
 
 
-def point_check():
-    point_start = False
-    center_start = False
-    all_point = []
-    all_center = []
-    with open("point.lua", "r", encoding="utf-8") as f:
-        lines = f.readlines()
-        for line in lines:
-            if point_start or center_start:
-                # 不是很好的判断方式，但是管用
-                if (
-                    " = " in line
-                    and str.startswith(line, "    ")
-                    and (not str.startswith(line, "        "))
-                    and (not str.startswith(line, "    --"))
-                ):
-                    pp = line.split(" = ")[0].strip()
-                    if point_start:
-                        all_point.append(pp)
-                    elif center_start:
-                        all_center.append(pp)
-            if "point = {" in line:
-                point_start = True
-                center_start = False
-            if "center = {" in line:
-                point_start = False
-                center_start = True
-            if "distance = {" in line:
-                break
-    print("获取完成")
-    for p in all_point:
-        if p not in all_center:
-            print(p, "缺少center")
-
-
 if __name__ == "__main__":
     try:
         arg = sys.argv[1]
-        if arg == "run":
-            run()
-        elif arg == "resave":
-            resave()
-        elif arg == "save":
-            save()
-        elif arg == "saverun":
-            saverun()
-        elif arg == "r":
-            release("RELEASE")
-        elif arg == "rs":
-            release("SKILL")
-        elif arg == "rm":
-            release("MAPS")
-        elif arg == "s":
-            statistician()
-        elif arg == "ver":
-            update_version()
-        elif arg == "check":
-            point_check()
-
     except Exception as e:
         print(e)
+        exit()
+    if arg == "run":
+        run()
+    elif arg == "resave":
+        resave()
+    elif arg == "save":
+        save()
+    elif arg == "saverun":
+        saverun()
+    elif arg == "r":
+        release("RELEASE")
+    elif arg == "rs":
+        release("SKILL")
+    elif arg == "rm":
+        release("MAPS")
+    elif arg == "s":
+        statistician()
+    elif arg == "ver":
+        update_version()
