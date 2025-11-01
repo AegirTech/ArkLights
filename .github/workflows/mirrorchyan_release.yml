@@ -1,0 +1,27 @@
+name: mirrorchyan_release
+
+on:
+  workflow_dispatch:
+    inputs:
+        tag:
+            default: ''
+            required: false
+  release:
+    types: [released]
+
+jobs:
+  mirrorchyan:
+    runs-on: macos-latest
+
+    steps:
+      - uses: MirrorChyan/uploading-action@v1
+        with:
+          filetype: latest-release
+          tag: ${{ inputs.tag }}
+          filename: "*.apk"
+          mirrorchyan_rid: ArkLights
+
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          owner: AegirTech
+          repo: ArkLights
+          upload_token: ${{ secrets.MirrorChyanUploadToken }}
