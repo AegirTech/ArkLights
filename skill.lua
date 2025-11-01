@@ -822,6 +822,10 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 base = base + 0.3
             elseif icon == 'bskill_man_spd&cost1' then  --裁度0
                 base = base + 0.2
+            elseif icon == 'bskill_man_spd&cost2' then  --雪猎0
+                base = base + 0.2
+            elseif icon == 'bskill_man_spd&cost3' then  --雪猎2
+                base = base + 0.3
             elseif icon == 'bskill_man_spd&limit5' then --裁度2
                 base = base + 0.25
                 storage[operatoridx] = (storage[operatoridx] or 0) + 6
@@ -833,7 +837,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 --log(name)
                 if table.findv({ "夜刀", "流星", "豆苗", "褐果", "石英", "洋灰", "历阵锐枪芬" }, name) then
                     standard = standard + 1
-                elseif table.findv({ "白面鸮", "赫默", "星源" }, name) then
+                elseif table.findv({ "白面鸮", "赫默", "星源", "溯光星源" }, name) then
                     rhine = rhine + 1
                 elseif table.findv({ "远牙", "灰毫", "野鬃" }, name) then
                     if isCharExsit["薇薇安娜"] then base = base + 0.07 end
@@ -2207,6 +2211,8 @@ trainingOperatorBest = function(operator, charType, targetLevel)
                 if targetLevel == 1 then
                     s = s + 0.45
                 end
+            elseif icon == "bskill_train_spd&profession2" and charType == "PIONEER" then
+                s = s + 0.3
             elseif icon == "bskill_train_specialist&pioneer1" and (charType == "PIONEER" or charType == "SPECIAL") then
                 s = s + 0.3
             elseif icon == "bskill_train_specialist&pioneer2" and (charType == "PIONEER" or charType == "SPECIAL") then
