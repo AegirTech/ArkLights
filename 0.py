@@ -80,7 +80,7 @@ class WindowMgr:
         return self._handle
 
 
-def upload_to_image_hosting(file_path: Path, host="gitcode") -> str | None:
+def upload_to_image_hosting(file_path: Path, host="gitcode"):
     """上传图片到图床 返回链接"""
 
     def generate_random_string(length=16):
