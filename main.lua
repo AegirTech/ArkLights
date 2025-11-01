@@ -123,7 +123,21 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     sleep(1000)
-    --exit()
+    -- local all = { 66, 877, 786, 969 }
+    -- log(ocrex_ret("喀兰贸易活动ocr范列表1"))
+    -- log(ocrex_ret("喀兰贸易活动ocr范列表2"))
+    -- log(ocrex_ret("喀兰贸易活动ocr范列表3"))
+    -- log(ocrex_ret("喀兰贸易活动ocr范列表4"))
+    -- log(ocrex_ret("喀兰贸易活动ocr范列表5"))
+    -- log(ocrex_ret(all))
+    -- FFFFFF
+    -- 63  880-- 起始坐标
+    -- 210
+    -- 357
+    -- 504
+    -- 651
+
+    -- 差值 147
 end
 
 load(before_account_hook or '')()

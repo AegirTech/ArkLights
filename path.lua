@@ -11271,6 +11271,32 @@ end
 --     end
 -- end
 
+markConsecutiveSequences = function(data)
+    for _, item in ipairs(data) do
+        item.is_con = false
+    end
+
+    local i = 1
+    while i <= #data do
+        local j = i + 1
+        -- 继续查找连续的数字
+        while j <= #data and data[j].number - data[j - 1].number == 1 do
+            j = j + 1
+        end
+
+        local sequenceLength = j - i
+        if sequenceLength >= 2 then
+            for k = i, j - 1 do
+                data[k].is_con = true
+            end
+        end
+
+        i = j
+    end
+
+    return data
+end
+
 喀兰贸易重建活动 = function()
     log("喀兰贸易重建活动")
     if not appear("喀兰贸易活动首页进入", 5) then return end
@@ -11304,4 +11330,38 @@ end
             return
         end
     end
+
+    local 数字列表 = {}
+    log("开始识别数字")
+    for i = 1, 5 do
+        local cx = 63 + (i - 1) * 147
+        local cy = 880
+        for j = 1, 5 do
+            local need_cop = point["喀兰贸易数字列表" .. str(j)]
+            -- log("need", need_cop)
+            local is_this_number = true
+            for k, v in pairs(need_cop) do
+                local px = cx + v[1]
+                local py = cy + v[2]
+                --log("check", px, py)
+                --log(getColor(px, py))
+                if not compareColor(px, py, "#FFFFFF", 0.9) then
+                    is_this_number = false
+                    break
+                end
+                --log("match", px, py)
+            end
+            if is_this_number then
+                table.insert(数字列表, {
+                    index = i,
+                    number = j,
+                    is_choose = false,
+                })
+                break
+            end
+        end
+    end
+    log("数字列表", 数字列表)
+
+    markConsecutiveSequences(数字列表)
 end
