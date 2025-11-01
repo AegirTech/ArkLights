@@ -354,7 +354,7 @@ path.base = {
             log("fight is empty, return to home")
             return
         end
-        fight_tick = fight_tick + battle_times
+        fight_tick = fight_tick + (battle_times and not copy_homework)
         local next_fight_tick = fight_tick % #fight + 1 -- 多倍代理次数
         local next_fight = fight[next_fight_tick]
         log(cur_fight, next_fight)
@@ -5999,6 +5999,7 @@ path.活动 = function(x)
     end
 
     swip(x)
+    toast(x)
     ssleep(.5)
     --exit() --活动手动取点时取消注释
     if x:includes({ "ST-", "TR-", "-P-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
