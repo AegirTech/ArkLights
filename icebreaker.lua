@@ -90,7 +90,7 @@ ib.start = function()
     else
         path.跳转("首页")
         ssleep(.2)
-        tap("面板活动")
+        tap("面板活动2")
         appear("ib_主页", 10)
         if ib_auto_team_format then
             if ib_team_role > 0 then
