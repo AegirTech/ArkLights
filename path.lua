@@ -3952,7 +3952,6 @@ path.线索传递 = function()
 end
 
 path.任务收集 = function()
-    次生活动领取()
     path.跳转("任务")
     log(9012)
     appear({ "任务未选中列表2", "任务有列表2", "任务无列表2" })
@@ -11269,26 +11268,3 @@ end
 --         end
 --     end
 -- end
-
-
-次生活动领取 = function()
-    path.跳转("首页")
-    tap("面板作战")
-    if not appear("主页", 3) then return end
-    if not appear("主页面蚀刻章黄", 3) then
-        log("没有蚀刻章")
-        return
-    end
-    tap("主页面蚀刻章黄")
-    if not appear("次生主页", 5) then return end
-    if not appear("次生主页橙点", 5) then
-        log("次生活动已完成")
-        return
-    end
-    tap("次生主页橙点")
-    if not appear("次生采集页面", 5) then return end
-    tap("次生采集")
-    ssleep(1)
-    log("任务完成")
-    return true
-end
