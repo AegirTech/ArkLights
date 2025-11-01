@@ -354,7 +354,8 @@ path.base = {
             log("fight is empty, return to home")
             return
         end
-        fight_tick = fight_tick + (battle_times and not copy_homework)
+        if copy_homework then battle_times = 0 end
+        fight_tick = fight_tick + battle_times
         local next_fight_tick = fight_tick % #fight + 1 -- 多倍代理次数
         local next_fight = fight[next_fight_tick]
         log(cur_fight, next_fight)
