@@ -11268,3 +11268,38 @@ end
 --         end
 --     end
 -- end
+
+喀兰贸易重建活动 = function()
+    log("喀兰贸易重建活动")
+    if not appear("喀兰贸易活动首页进入", 5) then return end
+    if wait(function()
+            tap("喀兰贸易活动首页进入")
+            if findOne("喀兰贸易活动场地未开放") then return true end
+            if findOne("喀兰贸易活动开始重建") then return true end
+            if findOne("教程关闭") then
+                tap("教程关闭")
+                ssleep(.2)
+            end
+        end, 10) then
+        log(5)
+        return
+    end
+    if findOne("喀兰贸易活动场地未开放") then
+        log(6)
+        return true
+    end
+    while true do
+        if findOne('喀兰贸易活动已达成') then
+            tap('喀兰贸易活动下一关')
+            ssleep(0.2)
+        end
+        if findOne('喀兰贸易活动已达成', 2) then
+            tap('喀兰贸易活动开始重建')
+            break
+        end
+        if not findOne('喀兰贸易活动下一关') then
+            log(10)
+            return
+        end
+    end
+end
