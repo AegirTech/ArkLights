@@ -409,12 +409,11 @@ def upload_to_backup_server(file_type):
     #         ),
     #     )
     # ]
-    cdn_url = upload_to_image_hosting(Path(up_file), host="skland")
+    cdn_url = upload_to_image_hosting(Path(up_file), host="keep")
     if cdn_url is None:
         print("上传至文件服务器失败。")
         return
     url = "https://arkapi.enlysure.com/ark/set_file_url"
-    print(f"CDN地址: {cdn_url}")
     params = {
         "file_name": {"RELEASE": "script", "SKILL": "skill", "MAPS": "maps.zip"}.get(
             file_type
