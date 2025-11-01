@@ -2357,6 +2357,7 @@ check_hot_update = function()
 end
 
 updateLr = function(update_info)
+    local new_script_path = getWorkPath() .. '/newscript.lr'
     if update_info.updateLr then
         toast("正在更新脚本...")
         if downloadFile(update_info.lrUrl, new_script_path) == -1 then
@@ -2377,6 +2378,8 @@ updateLr = function(update_info)
 end
 
 updateSkill = function(update_info)
+    local skill_extract_path = getWorkPath() .. '/skill'
+    local skill_path = getWorkPath() .. '/skill.zip'
     if dev_maps then
         log("开发模式解压skill.zip")
         extractAssets("main.rc", getWorkPath(), "skill.zip")

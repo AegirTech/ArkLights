@@ -51,9 +51,6 @@ console.clearLog()
 
 ark_api_base = "https://arkapi.enlysure.com"
 update_source = 'http://ark.aegirtech.com:8080'
-new_script_path = getWorkPath() .. '/newscript.lr'
-skill_path = getWorkPath() .. '/skill.zip'
-skill_extract_path = getWorkPath() .. '/skill'
 
 log_path = "/sdcard/" .. getPackageName() .. "/log/"
 
