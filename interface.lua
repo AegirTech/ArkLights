@@ -1754,7 +1754,11 @@ show_auto_fight_ui = function()
     newRow(layout)
     addButton(layout, "map_online", "联网更新地图包", "fetchMaps()")
     addButton(layout, nil, "本地更新地图包", "fetchLocalMaps()")
-    addInfo(layout, "本地更新请在频道下载maps.zip放在/sdcard/Pictures下")
+
+    newRow(layout)
+    addTextView(layout, "当前地图版本信息: 未知", "map_ver_text")
+
+    addInfo(layout, "下载失败请加入反馈群，在群内下载maps.zip放在/sdcard/Pictures下，再点击本地更新地图包")
     -----------------------------------------------------------
     addTitle(layout, "使用方法")
     newRow(layout)
@@ -1774,6 +1778,7 @@ show_auto_fight_ui = function()
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
     ui.setButton("map_online", "联网更新地图包")
+    load_map_version()
 end
 
 jump_readme = function()

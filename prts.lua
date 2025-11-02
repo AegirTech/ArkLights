@@ -16,6 +16,17 @@ fetchMaps = function()
         log("地图包版本获取失败,请稍后再试")
         ui.setButton("map_online", "联网更新地图包(下载失败，请重试)")
     end
+    load_map_version()
+end
+
+load_map_version = function()
+    local version_path = getWorkPath() .. '/maps/version.json'
+    if fileExist(version_path) then
+        local f = io.open(version_path, "r")
+        local version = f:read("*a")
+        f:close()
+        ui.setText("map_ver_text", "当前地图版本: " .. version)
+    end
 end
 
 fetchLocalMaps = function()

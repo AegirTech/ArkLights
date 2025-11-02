@@ -214,7 +214,8 @@ class Calc:
 
 
 levels_path = pathlib.Path(__file__).parent.parent / "levels.json"
-map_path = pathlib.Path(__file__).parent
+map_path = pathlib.Path(__file__).parent / "maps"
+map_path.mkdir(parents=True, exist_ok=True)
 
 url = "https://raw.githubusercontent.com/yuanyan3060/Arknights-Bot-Resource/main/levels.json"
 levels: List[Level] = []
@@ -224,7 +225,7 @@ response = requests.get(url)
 if response.status_code == 200:
     level_table = json.loads(response.text)
     for data in level_table:
-        print(data["name"], data["code"], data["stageId"])
+        # print(data["name"], data["code"], data["stageId"])
         levels.append(Level.from_json(data))
         if data["name"] == None:
             continue
@@ -323,17 +324,17 @@ def zip_files(file_folder, output_path):
     zipf.close()
 
 
-zip_files(map_path, map_path.parent / "maps.zip")
+# 写入当前时间 到 version文件中
+with open(map_path / "version.json", "w", encoding="UTF-8") as vf:
+    from datetime import datetime
 
-output_path = os.path.join(map_path.parent, "maps.zip")
-upload_url = "https://arkapi.enlysure.com:33033/ark/upload_file"
-headers = {
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlbmx5c3VyZSJ9.AoDoOVosfVJUl-mAE1G-KneyrZcnkcFeWfRwyTtaX74",
-    "Connection": "keep-alive",
-}
-file = {"file": open(output_path, "rb")}
-ret = requests.post(upload_url, headers=headers, files=file, timeout=500)
-print(ret.status_code, ret.text)
+    now = datetime.now()
+    vf.write(now.strftime("%Y-%m-%d %H:%M:%S"))
+
+
+zip_files(map_path, map_path.parent.parent / "maps.zip")
+
+output_path = os.path.join(map_path.parent.parent, "maps.zip")
 
 """
 if __name__ == "__main__":
