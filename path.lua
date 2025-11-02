@@ -1591,6 +1591,10 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
         back()
     end
 
+    if findAny({ "喀兰贸易活动返回" }) then
+        back()
+    end
+
     -- 生息演算页面适配
     if extra_mode == "生息沙洲遗闻" and findOne("生息底栏烹饪按钮") then
         log("生息")
@@ -11333,7 +11337,7 @@ path.喀兰贸易技术研发部 = function()
     if not findAny({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }) then
         path.跳转("首页")
         tap("面板活动")
-        if not appear("喀兰贸易活动首页", 5) then return end
+        if not appear("喀兰贸易活动首页进入", 5) then return end
     end
     喀兰贸易重建活动(true)
 end
@@ -11342,6 +11346,7 @@ end
     log("喀兰贸易重建活动")
     if need_enter then
         if not appear({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }, 5) then return end
+        log(2)
         if not wait(function()
                 tap("喀兰贸易活动首页进入")
                 if findOne("喀兰贸易活动场地未开放") then return true end
@@ -11355,6 +11360,7 @@ end
             log(5)
             return
         end
+        log(4)
         if findOne("喀兰贸易活动场地未开放") then
             log(6)
             return true
@@ -11365,7 +11371,7 @@ end
                 ssleep(0.2)
                 log(7)
             end
-            if findOne('喀兰贸易活动已达成', 2) then
+            if findOne('喀兰贸易活动开始重建', 2) then
                 tap('喀兰贸易活动开始重建')
                 log(9)
                 break
@@ -11375,11 +11381,19 @@ end
                 return
             end
         end
+        log(9)
     end
 
     if appear("喀兰贸易结算画面", 3) then
         log("重建成功，下一局")
         tap("喀兰贸易下一局")
+        wait(function()
+            tap("喀兰贸易领取")
+            if findAny({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }) then
+                return true
+            end
+        end, 5)
+        appear({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }, 2)
         return 喀兰贸易重建活动(true)
     end
 
