@@ -11329,11 +11329,20 @@ markConsecutiveSequences = function(data)
     return seq_index, data
 end
 
+path.喀兰贸易技术研发部 = function()
+    if not findAny({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }) then
+        path.跳转("首页")
+        tap("面板活动")
+        if not appear("喀兰贸易活动首页", 5) then return end
+    end
+    喀兰贸易重建活动(true)
+end
+
 喀兰贸易重建活动 = function(need_enter)
     log("喀兰贸易重建活动")
     if need_enter then
         if not appear({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }, 5) then return end
-        if wait(function()
+        if not wait(function()
                 tap("喀兰贸易活动首页进入")
                 if findOne("喀兰贸易活动场地未开放") then return true end
                 if findOne("喀兰贸易活动开始重建") then return true end
@@ -11342,6 +11351,7 @@ end
                     ssleep(.2)
                 end
             end, 10) then
+            back()
             log(5)
             return
         end
@@ -11353,9 +11363,11 @@ end
             if findOne('喀兰贸易活动已达成') then
                 tap('喀兰贸易活动下一关')
                 ssleep(0.2)
+                log(7)
             end
             if findOne('喀兰贸易活动已达成', 2) then
                 tap('喀兰贸易活动开始重建')
+                log(9)
                 break
             end
             if not findOne('喀兰贸易活动下一关') then
@@ -11363,6 +11375,12 @@ end
                 return
             end
         end
+    end
+
+    if appear("喀兰贸易结算画面", 3) then
+        log("重建成功，下一局")
+        tap("喀兰贸易下一局")
+        return 喀兰贸易重建活动(true)
     end
 
     local 数字列表 = {}
@@ -11396,9 +11414,13 @@ end
         end
     end
 
+    -- 测试
+    -- local hd_debug = true
+    -- 数字列表 = { { index = 1, number = 1, is_choose = false }, { index = 2, number = 2, is_choose = false }, { index = 3, number = 2, is_choose = false }, { index = 4, number = 4, is_choose = false }, { index = 5, number = 5, is_choose = false } }
+
     if #数字列表 ~= 5 then
         log("数字识别失败", 数字列表)
-        appearTap("喀兰贸易结束回合红", 3)
+        appearTap("喀兰贸易结束回合红", 2)
         return 喀兰贸易重建活动()
     end
 
@@ -11415,6 +11437,7 @@ end
 
     数字列表, 规划列表 = markActions(数字列表, seq_index) -- claude真好用
     log("规划列表", 规划列表)
+    if hd_debug then exit() end
 
     get_tap_index = function(tap_index)
         -- 根据index获取tap位置
@@ -11460,8 +11483,8 @@ end
     appear("喀兰贸易结束回合红", 2)
     if not wait(function()
             appearTap("喀兰贸易结束回合红", 0.5)
-            if disappear("喀兰贸易结束回合红", 2) then return true end
-        end, 5) then
+            if not findOne("喀兰贸易结束回合红") then return true end
+        end, 3) then
         log("喀兰贸易结束回合点击失败")
         return
     end
@@ -11547,18 +11570,20 @@ markActions = function(数字列表, seq_index)
             })
 
             -- 找到连续序列的最后一项,全部标记为收集资源
-            for _, seq in ipairs(unprocessedSeqs) do
-                for _, idx in ipairs(seq) do
-                    if 数字列表[idx].action == nil then
-                        数字列表[idx].action = "collect"
-                        table.insert(规划列表, {
-                            index = 数字列表[idx].index,
-                            number = 数字列表[idx].number,
-                            action = "collect"
-                        })
-                    end
+            last_seq = unprocessedSeqs[#unprocessedSeqs]
+            -- for _, seq in ipairs(unprocessedSeqs) do
+            for _, idx in ipairs(last_seq) do
+                if 数字列表[idx].action == nil then
+                    数字列表[idx].action = "collect"
+                    table.insert(规划列表, {
+                        index = 数字列表[idx].index,
+                        number = 数字列表[idx].number,
+                        action = "collect"
+                    })
                 end
             end
+
+            -- end
 
             -- 情况2: 只有连续序列,没有非连续序列
         elseif #availableNonConsec == 0 and #unprocessedSeqs > 0 then
@@ -11571,7 +11596,7 @@ markActions = function(数字列表, seq_index)
                 action = "forward"
             })
 
-            -- 当前连续序列剩下的标记为收集资源
+            -- -- 当前连续序列剩下的标记为收集资源
             for i = 2, #firstSeq do
                 数字列表[firstSeq[i]].action = "collect"
                 table.insert(规划列表, {
@@ -11581,18 +11606,18 @@ markActions = function(数字列表, seq_index)
                 })
             end
 
-            -- 其他连续序列全部标记为收集资源
-            for i = 2, #unprocessedSeqs do
-                for _, idx in ipairs(unprocessedSeqs[i]) do
-                    数字列表[idx].action = "collect"
-                    table.insert(规划列表, {
-                        index = 数字列表[idx].index,
-                        number = 数字列表[idx].number,
-                        action = "collect"
-                    })
-                end
-            end
-            break
+            -- -- 其他连续序列全部标记为收集资源
+            -- for i = 2, #unprocessedSeqs do
+            --     for _, idx in ipairs(unprocessedSeqs[i]) do
+            --         数字列表[idx].action = "collect"
+            --         table.insert(规划列表, {
+            --             index = 数字列表[idx].index,
+            --             number = 数字列表[idx].number,
+            --             action = "collect"
+            --         })
+            --     end
+            -- end
+            -- break
 
             -- 情况3: 只有非连续序列,没有连续序列
         elseif #availableNonConsec > 0 and #unprocessedSeqs == 0 then
