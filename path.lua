@@ -11332,7 +11332,7 @@ end
 喀兰贸易重建活动 = function(need_enter)
     log("喀兰贸易重建活动")
     if need_enter then
-        if not appear("喀兰贸易活动首页进入", 5) then return end
+        if not appear({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }, 5) then return end
         if wait(function()
                 tap("喀兰贸易活动首页进入")
                 if findOne("喀兰贸易活动场地未开放") then return true end
@@ -11396,25 +11396,16 @@ end
         end
     end
 
+    if #数字列表 ~= 5 then
+        log("数字识别失败", 数字列表)
+        appearTap("喀兰贸易结束回合红", 3)
+        return 喀兰贸易重建活动()
+    end
 
     local seq_index
     seq_index, 数字列表 = markConsecutiveSequences(数字列表)
     log("数字列表", 数字列表)
     log("连续序列索引", seq_index)
-
-    -- 查找第一个 is_con 为 false 的数字
-    -- local 规划 = {}
-    -- for _, item in ipairs(数字列表) do
-    --     if not item.is_con then
-    --         table.insert(规划, item.index)
-    --         break
-    --     end
-    -- end
-    -- true 表示前进，false表示收集资源
-    -- if #规划 == 0 then
-    --     log("所有数字均为连续序列，选择第一个数字")
-    --     table.insert(规划, { 数字列表[1].index, true })
-    -- end
 
     -- 寻找 非连续序列的数字，选择第一个选择标记为前进。然后寻找连续序列的最后一项，全部标记为 收集资源。
     -- 重复上面的逻辑直到没有非连续序列的数字或者没有连续序列的数字为止。
@@ -11448,26 +11439,38 @@ end
         log("点击位置坐标", tx, ty)
         wait(function()
             tap({ tx, ty })
-            ssleep(1)
             if appear({ "喀兰贸易前进", "喀兰贸易收集资源" }, 0.5) then return true end
         end, 5)
         if plan.action == "forward" then
             log("位置" .. plan.index .. "的数字" .. plan.number .. ": 前进")
-            appearTap("喀兰贸易前进", 5)
+            wait(function()
+                tap("喀兰贸易前进")
+                if disappear("喀兰贸易前进", 0.5) then return true end
+            end, 5)
         elseif plan.action == "collect" then
             log("位置" .. plan.index .. "的数字" .. plan.number .. ": 收集资源")
             -- 执行收集资源操作
-            appearTap("喀兰贸易收集资源", 5)
+            wait(function()
+                tap("喀兰贸易收集资源")
+                if disappear("喀兰贸易收集资源", 0.5) then return true end
+            end, 5)
         end
         disappear({ "喀兰贸易前进", "喀兰贸易收集资源" }, 3)
     end
-    appearTap("喀兰贸易结束回合红", 4)
-    if not findOne("喀兰贸易结束回合红") then
-        log("喀兰贸易重建失败, 强制结束")
+    appear("喀兰贸易结束回合红", 2)
+    if not wait(function()
+            appearTap("喀兰贸易结束回合红", 0.5)
+            if disappear("喀兰贸易结束回合红", 2) then return true end
+        end, 5) then
+        log("喀兰贸易结束回合点击失败")
         return
     end
-    ssleep(5)
-    喀兰贸易重建活动(false)
+    if appear("喀兰贸易结算画面", 3) then
+        log("重建成功，下一局")
+        tap("喀兰贸易下一局")
+        return 喀兰贸易重建活动(true)
+    end
+    return 喀兰贸易重建活动(false)
 end
 
 markActions = function(数字列表, seq_index)

@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.02 11:33"
+release_date = "11.02 14:58"
 update_announcement = '最近更新: 雪山降临活动作战'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -123,6 +123,8 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     sleep(1000)
+    喀兰贸易重建活动()
+    exit()
     -- local all = { 66, 877, 786, 969 }
     -- log(ocrex_ret("喀兰贸易活动ocr范列表1"))
     -- log(ocrex_ret("喀兰贸易活动ocr范列表2"))
