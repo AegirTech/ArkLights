@@ -2171,8 +2171,8 @@ point = {
         ["HD-8"] = { 1590, 462 },
         ["HD-ST-3"] = "1333|564|00B1FF",
         ["HD-9"] = { 1264, 673 },
-        ["HD-10"] = { 1404, 670 },
-
+        ["HD-TR-10"] = "1304|663|00B1FF",
+        ["HD-ST-4"] = "1514|668|00B0FE",
 
         -- 不要删除省的每次都手打，ctrl+/注释掉即可
         -- ["HD-EX-1"] = { 239 * 1.5, 244 * 1.5 },
@@ -3387,7 +3387,8 @@ distance = {
     ["HD-8"] = { swip_right_max, -1800 },
     ["HD-ST-3"] = { swip_right_max, -2000 },
     ["HD-9"] = { swip_right_max, -2200 },
-    ["HD-10"] = { swip_right_max, -2400 },
+    ["HD-TR-10"] = { swip_right_max, -2400 },
+    ["HD-ST-4"] = { swip_right_max, -2500 },
 
     ["CW-6"] = { swip_right_max, -1349 },
     ["GT-5"] = { swip_right_max, -1535 },
