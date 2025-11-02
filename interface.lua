@@ -924,7 +924,7 @@ show_debug_ui = function()
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "not_use_ocr", "基建不使用ocr（低配置或基建崩溃建议打开）", false)
 
-    addInfo(debug_layout_基建, "勾选后无法使用红松林、多萝西等标准化组合，无法自动使用菲亚梅塔")
+    addInfo(debug_layout_基建, "勾选后无法使用红松林、多萝西等标准化组合，无法自动使用菲亚梅塔、深海队")
 
     newRow(debug_layout_基建)
     ui.addCheckBox(debug_layout_基建, "disable_add_friend", "好友访问不自动添加好友", false)
@@ -938,7 +938,7 @@ show_debug_ui = function()
     newRow(debug_layout_基建)
     addTextView(debug_layout_基建, "基建换班心情阈值")
     ui.addEditText(debug_layout_基建, "shift_min_mood", '12')
-
+    addInfo(debug_layout_基建, "换班间隔12小时推荐12，8小时推荐10，6小时推荐8")
     -- ui.addCheckBox(debug_layout_基建, "disable_control_shift",
     --     "基建换班禁用控制中枢换班", false)
 
