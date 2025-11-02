@@ -11277,57 +11277,91 @@ markConsecutiveSequences = function(data)
     end
 
     local i = 1
+    local seq_index = {}
     while i <= #data do
-        local j = i + 1
+        local currentNum = data[i].number
+        local j = i
+        local sequence = {}
+        local numberToIndex = {} -- 记录每个数字第一次出现的索引
+
         -- 继续查找连续的数字
-        while j <= #data and data[j].number - data[j - 1].number == 1 do
-            j = j + 1
+        while j <= #data do
+            local num = data[j].number
+
+            if num == currentNum then
+                -- 相同的数字，只记录第一次出现的索引
+                if not numberToIndex[num] then
+                    numberToIndex[num] = data[j].index
+                    table.insert(sequence, data[j].index)
+                end
+                j = j + 1
+            elseif num == currentNum + 1 then
+                -- 连续的下一个数字
+                if not numberToIndex[num] then
+                    numberToIndex[num] = data[j].index
+                    table.insert(sequence, data[j].index)
+                end
+                currentNum = num
+                j = j + 1
+            else
+                -- 数字不连续，退出循环
+                break
+            end
         end
 
-        local sequenceLength = j - i
-        if sequenceLength >= 2 then
+        -- 计算序列中包含多少个不同的数字
+        local uniqueCount = 0
+        for _ in pairs(numberToIndex) do
+            uniqueCount = uniqueCount + 1
+        end
+        if uniqueCount >= 2 then
+            -- 标记所有在这个范围内的项
             for k = i, j - 1 do
                 data[k].is_con = true
             end
+            table.insert(seq_index, sequence)
         end
 
         i = j
     end
+    log("标记连续序列结果", data)
 
-    return data
+    return seq_index, data
 end
 
-喀兰贸易重建活动 = function()
+喀兰贸易重建活动 = function(need_enter)
     log("喀兰贸易重建活动")
-    if not appear("喀兰贸易活动首页进入", 5) then return end
-    if wait(function()
-            tap("喀兰贸易活动首页进入")
-            if findOne("喀兰贸易活动场地未开放") then return true end
-            if findOne("喀兰贸易活动开始重建") then return true end
-            if findOne("教程关闭") then
-                tap("教程关闭")
-                ssleep(.2)
-            end
-        end, 10) then
-        log(5)
-        return
-    end
-    if findOne("喀兰贸易活动场地未开放") then
-        log(6)
-        return true
-    end
-    while true do
-        if findOne('喀兰贸易活动已达成') then
-            tap('喀兰贸易活动下一关')
-            ssleep(0.2)
-        end
-        if findOne('喀兰贸易活动已达成', 2) then
-            tap('喀兰贸易活动开始重建')
-            break
-        end
-        if not findOne('喀兰贸易活动下一关') then
-            log(10)
+    if need_enter then
+        if not appear("喀兰贸易活动首页进入", 5) then return end
+        if wait(function()
+                tap("喀兰贸易活动首页进入")
+                if findOne("喀兰贸易活动场地未开放") then return true end
+                if findOne("喀兰贸易活动开始重建") then return true end
+                if findOne("教程关闭") then
+                    tap("教程关闭")
+                    ssleep(.2)
+                end
+            end, 10) then
+            log(5)
             return
+        end
+        if findOne("喀兰贸易活动场地未开放") then
+            log(6)
+            return true
+        end
+        while true do
+            if findOne('喀兰贸易活动已达成') then
+                tap('喀兰贸易活动下一关')
+                ssleep(0.2)
+            end
+            if findOne('喀兰贸易活动已达成', 2) then
+                tap('喀兰贸易活动开始重建')
+                break
+            end
+            if not findOne('喀兰贸易活动下一关') then
+                log(10)
+                return
+            end
         end
     end
 
@@ -11361,7 +11395,236 @@ end
             end
         end
     end
-    log("数字列表", 数字列表)
 
-    markConsecutiveSequences(数字列表)
+
+    local seq_index
+    seq_index, 数字列表 = markConsecutiveSequences(数字列表)
+    log("数字列表", 数字列表)
+    log("连续序列索引", seq_index)
+
+    -- 查找第一个 is_con 为 false 的数字
+    -- local 规划 = {}
+    -- for _, item in ipairs(数字列表) do
+    --     if not item.is_con then
+    --         table.insert(规划, item.index)
+    --         break
+    --     end
+    -- end
+    -- true 表示前进，false表示收集资源
+    -- if #规划 == 0 then
+    --     log("所有数字均为连续序列，选择第一个数字")
+    --     table.insert(规划, { 数字列表[1].index, true })
+    -- end
+
+    -- 寻找 非连续序列的数字，选择第一个选择标记为前进。然后寻找连续序列的最后一项，全部标记为 收集资源。
+    -- 重复上面的逻辑直到没有非连续序列的数字或者没有连续序列的数字为止。
+    -- 如果存在连续序列，但是不存在非连续序列，则选择连续序列第一项标记为前进，当前连续序列剩下的标记为收集资源。
+    -- 如果不存在连续序列，但是存在非连续序列，则选择第一个非连续序列标记为前进，倒数第一个标记为收集资源，然后再次寻找非连续序列，重复上述逻辑直到没有非连续序列为止。
+
+
+    数字列表, 规划列表 = markActions(数字列表, seq_index) -- claude真好用
+    log("规划列表", 规划列表)
+
+    get_tap_index = function(tap_index)
+        -- 根据index获取tap位置
+        -- 排除掉之前的已选择的部分
+        local real_tap_index = 0
+        for _, item in ipairs(数字列表) do
+            if not item.is_choose then
+                real_tap_index = real_tap_index + 1
+            end
+            if item.index == tap_index then
+                数字列表[tap_index].is_choose = true
+                return real_tap_index
+            end
+        end
+    end
+
+    for _, plan in ipairs(规划列表) do
+        log("执行计划", plan)
+        local tap_index = get_tap_index(plan.index)
+        log("tap_index", tap_index)
+        local tx, ty = scale(130 + 147 * (tap_index - 1)), scale(920)
+        log("点击位置坐标", tx, ty)
+        wait(function()
+            tap({ tx, ty })
+            ssleep(1)
+            if appear({ "喀兰贸易前进", "喀兰贸易收集资源" }, 0.5) then return true end
+        end, 5)
+        if plan.action == "forward" then
+            log("位置" .. plan.index .. "的数字" .. plan.number .. ": 前进")
+            appearTap("喀兰贸易前进", 5)
+        elseif plan.action == "collect" then
+            log("位置" .. plan.index .. "的数字" .. plan.number .. ": 收集资源")
+            -- 执行收集资源操作
+            appearTap("喀兰贸易收集资源", 5)
+        end
+        disappear({ "喀兰贸易前进", "喀兰贸易收集资源" }, 3)
+    end
+    appearTap("喀兰贸易结束回合红", 4)
+    if not findOne("喀兰贸易结束回合红") then
+        log("喀兰贸易重建失败, 强制结束")
+        return
+    end
+    ssleep(5)
+    喀兰贸易重建活动(false)
+end
+
+markActions = function(数字列表, seq_index)
+    -- 为每个item添加action字段
+    for _, item in ipairs(数字列表) do
+        item.action = nil -- nil表示不操作, "forward"表示前进, "collect"表示收集资源
+    end
+
+    -- 创建规划列表
+    local 规划列表 = {}
+
+    -- 辅助函数: 获取所有非连续序列的数字(is_con为false的)
+    local function getNonConsecutive()
+        local result = {}
+        -- for _, item in ipairs(数字列表) do
+        --     if not item.is_con then
+        --         table.insert(result, item)
+        --     end
+        -- end
+        local all_seq_index = {}
+        for _, seq in ipairs(seq_index) do
+            for _, idx in ipairs(seq) do
+                all_seq_index[idx] = true
+            end
+        end
+        for _, item in ipairs(数字列表) do
+            if not all_seq_index[item.index] then
+                table.insert(result, item)
+            end
+        end
+        return result
+    end
+
+    -- 辅助函数: 获取未处理的连续序列
+    local function getUnprocessedSequences()
+        local result = {}
+        for _, seq in ipairs(seq_index) do
+            local hasUnprocessed = false
+            for _, idx in ipairs(seq) do
+                if 数字列表[idx].action == nil then
+                    hasUnprocessed = true
+                    break
+                end
+            end
+            if hasUnprocessed then
+                table.insert(result, seq)
+            end
+        end
+        return result
+    end
+
+    while true do
+        local nonConsec = getNonConsecutive()
+        local unprocessedSeqs = getUnprocessedSequences()
+
+        -- 过滤掉已经被标记的非连续项
+        local availableNonConsec = {}
+        for _, item in ipairs(nonConsec) do
+            if item.action == nil then
+                table.insert(availableNonConsec, item)
+            end
+        end
+        log("可用非连续项", availableNonConsec)
+        log("未处理连续序列", unprocessedSeqs)
+
+        -- 情况1: 有非连续序列和连续序列
+        if #availableNonConsec > 0 and #unprocessedSeqs > 0 then
+            -- 选择第一个非连续序列标记为前进
+            availableNonConsec[1].action = "forward"
+            table.insert(规划列表, {
+                index = availableNonConsec[1].index,
+                number = availableNonConsec[1].number,
+                action = "forward"
+            })
+
+            -- 找到连续序列的最后一项,全部标记为收集资源
+            for _, seq in ipairs(unprocessedSeqs) do
+                for _, idx in ipairs(seq) do
+                    if 数字列表[idx].action == nil then
+                        数字列表[idx].action = "collect"
+                        table.insert(规划列表, {
+                            index = 数字列表[idx].index,
+                            number = 数字列表[idx].number,
+                            action = "collect"
+                        })
+                    end
+                end
+            end
+
+            -- 情况2: 只有连续序列,没有非连续序列
+        elseif #availableNonConsec == 0 and #unprocessedSeqs > 0 then
+            -- 选择第一个连续序列的第一项标记为前进
+            local firstSeq = unprocessedSeqs[1]
+            数字列表[firstSeq[1]].action = "forward"
+            table.insert(规划列表, {
+                index = 数字列表[firstSeq[1]].index,
+                number = 数字列表[firstSeq[1]].number,
+                action = "forward"
+            })
+
+            -- 当前连续序列剩下的标记为收集资源
+            for i = 2, #firstSeq do
+                数字列表[firstSeq[i]].action = "collect"
+                table.insert(规划列表, {
+                    index = 数字列表[firstSeq[i]].index,
+                    number = 数字列表[firstSeq[i]].number,
+                    action = "collect"
+                })
+            end
+
+            -- 其他连续序列全部标记为收集资源
+            for i = 2, #unprocessedSeqs do
+                for _, idx in ipairs(unprocessedSeqs[i]) do
+                    数字列表[idx].action = "collect"
+                    table.insert(规划列表, {
+                        index = 数字列表[idx].index,
+                        number = 数字列表[idx].number,
+                        action = "collect"
+                    })
+                end
+            end
+            break
+
+            -- 情况3: 只有非连续序列,没有连续序列
+        elseif #availableNonConsec > 0 and #unprocessedSeqs == 0 then
+            if #availableNonConsec == 1 then
+                -- 只剩一个非连续项,标记为前进
+                availableNonConsec[1].action = "forward"
+                table.insert(规划列表, {
+                    index = availableNonConsec[1].index,
+                    number = availableNonConsec[1].number,
+                    action = "forward"
+                })
+                break
+            else
+                -- 第一个标记为前进
+                availableNonConsec[1].action = "forward"
+                table.insert(规划列表, {
+                    index = availableNonConsec[1].index,
+                    number = availableNonConsec[1].number,
+                    action = "forward"
+                })
+
+                -- 倒数第一个标记为收集资源
+                availableNonConsec[#availableNonConsec].action = "collect"
+                table.insert(规划列表, {
+                    index = availableNonConsec[#availableNonConsec].index,
+                    number = availableNonConsec[#availableNonConsec].number,
+                    action = "collect"
+                })
+            end
+
+            -- 情况4: 既没有非连续也没有连续(全部处理完毕)
+        else
+            break
+        end
+    end
+
+    return 数字列表, 规划列表
 end
