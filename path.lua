@@ -8828,6 +8828,7 @@ path.自动合成模组材料 = function(target_level)
             appear("模组升级确认", 2)
         end
         if findOne("干员模组" .. current_level .. "级红") then
+            log("合成", i + 1, "级模组缺少材料")
             tap("干员模组" .. current_level .. "级红材料")
             appearTap("干员模组" .. current_level .. "级红材料跳转")
             appear("加工站")

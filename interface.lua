@@ -1196,7 +1196,7 @@ show_extra_ui = function()
     addButton(layout, nil, "喀兰贸易技术研发部开始",
         make_jump_ui_command(layout, nil,
             "extra_mode='喀兰贸易技术研发部';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-
+    ---------------------------------------------------------------------
     addTitle(layout, "促融共竞#2(1080p)")
     addInfo(layout, "要自己过一下教程,开两个模拟器一个当房主一个当参与者")
     newRow(layout)
@@ -1707,8 +1707,6 @@ show_auto_ui = function()
             "extra_mode='重复卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     ]]
     ---------------------------------------------------------------------
-
-    ---------------------------------------------------------------------
     addTitle(layout, "连续公招")
     newRow(layout)
     addButton(layout, "extra_recruit", "刷公招",
@@ -1776,7 +1774,7 @@ show_auto_fight_ui = function()
 如果开始作战界面来回乱点，则为缺少干员请尝试更换作业
 
 由于实现方法不同，不是所有作业都能适配，
-如果多次失败请尝试耿冠作业
+如果多次失败请尝试更换作业
 ]])
 
     newRow(layout)

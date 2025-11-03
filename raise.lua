@@ -1184,8 +1184,9 @@ raise.elite_one_phase = function(material_need)
                     tap("芯片制造" .. k)
                     appear("芯片站", 3)
 
-                    local numb_32001 = tonumber(ocro("胶水数量识别范围") or 0)
-                    local numb_32001_2 = tonumber(ocro("胶水库存识别范围") or 0)
+                    local numb_32001 = tonumber(ocro("胶水数量识别范围") or v)
+                    local numb_32001_2 = string.match(ocro("胶水库存识别范围"), "%d+") or v --识别不出来时不购买
+                    log("芯片助剂数量", numb_32001, "库存", numb_32001_2)
                     if numb_32001 + numb_32001_2 < v then
                         raise.buy_32001(v - numb_32001 - numb_32001_2)
                     end
@@ -2495,6 +2496,7 @@ end
     丰川祥子 = 67087,
     三角初华 = 67088,
     若叶睦 = 67089,
+    斩业星熊 = 73193,
 }
 
 -- 自动做模组任务2
