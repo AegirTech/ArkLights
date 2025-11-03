@@ -11455,6 +11455,7 @@ end
 
     数字列表, 规划列表 = markActions(数字列表, seq_index) -- claude真好用
     log("规划列表", 规划列表)
+    local kl_choice_delay = str2int(kl_choice_delay, 500)
     if hd_debug then exit() end
 
     get_tap_index = function(tap_index)
@@ -11480,7 +11481,7 @@ end
         log("点击位置坐标", tx, ty)
         wait(function()
             tap({ tx, ty })
-            if appear({ "喀兰贸易前进", "喀兰贸易收集资源" }, 0.5) then return true end
+            if appear({ "喀兰贸易前进", "喀兰贸易收集资源" }, 0.8) then return true end
         end, 5)
         if plan.action == "forward" then
             log("位置" .. plan.index .. "的数字" .. plan.number .. ": 前进")
@@ -11497,6 +11498,7 @@ end
             end, 5)
         end
         disappear({ "喀兰贸易前进", "喀兰贸易收集资源" }, 3)
+        slepp(kl_choice_delay)
     end
     appear("喀兰贸易结束回合红", 2)
     if not wait(function()
@@ -11673,4 +11675,26 @@ markActions = function(数字列表, seq_index)
     end
 
     return 数字列表, 规划列表
+end
+
+活动dis计算 = function()
+    -- 截图
+    local scren_p = getScreenPixel(0, 0, 0, 0)
+
+    function printRGB(color)
+        local r, g, b = colorToRGB(color)
+        print("col:" .. "=>" .. r .. "," .. g .. "," .. b)
+    end
+
+    local w, h, arr = getScreenPixel(0, 0, 0, 0)
+
+    print("image size:" .. w .. "," .. h)
+    local x = 847
+    local y = 634
+    local color = arr[y * w + (x + 1)]
+    local cc = getPixelColor(x, y)
+    print(color, cc)
+    printRGB(cc)
+    printRGB(color)
+    printRGB('00B1FF')
 end
