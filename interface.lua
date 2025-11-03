@@ -1190,7 +1190,7 @@ show_extra_ui = function()
     --         "extra_mode='争锋频道活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     ---------------------------------------------------------------------
 
-    addTitle(layout, "喀兰贸易技术研发部")
+    addTitle(layout, "喀兰贸易技术研发部(只支持1080p)")
     addInfo(layout, "测试阶段，可能存在bug")
     newRow(layout)
     addButton(layout, nil, "喀兰贸易技术研发部开始",

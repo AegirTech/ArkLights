@@ -11334,6 +11334,9 @@ markConsecutiveSequences = function(data)
 end
 
 path.喀兰贸易技术研发部 = function()
+    if screen.width ~= 1920 or screen.height ~= 1080 then
+        stop("喀兰贸易技术研发部仅支持1920x1080分辨率")
+    end
     if not findAny({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }) then
         path.跳转("首页")
         tap("面板活动")

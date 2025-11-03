@@ -2469,7 +2469,7 @@ hotUpdate = function()
         if i == 1 then
             update_info = check_hot_update_backup()
         elseif i == 2 then
-            ark_api_base = "https://enlysure.avemujica.org"
+            ark_api_base = "https://arkapi.moyuancn.vip"
             update_info = check_hot_update_backup()
         elseif i == 3 then
             update_info = check_hot_update()
