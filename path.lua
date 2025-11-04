@@ -932,6 +932,12 @@ path.fallback = {
         if not wait(function()
                 -- 曾出现 返回确认 误判为 活动公告返回
                 -- 返回确认3按back太快弹不出来
+                if findOne("侧边栏收起") then
+                    log(236)
+                    tap("侧边栏收起")
+                    ssleep(0.5)
+                end
+
                 local timeout = min(2, (time() - start_time + 1000) / 1000 * 2 / 10)
                 log(237, timeout)
                 -- timeout = 0
@@ -11388,7 +11394,7 @@ end
         log(9)
     end
 
-    if appear("喀兰贸易结算画面", 3) then
+    if findOne("喀兰贸易结算画面") then
         log("重建成功，下一局")
         tap("喀兰贸易下一局")
         wait(function()
@@ -11396,8 +11402,8 @@ end
             if findAny({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }) then
                 return true
             end
-        end, 5)
-        appear({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }, 2)
+        end, 10)
+        appear({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }, 4)
         return 喀兰贸易重建活动(true)
     end
 
@@ -11438,7 +11444,7 @@ end
 
     if #数字列表 ~= 5 then
         log("数字识别失败", 数字列表)
-        appearTap("喀兰贸易结束回合红", 2)
+        appearTap("喀兰贸易结束回合红", 1)
         return 喀兰贸易重建活动()
     end
 
@@ -11498,7 +11504,7 @@ end
             end, 5)
         end
         disappear({ "喀兰贸易前进", "喀兰贸易收集资源" }, 3)
-        slepp(kl_choice_delay)
+        sleep(kl_choice_delay)
     end
     appear("喀兰贸易结束回合红", 2)
     if not wait(function()

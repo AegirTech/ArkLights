@@ -340,13 +340,13 @@ def release(file_type):
         if new_lr_md5 == md5_text:
             print("md5值正确")
             # 上传
-            # upload(md5_text, file_type, "False")
-            upload_to_backup_server(file_type)
+            upload(md5_text, file_type, "False")
+            # upload_to_backup_server(file_type)
         else:
             print("md5值错误")
     elif file_type == "SKILL":
-        # upload("", file_type, "False")
-        upload_to_backup_server(file_type)
+        upload("", file_type, "False")
+        # upload_to_backup_server(file_type)
     elif file_type == "MAPS":
         upload_to_backup_server(file_type)
 
