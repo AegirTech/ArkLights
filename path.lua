@@ -715,6 +715,7 @@ path.login = {
 
         -- 存在两个输入框时，输入帐密
         if findOne("username_inputbox") then
+            log(590)
             local input_box = findNodes(point["username_inputbox"])
             if type(input_box) == 'table' and #input_box == 2 then
                 if not username or #username == 0 or not password or #password == 0 then
@@ -723,7 +724,7 @@ path.login = {
                 end
                 wait(function() nodeLib.setText(input_box[1], username) end, 1)
                 wait(function() nodeLib.setText(input_box[2], password) end, 1)
-
+                log(591)
                 -- 同意登录
                 local checkbox = findNodes(point["login_checkbox"])
                 if type(checkbox) == 'table' and checkbox[#checkbox].checked == false then
@@ -11456,7 +11457,8 @@ end
     -- 寻找 非连续序列的数字，选择第一个选择标记为前进。然后寻找连续序列的最后一项，全部标记为 收集资源。
     -- 重复上面的逻辑直到没有非连续序列的数字或者没有连续序列的数字为止。
     -- 如果存在连续序列，但是不存在非连续序列，则选择连续序列第一项标记为前进，当前连续序列剩下的标记为收集资源。
-    -- 如果不存在连续序列，但是存在非连续序列，则选择第一个非连续序列标记为前进，倒数第一个标记为收集资源，然后再次寻找非连续序列，重复上述逻辑直到没有非连续序列为止。
+    -- 如果不存在连续序列，但是存在非连续序列，则选择第一个非连续序列标记为前进，倒数第一个标记为收集资源，然后再次寻找非连续序列，
+    -- 重复上述逻辑直到没有非连续序列为止。
 
 
     数字列表, 规划列表 = markActions(数字列表, seq_index) -- claude真好用
