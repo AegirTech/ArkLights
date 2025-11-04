@@ -1739,7 +1739,7 @@ controlStationOperatorBest = function(operator)
     -- 夕
     if #best < 5 and isCharExsit["絮雨"] then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') and o[3] > 22 then
                 table.insert(best, o)
             end
         end
@@ -1748,7 +1748,7 @@ controlStationOperatorBest = function(operator)
     -- 令
     if #best < 5 and isCharExsit["桑葚"] then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1&bd2') then
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1&bd2') and o[3] > 22 then
                 table.insert(best, o)
                 isCharExsit["令"] = true
                 break
@@ -1998,9 +1998,11 @@ dormitoryOperatorBest = function(operator, goodType, virtralPowerStationNum)
 
     if isCharExsit["迷迭香"] or isCharExsit["絮雨"] then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1_2") and table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1_n3") then   --车尔尼
+            if table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1_2") and
+                table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1_n3") then --车尔尼2
                 table.insert(best, o)
-            elseif table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1") and table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1_n2") then --爱丽丝
+            elseif table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1") and
+                table.includes({ o[1], o[2] }, "bskill_dorm_all&bd_n1_n2") then --爱丽丝2
                 table.insert(best, o)
             elseif table.includes({ o[1], o[2] }, "bskill_dorm_bdnum") or
                 table.includes({ o[1], o[2] }, "bskill_dorm_rec_allbd") or o[6] == "塑心" then --塑心
@@ -2011,7 +2013,8 @@ dormitoryOperatorBest = function(operator, goodType, virtralPowerStationNum)
     end
     if isCharExsit["鸿雪"] then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, "bskill_dorm_all&one1") or table.includes({ o[1], o[2] }, "bskill_dorm_all&one2") then --杜林
+            if table.includes({ o[1], o[2] }, "bskill_dorm_all&one1") or
+                table.includes({ o[1], o[2] }, "bskill_dorm_all&one2") then --杜林
                 table.insert(best, o)
             elseif table.includes({ o[1], o[2] }, "bskill_dorm_all2") and o[6] == "桃金娘" then --桃金娘
                 table.insert(best, o)
