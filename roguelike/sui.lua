@@ -717,7 +717,7 @@ path.界园前瞻投资 = function()
             if findOne("界园_选择招募一阶段完成") then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
             tap('萨卡兹_蓝图分队位置列表' .. t_position)
-            ssleep(1)--太快了直接选错招募券组合
+            ssleep(1) --太快了直接选错招募券组合
         end, 10) then
         return
     end
@@ -897,6 +897,11 @@ path.界园前瞻投资 = function()
         第一列关卡 = 界园路线选择结果[1][1]
     end
 
+    if zl_big_map then
+        第一列关卡 = 1
+        界园路线选择结果[1][1] = 1
+    end
+
     log("准备进入第一关作战")
     local 右上角取样 = sample("投币提示")
     ssleep(.5)
@@ -937,15 +942,15 @@ path.界园前瞻投资 = function()
         return false
     end
 
-    if zl_big_map and not sui.战斗后领取() then
+    if zl_big_map and zl_skip_fight and not sui.战斗后领取() then
         log("未能完成战斗后拾取")
         return false
     end
-    
+
     log("完成战斗")
 
     if not wait(function()
-            if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入", "界园_作战页面加载" , "界园_紧急作战页面加载"}) then return true end
+            if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入", "界园_作战页面加载", "界园_紧急作战页面加载" }) then return true end
             if 第二列数量 == 3 then
                 tap("萨卡兹_3节点_作战列表" .. str(界园路线选择结果[1][1]))
             else
@@ -996,6 +1001,10 @@ path.界园前瞻投资 = function()
             log("未能完成战斗后拾取")
             return false
         end
+        if zl_big_map and zl_skip_fight and not sui.战斗后领取() then
+            log("未能完成战斗后拾取")
+            return false
+        end
         log("完成战斗")
     else
         sui.不期而遇处理()
@@ -1006,66 +1015,34 @@ path.界园前瞻投资 = function()
 
     --点了《扩园篇》天赋
     if zl_big_map then
-        zl_fight_more = true 
-        local 界园路线选择结果 = {}
-        local 第二列数量 = 0
-        local 节点判断 = function(x)
-            第二列数量 = x
-            log(300, 第二列数量)
-            local strx = str(x)
-            for i = 1, x do
-                if findOne("界园_第2列_不期而遇" .. strx .. "_列表" .. i) then
-                    table.insert(界园路线选择结果, { i, "不期而遇" })
-                else
-                    local ret = ocrex_ret("界园_第2列_关卡名ocr" .. strx .. "_列表" .. i)
-                    if string.finds(ret, { "得", "所", "愿" }) then
-                        table.insert(界园路线选择结果, { i, "得偿所愿" })
-                    end
-                end
-            end
-        end
+        --local 第二列关卡 = 界园路线选择结果[1][1]
         if findOne("界园_第二列存在3节点") then
-         节点判断(3)
+            第三列数量 = 3
         else
-          节点判断(2)
+            第三列数量 = 2
         end
-        log(界园路线选择结果)
-        if #界园路线选择结果 == 0 then
-            if zl_fight_more then
-                界园路线选择结果 = {
-                    { 1, "作战" },
-                }
-            else
-                toast("第二列没有不期而遇")
-            end
-        end
-        local 第一列关卡 = 1
-        if 第二列数量 == 3 then
-            if 界园路线选择结果[1][1] == 2 then
-                if not findOne("界园_第一列1第二列2是否连接") then
-                    第一列关卡 = 2
-                end
-            elseif 界园路线选择结果[1][1] == 3 then
-                第一列关卡 = 2
-            end
+
+        if 界园路线选择结果[1][2] == "作战" then
+            界园路线选择结果[1][2] = "不期而遇"
         else
-            第一列关卡 = 界园路线选择结果[1][1]
+            界园路线选择结果[1][2] = "作战"
         end
+        --只有二战，第三列和第二列必不同
 
         if not wait(function()
                 if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入", "界园_作战页面加载", "界园_紧急作战页面加载" }) then return true end
-                if 第二列数量 == 3 then
-                    tap("萨卡兹_3节点_作战列表" .. str(界园路线选择结果[1][1]))
+                if 第三列数量 == 3 then
+                    tap("萨卡兹_3节点_作战列表1")
                 else
-                    tap("萨卡兹_2节点_作战列表" .. str(界园路线选择结果[1][1]))
+                    tap("萨卡兹_2节点_作战列表1")
                 end
             end, 10) then
             return false
         end
 
-        -- 第二列是不期而遇/得偿所愿
-        log("第二步", 界园路线选择结果)
-        log("第二步", 界园路线选择结果[1], 界园路线选择结果[1][2])
+        -- 第三列是不期而遇/得偿所愿
+        log("第三步", 界园路线选择结果)
+        log("第三步", 界园路线选择结果[1], 界园路线选择结果[1][2])
         if 界园路线选择结果[1][2] == "不期而遇" or 界园路线选择结果[1][2] == "得偿所愿" then
             --进入不期而遇
             if not wait(function()
@@ -1079,8 +1056,9 @@ path.界园前瞻投资 = function()
         end
 
         if 界园路线选择结果[1][2] == "作战" then
-            log("准备进入第2关作战")
+            log("准备进入第3列作战")
             ssleep(.5)
+            log("时光之末", zl_skip_fight)
             if zl_skip_fight then
                 sui.放弃作战()
             else
@@ -1105,7 +1083,7 @@ path.界园前瞻投资 = function()
             sui.不期而遇处理()
         end
 
-            log(1055)
+        log(1055)
         local r = appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
         if r ~= "战略返回" then
             作战结算返回()
@@ -1131,7 +1109,7 @@ path.界园前瞻投资 = function()
     local 商店关卡寻找 = function()
         log('商店关卡寻找')
         local po = find_color("界园_商店关卡查找_列范围", "039D54", 2, 0.95)
-        log("不期而遇关卡位置", po)
+        log("商店关卡位置", po)
         if po then
             wait(function()
                 tap({ po[1], po[2] - scale(20) })
