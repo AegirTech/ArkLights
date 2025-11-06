@@ -83,6 +83,9 @@ import_room_id = function()
 end
 
 ib.start = function()
+    if screen.width ~= 1920 or screen.height ~= 1080 then
+        stop("促融共竞仅支持1920x1080分辨率")
+    end
     if findOne("ib_选择项目红") and ib_grouping_method == 1 then
         log("已经建好房间")
     elseif findOne("ib_准备就绪") and ib_grouping_method == 0 then
@@ -248,6 +251,8 @@ ib.促融共竞循环 = function()
             end
         end,
         ib_下一步 = function()
+            captureqqimagedeliver("INFO", "促融共竞推送",
+            table.join(qqmessage, ' ') .. " " .. info)
             tap("ib_下一步")
             ssleep(2)
         end,
