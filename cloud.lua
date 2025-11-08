@@ -349,6 +349,15 @@ m.haltComplete = function()
     return res, code
 end
 
+m.cmdReport = function(cmd,result)
+    print("远程命令回执")
+    local data = { cmd = cmd, result = result }
+    local res, code = httpPost(m.server .. "/remoteCmdReport?" .. "deviceToken=" ..
+        m.deviceToken, JsonEncode(data), 30,
+        "Content-Type: application/json")
+    return res, code
+end
+
 m.solveTask = function(data) restartSimpleMode(data) end
 
 m.fetchSolveTask = function()
@@ -379,12 +388,36 @@ m.startHeartBeat = function()
         while true do
             local res, code = m.heartBeat()
             local status, data = pcall(JsonDecode, res)
-            if data.code == 500 then
-                m.haltComplete()
-                log("云控", "停机上报")
-                -- 子线程不能直接stop 需要使用setTimer延时函数回调stop到主线程
-                setTimer(stop, 100, "强制停机")
+            if cloud_v2_enable then
+                    -- 停机流程
+                if data.data.cmd == 2 then
+                    m.haltComplete()
+                    log("云控", "停机上报")
+                    -- 子线程不能直接stop 需要使用setTimer延时函数回调stop到主线程
+                    m.cmdReport(2,None)
+                    setTimer(stop, 100, "强制停机")
+                elseif data.data.cmd == 3 then
+                    -- 上传截图
+                    local img_src = getWorkPath() .. "/tmp.jpg"
+                    hideControlBar()
+                    ssleep(.5)
+                    snapShot(img_src)
+                    setControlBar()
+                    local url = m.uploadImgToInquisition(img_src)
+                    if url ~= "" then
+                        -- 上传成功，执行回执
+                        m.cmdReport(3,url)
+                    end
+                end    
+            else
+                if data.code == 500 then
+                    m.haltComplete()
+                    log("云控", "停机上报")
+                    -- 子线程不能直接stop 需要使用setTimer延时函数回调stop到主线程
+                    setTimer(stop, 100, "强制停机")
+                end
             end
+            
             ssleep(5)
         end
     end
