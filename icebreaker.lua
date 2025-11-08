@@ -251,8 +251,7 @@ ib.促融共竞循环 = function()
             end
         end,
         ib_下一步 = function()
-            captureqqimagedeliver("INFO", "促融共竞推送",
-            table.join(qqmessage, ' ') .. " " .. info)
+            captureqqimagedeliver("INFO", "促融共竞推送", table.join(qqmessage, ' '))
             tap("ib_下一步")
             ssleep(2)
         end,
