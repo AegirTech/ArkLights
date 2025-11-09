@@ -831,7 +831,8 @@ ib.抄作业 = function(作业, maptype)
         while os.time() - start < time do
             keepCapture()
             do_strategy()
-            sleep(50)
+            -- sleep(50)
+            ssleep(1) -- 1s检查一次 太卡了
         end
         releaseCapture()
         --print(os.time())
@@ -1021,6 +1022,7 @@ ib.抄作业 = function(作业, maptype)
 
         sleep(75)
         releaseCapture()
+        ssleep(0.8) -- 太卡了 1s检查一次
         if findOne("跳过剧情") then
             path.跳过剧情()
             print("跳过剧情")
