@@ -253,7 +253,7 @@ ib.促融共竞循环 = function()
         ib_下一步 = function()
             captureqqimagedeliver("INFO", "促融共竞推送", table.join(qqmessage, ' '))
             tap("ib_下一步")
-            ssleep(2)
+            ssleep(1)
         end,
         ib_返回房间 = function()
             log(ib_auto_like)
@@ -262,6 +262,10 @@ ib.促融共竞循环 = function()
                 tap("ib_点赞")
             end
             tap("ib_返回房间")
+            ssleep(1)
+        end,
+        ib_返回房间2 = function()
+            tap("ib_返回房间2")
             ssleep(1)
         end,
         ib_关卡内部顶部标识 = function()
