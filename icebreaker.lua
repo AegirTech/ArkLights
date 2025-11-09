@@ -83,7 +83,7 @@ import_room_id = function()
 end
 
 ib.start = function()
-    if screen.width ~= 1920 or screen.height ~= 1080 then
+    if ib_grouping_method == 1 and screen.width ~= 1920 and screen.height ~= 1080 then
         stop("促融共竞仅支持1920x1080分辨率")
     end
     if findOne("ib_选择项目红") and ib_grouping_method == 1 then
