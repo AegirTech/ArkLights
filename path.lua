@@ -1316,7 +1316,7 @@ path.限时活动 = function(retry)
     if retry > 10 then return end
     path.跳转("首页")
     if notify_sub_expire and findOne("月卡即将到期") and not 月卡到期状态 then
-        captureqqimagedeliver("WARNING", "月卡到期提醒", "月卡即将到期，请及时续费")
+        captureqqimagedeliver("WARN", "月卡到期提醒", "月卡即将到期，请及时续费")
         月卡到期状态 = true
     end
 

@@ -1361,10 +1361,12 @@ raise.upgrade_skill = function(id, target_level, level)
             if findOne("干员技能升级红") then return false end
             if findOne("干员档案") then return true end
         end, 10) then
-        log("无法升满技能")
+        local text = "材料不足,升级技能" .. name .. "到7级失败,请手动升级"
+        log(text)
+        captureqqimagedeliver("WARN", "升级技能失败", text)
         return false
     end
-    log("升级技能", target_phase, name, "到7级已完成")
+    log("升级技能", name, "到7级已完成")
     path.跳转("干员")
     return true
 end
@@ -2089,6 +2091,7 @@ raise.材料合成 = function()
             raise.材料合成() -- 3个加工都得单独合成一遍
         elseif findOne("加工站不可加工列表" .. i) then
             -- todo:记录缺的材料
+            captureqqimagedeliver("WARN", "专精技能失败", "合成材料失败,下级材料不足")
             return
         end
     end
@@ -2497,6 +2500,7 @@ end
     三角初华 = 67088,
     若叶睦 = 67089,
     斩业星熊 = 73193,
+    圣聆初雪 = 73227,
 }
 
 -- 自动做模组任务2
