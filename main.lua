@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.09 21:32"
+release_date = "11.10 20:05"
 update_announcement = '最近更新: 雪山降临活动/技术研发部小活动'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -123,53 +123,12 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     sleep(1000)
+    log(findOne("ib_返回房间2"))
     --活动dis计算()
-
-    local sim = 0.9
-    local nedcol = "384250"
-
-    -- local number = getColorNum(1471, 130, 1527, 188, nedcol, sim)
-    -- log(number, "矿石")
-
-    -- local number = getColorNum(1468, 238, 1529, 300, nedcol, sim)
-    -- log(number, "齿轮")
-
-    -- local number = getColorNum(1641, 238, 1692, 293, nedcol, sim)
-    -- log(number, "木头")
-
-    local number = getColorNum(1177, 580, 1228, 629, nedcol, sim)
-    log(number, "木头")
-
-    local number = getColorNum(1069, 264, 1120, 319, nedcol, sim)
-    log(number, "木头")
-
-    local number = getColorNum(965, 497, 1017, 549, nedcol, sim)
-    log(number, "木头")
-
-    local number = getColorNum(1229, 324, 1282, 375, nedcol, sim)
-    log(number, "矿石")
-    local number = getColorNum(565, 535, 614, 587, nedcol, sim)
-    log(number, "矿石")
-    local number = getColorNum(423, 406, 475, 461, nedcol, sim)
-    log(number, "矿石")
-
-    local number = getColorNum(1362, 437, 1418, 487, nedcol, sim)
-    log(number, "齿轮")
-
-    local number = getColorNum(584, 308, 645, 360, nedcol, sim)
-    log(number, "齿轮")
-
-
-
-    -- exit()
+    exit()
     -- 喀兰贸易重建活动()
     -- exit()
     -- local all = { 66, 877, 786, 969 }
-    -- log(ocrex_ret("喀兰贸易活动ocr范列表1"))
-    -- log(ocrex_ret("喀兰贸易活动ocr范列表2"))
-    -- log(ocrex_ret("喀兰贸易活动ocr范列表3"))
-    -- log(ocrex_ret("喀兰贸易活动ocr范列表4"))
-    -- log(ocrex_ret("喀兰贸易活动ocr范列表5"))
     -- log(ocrex_ret(all))
     -- FFFFFF
     -- 63  880-- 起始坐标
