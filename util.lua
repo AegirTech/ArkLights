@@ -1957,6 +1957,11 @@ end
 
 lock = Lock:new()
 
+---审判庭通知和推送
+---@param log_level string INFO,WARN
+---@param log_title string 通知标题
+---@param log_detail string 通知内容
+---@param important boolean 是否通知用户
 captureqqimagedeliver = function(log_level, log_title, log_detail, important)
     local f = io.open(getWorkPath() .. '/.nomedia', 'w')
     f:close()
