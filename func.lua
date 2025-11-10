@@ -1031,6 +1031,13 @@ detect_simulators = function()
     console.println(1, "环境检测：" .. 设备)
     if 设备 == "mumu" then
         console.println(3, "如果出现任何问题，请更换雷电模拟器，不推荐使用Mumu。")
+        if not root_mode then
+            console.show()
+            console.println(3, "请在模拟器设置内开启root权限，并且给脚本root权限，否则可能会出现各种情况导致无法运行")
+            console.println(3, "10秒后自动关闭此提示")
+            ssleep(10)
+            console.dismiss()
+        end
     end
     return 设备
 end
