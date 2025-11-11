@@ -1200,79 +1200,79 @@ show_extra_ui = function()
     addTextView(layout, "每次选择延迟(ms)")
     ui.addEditText(layout, "kl_choice_delay", "0")
     ---------------------------------------------------------------------
-    addTitle(layout, "促融共竞#2(1080p)")
-    addInfo(layout, "要自己过一下教程,开两个模拟器一个当房主一个当参与者")
-    newRow(layout)
+    -- addTitle(layout, "促融共竞#2(1080p)")
+    -- addInfo(layout, "要自己过一下教程,开两个模拟器一个当房主一个当参与者")
+    -- newRow(layout)
 
-    ibSettingVisiblity = function()
-        local grouping_method = ui.getValue("ib_grouping_method")
-        if grouping_method == 0 then --参与方
-            ui.setRowVisibleByGid(layout, "房主", 8)
-            ui.setRowVisibleByGid(layout, "参与者", 0)
-        else
-            ui.setRowVisibleByGid(layout, "房主", 0)
-            ui.setRowVisibleByGid(layout, "参与者", 8)
-        end
-    end
+    -- ibSettingVisiblity = function()
+    --     local grouping_method = ui.getValue("ib_grouping_method")
+    --     if grouping_method == 0 then --参与方
+    --         ui.setRowVisibleByGid(layout, "房主", 8)
+    --         ui.setRowVisibleByGid(layout, "参与者", 0)
+    --     else
+    --         ui.setRowVisibleByGid(layout, "房主", 0)
+    --         ui.setRowVisibleByGid(layout, "参与者", 8)
+    --     end
+    -- end
 
-    addTextView(layout, "组队选择")
-    ui.addSpinner(layout, "ib_grouping_method", { "参与方", "房主" }, 0)
-    ui.setOnChange("ib_grouping_method", "ibSettingVisiblity()")
-    ui.addCheckBox(layout, "ib_auto_like", "自动点赞", true)
+    -- addTextView(layout, "组队选择")
+    -- ui.addSpinner(layout, "ib_grouping_method", { "参与方", "房主" }, 0)
+    -- ui.setOnChange("ib_grouping_method", "ibSettingVisiblity()")
+    -- ui.addCheckBox(layout, "ib_auto_like", "自动点赞", true)
 
-    ibSettingVisiblity2 = function()
-        -- 0: 躺赢狗 1: 角色A 2: 角色B 3:单人大号  4:单人大号  5: 回费工具人
-        local team_role = ui.getValue("ib_team_role")
-        toast(team_role)
-        if team_role == 0 then --躺赢狗
-            ui.setVisiblity("agree_cost_request_automaticlly", 0)
-            ui.setVisiblity("ib_auto_team_format", 3)
-        else
-            ui.setVisiblity("agree_cost_request_automaticlly", 3)
-            ui.setVisiblity("ib_auto_team_format", 0)
-        end
-        if team_role == 4 or team_role == 3 then --单人大号
-            ui.setVisiblity("ask_cost_automaticlly", 0)
-        else
-            ui.setVisiblity("ask_cost_automaticlly", 3)
-        end
-        if team_role == 5 or team_role == 0 then --回费工具人
-            ui.setVisiblity("agree_cost_request_automaticlly", 0)
-        else
-            ui.setVisiblity("agree_cost_request_automaticlly", 3)
-        end
-    end
+    -- ibSettingVisiblity2 = function()
+    --     -- 0: 躺赢狗 1: 角色A 2: 角色B 3:单人大号  4:单人大号  5: 回费工具人
+    --     local team_role = ui.getValue("ib_team_role")
+    --     toast(team_role)
+    --     if team_role == 0 then --躺赢狗
+    --         ui.setVisiblity("agree_cost_request_automaticlly", 0)
+    --         ui.setVisiblity("ib_auto_team_format", 3)
+    --     else
+    --         ui.setVisiblity("agree_cost_request_automaticlly", 3)
+    --         ui.setVisiblity("ib_auto_team_format", 0)
+    --     end
+    --     if team_role == 4 or team_role == 3 then --单人大号
+    --         ui.setVisiblity("ask_cost_automaticlly", 0)
+    --     else
+    --         ui.setVisiblity("ask_cost_automaticlly", 3)
+    --     end
+    --     if team_role == 5 or team_role == 0 then --回费工具人
+    --         ui.setVisiblity("agree_cost_request_automaticlly", 0)
+    --     else
+    --         ui.setVisiblity("agree_cost_request_automaticlly", 3)
+    --     end
+    -- end
 
-    newRow(layout)
-    addTextView(layout, "角色")
-    ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)",
-        "角色B(ew叔叔+陷阱师)", "IG-7单号带躺(酒神夜莺阿斯卡纶黍奶羊)", "单人(天有四时+双御械)不打3/9", "工具人(桃金娘+低星)给单人回费" }, 0)
-    ui.setOnChange("ib_team_role", "ibSettingVisiblity2()")
-    ui.addCheckBox(layout, "agree_cost_request_automaticlly",
-        "自动同意费用请求", true)
-    ui.addCheckBox(layout, "ask_cost_automaticlly",
-        "自动请求费用", false)
-    ui.addCheckBox(layout, "ib_auto_team_format",
-        "自动编队", true)
+    -- newRow(layout)
+    -- addTextView(layout, "角色")
+    -- ui.addSpinner(layout, "ib_team_role", { "躺赢狗(不自动作战)", "角色A(天有四时+双驭械)",
+    --     "角色B(ew叔叔+陷阱师)", "IG-7单号带躺(酒神夜莺阿斯卡纶黍奶羊)", "单人(天有四时+双御械)不打3/9", "工具人(桃金娘+低星)给单人回费" }, 0)
+    -- ui.setOnChange("ib_team_role", "ibSettingVisiblity2()")
+    -- ui.addCheckBox(layout, "agree_cost_request_automaticlly",
+    --     "自动同意费用请求", true)
+    -- ui.addCheckBox(layout, "ask_cost_automaticlly",
+    --     "自动请求费用", false)
+    -- ui.addCheckBox(layout, "ib_auto_team_format",
+    --     "自动编队", true)
 
-    ui.newRow(layout, "参与者", -1, -2, "参与者")
-    addButton(layout, "ib_copy_room_id", "粘贴房间号", "import_room_id()")
-    ui.addEditText(layout, "extra_crgj_room", "复制后单击左侧按钮粘贴房间号", 700)
+    -- ui.newRow(layout, "参与者", -1, -2, "参与者")
+    -- addButton(layout, "ib_copy_room_id", "粘贴房间号", "import_room_id()")
+    -- ui.addEditText(layout, "extra_crgj_room", "复制后单击左侧按钮粘贴房间号", 700)
 
-    ui.newRow(layout, "房主", -1, -2, "房主")
-    addTextView(layout, "房主选择")
-    addTextView(layout, "难度")
-    ui.addSpinner(layout, "ib_difficulty", { "初级", "高级", "特级" }, 0)
-    addTextView(layout, "项目")
-    ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5", "6", "7",
-        "8", "9", "10(推荐)", "11", "12", "13", "14"
-    }, 0)
+    -- ui.newRow(layout, "房主", -1, -2, "房主")
+    -- addTextView(layout, "房主选择")
+    -- addTextView(layout, "难度")
+    -- ui.addSpinner(layout, "ib_difficulty", { "初级", "高级", "特级" }, 0)
+    -- addTextView(layout, "项目")
+    -- ui.addSpinner(layout, "ib_object_id", { "随机", "1", "2", "3", "4", "5", "6", "7",
+    --     "8", "9", "10(推荐)", "11", "12", "13", "14"
+    -- }, 0)
 
-    newRow(layout)
-    addButton(layout, nil, "促融共竞开始",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    newRow(layout)
+    -- newRow(layout)
+    -- addButton(layout, nil, "促融共竞开始",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='促融共竞';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    -- newRow(layout)
 
     ---------------------------------------------------------------------
     addTitle(layout, "集成战略")
