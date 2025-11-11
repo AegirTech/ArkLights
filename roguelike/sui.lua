@@ -1367,35 +1367,20 @@ sui.普通作战1 = function()
     log('招募卡达')
     sui.招募并记录干员("卡达", 肉鸽白名单)
     log(肉鸽参数["operators"])
-    if not appear("界园_初始招募") then return end
+    --if not appear("界园_初始招募") then return end
     log(2698)
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
-            if not findOne("界园_初始招募") then return true end
+            if findOne("界园_投出通宝确认") then return true end
             tap("界园_进入探索")
-        end, 5) then
+            ssleep(.5)
+        end, 25) then
         return
     end
 
-    log(2700)
-    --点击进入探索之后，有一段时间的加载界面，需要点击
-    local xtime = time()
-    if not wait(function()
-            if findOne("战略返回") then return true end
-            if findOne("界园_每层通宝确认") then return true end
-            tap("战略确认")
-            --第一次会弹出‘战略帮助’那个界面
-            if time() - xtime > 3 * 1000 then
-                xtime = time()
-                tap("招募说明关闭")
-            end
-        end, 20) then
-        return
-    end
-
-    if findOne("界园_每层通宝确认") then
+    if findOne("界园_投出通宝确认") then
         当前通宝 = sui.判断投出通宝()
-        tap("界园_每层通宝确认")
+        tap("界园_投出通宝确认")
     end
     ssleep(0.5) -- 右边第三列有概率加载过慢
     local best_path = sui.判断路径()
