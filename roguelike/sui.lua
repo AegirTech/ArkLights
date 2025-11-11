@@ -1214,6 +1214,7 @@ end
 
 sui.普通作战1 = function()
     log('界园肉鸽')
+    sui.recruit_info = zl.加载干员招募评分("sui")
     -- 大地图数据
     横向间隔 = scale(675)
     纵向间隔 = scale(91)
@@ -1502,7 +1503,7 @@ sui.判断路径 = function()
     local floor = sui.判断楼层()
     local 总列数 = { 4, 5, 5, 5, 5, 5, 5 } -- 每一层的列数
     大地图 = zl.创建大地图二维数组(7, 总列数[floor], 0)
-    local 起始行号 = sui.第1列判断()
+    local 起始行号 = sui.第1列判断() --通过关卡颜色判断
     for i = 2, 总列数[floor] - 1 do
         zl.大地图右滑()
         起始行号 = sui.第2列判断(i, 起始行号, i == 总列数[floor] - 1)
