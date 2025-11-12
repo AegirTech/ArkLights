@@ -1203,11 +1203,35 @@ path.界园前瞻投资 = function()
     return
 end
 
-sui.招募并记录干员 = function(干员, 肉鸽白名单)
-    local idx, name = zl.招募干员(干员, 肉鸽白名单)
-    log(idx, name)
-    if table.findk(肉鸽参数["operators"], name) then
-        肉鸽参数["operators"][name] = 肉鸽参数["operators"][name] + 1
+sui.招募并记录干员 = function(t)
+    if not t then return end
+    if t.name then
+        zl.招募翻页(1)
+        if page > 0 then
+            for i = 1, page do
+                zl.招募翻页()
+            end
+        end
+        if table.findk(肉鸽参数["operators"], name) then
+            肉鸽参数["operators"][name] = {
+                name = t.name,
+                level = t.level,
+                elite = t.elite,
+            }
+        end
+    end
+    zl.选择干员(t.index)
+end
+
+sui.招募指定干员 = function(干员, 肉鸽白名单)
+    local name, idx, elite, level = zl.查找指定干员(干员, 肉鸽白名单)
+    log(name, idx)
+    if name and name ~= 0 then
+        肉鸽参数["operators"][name] = {
+            name = name,
+            level = level,
+            elite = elite,
+        }
     end
     zl.选择干员(idx)
 end
@@ -1276,13 +1300,9 @@ sui.普通作战1 = function()
         floor = 0,
         collection = {},
         operators = {
-            维什戴尔 = 1,
-            谷米 = 1,
-            卡达 = 1,
-            --[[ 电弧 = 1,
-            酒神 = 1,
-            罗小黑 = 1,
-            清流 = 1, ]]
+            维什戴尔 = {},
+            谷米 = {},
+            卡达 = {},
         },
         ticket = 2,
     }
@@ -1333,7 +1353,7 @@ sui.普通作战1 = function()
         return
     end
     log('招募维什戴尔')
-    sui.招募并记录干员("维什戴尔", 肉鸽白名单)
+    sui.招募指定干员("维什戴尔", 肉鸽白名单)
 
     -- 第2人
     --[[ if not wait(function(reset_wait_start_time)
@@ -1353,7 +1373,7 @@ sui.普通作战1 = function()
         return
     end
     log('招募古米')
-    sui.招募并记录干员("古米", 肉鸽白名单)
+    sui.招募指定干员("古米", 肉鸽白名单)
     --ssleep(1)
     -- 第3人
     log('招募第三个人')
@@ -1366,7 +1386,7 @@ sui.普通作战1 = function()
         return
     end
     log('招募卡达')
-    sui.招募并记录干员("卡达", 肉鸽白名单)
+    sui.招募指定干员("卡达", 肉鸽白名单)
     log(肉鸽参数["operators"])
     --if not appear("界园_初始招募") then return end
     log(2698)

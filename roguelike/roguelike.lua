@@ -44,7 +44,7 @@ zl.放弃未结束的肉鸽探索 = function()
     path.跳转("首页")
 end
 
-zl.招募干员 = function(干员, 肉鸽白名单, 最大翻页次数) --招募指定干员
+zl.查找指定干员 = function(干员, 肉鸽白名单, 最大翻页次数) --招募指定干员
     log("肉鸽招募干员", 干员)
     log(肉鸽白名单)
     local 被招募干员
@@ -65,21 +65,29 @@ zl.招募干员 = function(干员, 肉鸽白名单, 最大翻页次数) --招募
                     scale(1125 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(294 + 纵向距离 * (i % 4)) }
                 被招募干员 = correctCharName(ocro("肉鸽干员名称识别范围"))
                 log(i, 被招募干员)
-                if table.includes(肉鸽白名单, 被招募干员) then
-                    --tap("近卫招募列表" .. (i + 1))
+                if not 肉鸽白名单 or table.includes(肉鸽白名单, 被招募干员) then
+                    point.肉鸽干员等级识别范围 = { scale(682 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(261 + 纵向距离 * (i % 4)),
+                        scale(707 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(291 + 纵向距离 * (i % 4)) }
+                    local 可招募干员等级 = tonumber(ocro("肉鸽干员等级识别范围")) or 1
+                    local 可招募干员精英 = 0 --精二图标和精一图标不是完全重合
+                    if cmpColor(scale(730 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(222 + 纵向距离 * (i % 4)), "FFFFFF", 0.95) == 1 then
+                        可招募干员精英 = 2
+                    elseif cmpColor(scale(730 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(215 + 纵向距离 * (i % 4)), "FFFFFF", 0.95) == 1 then
+                        可招募干员精英 = 1
+                    end --tap("近卫招募列表" .. (i + 1))
                     if table.includes(肉鸽队员, 被招募干员) then
                         table.insert(肉鸽队员, 被招募干员)
                     elseif 被招募干员 == "维什戴尔" then
                         招募开局干员 = 1
                     end
-                    return (i + 1), 被招募干员
+                    return 被招募干员, (i + 1), 可招募干员精英, 可招募干员等级
                 end
             end
             ssleep(.5)
             zl.招募翻页()
         end
     end
-    return 0, 0
+    return 0, 0, 0, 1
 end
 
 zl.招募翻页 = function(left, nodelay)
@@ -120,10 +128,10 @@ zl.招募翻页 = function(left, nodelay)
     return nodelay and delay or 0
 end
 
-zl.分析可招募干员 = function()
+zl.分析可招募干员 = function(最大翻页次数)
     log("分析可招募干员")
     local 可招募干员列表 = {}
-    local 最大翻页次数 = 10
+    local 最大翻页次数 = 最大翻页次数 or 4
     local 横向距离 = 585
     local 纵向距离 = 205
     local 起始点横坐标, 起始点纵坐标 = 624, scale(144) --用于定位
@@ -142,10 +150,10 @@ zl.分析可招募干员 = function()
             local 可招募干员 = correctCharName(ocro("肉鸽干员名称识别范围"))
             point.肉鸽干员等级识别范围 = { scale(682 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(261 + 纵向距离 * (i % 4)),
                 scale(707 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(291 + 纵向距离 * (i % 4)) }
-            local 可招募干员等级 = ocro("肉鸽干员等级识别范围")
+            local 可招募干员等级 = tonumber(ocro("肉鸽干员等级识别范围")) or 1
             point.肉鸽干员希望识别范围 = { scale(985 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(223 + 纵向距离 * (i % 4)),
                 scale(1020 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(249 + 纵向距离 * (i % 4)) }
-            local 需要希望 = ocro("肉鸽干员希望识别范围")
+            local 需要希望 = tonumber(ocro("肉鸽干员希望识别范围")) or 7
             local 可招募干员精英 = 0 --精二图标和精一图标不是完全重合
             if cmpColor(scale(730 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(222 + 纵向距离 * (i % 4)), "FFFFFF", 0.95) == 1 then
                 可招募干员精英 = 2
@@ -178,17 +186,19 @@ zl.加载干员招募评分 = function(theme)
     local theme_info = {
         oper_groups = {}, --保留groups的顺序信息
         all_groups = {},
-        all_opers = {},
+        all_opers_recruit_info = {},
+        all_opers_battle_info = {},
+        conditions = {},
     }
     local file_path = "mnt/sdcard/Pictures/" .. theme .. "/recruitment.json"
     local recruit_json = JsonDecode(readFile(file_path))
     log("加载成功,初始化数据")
-    log(#recruit_json.priority)
+    theme_info.conditions = recruit_json.team_complete_condition
     local group_id = 0
     -- {"name":干员组名, "opers":组内干员组成的array}
     for _, group_json in ipairs(recruit_json.priority) do
         local group_name = group_json.name
-        log(group_name)
+        --log(group_name)
         table.insert(theme_info.oper_groups, group_name)
 
         -- 干员组信息
@@ -204,44 +214,30 @@ zl.加载干员招募评分 = function(theme)
             group_info.opers[order_in_group] = name
 
             -- 肉鸽干员招募信息
-            local oper_info = {}
-            if theme_info.all_opers and theme_info.all_opers[name] then
-                -- 干员已存在时仅做更新
-                oper_info = theme_info.all_opers[name]
+            local oper_recruit_info = {}
+            local oper_battle_info = {}
+            -- 干员已存在时仅做更新
+            if theme_info.all_opers_recruit_info[name] then
+                oper_recruit_info = theme_info.all_opers_recruit_info[name]
+            end
+            if theme_info.all_opers_battle_info[name] then
+                oper_battle_info = theme_info.all_opers_battle_info[name]
             end
 
-            oper_info.name = name
-            if not oper_info.group_id then
-                oper_info.group_id = {}
-            end
-            table.insert(oper_info.group_id, group_id)
+            oper_recruit_info.name = name
+            oper_battle_info.name = name
 
-            if not oper_info.order_in_group then
-                oper_info.order_in_group = {}
-                for i = 1, #recruit_json.priority do
-                    oper_info.order_in_group[i] = 0 --防止稀疏数组
-                end
-            end
-            oper_info.order_in_group[group_id] = order_in_group
+            oper_recruit_info.recruit_priority = oper_json.recruit_priority or oper_recruit_info.recruit_priority or 0
+            oper_recruit_info.promote_priority = oper_json.promote_priority or oper_recruit_info.promote_priority or 0
+            oper_recruit_info.is_alternate = oper_json.is_alternate or oper_recruit_info.is_alternate or false
+            oper_recruit_info.is_key = oper_json.is_key or oper_recruit_info.is_key or false
+            oper_recruit_info.is_start = oper_json.is_start or oper_recruit_info.is_start or false
 
-            oper_info.recruit_priority = oper_json.recruit_priority or oper_info.recruit_priority or 0
-            oper_info.promote_priority = oper_json.promote_priority or oper_info.promote_priority or 0
-            oper_info.is_alternate = oper_json.is_alternate or oper_info.is_alternate or false
-            oper_info.skill = oper_json.skill or oper_info.skill or 0
-            oper_info.alternate_skill = oper_json.alternate_skill or oper_info.alternate_skill or 0
-            oper_info.skill_usage = oper_json.skill_usage or oper_info.skill_usage or 1
-            oper_info.skill_times = oper_json.skill_times or oper_info.skill_times or 1
-            oper_info.alternate_skill_usage = oper_json.alternate_skill_usage or oper_info.alternate_skill_usage or 1
-            oper_info.alternate_skill_times = oper_json.alternate_skill_times or oper_info.alternate_skill_times or 1
-            oper_info.is_key = oper_json.is_key or oper_info.is_key or false
-            oper_info.is_start = oper_json.is_start or oper_info.is_start or false
-            oper_info.auto_retreat = oper_json.auto_retreat or oper_info.auto_retreat or 0
-
-            oper_info.recruit_priority_when_team_full = oper_info.recruit_priority - 100
-            oper_info.promote_priority_when_team_full = oper_info.promote_priority + 300
+            oper_recruit_info.recruit_priority_when_team_full = oper_recruit_info.recruit_priority - 100
+            oper_recruit_info.promote_priority_when_team_full = oper_recruit_info.promote_priority + 300
 
             if oper_json.recruit_priority_offsets then
-                oper_info.recruit_priority_offsets = {}
+                oper_recruit_info.recruit_priority_offsets = {}
                 for _, offset_json in ipairs(oper_json.recruit_priority_offsets) do
                     local offset = {}
                     offset.groups = {}
@@ -251,24 +247,46 @@ zl.加载干员招募评分 = function(theme)
                     offset.threshold = offset_json.threshold or 0
                     offset.is_less = offset_json.is_less or false
                     offset.offset = offset_json.offset or 0
-                    table.insert(oper_info.recruit_priority_offsets, offset)
+                    table.insert(oper_recruit_info.recruit_priority_offsets, offset)
                 end
             end
 
             if oper_json.collection_priority_offsets then
-                oper_info.collection_priority_offsets = {}
+                oper_recruit_info.collection_priority_offsets = {}
                 for _, offset_json in ipairs(oper_json.collection_priority_offsets) do
                     local offset = {}
                     offset.collection = offset_json.collection or ""
                     offset.offset = offset_json.offset or 0
-                    table.insert(oper_info.collection_priority_offsets, offset)
+                    table.insert(oper_recruit_info.collection_priority_offsets, offset)
                 end
             end
 
-            if not theme_info.all_opers then
-                theme_info.all_opers = {}
+            if not oper_battle_info.group_id then
+                oper_battle_info.group_id = {}
             end
-            theme_info.all_opers[name] = oper_info
+            table.insert(oper_battle_info.group_id, group_id)
+
+            if not oper_battle_info.order_in_group then
+                oper_battle_info.order_in_group = {}
+                for i = 1, #recruit_json.priority do
+                    oper_battle_info.order_in_group[i] = 0 --防止稀疏数组
+                end
+            end
+
+            oper_battle_info.order_in_group[group_id] = order_in_group
+            oper_battle_info.skill = oper_json.skill or oper_battle_info.skill or 0
+            oper_battle_info.alternate_skill = oper_json.alternate_skill or oper_battle_info.alternate_skill or 0
+            oper_battle_info.skill_usage = oper_json.skill_usage or oper_battle_info.skill_usage or 1
+            oper_battle_info.skill_times = oper_json.skill_times or oper_battle_info.skill_times or 1
+            oper_battle_info.alternate_skill_usage = oper_json.alternate_skill_usage or
+                oper_battle_info.alternate_skill_usage or 1
+            oper_battle_info.alternate_skill_times = oper_json.alternate_skill_times or
+                oper_battle_info.alternate_skill_times or 1
+            oper_battle_info.auto_retreat = oper_json.auto_retreat or oper_battle_info.auto_retreat or 0
+
+
+            theme_info.all_opers_recruit_info[name] = oper_recruit_info
+            theme_info.all_opers_battle_info[name] = oper_battle_info
             order_in_group = order_in_group + 1
         end
 
@@ -279,28 +297,95 @@ zl.加载干员招募评分 = function(theme)
     return theme_info
 end
 
-
-
-
-
----@param recruit_info table 干员招募评分数据
+---@param recruit_info table 干员招募评分数据,读取的预设值json文件
+---@param 可招募干员列表 table 识别出来的当前可供招募的干员列表
+---@param 现有干员列表 table 已经招募的干员
 zl.计算干员优先级 = function(recruit_info, 可招募干员列表, 现有干员列表)
-    local 干员位置 = { page = 0, index = 1 }
+    log("计算干员优先级")
+    local 干员位置 = { name = "", page = 0, index = 1 }
     if not recruit_info or not 可招募干员列表 then return 干员位置 end
-    if #可招募干员列表 == 0 then return end
+    local all_groups = recruit_info.all_groups
+    local all_opers = recruit_info.all_opers_recruit_info
+    local 当前可招募评分列表 = {}
+    local team_complete = false
+    --todo 判断阵容完备度
 
-    for name, 可招募干员信息 in 可招募干员列表 do
-        log(name)
-        local priority = 0
-        local 当前干员评分信息 = recruit_info[name]
-        if table.findv(现有干员列表, name) then --队伍中已有
-            if string.startsWith(name, "预备干员") then --预备干员
-                priority = 0
-            else
-
+    --log(现有干员列表)
+    for name, 可招募干员信息 in pairs(可招募干员列表) do
+        local priority = -1000
+        local 当前干员评分信息 = all_opers[name]
+        --log(name)
+        --log(可招募干员信息)
+        --log(当前干员评分信息)
+        if 当前干员评分信息 then
+            if table.findk(现有干员列表, name) then --队伍中已有
+                if 可招募干员信息.elite < 2 then --小于精二
+                    priority = -1000
+                else
+                    priority = 当前干员评分信息.promote_priority
+                end
+            else --初次招募
+                if 可招募干员信息.elite == 2 then
+                    priority = 当前干员评分信息.recruit_priority + 当前干员评分信息.promote_priority
+                elseif 可招募干员信息.elite == 1 and (可招募干员信息.level >= 55 or 可招募干员信息.level == 0) then
+                    priority = 当前干员评分信息.recruit_priority
+                else
+                    priority = -1000
+                end
+                -- todo 根据offset再进行修正
+            end
+            if 可招募干员信息.hope == 0 then
+                priority = priority + 100
+            end
+            if not 当前干员评分信息.is_key and not team_complete then
+                priority = priority - 1000
+            end
+            if priority > 0 then
+                当前可招募评分列表[name] = priority
             end
         end
+        --log(name, priority)
     end
+    log(当前可招募评分列表)
+    local best = 0
+    local best_oper = ""
+    for k, v in pairs(当前可招募评分列表) do
+        if v > best then
+            best = v
+            best_oper = k
+        end
+    end
+    log("最高评分干员: " .. best_oper .. " 评分: " .. best)
+    if best > 0 then
+        干员位置 = 可招募干员列表[best_oper]
+        干员位置.name = best_oper
+    end
+    log("干员位置: 第" .. 干员位置.page .. "页,第" .. 干员位置.index .. "个干员")
+    return 干员位置
+end
+
+zl.判断阵容完备度 = function(recruit_info, 现有干员列表)
+
+end
+
+zl.招募并记录干员 = function(t)
+    log(t)
+    if not t then return end
+    if t.name then
+        zl.招募翻页(1)
+        if t.page > 0 then
+            for i = 1, t.page do
+                zl.招募翻页()
+            end
+        end
+
+        肉鸽参数["operators"][t.name] = {
+            name = t.name,
+            level = t.level,
+            elite = t.elite,
+        }
+    end
+    zl.选择干员(t.index)
 end
 
 zl.选择干员 = function(idx) --选择当页干员
