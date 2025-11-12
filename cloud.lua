@@ -125,6 +125,7 @@ m.uploadImgToInquisition = function(img_path)
         if data.code == 200 then
             log("云控日志", "截图上传成功")
             log("云控日志", "截图地址: ", data.data)
+            last_upload_img = data.data
             return data.data
         else
             log("云控日志", "截图上传失败")
@@ -349,7 +350,7 @@ m.haltComplete = function()
     return res, code
 end
 
-m.cmdReport = function(cmd,result)
+m.cmdReport = function(cmd, result)
     print("远程命令回执")
     local data = { cmd = cmd, result = result }
     local res, code = httpPost(m.server .. "/remoteCmdReport?" .. "deviceToken=" ..
@@ -389,12 +390,12 @@ m.startHeartBeat = function()
             local res, code = m.heartBeat()
             local status, data = pcall(JsonDecode, res)
             if cloud_v2_enable then
-                    -- 停机流程
+                -- 停机流程
                 if data.data.cmd == 2 then
                     m.haltComplete()
                     log("云控", "停机上报")
                     -- 子线程不能直接stop 需要使用setTimer延时函数回调stop到主线程
-                    m.cmdReport(2,None)
+                    m.cmdReport(2, None)
                     setTimer(stop, 100, "强制停机")
                 elseif data.data.cmd == 3 then
                     -- 上传截图
@@ -406,9 +407,9 @@ m.startHeartBeat = function()
                     local url = m.uploadImgToInquisition(img_src)
                     if url ~= "" then
                         -- 上传成功，执行回执
-                        m.cmdReport(3,url)
+                        m.cmdReport(3, url)
                     end
-                end    
+                end
             else
                 if data.code == 500 then
                     m.haltComplete()
@@ -417,7 +418,7 @@ m.startHeartBeat = function()
                     setTimer(stop, 100, "强制停机")
                 end
             end
-            
+
             ssleep(5)
         end
     end

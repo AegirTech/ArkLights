@@ -4192,7 +4192,7 @@ uploadImg = function(img)
     log("ret", ret)
     ret = get(ret, 'data', 'url')
     ret = strOr(ret)
-    last_upload_img = ret
+    -- last_upload_img = ret
     return ret
 end
 
