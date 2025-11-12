@@ -1214,6 +1214,7 @@ end
 
 sui.普通作战1 = function()
     log('界园肉鸽')
+    sui.recruit_info = zl.加载干员招募评分("sui")
     -- 大地图数据
     横向间隔 = scale(675)
     纵向间隔 = scale(91)
@@ -1367,35 +1368,20 @@ sui.普通作战1 = function()
     log('招募卡达')
     sui.招募并记录干员("卡达", 肉鸽白名单)
     log(肉鸽参数["operators"])
-    if not appear("界园_初始招募") then return end
+    --if not appear("界园_初始招募") then return end
     log(2698)
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
-            if not findOne("界园_初始招募") then return true end
+            if findOne("界园_投出通宝确认") then return true end
             tap("界园_进入探索")
-        end, 5) then
+            ssleep(.5)
+        end, 25) then
         return
     end
 
-    log(2700)
-    --点击进入探索之后，有一段时间的加载界面，需要点击
-    local xtime = time()
-    if not wait(function()
-            if findOne("战略返回") then return true end
-            if findOne("界园_每层通宝确认") then return true end
-            tap("战略确认")
-            --第一次会弹出‘战略帮助’那个界面
-            if time() - xtime > 3 * 1000 then
-                xtime = time()
-                tap("招募说明关闭")
-            end
-        end, 20) then
-        return
-    end
-
-    if findOne("界园_每层通宝确认") then
+    if findOne("界园_投出通宝确认") then
         当前通宝 = sui.判断投出通宝()
-        tap("界园_每层通宝确认")
+        tap("界园_投出通宝确认")
     end
     ssleep(0.5) -- 右边第三列有概率加载过慢
     local best_path = sui.判断路径()
@@ -1517,7 +1503,7 @@ sui.判断路径 = function()
     local floor = sui.判断楼层()
     local 总列数 = { 4, 5, 5, 5, 5, 5, 5 } -- 每一层的列数
     大地图 = zl.创建大地图二维数组(7, 总列数[floor], 0)
-    local 起始行号 = sui.第1列判断()
+    local 起始行号 = sui.第1列判断() --通过关卡颜色判断
     for i = 2, 总列数[floor] - 1 do
         zl.大地图右滑()
         起始行号 = sui.第2列判断(i, 起始行号, i == 总列数[floor] - 1)

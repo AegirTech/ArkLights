@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.10 21:38"
+release_date = "11.12 03:41"
 update_announcement = '最近更新: 雪山降临活动/技术研发部小活动'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -123,7 +123,28 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     sleep(1000)
-    log(findOne("ib_返回房间2"))
+    --point.肉鸽干员等级识别范围 = { 682, 261, 707, 291 }
+    --log(ocro("肉鸽干员等级识别范围"))
+    local 肉鸽参数 = {
+        hp = 0,
+        hope = 0,
+        floor = 0,
+        collection = {},
+        operators = {
+            维什戴尔 = 1,
+            谷米 = 1,
+            卡达 = 1,
+            --[[ 电弧 = 1,
+            酒神 = 1,
+            罗小黑 = 1,
+            清流 = 1, ]]
+        },
+        ticket = 2,
+    }
+    recruit_info = zl.加载干员招募评分()
+    --local 可招募干员列表 = zl.分析可招募干员()
+    --log(recruit_info)
+    --zl.计算干员优先级(recruit_info, 可招募干员列表, 肉鸽参数.operators)
     --活动dis计算()
     exit()
     -- 喀兰贸易重建活动()
