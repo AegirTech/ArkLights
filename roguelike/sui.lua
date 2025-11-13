@@ -1398,7 +1398,7 @@ sui.普通作战1 = function()
         end, 25) then
         return
     end
-
+    ssleep(1)
     if findOne("界园_投出通宝确认") then
         当前通宝 = sui.判断投出通宝()
         tap("界园_投出通宝确认")
