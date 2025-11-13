@@ -1612,7 +1612,10 @@ retreat = function(x1, y1, x2, y2)
     -- touchUp(0, x2, y2)
 end
 
--- wait until func success
+--- wait until func success
+---@param func function 循环体
+---@param timeout number 循环最大时间,单位秒
+---@param interval number 单次循环间隔时间,单位秒
 wait = function(func, timeout, interval)
     timeout = timeout or 2
     interval = interval or 0
