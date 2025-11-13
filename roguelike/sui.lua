@@ -1415,6 +1415,15 @@ sui.普通作战1 = function()
     if 当前节点类型 == 1 then
         local 作战名 = sui.作战名ocr校正(ocro("界园_作战检测范围"))
         log(作战名)
+        if 作战名 then
+            if not wait(function()
+                    if findOne("快捷编队") then return true end
+                    tap("界园_作战_进入")
+                    ssleep(.5)
+                end, 5) then
+            end
+        end
+        zl.快捷编队()
     end
 end
 

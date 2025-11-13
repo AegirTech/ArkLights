@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.13 02:43"
+release_date = "11.14 02:59"
 update_announcement = '最近更新: 雪山降临活动/技术研发部小活动'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -124,9 +124,14 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     sleep(1000)
     --point.肉鸽干员等级识别范围 = { 682, 261, 707, 291 }
-    --log(ocro("肉鸽干员等级识别范围"))
-    sui.普通作战1()
+    log(ocro("rl_编队数量ocr范围"))
+    --zl.分析待编队干员()
     --活动dis计算()
+    肉鸽参数 = { operators = {}, }
+    local recruit_info = zl.加载干员招募评分()
+    log(recruit_info.all_opers_battle_info)
+    zl.自动编队(recruit_info)
+
     exit()
     -- 喀兰贸易重建活动()
     -- exit()

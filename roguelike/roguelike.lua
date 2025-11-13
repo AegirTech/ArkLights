@@ -388,6 +388,159 @@ zl.招募并记录干员 = function(t)
     zl.选择干员(t.index)
 end
 
+zl.分析待编队干员 = function(最大翻页次数)
+    log("分析待编队干员")
+    local 待编队干员列表 = {}
+    local 最大翻页次数 = 最大翻页次数 or 6
+    local 横向距离 = 585
+    local 纵向距离 = 205
+    local 起始点横坐标, 起始点纵坐标 = 624, scale(144) --用于定位
+    local 干员过多 = false
+    appear("确认招募", 3)
+    if not findOne("rl_第零列无干员") or not findOne("rl_第三列无干员") then
+        干员过多 = true
+        zl.招募翻页(1)
+        ssleep(1)
+    end
+
+    for page = 0, 最大翻页次数 do
+        local intX = findMultiColor(scale(586), 起始点纵坐标, scale(777), 起始点纵坐标 + 1,
+            "2E2E2E", "0|" .. scale(-20) .. "|C3C3C3", 0, 0.95)
+        if not intX then break end --没有干员可招募
+        local 偏移坐标 = scale(起始点横坐标) - intX
+        --log("偏移坐标", 偏移坐标)
+        local 无干员 = false
+        for i = 0, 7 do
+            point.肉鸽干员名称识别范围 = { scale(936 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(259 + 纵向距离 * (i % 4)),
+                scale(1125 + 横向距离 * math.floor(i / 4)) - 偏移坐标, scale(294 + 纵向距离 * (i % 4)) }
+            local 干员 = correctCharName(ocro("肉鸽干员名称识别范围"))
+            if not 干员 then
+                无干员 = true
+                break
+            end
+            log(page, i, 干员)
+            if 偏移坐标 < -80 then
+                if i >= 4 then --最后一页前面4个会重复
+                    待编队干员列表[page * 8 + i + 1 - 4] = {
+                        page = page,
+                        index = i + 1,
+                        name = 干员,
+                    }
+                end
+            else
+                待编队干员列表[page * 8 + i + 1] = {
+                    page = page,
+                    index = i + 1,
+                    name = 干员,
+                }
+            end
+        end
+
+        ssleep(.5)
+        if 偏移坐标 < -80 or 无干员 == true then --已经翻到最后一页
+            break
+        end
+        zl.招募翻页()
+    end
+    if 干员过多 then
+        zl.招募翻页(1)
+        ssleep(1)
+    end
+
+    return 待编队干员列表
+end
+
+zl.自动编队 = function(recruit_info)
+    log("肉鸽自动编队")
+    appear("快捷编队", 3)
+    local 已选择干员 = {}
+    local all_opers_battle_info = recruit_info.all_opers_battle_info
+    local 编队上限 = tonumber(ocro("rl_编队数量ocr范围"):match("/(%d+)")) or 6
+    if not wait(function()
+            if findOne("rl_编队清空选择") then return true end
+            tap("快捷编队")
+        end, 5, .1) then
+        return
+    end
+    if not wait(function()
+            if findOne("rl_无干员选中") then return true end
+            tap("rl_编队清空选择")
+        end, 5, .1) then
+        return
+    end
+    local 待编队干员列表 = zl.分析待编队干员()
+    if #肉鸽参数.operators > 编队上限 then
+        local conditions = recruit_info.conditions
+        local all_groups = recruit_info.all_groups
+        local oper_
+        log(conditions)
+        log(all_groups)
+        --没写好
+        for i = 1, #conditions do --遍历所有控制组
+            local groups = conditions[i].groups
+            local threshold = conditions[i].threshold
+            local count = 0
+            for name, info in pairs(待编队干员列表) do --遍历待编队的干员
+                for j = 1, #groups do --如果在组里就添加
+                    local group_name = groups[j]
+                    local opers = all_groups[group_name]["opers"]
+                    if table.findv(opers, name) then
+                        table.insert(已选择干员, info)
+                        count = count + 1
+                        break
+                    end
+                end
+            end
+            if count >= threshold then
+                break
+            end
+        end
+        log(已选择干员)
+    else
+        for i = 1, 12 do
+            tap("近卫招募列表" .. i)
+            ssleep(.01)
+        end
+        已选择干员 = 待编队干员列表
+    end
+    if not wait(function()
+            if findOne("快捷编队") then return true end
+            tap("确认招募")
+        end, 5, .5) then
+        return
+    end
+    ssleep(1)
+    local 纵向距离, 横向距离 = 185, 86
+    log(已选择干员, #已选择干员)
+    for i = 1, #已选择干员 do
+        local name = 已选择干员[i].name
+        local skill = all_opers_battle_info[name].skill
+        local alternate_skill = all_opers_battle_info[name].alternate_skill
+        log(i, name, alternate_skill, skill)
+        if alternate_skill > 0 then
+            if i <= 4 then
+                tap({ scale(362 + 横向距离 * (alternate_skill - 1)), scale(268 + 纵向距离 * (i - 1)) })
+            elseif i <= 9 then
+                tap({ scale(970 + 横向距离 * (alternate_skill - 1)), scale(163 + 纵向距离 * (i - 5)) })
+            else
+                tap({ scale(1578 + 横向距离 * (alternate_skill - 1)), scale(268 + 纵向距离 * (i - 10)) })
+            end
+            ssleep(.01)
+        end
+        if skill > 0 then
+            if i <= 4 then
+                tap({ scale(362 + 横向距离 * (skill - 1)), scale(268 + 纵向距离 * (i - 1)) })
+            elseif i <= 9 then
+                tap({ scale(970 + 横向距离 * (skill - 1)), scale(163 + 纵向距离 * (i - 5)) })
+            else
+                tap({ scale(1578 + 横向距离 * (skill - 1)), scale(268 + 纵向距离 * (i - 10)) })
+            end
+            ssleep(.01)
+        end
+    end
+end
+
+
 zl.选择干员 = function(idx) --选择当页干员
     if not wait(function()
             if findAny({ "萨卡兹_初始招募", "战略返回" }) then
@@ -910,10 +1063,6 @@ zl.selection_node = function(select_number, rogueType)
     else
         return -1, -1
     end
-end
-
-zl.快捷编队 = function()
-
 end
 
 --不期而遇事件处理
