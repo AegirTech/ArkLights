@@ -1160,6 +1160,18 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
     ------------------------------------------------------------
+    addTitle(layout, "卫戍协议(测试)")
+    addInfo(layout, "需要自己过一下教程")
+    newRow(layout)
+    addTextView(layout, "模式")
+    ui.addSpinner(layout, "shp_game_mode", { "1 - 4回合循环" }, 0)
+    newRow(layout)
+    addButton(layout, nil, "卫戍协议开始",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+
+
+    -------------------------------------------------------------
     -- addTitle(layout, "宝石铭刻")
     -- addInfo(layout, "最好是1080p，平板模式")
     -- newRow(layout)
@@ -1695,20 +1707,7 @@ show_auto_ui = function()
     newRow(layout)
     addButton(layout, nil, "仓库识别(未完成)", "raise_storage_dentify")]]
 
-    --[[
-    newRow(layout)
-    addTextView(layout, "--------------------卫戍协议相关--------------------")
-    newRow(layout)
 
-    addTextView(layout, "建议ew、异拉放5本")
-    newRow(layout)
-    addButton(layout, nil, "卫戍协议每日",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    addButton(layout, nil, "重复到打满",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='重复卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    ]]
     ---------------------------------------------------------------------
     addTitle(layout, "连续公招")
     newRow(layout)
