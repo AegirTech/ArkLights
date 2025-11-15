@@ -10265,6 +10265,7 @@ end
 
 -- 横排奖励,要求取入口/页面/领取三个点
 path.活动奖励 = function(活动)
+    log("领取" .. 活动 .. "奖励")
     if appear(活动 .. "奖励入口", 1) then
         tap(活动 .. "奖励入口")
     else
@@ -10293,8 +10294,8 @@ path.卫戍协议 = function()
         tap("面板活动")
     end
     if appear("教程关闭", 3) then tap("教程关闭") end
-    while true do --到时候把true换成findOne("卫戍协议等级max")
-        path.卫戍协议循环()
+    while not path.卫戍协议循环() do --到时候把true换成
+
     end
     path.活动奖励("卫戍协议")
 end
@@ -10305,6 +10306,11 @@ path.卫戍协议循环 = function()
         tap("面板活动")
     end
     if not appear("卫戍协议首页", 5) then return end
+    if findOne("卫戍协议等级max") then
+        log("卫戍协议等级已满")
+        captureqqimagedeliver("INFO", "卫戍协议等级已满", "卫戍协议等级已满")
+        return true
+    end
     tap("卫戍协议首页")
     disappear("卫戍协议首页", 3)
     appear("卫戍协议开始模拟", 2)
