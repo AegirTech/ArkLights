@@ -343,7 +343,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
             end
             悖论模拟选技能()
         else
-            if 自动编队(作业["opers"], 群组) == false then return false end
+            if 自动编队(作业["opers"], 群组) == false then return "编队失败" end
         end
         releaseCapture()
     end
@@ -403,7 +403,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
                 return true
             end
         end, 120) then
-        return
+        return true
     end
     print("抄作业")
     抄作业(作业, tonumber(地图类型))
@@ -420,9 +420,10 @@ auto_prts = function(作业名, 需要编队, 是否自带)
                 return true
             end
         end, 5) then
-        return
+        return true
     end
     sleep(3000)
+    return true
 end
 
 auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
