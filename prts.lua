@@ -732,11 +732,6 @@ end
         captureqqimagedeliver("WARN", "自动战斗编队失败", "缺少干员过多,编队未完成")
         sleep(1000)
         --有时候会在编队界面卡主 一直返回不了主页
-        wait(function()
-            back()
-        end, 3, .3)
-        ssleep(1)
-        path.跳转("首页")
         return false
     end
     -- if 未编入数量 == 1 then

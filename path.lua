@@ -5035,7 +5035,10 @@ path.开始游戏 = function(x, disable_ptrs_check)
         if need_copy_homework then
             ssleep(0.5)
             pcall(upload_launch_info, "autofight")
-            auto_prts(homework[x], true)
+            if not auto_prts(homework[x], true) then
+                path.跳转("首页")
+                return true
+            end
         else
             if not wait(function()
                     if not findOne(state) then return true end
@@ -5063,7 +5066,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
     elseif state == "开始行动突袭" or state == "开始行动故事集S" or state == "沙盘推演确定" then
         no_success_one_loop = 0
         ssleep(0.5)
-        auto_prts(homework[x], true)
+        if not auto_prts(homework[x], true) then path.跳转("首页") end
         return path.base.接管作战()
     elseif stone_times < max_stone_times and state == "源石恢复理智取消" or
         drug_times < max_drug_times and state == "药剂恢复理智取消" then
