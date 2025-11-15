@@ -11039,7 +11039,7 @@ end
 
     local 数字列表 = {}
     log("开始识别数字")
-    for i = 1, 5 do
+    for i = 1, 8 do
         local cx = 63 + (i - 1) * 147
         local cy = 880
         for j = 1, 5 do
@@ -11072,7 +11072,7 @@ end
     -- local hd_debug = true
     -- 数字列表 = { { index = 1, number = 1, is_choose = false }, { index = 2, number = 2, is_choose = false }, { index = 3, number = 2, is_choose = false }, { index = 4, number = 4, is_choose = false }, { index = 5, number = 5, is_choose = false } }
 
-    if #数字列表 ~= 5 then
+    if #数字列表 < 4 then
         log("数字识别失败", 数字列表)
         appearTap("喀兰贸易结束回合红", 1)
         return 喀兰贸易重建活动()
@@ -11133,6 +11133,13 @@ end
                 tap("喀兰贸易收集资源")
                 if disappear("喀兰贸易收集资源", 0.5) then return true end
             end, 5)
+            ssleep(0.2)
+            if findOne("喀兰贸易前进") then
+                wait(function()
+                    tap("喀兰贸易前进")
+                    if disappear("喀兰贸易前进", 0.5) then return true end
+                end, 5)
+            end
         end
         disappear({ "喀兰贸易前进", "喀兰贸易收集资源" }, 3)
         sleep(kl_choice_delay)
