@@ -10290,7 +10290,7 @@ end
 path.卫戍协议 = function()
     if not findOne("卫戍协议首页") then
         path.跳转("首页")
-        tap("面板活动1")
+        tap("面板活动")
     end
     if appear("教程关闭", 3) then tap("教程关闭") end
     while true do --到时候把true换成findOne("卫戍协议等级max")
@@ -10302,8 +10302,9 @@ end
 path.卫戍协议循环 = function()
     if not findOne("卫戍协议首页") then
         path.跳转("首页")
-        tap("面板活动1")
+        tap("面板活动")
     end
+    if not appear("卫戍协议首页", 5) then return end
     tap("卫戍协议首页")
     disappear("卫戍协议首页", 3)
     appear("卫戍协议开始模拟", 2)
