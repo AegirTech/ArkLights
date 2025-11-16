@@ -683,7 +683,7 @@ end
                     未编入干员 = { i, 未编入[2] }
                 elseif 是否群组 == nil and 未编入数量 > 1 then
                     log("缺少干员超过1个")
-                    exitScript()
+                    return false
                 end
                 if not 是否群组 then 编入数量 = #干员目录 + 编入数量 end
             end
