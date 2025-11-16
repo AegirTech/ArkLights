@@ -10997,7 +10997,7 @@ path.喀兰贸易技术研发部 = function()
     end
     if not findAny({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }) then
         path.跳转("首页")
-        tap("面板活动")
+        tap("面板活动2")
         if not appear("喀兰贸易活动首页进入", 5) then return end
     end
     喀兰贸易重建活动(true)
