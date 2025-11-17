@@ -11093,7 +11093,7 @@ end
     -- local hd_debug = true
     -- 数字列表 = { { index = 1, number = 1, is_choose = false }, { index = 2, number = 2, is_choose = false }, { index = 3, number = 2, is_choose = false }, { index = 4, number = 4, is_choose = false }, { index = 5, number = 5, is_choose = false } }
 
-    if #数字列表 < 4 then
+    if #数字列表 < 2 then
         log("数字识别失败", 数字列表)
         appearTap("喀兰贸易结束回合红", 1)
         return 喀兰贸易重建活动()
@@ -11175,7 +11175,12 @@ end
     end
     if appear("喀兰贸易结算画面", 3) then
         log("重建成功，下一局")
-        tap("喀兰贸易下一局")
+        wait(function()
+            tap("喀兰贸易下一局")
+            if appear({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }, 1) then
+                return true
+            end
+        end, 15)
         return 喀兰贸易重建活动(true)
     end
     return 喀兰贸易重建活动(false)
