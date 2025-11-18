@@ -11094,7 +11094,7 @@ end
     -- local hd_debug = true
     -- 数字列表 = { { index = 1, number = 1, is_choose = false }, { index = 2, number = 2, is_choose = false }, { index = 3, number = 2, is_choose = false }, { index = 4, number = 4, is_choose = false }, { index = 5, number = 5, is_choose = false } }
 
-    if #数字列表 < 2 then
+    if #数字列表 < 1 then
         log("数字识别失败", 数字列表)
         appearTap("喀兰贸易结束回合红", 1)
         return 喀兰贸易重建活动()
@@ -11350,7 +11350,7 @@ end
 
 活动dis计算 = function()
     -- 截图
-    local scren_p = getScreenPixel(0, 0, 0, 0)
+    --local scren_p = getScreenPixel(0, 0, 0, 0)
 
     function printRGB(color)
         local r, g, b = colorToRGB(color)
