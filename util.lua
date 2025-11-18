@@ -4084,6 +4084,7 @@ update_state_from_debugui = function()
     sss_only_complete = (sss_only_complete == nil) and true or sss_only_complete
 
     if paddleocr_loadfailed or disable_paddleocr then
+        log("PaddleOCR不可用，使用默认OCR")
         ocrex = ocr
     end
 end
