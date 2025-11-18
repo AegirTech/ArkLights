@@ -11031,6 +11031,11 @@ end
                 tap('喀兰贸易活动下一关')
                 ssleep(0.2)
                 log(7)
+                if not findOne('喀兰贸易活动下一关') then
+                    captureqqimagedeliver("INFO", "喀兰贸易活动推送", table.join(qqmessage, ' '))
+                    log(99)
+                    return
+                end
             end
             if findOne('喀兰贸易活动开始重建', 2) then
                 tap('喀兰贸易活动开始重建')
@@ -11038,7 +11043,6 @@ end
                 break
             end
             if not findOne('喀兰贸易活动下一关') then
-                captureqqimagedeliver("INFO", "喀兰贸易活动推送", table.join(qqmessage, ' '))
                 log(10)
                 return
             end
