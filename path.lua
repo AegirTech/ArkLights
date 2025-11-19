@@ -11028,10 +11028,10 @@ end
         end
         while true do
             if findOne('喀兰贸易活动已达成') then
-                if not findOne('喀兰贸易活动下一关') then
+                if findOne('喀兰贸易活动最后一关') then
+                    log("喀兰贸易活动完成所有关卡")
                     captureqqimagedeliver("INFO", "喀兰贸易活动推送", table.join(qqmessage, ' '))
-                    log(99)
-                    return
+                    return true
                 end
                 tap('喀兰贸易活动下一关')
                 ssleep(0.2)
