@@ -1160,7 +1160,7 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
     ------------------------------------------------------------
-    addTitle(layout, "卫戍协议(测试)")
+    addTitle(layout, "卫戍协议")
     addInfo(layout, "需要自己过一下教程")
     newRow(layout)
     addTextView(layout, "模式")

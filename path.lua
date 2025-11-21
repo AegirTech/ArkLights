@@ -10379,7 +10379,9 @@ path.卫戍协议循环 = function()
             ssleep(2)
             disappear("正在提交反馈至神经", network_timeout)
             if findOne("卫戍协议首页") then return true end
-        end, 10, 1) then
+        end, 30, 1) then
+        log("可能是卡住了,点一下返回首页")
+        tap("卫戍协议准备就绪")
     end
 end
 
