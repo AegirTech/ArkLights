@@ -10309,7 +10309,7 @@ path.卫戍协议 = function()
         tap("面板活动")
     end
     if appear("教程关闭", 3) then tap("教程关闭") end
-    while not path.卫戍协议循环() do --到时候把true换成
+    while not path.卫戍协议循环() do
 
     end
     path.活动奖励("卫戍协议")
@@ -10324,6 +10324,11 @@ path.卫戍协议循环 = function()
     if findOne("卫戍协议等级max") then
         log("卫戍协议等级已满")
         captureqqimagedeliver("INFO", "卫戍协议等级已满", "卫戍协议等级已满")
+        return true
+    end
+    if shp_only_daily_task and findOne("卫戍协议每日已完成") then
+        log("卫戍协议每日已完成")
+        captureqqimagedeliver("INFO", "卫戍协议每日已完成", "卫戍协议每日已完成")
         return true
     end
     tap("卫戍协议首页")

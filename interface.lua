@@ -567,7 +567,7 @@ make_jump_ui = function(layout)
     local buttons = {
         { nil, "多账户", make_jump_ui_command(layout, 'multi_account') },
         { nil, "小工具", make_jump_ui_command(layout, "auto") },
-        { nil, "肉鸽/生息", make_jump_ui_command(layout, "extra") },
+        { nil, "肉鸽|小游戏", make_jump_ui_command(layout, "extra") },
         { "quit_script", "退出", make_jump_ui_command(layout, nil, "saveConfig('Not_Restart','true');peaceExit()") },
         { nil, "自动作战", make_jump_ui_command(layout, "auto_fight") },
         { nil, "高级设置", make_jump_ui_command(layout, "debug") },
@@ -1165,6 +1165,7 @@ show_extra_ui = function()
     newRow(layout)
     addTextView(layout, "模式")
     ui.addSpinner(layout, "shp_game_mode", { "1 - 4回合循环" }, 0)
+    ui.addCheckBox(layout, "shp_only_daily_task", "只做每日", false)
     newRow(layout)
     addButton(layout, nil, "卫戍协议开始",
         make_jump_ui_command(layout, nil,
