@@ -1203,15 +1203,15 @@ show_extra_ui = function()
     --         "extra_mode='争锋频道活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     ---------------------------------------------------------------------
 
-    addTitle(layout, "喀兰贸易技术研发部(只支持1080p)")
-    addInfo(layout, "测试阶段，可能存在bug")
-    newRow(layout)
-    addButton(layout, nil, "喀兰贸易技术研发部开始",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='喀兰贸易技术研发部';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    newRow(layout)
-    addTextView(layout, "每次选择延迟(ms)")
-    ui.addEditText(layout, "kl_choice_delay", "0")
+    -- addTitle(layout, "喀兰贸易技术研发部(只支持1080p)")
+    -- addInfo(layout, "测试阶段，可能存在bug")
+    -- newRow(layout)
+    -- addButton(layout, nil, "喀兰贸易技术研发部开始",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='喀兰贸易技术研发部';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    -- newRow(layout)
+    -- addTextView(layout, "每次选择延迟(ms)")
+    -- ui.addEditText(layout, "kl_choice_delay", "0")
     ---------------------------------------------------------------------
     -- addTitle(layout, "促融共竞#2(1080p)")
     -- addInfo(layout, "要自己过一下教程,开两个模拟器一个当房主一个当参与者")
