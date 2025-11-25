@@ -2867,7 +2867,7 @@ parse_fight_config = function(fight_ui)
             end
             for _ = 1, 99 do table.insert(expand_fight, "HD-1") end
         elseif table.includes({ 'HD1' }, v) then
-            for i = hd_max_stage, 1, -1 do table.insert(expand_fight, 'HD' .. '-' .. i) end
+            for i = 1, hd_max_stage do table.insert(expand_fight, 'HD' .. '-' .. i) end
             table.insert(expand_fight, "BREAK")
         elseif table.includes({ 'HD2' }, v) then                --【速通输入，“hd3”“HD3”】都会插入16个关卡坐标
             for i = 1, 8 do
@@ -3010,10 +3010,10 @@ update_state_from_ui = function()
     job = parse_from_ui("now_job_ui", all_job)
 
     -- 活动开放时间段
-    hd_nickname = "OS"
-    hd_max_stage = 9
+    hd_nickname = "PV"
+    hd_max_stage = 10
     hd_exclude = {}                                --排除哪些关卡不刷，例如{9}
-    hd_open_time_end = parse_time("202511220400")
+    hd_open_time_end = parse_time("202512050400")
     hd2_open_time_end = parse_time("202507150400") -- 故事集开放时间段
     hd_mod = "SS"
     log("fight_ui", fight_ui)
