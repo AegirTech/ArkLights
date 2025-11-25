@@ -5885,7 +5885,7 @@ path.活动 = function(x)
     if not skip_guide then
         path.跳转("首页")
         --tap("面板活动2")
-        path.活动页面寻找(2)
+        path.活动页面寻找(1)
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -10306,7 +10306,7 @@ end
 path.卫戍协议 = function()
     if not findOne("卫戍协议首页") then
         path.跳转("首页")
-        tap("面板活动")
+        tap("面板活动2")
     end
     if appear("教程关闭", 3) then tap("教程关闭") end
     while not path.卫戍协议循环() do
@@ -10318,7 +10318,7 @@ end
 path.卫戍协议循环 = function()
     if not findOne("卫戍协议首页") then
         path.跳转("首页")
-        tap("面板活动")
+        tap("面板活动2")
     end
     if not appear("卫戍协议首页", 5) then return end
     if findOne("卫戍协议等级max") then
