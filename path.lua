@@ -5971,6 +5971,10 @@ path.活动 = function(x)
     --     path.跳转("首页")
     --     path.活动页面寻找(1)
     -- end
+    if not car_checked then
+        path.烟花委员会()
+        return path.活动(x)
+    end
 
     if not skip_guide and not appear({ "活动导航0", "活动商店导航" }, 5) then
         log("未找到活动导航")
