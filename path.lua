@@ -5972,6 +5972,12 @@ path.活动 = function(x)
     --     path.活动页面寻找(1)
     -- end
     if not car_checked then
+        ssleep(2) --烟花活动ui加载需要时间
+        if findOne('烟花活动未解锁') then
+            log('烟花活动未解锁')
+            car_checked = true
+            return
+        end
         path.烟花委员会()
         return path.活动(x)
     end
