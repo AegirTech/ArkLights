@@ -10108,11 +10108,13 @@ path.烟花委员会 = function()
     ssleep(1)
     -- 寻找没打的关卡
     if not wait(function()
-            local p = findOne("烟花_关卡寻找", .9)
-            if p then
-                tap(p)
-                disappear("烟花委员会首页", 3)
+            local p = findOnes("烟花_关卡寻找", .87)
+            for _, v in ipairs(p) do
+                --快速点击所有结果，总有一个能进入
+                tap({ v.x, v.y })
+                ssleep(.15)
             end
+            disappear("烟花委员会首页", 3)
             if findOne("烟花关卡内部进入判断") then return true end
         end, 10, 1) then
         wait(function()
