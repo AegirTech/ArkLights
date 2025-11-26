@@ -6377,7 +6377,7 @@ path.商店搬空 = function()
     end
     log("商店清空任务")
 
-    if not path.活动页面寻找(2) then return end
+    if not path.活动页面寻找(1) then return end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
@@ -10339,7 +10339,7 @@ path.卫戍协议循环 = function()
     disappear("卫戍协议首页", 3)
     appear("卫戍协议开始模拟", 2)
     ssleep(.2)
-    for i = 1, 3 do
+    for i = 1, 2 do --只打前两个难度
         tap("卫戍协议难度列表" .. i)
         ssleep(1)
     end

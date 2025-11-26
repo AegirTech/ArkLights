@@ -1698,6 +1698,7 @@ wait_game_up = function(retry)
     }, 5)
     if p == "同意并继续" then path.bilibili_login[p]() end
     trySolveSlipCaptcha()
+    log(1701)
     checkScreenLock()
     log("wait_game_up next", retry)
     disable_game_up_check = prev
