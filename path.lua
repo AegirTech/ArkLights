@@ -10108,14 +10108,13 @@ path.烟花委员会 = function()
     ssleep(1)
     -- 寻找没打的关卡
     if not wait(function()
-            local d_p = find_color("烟花_关卡寻找范围", "DF554E", 0, 0.90)
-            if d_p then
-                log(d_p)
-                tap({ d_p[1], d_p[2] + scale(40) })
+            local p = findOne("烟花_关卡寻找", .9)
+            if p then
+                tap(p)
+                disappear("烟花委员会首页", 3)
             end
-            disappear("烟花委员会首页", 3)
             if findOne("烟花关卡内部进入判断") then return true end
-        end, 10) then
+        end, 10, 1) then
         wait(function()
             tap("生息演算_全局_返回")
             ssleep(1)
