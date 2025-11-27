@@ -8,6 +8,7 @@
 *.ogg
 *.psd
 *.zip
+*.log
 tmp*
 /*/
 !/roguelike/
