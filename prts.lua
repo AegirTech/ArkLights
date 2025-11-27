@@ -671,7 +671,17 @@ end
                 end
                 --print(干员目录)
                 未编入 = 选择干员(干员目录, "待编队干员", 是否群组)
-
+                log("未编入结果", 未编入[1], 未编入[2])
+                if 未编入[1] > 0 then
+                    --按等级升序再找一遍
+                    tap("等级降序")
+                    ssleep(.8)
+                    swipe_next_page(1)
+                    ssleep(.8)
+                    未编入 = 选择干员(干员目录, "待编队干员", 是否群组)
+                    tap("等级降序")
+                    ssleep(.8)
+                end
                 未编入数量 = 未编入数量 + 未编入[1]
                 if 是否群组 and 未编入[1] == 0 then
                     group_selected = 1
@@ -876,7 +886,7 @@ end
         干员组[i] = string.sub(干员目录[i], 1, string.len(干员目录[i]) - 1)
         技能组[i] = tonumber(string.sub(干员目录[i], -1)) or 1
     end
-    local 找干员 = function(识别结果)
+    local 找干员 = function(识别结果) --当前页面
         for i = 1, 需要干员数 do
             -- print "需要干员", i, 干员组[i]
             if 已选择[i] == nil then
@@ -907,6 +917,7 @@ end
     end
     print(干员组, 技能组)
     keepCapture()
+    local last_char = ""
     for i = 1, 18 do
         print("识别上")
         local 识别结果 = 干员名ocr校正(ocrex("上排干员范围"))
@@ -918,9 +929,14 @@ end
         print("已选择", selected, "个干员")
         if 是否群组 and selected >= 群组需要数量 then return { 0 } end
         if selected < 需要干员数 then
-            print("下一页搜索")
+            print("下一页搜索,上一页最后一个干员", last_char)
             swipe_next_page()
             keepCapture()
+            if 识别结果[#识别结果]["text"] == last_char then
+                break
+            else
+                last_char = 识别结果[#识别结果]["text"]
+            end
         else
             return { 0 }
         end
@@ -941,6 +957,7 @@ end
     end
 end
 
+--作战时编队滑动翻页
 swipe_next_page = function(left, nodelay)
     local duration
     local finger
