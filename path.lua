@@ -341,11 +341,11 @@ path.base = {
             return path.跳转("首页")
         end
 
-        log(89, repeat_fight_mode)
+        log(89, fight_times, repeat_fight_mode)
         if repeat_fight_mode then return path.开始游戏('') end
 
         -- current fight success
-        log(cur_fight, fight_tick, fight)
+        log(348, cur_fight, fight_tick, fight)
         pre_fight = cur_fight
         fight_failed_times[cur_fight] = -3
         -- if same fight or same page fight
@@ -354,11 +354,11 @@ path.base = {
             log("fight is empty, return to home")
             return
         end
-        if copy_homework then battle_times = 0 end
-        fight_tick = fight_tick + battle_times
+
+        fight_tick = fight_tick + battle_times - 1
         local next_fight_tick = fight_tick % #fight + 1 -- 多倍代理次数
         local next_fight = fight[next_fight_tick]
-        log(cur_fight, next_fight)
+        log(fight_tick, cur_fight, next_fight)
 
         if table.includes({ "剿灭" }, get_fight_type(cur_fight)) then
             jmfight_times = (jmfight_times or 0) + 1
@@ -1834,7 +1834,7 @@ update_state = function()
 
     -- 作战统计
     fight_history = {}
-
+    --作战计数器
     fight_tick = 0
     no_success_one_loop = 0
     prev_jump = "基建"
@@ -10110,12 +10110,15 @@ path.烟花委员会 = function()
     -- 寻找没打的关卡
     if not wait(function()
             local p = findOnes("烟花_关卡寻找", .87)
-            for _, v in ipairs(p) do
-                --快速点击所有结果，总有一个能进入
-                tap({ v.x, v.y })
-                ssleep(.15)
+            if p then
+                for _, v in ipairs(p) do
+                    --快速点击所有结果，总有一个能进入
+                    tap({ v.x, v.y })
+                    ssleep(.1)
+                    if not findOne("烟花委员会首页") then break end
+                end
+                disappear("烟花委员会首页", 3)
             end
-            disappear("烟花委员会首页", 3)
             if findOne("烟花关卡内部进入判断") then return true end
         end, 10, 1) then
         wait(function()
