@@ -668,6 +668,8 @@ show_debug_ui = function()
         make_jump_ui_command(layout, loadConfig("last_layout", "main")),
         nil, nil)
 
+    addButton(layout, nil, "系统手势解锁(可能有bug)", make_jump_ui_command(layout, 'gesture_capture'))
+
     newRow(layout)
     ui.addCheckBox(layout, "enable_log", "启用日志", true)
     ui.addCheckBox(layout, "write_log_local", "保存日志到本地", true)
@@ -676,12 +678,8 @@ show_debug_ui = function()
     newRow(layout)
     addTextView(layout, "最大日志时长(分钟)")
     ui.addEditText(layout, "max_log_time", "15")
-    newRow(layout)
-    addTextView(layout, "最大日志行数")
+    addTextView(layout, "    最大日志行数")
     ui.addEditText(layout, "max_log_count", "1000")
-
-    newRow(layout)
-    addButton(layout, nil, "解锁", make_jump_ui_command(layout, 'gesture_capture'))
 
     newRow(layout)
     ui.addTabView(layout, "debug_tab")
@@ -1035,6 +1033,7 @@ show_debug_ui = function()
 
     newRow(debug_layout_调试)
     addButton(debug_layout_调试, nil, "清除缓存", "clear_cache()")
+    addTextView(debug_layout_调试, "设备id： " .. get_device_id(), ui_device_id)
 
     newRow(debug_layout_调试)
     ui.addCheckBox(debug_layout_调试, "use_system_library", "使用系统支持库", true)
