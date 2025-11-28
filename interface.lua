@@ -1012,10 +1012,13 @@ show_debug_ui = function()
 
     newRow(debug_layout_其他)
     addTextView(debug_layout_其他, "搬商店时间在活动")
-    ui.addSpinner(debug_layout_其他, "shop_period", { "结束前", "结束后", "结束前后", "每一次" }, 0)
+    ui.addSpinner(debug_layout_其他, "shop_period", { "结束前", "每一次" }, 0)
     addTextView(debug_layout_其他, "的第")
-    ui.addSpinner(debug_layout_其他, "shop_day", { "1", "2", "3", "4", "5" }, 0)
-    addTextView(debug_layout_其他, "天当天")
+    ui.addSpinner(debug_layout_其他, "shop_day", { "1", "2", "3", "4" }, 1)
+    addTextView(debug_layout_其他, "天内")
+
+    newRow(debug_layout_其他)
+    addTextView(debug_layout_其他, "因为活动关闭后可能会点到新活动导致卡教程，所以不再支持活动结束后购买商店")
 
     newRow(debug_layout_其他)
     addTextView(debug_layout_其他, "无障碍模式关闭app方式")
