@@ -1081,6 +1081,7 @@ show_debug_ui = function()
     newRow(debug_layout_调试)
     addButton(debug_layout_调试, "upload_screen_info", "上传当前屏幕节点信息", "upload_screen()")
 
+    -- 速通替换了懒人自带的tap函数，修改为gesture实现的
     newRow(debug_layout_调试)
     ui.addCheckBox(debug_layout_调试, "enable_native_tap", "启用原生点击方式", false)
 

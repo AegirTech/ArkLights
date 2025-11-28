@@ -34,7 +34,7 @@ disable_log_wrapper = function(func, enable)
 end
 enable_log_wrapper = function(func) return disable_log_wrapper(func, true) end
 
--- 无障碍函数替换
+-- 无障碍函数替换 -- 没什么用，给root打包用的，速通目前用的是无障碍打包
 if not openPermissionSetting then
     openPermissionSetting =
         function() stop("没root请换用无障碍版速通") end
@@ -68,32 +68,33 @@ if not openPermissionSetting then
     function Gesture:addPath(path) table.insert(self.path, path) end
 
     gestureDispatchOnePath = function(path, id)
-        local point = path.point
+        log('root gesture')
+        local point = path.point -- 此时path已经已经Path:addPoint修改过了。point是[x,y,x1,y1,...]
         if #point < 2 then return end
         local start_time = time()
         local timeline = {}
         local length = 0
         local x, y, px, py
-        px = point[1]
+        px = point[1] -- 初始点
         py = point[2]
         sleep(path.startTime)
         for i = 2, #point / 2 do
             x = point[i * 2]
             y = point[i * 2 + 1]
             length = length + math.sqrt((x - px) ^ 2 + (y - py) ^ 2)
-            table.insert(timeline, length)
+            table.insert(timeline, length) -- 计算每个点和前一个点的距离，累加
             px, py = x, y
         end
         touchUp(id)
-        touchMove(id, point[1], point[2])
+        touchMove(id, point[1], point[2]) -- 移到开始的点
         touchDown(id)
         print(59, id, point)
         for i = 2, #point / 2 do
             x = point[i * 2]
             y = point[i * 2 + 1]
-            timeline[i] = timeline[i] / length * path.durTime
+            timeline[i] = timeline[i] / length * path.durTime    -- 当前已经滑动距离/总距离*总时间 = 当前时间点
             touchMoveEx(id, x, y, timeline[i])
-            if time() - start_time > path.durTime then break end
+            if time() - start_time > path.durTime then break end -- 每次滑动后检查是否超时
         end
         sleep(max(0, time() - start_time - path.durTime))
         print(60, id, point, start_time + path.durTime - time())
@@ -1231,11 +1232,27 @@ zoom = function(retry)
             { point = { { 0, 0 }, { 5, 0 } }, duration = duration },
         }
     else
-        -- 更改为基建右上角的那一块空白
-        log("miui缩放测试")
+        log("缩放测试2")
+        -- finger = {
+        --     { point = { point["miui缩放开始"] }, duration = duration },
+        --     { point = { point["miui缩放结束"], point["miui缩放开始"] }, duration = duration },
+        -- }
+
         finger = {
-            { point = { point["miui缩放开始"] }, duration = duration },
-            { point = { point["miui缩放结束"], point["miui缩放开始"] }, duration = duration },
+            {
+                point = { { screen.width - scale(300),      scale(180) },
+                    { math.round(screen.width / 2 + scale(10)), math.round(screen.height / 2 - scale(10)) } },
+                duration = duration,
+                start = 0
+            },
+            {
+                point = {
+                    { scale(300),                               screen.height - scale(10) },
+                    { math.round(screen.width / 2 - scale(10)), math.round(screen.height / 2 + scale(10)) },
+                },
+                duration = duration,
+                start = 0
+            },
         }
         -- finger = {
         --     { point = { { 0, 0 } },           duration = duration },
