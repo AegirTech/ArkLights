@@ -917,7 +917,6 @@ end
     end
     print(干员组, 技能组)
     keepCapture()
-    local last_char = ""
     for i = 1, 18 do
         print("识别上")
         local 识别结果 = 干员名ocr校正(ocrex("上排干员范围"))
@@ -932,11 +931,6 @@ end
             print("下一页搜索,上一页最后一个干员", last_char)
             swipe_next_page()
             keepCapture()
-            if 识别结果[#识别结果]["text"] == last_char then
-                break
-            else
-                last_char = 识别结果[#识别结果]["text"]
-            end
         else
             return { 0 }
         end
