@@ -10387,17 +10387,16 @@ path.卫戍协议循环 = function()
     --     --进图后强退app,到主页放弃上一把
     -- end
     if not wait(function()
-            tap("卫戍协议准备就绪")
             if findOne("卫戍协议选择分队") then return true end
+            tap("卫戍协议准备就绪")
         end, 10, 1) then
     end
     ssleep(.5)
     tap("卫戍协议选择血最多分队")
     ssleep(2)
-    if not wait(function()
-            tap("卫戍协议准备就绪")
-        end, 5, 1) then
-    end
+    wait(function()
+        tap("卫戍协议准备就绪")
+    end, 5, 1)
     ssleep(10)
     appear("卫戍协议开始战斗", 40)
     for i = 1, 4 do
