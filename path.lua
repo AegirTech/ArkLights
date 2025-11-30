@@ -10109,7 +10109,7 @@ path.烟花委员会 = function()
     ssleep(1)
     -- 寻找没打的关卡
     if not wait(function()
-            local p = findOnes("烟花_关卡寻找", .87)
+            local p = findOnes("烟花_关卡寻找", .85)
             if p then
                 for _, v in ipairs(p) do
                     --快速点击所有结果，总有一个能进入
