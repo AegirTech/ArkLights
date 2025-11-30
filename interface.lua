@@ -572,7 +572,8 @@ make_jump_ui = function(layout)
         { nil, "自动作战", make_jump_ui_command(layout, "auto_fight") },
         { nil, "高级设置", make_jump_ui_command(layout, "debug") },
         { "join_qq", "加入QQ群", make_jump_ui_command(layout, nil, "jump_qq_qun()") },
-        { "join_channel", "QQ频道", make_jump_ui_command(layout, nil, "jump_qq_channel()") },
+        -- { "join_channel", "QQ频道", make_jump_ui_command(layout, nil, "jump_qq_channel()") },
+        { "jump_afadian", "爱发电赞助", make_jump_ui_command(layout, nil, "jump_address('https://afdian.com/a/arklights')") },
         { "readme_btn", "使用文档", make_jump_ui_command(layout, nil, "saveConfig('readme_already_read','1');jump_readme()") },
     }
 
@@ -580,9 +581,9 @@ make_jump_ui = function(layout)
         if k % max_checkbox_one_row == 1 then newRow(layout) end
         addButton(layout, v[1], v[2], v[3])
     end
-    newRow(layout)
-    addButton(layout, "jump_afadian", "爱发电赞助",
-        make_jump_ui_command(layout, nil, "jump_address('https://afdian.com/a/arklights')"))
+    -- newRow(layout)
+    -- addButton(layout, "jump_afadian", "爱发电赞助",
+    --     make_jump_ui_command(layout, nil, "jump_address('https://afdian.com/a/arklights')"))
 end
 
 make_ui_title = function(layout, name)
@@ -644,11 +645,12 @@ show_main_ui = function()
     ui.show(layout, false)
 
     local tcolor = "#ff4169E1"
-    if #loadConfig("readme_already_read", '') == 0 then
-        ui.setBackground("readme_btn", tcolor)
-    end
+    -- if #loadConfig("readme_already_read", '') == 0 then
+    --     ui.setBackground("readme_btn", tcolor)
+    -- end
     ui.setBackground("join_qq", "#ff37a652")
-    ui.setBackground("join_channel", "#ff37a652")
+    -- ui.setBackground("join_channel", "#ff37a652")
+    ui.setBackground("readme_btn", "#ffeb1c09")
     ui.setBackground("quit_script", "#ffeb1c09")
     ui.setBackground("start_and_clock", "#ff37a652")
     ui.setBackground("jump_afadian", "#ff37a652")
