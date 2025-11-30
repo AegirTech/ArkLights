@@ -5884,8 +5884,7 @@ path.活动 = function(x)
 
     if not skip_guide then
         path.跳转("首页")
-        --tap("面板活动2")
-        path.活动页面寻找(1)
+        tap("面板活动")
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -5969,7 +5968,6 @@ path.活动 = function(x)
     --         return
     --     end
     --     path.跳转("首页")
-    --     path.活动页面寻找(1)
     -- end
     if not car_checked then
         ssleep(2) --烟花活动ui加载需要时间
@@ -6107,31 +6105,6 @@ hd_wrapper = function(func)
     return f
 end
 
-path.活动页面寻找 = function(n)
-    local n = n or 1
-    if n > 3 then return false end
-    path.跳转("首页")
-    local l = { "面板活动", "面板活动2", "面板作战" }
-    tap(l[n])
-    disappear("主页", 2)
-    -- if hd_mod ~= "故事集" then
-    --     ssleep(5) --六周年庆活动进入时候容易触发"跳过剧情"，加点延迟
-    --     log(5992)
-    -- end
-    if not wait(function()
-            if findOne("活动导航0") or findOne("活动商店导航") then return true end
-            if l[n] == "面板作战" then
-                tap("面板活动3")
-                ssleep(0.1)
-            end
-            if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
-            if findOne("教程关闭") then tap("教程关闭") end
-        end, 15) then
-        path.活动页面寻找(n + 1)
-    end
-    if findOne("活动导航0") or findOne("活动商店导航") then return true end
-end
-
 -- path.商店搬空 = function()
 --     local t = os.time()
 --     if not shop_period then shop_period = 0 end
@@ -6149,8 +6122,6 @@ end
 --         return
 --     end
 --     log("商店清空任务")
-
---     if not path.活动页面寻找(3) then return end
 
 --     if not wait(function()
 --             if findOne("活动商店导航") then return true end
@@ -6374,16 +6345,18 @@ path.商店搬空 = function()
 
     -- 搬商店时间
     local interval = t - hd_open_time_end
-    if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) then
-        return
-    elseif shop_period == 1 and not (interval > 0 and t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day) then
-        return
-    elseif shop_period == 2 and not ((t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) or (t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day)) then
+    if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1)) then
         return
     end
     log("商店清空任务")
-
-    if not path.活动页面寻找(1) then return end
+    tap("面板活动")
+    if not wait(function()
+            if findOne("活动导航0") or findOne("活动商店导航") then return true end
+            if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
+            if findOne("教程关闭") then tap("教程关闭") end
+        end, 15) then
+        return
+    end
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
@@ -6514,7 +6487,15 @@ path.故事解锁 = function()
 
     log("故事集剧情解锁")
 
-    if not path.活动页面寻找(1) then return end
+    tap("面板活动")
+    if not wait(function()
+            if findOne("活动导航0") or findOne("活动商店导航") then return true end
+            if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
+            if findOne("教程关闭") then tap("教程关闭") end
+        end, 15) then
+        return
+    end
+
     if not appear("故事集导航", 5) then
         log("未找到故事集导航")
         return
@@ -9283,7 +9264,14 @@ path.宝石铭刻寻找课程 = function()
 
     path.跳转('首页')
 
-    if not path.活动页面寻找(1) then return end
+    tap("面板活动")
+    if not wait(function()
+            if findOne("活动导航0") or findOne("活动商店导航") then return true end
+            if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
+            if findOne("教程关闭") then tap("教程关闭") end
+        end, 15) then
+        return
+    end
 
     log('3064')
 
@@ -10077,6 +10065,25 @@ equalKey2 = function(a, b)
     return true
 end
 
+path.烟花委员会loop = function()
+    car_checked = false
+    while true do
+        if not appear("活动导航0", 2) then
+            tap("面板活动")
+            if not wait(function()
+                    if findOne("活动导航0") or findOne("活动商店导航") then return true end
+                    if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
+                    if findOne("教程关闭") then tap("教程关闭") end
+                end, 15) then
+                return
+            end
+        end
+        path.烟花委员会()
+        car_checked = false
+        ssleep(0.3)
+    end
+end
+
 path.烟花委员会 = function()
     log("烟花活动")
     -- 导航
@@ -10109,24 +10116,39 @@ path.烟花委员会 = function()
     ssleep(1)
     -- 寻找没打的关卡
     if not wait(function()
-            local p = findOnes("烟花_关卡寻找", .85)
-            if p then
-                for _, v in ipairs(p) do
-                    --快速点击所有结果，总有一个能进入
-                    tap({ v.x, v.y })
-                    ssleep(.1)
-                    if not findOne("烟花委员会首页") then break end
-                end
+            -- local p = findOnes("烟花_关卡寻找", .87)
+            -- if p then
+            --     for _, v in ipairs(p) do
+            --         --快速点击所有结果，总有一个能进入
+            --         tap({ v.x, v.y })
+            --         ssleep(.1)
+            --         if not findOne("烟花委员会首页") then break end
+            --     end
+            --     disappear("烟花委员会首页", 3)
+            -- end
+            local d_p = find_color("烟花_关卡寻找范围", "DF554E", 4, 0.95)
+            if d_p then
+                log(d_p)
+                tap({ d_p[1], d_p[2] + scale(40) })
                 disappear("烟花委员会首页", 3)
             end
             if findOne("烟花关卡内部进入判断") then return true end
-        end, 10, 1) then
-        wait(function()
-            tap("生息演算_全局_返回")
-            ssleep(1)
-            if findOne("活动导航0") then return true end
-        end, 10)
-        return
+        end, 3, 1) then
+        -- wait(function()
+        --     tap("生息演算_全局_返回")
+        --     ssleep(1)
+        --     if findOne("活动导航0") then return true end
+        -- end, 10)
+        -- return
+        local d_p = find_color("烟花_关卡寻找范围", "DF554E", 4, 0.95)
+        if d_p then
+            log(d_p)
+            tap({ d_p[1], d_p[2] + scale(40) })
+            disappear("烟花委员会首页", 3)
+        else
+            back()
+            return
+        end
     end
 
     -- 基础函数

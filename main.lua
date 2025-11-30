@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.28 02:06"
+release_date = "11.30 13:37"
 update_announcement = '最近更新: PV复刻'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -131,17 +131,6 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     -- local recruit_info = zl.加载干员招募评分()
     -- log(recruit_info.all_opers_battle_info)
     -- zl.自动编队(recruit_info)
-
-    -- 喀兰贸易重建活动()
-    -- exit()
-    -- local all = { 66, 877, 786, 969 }
-    -- log(ocrex_ret(all))
-    -- FFFFFF
-    -- 63  880-- 起始坐标
-    -- 210
-    -- 357
-    -- 504
-    -- 651
 
     -- 差值 147
 end

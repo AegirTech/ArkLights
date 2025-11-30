@@ -668,6 +668,8 @@ show_debug_ui = function()
         make_jump_ui_command(layout, loadConfig("last_layout", "main")),
         nil, nil)
 
+    addButton(layout, nil, "系统手势解锁(可能有bug)", make_jump_ui_command(layout, 'gesture_capture'))
+
     newRow(layout)
     ui.addCheckBox(layout, "enable_log", "启用日志", true)
     ui.addCheckBox(layout, "write_log_local", "保存日志到本地", true)
@@ -676,12 +678,8 @@ show_debug_ui = function()
     newRow(layout)
     addTextView(layout, "最大日志时长(分钟)")
     ui.addEditText(layout, "max_log_time", "15")
-    newRow(layout)
-    addTextView(layout, "最大日志行数")
+    addTextView(layout, "    最大日志行数")
     ui.addEditText(layout, "max_log_count", "1000")
-
-    newRow(layout)
-    addButton(layout, nil, "解锁", make_jump_ui_command(layout, 'gesture_capture'))
 
     newRow(layout)
     ui.addTabView(layout, "debug_tab")
@@ -1012,10 +1010,13 @@ show_debug_ui = function()
 
     newRow(debug_layout_其他)
     addTextView(debug_layout_其他, "搬商店时间在活动")
-    ui.addSpinner(debug_layout_其他, "shop_period", { "结束前", "结束后", "结束前后", "每一次" }, 0)
+    ui.addSpinner(debug_layout_其他, "shop_period", { "结束前", "每一次" }, 0)
     addTextView(debug_layout_其他, "的第")
-    ui.addSpinner(debug_layout_其他, "shop_day", { "1", "2", "3", "4", "5" }, 0)
-    addTextView(debug_layout_其他, "天当天")
+    ui.addSpinner(debug_layout_其他, "shop_day", { "1", "2", "3", "4" }, 1)
+    addTextView(debug_layout_其他, "天内")
+
+    newRow(debug_layout_其他)
+    addTextView(debug_layout_其他, "因为活动关闭后可能会点到新活动导致卡教程，所以不再支持活动结束后购买商店")
 
     newRow(debug_layout_其他)
     addTextView(debug_layout_其他, "无障碍模式关闭app方式")
@@ -1032,6 +1033,7 @@ show_debug_ui = function()
 
     newRow(debug_layout_调试)
     addButton(debug_layout_调试, nil, "清除缓存", "clear_cache()")
+    addTextView(debug_layout_调试, "设备id： " .. get_device_id(), ui_device_id)
 
     newRow(debug_layout_调试)
     ui.addCheckBox(debug_layout_调试, "use_system_library", "使用系统支持库", true)
@@ -1081,6 +1083,7 @@ show_debug_ui = function()
     newRow(debug_layout_调试)
     addButton(debug_layout_调试, "upload_screen_info", "上传当前屏幕节点信息", "upload_screen()")
 
+    -- 速通替换了懒人自带的tap函数，修改为gesture实现的
     newRow(debug_layout_调试)
     ui.addCheckBox(debug_layout_调试, "enable_native_tap", "启用原生点击方式", false)
 
@@ -1159,6 +1162,12 @@ show_extra_ui = function()
     ui.addEditText(layout, "extra_single_account", "")
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
+    ------------------------------------------------------------
+    addTitle(layout, "烟花活动")
+    newRow(layout)
+    addButton(layout, nil, "活动循环（需要自行手动停止）",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='烟花委员会loop';extra_mode_multi=false;lock:remove(main_ui_lock)"))
     ------------------------------------------------------------
     addTitle(layout, "卫戍协议")
     addInfo(layout, "需要自己过一下教程")
