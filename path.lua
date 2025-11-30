@@ -10341,7 +10341,7 @@ path.活动奖励 = function(活动)
 end
 
 path.卫戍协议 = function()
-    if not findOne("卫戍协议首页") then
+    if not findAny({ "卫戍协议首页", "卫戍协议断线重连" }) then
         path.跳转("首页")
         tap("面板活动2")
     end
@@ -10353,11 +10353,17 @@ path.卫戍协议 = function()
 end
 
 path.卫戍协议循环 = function()
-    if not findOne("卫戍协议首页") then
+    if not findAny({ "卫戍协议首页", "卫戍协议断线重连" }) then
         path.跳转("首页")
         tap("面板活动2")
     end
-    if not appear("卫戍协议首页", 5) then return end
+    if not appear({ "卫戍协议首页", "卫戍协议断线重连" }, 5) then return end
+    if findOne("卫戍协议断线重连") then
+        --被挤下线了,休息15min
+        --ssleep(15 * 60)
+        tap("卫戍协议断线重连")
+        goto relink
+    end
     if findOne("卫戍协议等级max") then
         log("卫戍协议等级已满")
         captureqqimagedeliver("INFO", "卫戍协议等级已满", "卫戍协议等级已满")
@@ -10411,6 +10417,7 @@ path.卫戍协议循环 = function()
     ssleep(.5)
     tap("卫戍协议金币清零确定")
     ssleep(8)
+    ::relink::
     if not wait(function()
             tap("卫戍协议准备就绪")
             ssleep(2)
