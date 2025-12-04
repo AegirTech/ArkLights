@@ -1297,8 +1297,7 @@ check_server_is_close = function()
     end
     local current_hour = tonumber(os.date("%H"))
     local current_minute = tonumber(os.date("%M"))
-    if (current_hour > 10 or (current_hour == 10 and current_minute >= 0)) and
-        (current_hour < 16 or (current_hour == 16 and current_minute == 0)) then
+    if current_hour >= 3 and current_hour < 16 then
         if tonumber(loadConfig("server_close", 0)) > os.time() then
             return wait_s()
         end
@@ -1307,7 +1306,6 @@ check_server_is_close = function()
         if last_time == curtime then
             return
         end
-
         local url = ark_api_base .. "/ark/server/check?verify=arklights"
         local res, code = httpGet(url, 10)
         if code == 200 then
