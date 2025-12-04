@@ -55,6 +55,18 @@ sui.跳转 = function()
         end
     end
     if findAny({ "界园_主页干员详情", "界园_主页干员详情蓝色" }) then back() end
+    if findOne("界园_粉色界面卡住") then
+        if not wait(function()
+                tap("界园_粉色界面卡住")
+                if findOne("界园_常规行动") then return true end
+                tap("新战略确认")
+                ssleep(0.3)
+                if findOne("界园_战略帮助") then back() end
+                ssleep(0.3)
+            end, 5) then
+            return restart()
+        end
+    end
     if findOne("界园_作战失败结算") then
         return 作战结算返回()
     end
@@ -927,7 +939,7 @@ path.界园前瞻投资 = function()
     log(1055)
     local r = appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
     if r ~= "战略返回" then
-        back()
+        -- back()
         if not appear("界园_常规行动", 5) then
             log(3303, "无法返回常规行动")
             restart()
