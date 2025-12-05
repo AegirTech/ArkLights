@@ -784,7 +784,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 --log(name)
                 if table.findv({ "史都华德", "香草", "调香师", "杰西卡", "水月", "罗比菈塔", "海沫" }, name) then
                     standard = standard + 1
-                elseif table.findv({ "白面鸮", "赫默", "多萝西", "星源" }, name) then
+                elseif table.findv({ "白面鸮", "赫默", "多萝西", "星源", "溯光星源", "娜斯提" }, name) then
                     rhine = rhine + 1
                 elseif table.findv({ "远牙", "灰毫", "野鬃" }, name) then
                     if isCharExsit["薇薇安娜"] then base = base + 0.07 end
@@ -837,7 +837,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 --log(name)
                 if table.findv({ "夜刀", "流星", "豆苗", "褐果", "石英", "洋灰", "历阵锐枪芬" }, name) then
                     standard = standard + 1
-                elseif table.findv({ "白面鸮", "赫默", "星源", "溯光星源" }, name) then
+                elseif table.findv({ "白面鸮", "赫默", "星源", "溯光星源", "娜斯提" }, name) then
                     rhine = rhine + 1
                 elseif table.findv({ "远牙", "灰毫", "野鬃" }, name) then
                     if isCharExsit["薇薇安娜"] then base = base + 0.07 end
@@ -969,9 +969,14 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
             if not_use_ocr then rhine = 1 end --自身至少是一个
             base = base + rhine * 0.0501 * all['bskill_man_skill_spd2'] - 0.0002
         end
-        if all['bskill_man_skill_spd3'] then
+        if all['bskill_man_gold&rhine'] and goodType == '贵金属' then
+            -- 娜斯提，全基建莱茵科技干员数量(不等同于莱茵科技数量,暂且认为一样)
+            if not_use_ocr then rhine = 1 end --自身至少是一个
+            base = base + rhine * 0.03 * all['bskill_man_gold&rhine']
+        end
+        if all['bskill_man_skill_spd3'] and goodType == '贵金属' then
             -- 苍苔，金属工艺技能数量
-            if goodType == '贵金属' then base = base + metallics * 0.0501 * all['bskill_man_skill_spd3'] - 0.0002 end
+            base = base + metallics * 0.0501 * all['bskill_man_skill_spd3'] - 0.0002
         end
 
         -- 禁止过小容量
