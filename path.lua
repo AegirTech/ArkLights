@@ -3611,7 +3611,7 @@ end
 
 path.线索交流 = function()
     path.跳转("基建")
-
+    log(166)
     local f
 
     if not wait(function()
@@ -3670,6 +3670,7 @@ path.线索交流 = function()
 
     -- 接收线索
     wait(function()
+        log(1052)
         if not findOne("线索传递") then return true end
         -- TODO 暂时妥协这0.5秒，丢失率太高
         if not appear("接收线索有", .5) then return true end
@@ -3679,16 +3680,17 @@ path.线索交流 = function()
             end, 5) then
             return true
         end
-
+        log(1055)
         if not appear("接收线索", 5) then return true end
         wait(function() tap("全部收取") end, 1)
-
+        log(1055)
         if not wait(function()
                 if findOne("线索传递") then return true end
                 tap("解锁线索上")
             end, 5) then
             return true
         end
+        log(1057)
     end, 10)
     if not appear("线索传递") then return end
 
@@ -3711,11 +3713,21 @@ path.线索交流 = function()
 
         -- 已满则传递，并循环
         if not appear("未达线索上限", .5) then
+            log("信用已满, 返回")
             tap("返回")
             appear("线索传递")
             clue_unlocked = false
-            path.线索布置()
+            if findOne("线索快速置入") then
+                tap("线索快速置入")
+                disappear("线索快速置入", 2)
+            end
+            if findOne("解锁线索") and not disable_clue_unlock then
+                clue_unlocked = true
+            end
+            -- path.线索布置()
+            log(10351, clue_unlocked)
             if not clue_unlocked then path.线索传递() end
+            path.线索布置()
             return f(retry + 1)
         end
 
@@ -3793,6 +3805,7 @@ end
 
 path.线索布置 = function()
     -- internal
+    log(642)
     if not findOne("线索传递") then
         log("线索布置未找到线索传递")
         return
@@ -3804,6 +3817,11 @@ path.线索布置 = function()
         ssleep(5)
         path.线索传递()
         return
+    end
+    log(699)
+    if findOne("线索快速置入") then
+        tap("线索快速置入")
+        disappear("线索快速置入", 2)
     end
 
     -- 在左侧判断，不会右侧提示挡住
@@ -3863,26 +3881,27 @@ path.线索布置 = function()
 
     if findOne("解锁线索") and not disable_clue_unlock then
         clue_unlocked = true
-
+        log(1649)
         wait(function() tap("解锁线索") end, .5)
 
         if not appear({ "进驻信息", "进驻信息选中" }, 5) then
             return path.线索交流()
         end
-
+        log(1652)
         if not wait(function()
                 if findOne("线索传递") then return true end
                 tap("制造站进度")
             end, 10) then
             return path.线索交流()
         end
-
+        log(1655)
         return path.线索布置()
     end
 end
 
 path.线索传递 = function()
     -- internal
+    log(651)
     disappear("正在提交反馈至神经", network_timeout)
     if not findTap("线索传递") then return end
 
