@@ -1165,12 +1165,6 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
     ------------------------------------------------------------
-    addTitle(layout, "烟花活动")
-    newRow(layout)
-    addButton(layout, nil, "活动循环（需要自行手动停止）",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='烟花委员会loop';extra_mode_multi=false;lock:remove(main_ui_lock)"))
-    ------------------------------------------------------------
     addTitle(layout, "卫戍协议")
     addInfo(layout, "需要自己过一下教程")
     newRow(layout)

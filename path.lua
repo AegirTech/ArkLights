@@ -5969,16 +5969,6 @@ path.活动 = function(x)
     --     end
     --     path.跳转("首页")
     -- end
-    if not car_checked then
-        ssleep(2) --烟花活动ui加载需要时间
-        if findOne('烟花活动未解锁') then
-            log('烟花活动未解锁')
-            car_checked = true
-            return
-        end
-        path.烟花委员会()
-        return path.活动(x)
-    end
 
     if not skip_guide and not appear({ "活动导航0", "活动商店导航" }, 5) then
         log("未找到活动导航")
