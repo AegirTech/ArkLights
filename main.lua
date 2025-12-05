@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "12.04 20:32"
+release_date = "12.05 14:16"
 update_announcement = '最近更新: PV复刻'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -123,6 +123,8 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     sleep(1000)
+    swip("HD-4")
+    exit()
     --point.肉鸽干员等级识别范围 = { 682, 261, 707, 291 }
     -- log(ocro("rl_编队数量ocr范围"))
     -- --zl.分析待编队干员()
