@@ -3406,11 +3406,12 @@ center = {
 }
 
 distance = {
+    ["HD-ST-1"] = { swip_right_max, 0 },
     ["HD-1"] = { swip_right_max, 0 },
     ["HD-2"] = { swip_right_max, -326 },
     ["HD-3"] = { swip_right_max, -594 },
     ["HD-4"] = { swip_right_max, -859 },
-    ["HD-ST-3"] = { swip_right_max, -859 },
+    ["HD-ST-2"] = { swip_right_max, -859 },
     ["HD-5"] = { swip_right_max, -1431 },
     ["HD-6"] = { swip_right_max, -1733 },
     ["HD-7"] = { swip_right_max, -2000 },
