@@ -80,10 +80,10 @@ sui.跳转 = function()
     end
 
     -- 放弃探索
-    if findOne("界园_戛然而止") then
+    if findAny({ "界园_戛然而止", "界园_戛然而止2" }) then
         if not findOne("界园_放弃探索") then
             if not wait(function()
-                    if not findOne("界园_戛然而止") then return true end
+                    if not findAny({ "界园_戛然而止", "界园_戛然而止2" }) then return true end
                     tap("界园_探索开始")
                 end, 5) then
                 return
@@ -937,7 +937,7 @@ path.界园前瞻投资 = function()
     end
     --有时光之末但没点《扩园篇》天赋
     log(1055)
-    local r = appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
+    local r = appear({ "战略返回", '界园_戛然而止', '界园_戛然而止2', "界园_作战失败结算" }, 30)
     if r ~= "战略返回" then
         -- back()
         if not appear("界园_常规行动", 5) then
@@ -995,8 +995,8 @@ path.界园前瞻投资 = function()
         else
             sui.战斗开始()
         end
-        appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
-        if findOne("界园_戛然而止") then
+        appear({ "战略返回", '界园_戛然而止', '界园_戛然而止2', "界园_作战失败结算" }, 30)
+        if findAny({ "界园_戛然而止", "界园_戛然而止2" }) then
             log('戛然而止界面，准备返回')
             return
         end
@@ -1077,8 +1077,8 @@ path.界园前瞻投资 = function()
                 sui.战斗开始()
             end
             --有时光之末而且点《扩园篇》天赋
-            appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
-            if findOne("界园_戛然而止") then
+            appear({ "战略返回", '界园_戛然而止', "界园_戛然而止2", "界园_作战失败结算" }, 30)
+            if findAny({ "界园_戛然而止", "界园_戛然而止2" }) then
                 log('戛然而止界面，准备返回')
                 return
             end
@@ -1096,7 +1096,7 @@ path.界园前瞻投资 = function()
         end
 
         log(1055)
-        local r = appear({ "战略返回", '界园_戛然而止', "界园_作战失败结算" }, 30)
+        local r = appear({ "战略返回", '界园_戛然而止', "界园_戛然而止2", "界园_作战失败结算" }, 30)
         if r ~= "战略返回" then
             作战结算返回()
             if not appear("界园_常规行动", 5) then
