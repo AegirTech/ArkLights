@@ -4,7 +4,9 @@
 name: Map update
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+  schedule:
+    - cron: '0 10 * * *' 
 
 permissions:
   contents: read
