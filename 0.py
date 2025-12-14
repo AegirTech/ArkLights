@@ -9,10 +9,6 @@ from pathlib import Path
 from time import sleep
 
 import requests
-import win32api
-import win32com.client
-import win32con
-import win32gui
 
 # win环境下的快速开发脚本
 API = "http://ark.aegirtech.com:8080"
@@ -49,6 +45,13 @@ else:
 
 
 class WindowMgr:
+    try:
+        import win32gui
+    except Exception:
+        win32gui = None
+    else:
+        win32gui = win32gui
+
     """Encapsulates some calls to the winapi for window management"""
 
     def __init__(self):
@@ -57,23 +60,23 @@ class WindowMgr:
 
     def find_window(self, class_name, window_name=None):
         """基于类名来查找窗口"""
-        self._handle = win32gui.FindWindow(class_name, window_name)
+        self._handle = self.win32gui.FindWindow(class_name, window_name)
 
     def _window_enum_callback(self, hwnd, class_name_wildcard_list):
         """传递给win32gui.EnumWindows()，检查所有打开的顶级窗口"""
         class_name, wildcard = class_name_wildcard_list
-        if re.match(wildcard, str(win32gui.GetWindowText(hwnd))) is not None:
+        if re.match(wildcard, str(self.win32gui.GetWindowText(hwnd))) is not None:
             self._handle = hwnd
 
     def find_window_wildcard(self, class_name, wildcard):
         """根据类名，查找一个顶级窗口，确保其类名相符，且标题可以用正则表达式匹配对应的通配符"""
         self._handle = None
-        win32gui.EnumWindows(self._window_enum_callback, [class_name, wildcard])
+        self.win32gui.EnumWindows(self._window_enum_callback, [class_name, wildcard])
         return self._handle
 
     def set_foreground(self):
         """put the window in the foreground"""
-        win32gui.SetForegroundWindow(self._handle)
+        self.win32gui.SetForegroundWindow(self._handle)
 
     def get_hwnd(self):
         """return hwnd for further use"""
@@ -220,6 +223,10 @@ def upload_to_image_hosting(file_path: Path, host="gitcode"):
 
 def run(now=True):
     """自动运行调试 需提前打开任意lua文件"""
+    import win32api
+    import win32com.client
+    import win32con
+    import win32gui
     myWindowMgr = WindowMgr()
     hwnd = myWindowMgr.find_window_wildcard(None, ".*?懒人精灵 - .*?")
     if hwnd is not None:
@@ -275,9 +282,9 @@ def save():
         for line in lines:
             if re.match('release_date = ".*"', line):
                 line = (
-                    'release_date = "'
-                    + str(datetime.datetime.now().strftime("%m.%d %H:%M"))
-                    + '"\n'
+                        'release_date = "'
+                        + str(datetime.datetime.now().strftime("%m.%d %H:%M"))
+                        + '"\n'
                 )
             ss += line
     with open("main.lua", "w", encoding="utf-8") as f:
@@ -297,7 +304,7 @@ def save():
         with open(lua_file, "r", encoding="utf-8") as f:
             file_name = os.path.basename(lua_file)
             with open(
-                os.path.join(path, "脚本", file_name), "w", encoding="GB18030"
+                    os.path.join(path, "脚本", file_name), "w", encoding="GB18030"
             ) as f1:
                 f1.write(f.read())
 
@@ -307,7 +314,7 @@ def save():
         # 把ui_file以utf-8的格式打开，然后以GB18030的格式写入到path+界面目录下
         with open(ui_file, "r", encoding="utf-8") as f:
             with open(
-                os.path.join(path, "界面", ui_file), "w", encoding="GB18030"
+                    os.path.join(path, "界面", ui_file), "w", encoding="GB18030"
             ) as f1:
                 f1.write(f.read())
 

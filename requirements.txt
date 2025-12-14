@@ -1,5 +1,5 @@
 win32gui
 pywin32
 np~=1.0.2
-numpy==1.26.4
-requests~=2.31.0
+numpy~=2.2.6
+requests~=2.32.5

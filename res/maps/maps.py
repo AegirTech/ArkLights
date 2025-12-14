@@ -1,15 +1,16 @@
 # https://raw.githubusercontent.com/yuanyan3060/Arknights-Bot-Resource/main/levels.json
-import os
-from typing import List, Optional, Tuple
-from dataclasses import dataclass
-import json
-import pathlib
-import math
-import zipfile
 import glob
+import json
+import math
+import os
+import pathlib
+import subprocess
+import sys
+import zipfile
+from dataclasses import dataclass
+from typing import List, Optional, Tuple
 
 import numpy as np
-
 import requests
 
 # 定义全局变量
@@ -326,15 +327,28 @@ def zip_files(file_folder, output_path):
 
 # 写入当前时间 到 version文件中
 with open(map_path / "version.json", "w", encoding="UTF-8") as vf:
-    from datetime import datetime
+    from datetime import datetime, timezone, timedelta
 
-    now = datetime.now()
+    now = datetime.now(timezone(timedelta(hours=8)))
     vf.write(now.strftime("%Y-%m-%d %H:%M:%S"))
 
 
-zip_files(map_path, map_path.parent.parent / "maps.zip")
+zip_path = map_path.parent.parent / "maps.zip"
+zip_files(map_path, zip_path)
+print("地图坐标生成完毕，压缩包路径：" + str(zip_path))
 
-output_path = os.path.join(map_path.parent.parent, "maps.zip")
+execpath = pathlib.Path(__file__).parent.parent.parent
+main_py = os.path.join(execpath, "0.py")
+
+subprocess.run(
+    [
+        sys.executable,
+        main_py,
+        "rm",
+    ]
+)
+
+print("文件上传完成")
 
 """
 if __name__ == "__main__":
