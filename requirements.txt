@@ -1,5 +1,4 @@
-win32gui
-pywin32
-np~=1.0.2
+# win32gui
+# pywin32
 numpy~=2.2.6
 requests~=2.32.5
