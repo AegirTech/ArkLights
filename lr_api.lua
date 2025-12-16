@@ -525,8 +525,21 @@ function encodeUrl(str) end
 function fileExist(file) end
 
 --- 获取文件的MD5码
----@param string any
-function fileMD5(string) end
+---@param path string 要MD5编码的文件绝对路径
+function fileMD5(path) end
+
+--- 获取文件的MD5码
+---@param str string 要MD5编码的字符串
+function MD5(str) end
+
+--- 获取文件内容的base64编码
+---@param path string 文件的路径
+function getFileBase64(path) end
+
+--- 获取文件的大小
+---@param path string 文件路径
+---@return number 文件大小 单位字节
+function fileSize(path) end
 
 --- mkdir 创建文件夹
 ---@param dir any
@@ -548,8 +561,10 @@ end
 function readFile(path) end
 
 --- rotateImage 旋转本地图片,图片格式可以是png bmp jpg三种类型
----@return table 1表示成功0表示失败
-function rotateImage() end
+---@param path string 文件的路径
+---@param rotate integer 90 180 270三种值，此处为顺时针旋转
+---@return integer 1表示成功0表示失败
+function rotateImage(path, rotate) end
 
 --- scaleImage 缩放图片,图片格式可以是png bmp jpg三种类型
 ---@param src any

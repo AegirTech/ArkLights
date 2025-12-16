@@ -1,6 +1,12 @@
-oppid = "com.hypergryph.arknights"
-bppid = "com.hypergryph.arknights.bilibili"
+---@type string 官服包名
+oppid = "com.hypergryph.arknights"          --官服包名
+---@type string B服包名
+bppid = "com.hypergryph.arknights.bilibili" --B服包名
 
+--- 临时关闭 `disable_game_up_check` 标记执行函数
+--- @generic T
+--- @param func fun(...):T @被包装的函数
+--- @return fun(...):T     @包装后的函数
 disable_game_up_check_wrapper = function(func)
     return function(...)
         local state = disable_game_up_check
@@ -10,9 +16,19 @@ disable_game_up_check_wrapper = function(func)
         return ret
     end
 end
+
+--- 将函数包装为“永不返回”，在死循环中不断调用
+--- @generic T
+--- @param func fun(...):T
+--- @return fun(...)
 never_end_wrapper = function(func)
     return function(...) while true do func(...) end end
 end
+
+--- 在函数执行期间保持截图/节点捕获
+--- @generic T
+--- @param func fun(...):T
+--- @return fun(...):T
 still_wrapper = function(func)
     return function(...)
         -- nodeLib.keepNode()
@@ -23,6 +39,12 @@ still_wrapper = function(func)
         return ret
     end
 end
+
+--- 执行函数期间临时修改 `disable_log`
+--- @generic T
+--- @param func fun(...):T
+--- @param enable boolean 是否启用日志（true 为开启日志）
+--- @return fun(...):T
 disable_log_wrapper = function(func, enable)
     return function(...)
         local state = disable_log
@@ -32,15 +54,31 @@ disable_log_wrapper = function(func, enable)
         return ret
     end
 end
+
+--- 始终启用日志的包装函数
+--- @generic T
+--- @param func fun(...):T
+--- @return fun(...):T
 enable_log_wrapper = function(func) return disable_log_wrapper(func, true) end
 
 -- 无障碍函数替换 -- 没什么用，给root打包用的，速通目前用的是无障碍打包
+--- 无障碍函数替换
+--- 若未提供系统级 `openPermissionSetting` 等函数（通常为 root 打包用），
+--- 则在此声明兼容版本，避免后续逻辑报错。
 if not openPermissionSetting then
     openPermissionSetting =
         function() stop("没root请换用无障碍版速通") end
     isSnapshotServiceRun = function() return true end
     isAccessibilityServiceRun = function() return true end
+    --- 手势路径
+    --- @class Path
+    --- @field startTime number 起始时间（毫秒）
+    --- @field durTime number 持续时间（毫秒）
+    --- @field point number[] 点序列，格式为 {x1, y1, x2, y2, ...}
     Path = {}
+    --- 创建路径对象
+    --- @param o? Path
+    --- @return Path
     function Path:new(o)
         o = o or { startTime = 0, durTime = 0, point = {} }
         setmetatable(o, self)
@@ -48,16 +86,30 @@ if not openPermissionSetting then
         return o
     end
 
+    --- 设置起始时间
+    --- @param t number
     function Path:setStartTime(t) self.startTime = t end
 
+    --- 设置持续时间
+    --- @param t number
     function Path:setDurTime(t) self.durTime = t end
 
+    --- 在路径中追加一个坐标点
+    --- @param x number
+    --- @param y number
     function Path:addPoint(x, y)
         table.insert(self.point, x)
         table.insert(self.point, y)
     end
 
+    --- 手势容器
+    --- @class Gesture
+    --- @field path Path[] 路径数组
     Gesture = {}
+
+    --- 创建手势对象
+    --- @param o? Gesture
+    --- @return Gesture
     function Gesture:new(o)
         o = o or { path = {} }
         setmetatable(o, self)
@@ -65,8 +117,13 @@ if not openPermissionSetting then
         return o
     end
 
+    --- 添加一条路径
+    --- @param path Path
     function Gesture:addPath(path) table.insert(self.path, path) end
 
+    --- 实际执行一条 Path 的手势
+    --- @param path Path
+    --- @param id integer 手指 id
     gestureDispatchOnePath = function(path, id)
         log('root gesture')
         local point = path.point -- 此时path已经已经Path:addPoint修改过了。point是[x,y,x1,y1,...]
@@ -100,6 +157,7 @@ if not openPermissionSetting then
         print(60, id, point, start_time + path.durTime - time())
         touchUp(id)
     end
+    --- 多路径分发
     function Gesture:dispatch()
         for id, path in pairs(self.path) do
             log(71, id, path)
@@ -108,20 +166,53 @@ if not openPermissionSetting then
     end
 end
 
+--- 当前脚本绑定的游戏包名
+--- @type string
 package = getPackageName()
--- transfer 节点精灵 to 懒人精灵
+--- 将屏幕像素颜色从 BGR 转为 RGB（节点精灵到懒人精灵）
+--- @param x integer
+--- @param y integer
+--- @return string rgbHex 形如 \"RRGGBB\" 的 16 进制字符串
 getColor = function(x, y)
     local bgr = getPixelColor(x, y):upper()
     return bgr:sub(7, 8) .. bgr:sub(5, 6) .. bgr:sub(3, 4)
 end
+--- 获取当前时间（毫秒）
+--- @type fun():integer
 time = systemTime
+
+--- 安全退出脚本
+--- @type fun()
 exit = exitScript
+
+--- JSON 解码
+--- @type fun(json:string):any
 JsonDecode = jsonLib.decode
+--- JSON 编码
+--- @type fun(value:any):string
 JsonEncode = jsonLib.encode
+
+--- 查找单个节点
+--- @param selector string|table
+--- @return table|nil
 findNode = function(selector) return nodeLib.findOne(selector, true) end
+
+--- 查找多个节点
+--- @param selector string|table
+--- @return table[] 节点列表
 findNodes = function(selector) return nodeLib.findAll(selector, true) end
+
+--- 点击节点（带校验）
+--- @param x table
 clickNode = function(x) nodeLib.click(x, true) end
+
+--- 点击节点（不校验）
+--- @param x table
 clickNodeFalse = function(x) nodeLib.click(x, false) end
+
+--- 在指定坐标执行一次点击手势
+--- @param x integer
+--- @param y integer
 clickPoint = function(x, y)
     local gesture = Gesture:new()
     local path = Path:new()
@@ -131,19 +222,41 @@ clickPoint = function(x, y)
     gesture:addPath(path)
     gesture:dispatch()
 end
+--- 原始点击函数封装
+--- @type fun(x:integer, y:integer)
 _tap = tap
 
+--- 文件转 base64
+--- @type fun(path:string):string
 base64 = getFileBase64
+
+--- 写入剪贴板
+--- @type fun(text:string)
 putClipboard = writePasteboard
+
+--- 读取剪贴板
+--- @type fun():string
 getClipboard = readPasteboard
+
+--- 原始 toast 函数
+--- @type fun(text:string)
 _toast = toast
+
+--- 屏幕显示并输出日志
+--- @param x string 显示内容
 toast = function(x)
     _toast(x)
     log(x)
 end
 
+--- 设备点击事件坐标最大值，用于把 getevent 的原始坐标换算为屏幕坐标
+--- @type integer|nil
 deviceClickEventMaxX = nil
+--- @type integer|nil
 deviceClickEventMaxY = nil
+
+--- 通过 root getevent 获取用户最后一次点击的屏幕坐标
+--- @return table|nil pos { x:number, y:number } 或 nil（未获取到）
 catchClick = function()
     if not root_mode then stop("未实现免root获取用户点击") end
     local result = exec("su root sh -c 'getevent -l -c 4 -q'")
@@ -165,13 +278,24 @@ catchClick = function()
         }
     end
 end
-home = function()
+
+--- 返回手机主页
+home = function() --返回手机主页
     -- open(package)
     keyPress(3)
 end
-back = function() keyPress(4) end
+
+--- 发送返回键
+back = function() keyPress(4) end --点击返回
+
+--- 发送电源键
 power = function() keyPress(26) end
+
+--- 原始分辨率获取函数
 _getDisplaySize = getDisplaySize
+
+--- 获取当前逻辑分辨率，可被全局的 force_width/force_height 覆盖
+--- @return integer width, integer height
 getDisplaySize = function()
     -- override height and width
     if type(force_height) == 'number' and type(force_width) == 'number' and
@@ -189,12 +313,23 @@ getDisplaySize = function()
     -- use internal api
     return _getDisplaySize()
 end
+
+--- 获取当前屏幕宽高（自动考虑旋转）
+--- @return {width:integer,height:integer}
 getScreen = function()
     local width, height = getDisplaySize()
     if getDisplayRotate() % 2 == 1 then width, height = height, width end
     return { width = width, height = height }
 end
+
+--- 保存配置（字符串）
+--- @type fun(key:string, value:string)
 saveConfig = setStringConfig
+
+--- 读取配置（字符串），若不存在则返回默认值
+--- @param k string
+--- @param v? string 默认值
+--- @return string
 loadConfig = function(k, v)
     v = v or ''
     local y = getStringConfig(k)
@@ -202,35 +337,66 @@ loadConfig = function(k, v)
     return y
 end
 
+--- 友好退出脚本
 peaceExit = function()
     -- need_show_console = false
     exit()
 end
 
+--- 数学工具别名
+--- @type fun(a:number, b:number,...):number
 max = math.max
+--- @type fun(a:number, b:number,...):number
 min = math.min
+
+--- 四舍五入
+--- @param x number
+--- @return integer
 math.round = function(x) return math.floor(x + 0.5) end
+
+--- 四舍五入别名
+--- @type fun(x:number):integer
 round = math.round
+
+--- 将数值限制在 [minimum, maximum] 区间内
+--- @param x number
+--- @param minimum number
+--- @param maximum number
+--- @return number
 clip = function(x, minimum, maximum) return min(max(x, minimum), maximum) end
 
+--- 对字符串进行转义，使其可安全用于 gsub 正则
+--- @param str string
+--- @return string
 -- https://stackoverflow.com/questions/9790688/escaping-strings-for-gsub
 string.quote = function(str)
     local quotepattern = '([' .. ("%^$().[]*+-?"):gsub("(.)", "%%%1") .. '])'
     return str:gsub(quotepattern, "%%%1")
 end
 
+--- 去除字符串首尾空白
+--- @param s string|nil
+--- @return string
 -- https://stackoverflow.com/questions/10460126/how-to-remove-spaces-from-a-string-in-lua
 string.trim = function(s)
     s = s or ''
     return s:match '^()%s*$' and '' or s:match '^%s*(.*%S)'
 end
 
+--- 统计 pattern 在字符串中出现的次数
+--- @param str string
+--- @param pattern string
+--- @return integer
 string.count = function(str, pattern)
     local ans = 0
     for _ in str.gfind(pattern) do ans = ans + 1 end
     return ans
 end
 
+--- 按 UTF-8 字符映射替换字符串
+--- @param str string
+--- @param map table<string,string>
+--- @return string
 string.map = function(str, map)
     local ans = ''
     for character in string.gmatch(str, "([%z\1-\127\194-\244][\128-\191]*)") do
@@ -244,6 +410,10 @@ string.map = function(str, map)
     return ans
 end
 
+--- 字符串分割
+--- @param str string
+--- @param sep? string 分隔符（默认为空白）
+--- @return string[]
 string.split = function(str, sep)
     if sep == nil then sep = "%s" end
     local t = {}
@@ -251,6 +421,10 @@ string.split = function(str, sep)
     return t
 end
 
+--- 全角转半角 + 统一常见符号
+--- @param str string
+--- @param extra_map? table<string,string>
+--- @return string
 -- 全角转半角
 string.commonmap = function(str, extra_map)
     return string.map(str, update({
@@ -357,41 +531,91 @@ string.commonmap = function(str, extra_map)
     }, extra_map or {}))
 end
 
+--- 先统一字符，再按空白拆分
+--- @param str string
+--- @param extra_map? table<string,string>
+--- @return string[]
 string.filterSplit = function(str, extra_map)
     return string.split(string.commonmap(str, extra_map))
 end
 
+--- 是否以 prefix 开头
+--- @param str string
+--- @param prefix string
+--- @return boolean
 string.startsWith = function(str, prefix)
     return string.sub(str, 1, string.len(prefix)) == prefix
 end
 
+--- 是否以 suffix 结尾
+--- @param str string
+--- @param suffix string
+--- @return boolean
 string.endsWith = function(str, suffix)
     return string.sub(str, #str - string.len(suffix) + 1) == suffix
 end
 
+--- 在字符串中查找任一目标子串
+--- @param x string
+--- @param targetStr? string[]
+--- @return boolean
+string.finds = function(x, targetStr)
+    local targetStr = targetStr or {}
+    for _, v in ipairs(targetStr) do
+        if string.find(x, v, 1, true) then
+            return true
+        end
+    end
+    return false
+end
+
+--- 生成一个以固定字符串为前缀判断的函数
+--- @param x string
+--- @return fun(prefix:string):boolean
 startsWithX = function(x)
     return
         function(prefix) return x:startsWith(prefix) end
 end
 
+--- 左侧补齐到指定长度
+--- @param str string
+--- @param len integer
+--- @param char? string
+--- @return string
 string.padStart = function(str, len, char)
     if char == nil then char = " " end
     return string.rep(char, len - #str) .. str
 end
+
+--- 右侧补齐到指定长度
+--- @param str string
+--- @param len integer
+--- @param char? string
+--- @return string
 string.padEnd = function(str, len, char)
     if char == nil then char = " " end
     return str .. string.rep(char, len - #str)
 end
+
+--- 计算两个表之间的差异（仅保留 a 中与 b 不同的键值）
+--- @param a table
+--- @param b table
+--- @return table
+--- 计算两个表之间的差异，只保留 a 中与 b 不同的键值
 table.diff = function(a, b)
     local ans = {}
     for k, v in pairs(a) do if v ~= b[k] then ans[k] = v end end
     return ans
 end
+
+--- 按索引列表从表中取值，返回一个新的数组
 table.index = function(t, idx)
     local ans = {}
     for _, i in pairs(idx) do table.insert(ans, t[i]) end
     return ans
 end
+
+--- 使用归并函数从左到右对表中的元素进行聚合
 table.reduce = function(t, f, a)
     a = a or 0
     for _, c in pairs(t) do a = f(a, c) end
@@ -402,14 +626,17 @@ table.sum = function(t)
     for _, c in pairs(t) do a = a + c end
     return a
 end
--- 从t中选出长度为n的所有组合，结果在ans，
-table.combination = function(t, n)
+
+--- 求表中所有数值元素之和
+table.sum = function(t)
     local ans = {}
     local cur = {}
     local k = 1
     combination(t, n, ans, cur, k)
     return ans
 end
+
+--- 递归实现组合枚举的内部函数
 combination = function(t, n, ans, cur, k)
     -- cur = cur or {}
     -- k = k or 1
@@ -423,6 +650,7 @@ combination = function(t, n, ans, cur, k)
     end
 end
 
+--- 将嵌套表拍平成一维数组
 table.flatten = function(t)
     local ans = {}
     for _, v in pairs(t) do
@@ -435,6 +663,7 @@ table.flatten = function(t)
     return ans
 end
 
+--- 去除数组中的重复元素，按首次出现的顺序保留
 table.remove_duplicate = function(t)
     local ans = {}
     local visited = {}
@@ -447,6 +676,7 @@ table.remove_duplicate = function(t)
     return ans
 end
 
+--- 从数组中删除所有等于指定值的元素（原地修改）
 table.removev = function(t, v)
     for i = #t, 1, -1 do
         if t[i] == v then
@@ -455,7 +685,7 @@ table.removev = function(t, v)
     end
 end
 
--- 出现n次的元素
+--- 返回在表中恰好出现指定次数的元素列表
 table.appear_times = function(t, times)
     local ans = {}
     local visited = {}
@@ -472,7 +702,7 @@ end
 --   return table.extend(table.slice(t, idx), table.slice(t, 1, idx - 1))
 -- end
 
--- 交
+--- 求两个数组的交集，返回共同出现的元素
 table.intersect = function(a, b)
     local ans = {}
     if #b < #a then a, b = b, a end
@@ -482,7 +712,7 @@ table.intersect = function(a, b)
     return ans
 end
 
--- 差
+--- 求数组差集，返回在 a 中但不在 b 中的元素
 table.subtract = function(a, b)
     local ans = {}
     b = table.value2key(b or {})
@@ -491,47 +721,55 @@ table.subtract = function(a, b)
     return ans
 end
 
+--- 对数组进行切片，返回指定区间与步长的新数组
 table.slice = function(tbl, first, last, step)
     local sliced = {}
     for i = first or 1, last or #tbl, step or 1 do sliced[#sliced + 1] = tbl[i] end
     return sliced
 end
--- shallow table
+
+--- 判断浅层表 a 是否包含表 b 的所有键值对
 table.contains = function(a, b)
     for k, v in pairs(b) do if a[k] ~= v then return false end end
     return true
 end
 
+--- 将数组“值”反转为哈希表的“键”
 table.value2key = function(x)
     local ans = {}
     for k, v in pairs(x) do ans[v] = k end
     return ans
 end
+
+--- 按掩码表从参考数组中选择元素
 table.select = function(mask, reference)
     local ans = {}
     for i = 1, #reference do if mask[i] then table.insert(ans, reference[i]) end end
     return ans
 end
 
--- return true if there is an x s.t. f(x) is true
+--- 判断表中是否存在至少一个元素使得函数 f 返回 true
 table.any = function(t, f)
     for k, v in pairs(t) do if f(v) then return true end end
 end
 
--- return true if f(x) is all true
+--- 判断表中所有元素是否都满足函数 f
 table.all = function(t, f)
     for _, v in pairs(t) do if not f(v) then return false end end
     return true
 end
 
+--- 在表中查找是否存在指定键名
 table.findk = function(t, s)
     for k, _ in pairs(t) do if s == k then return true end end
 end
 
+--- 查找键值所在位置（只适用于数组）
 table.search = function(t, s)
     for k, v in ipairs(t) do if s == v then return k end end
 end
 
+--- 查找键值或满足条件的值
 table.findv = function(t, f)
     for k, v in pairs(t) do
         if type(f) == "string" then
@@ -544,17 +782,21 @@ table.findv = function(t, f)
     end
 end
 
+--- 过滤表中元素，返回满足条件的新数组
 table.filter = function(t, f)
     local a = {}
     for _, v in pairs(t) do if f(v) then table.insert(a, v) end end
     return a
 end
+
+--- 过滤键值对，返回满足条件的新表
 table.filterKV = function(t, f)
     local a = {}
     for k, v in pairs(t) do if f(k, v) then a[k] = v end end
     return a
 end
 
+--- 获取表中所有键，返回为数组
 table.keys = function(t)
     local a = {}
     t = t or a
@@ -562,6 +804,7 @@ table.keys = function(t)
     return a
 end
 
+--- 获取表中所有值，返回为数组
 table.values = function(t)
     local a = {}
     t = t or a
@@ -569,7 +812,7 @@ table.values = function(t)
     return a
 end
 
--- a,a+1,...b
+--- 生成等差数列数组 a, a+s, ..., b
 range = function(a, b, s)
     local t = {}
     if not b and not s then a, b = 1, a end
@@ -578,10 +821,12 @@ range = function(a, b, s)
     return t
 end
 
+--- 判断数组中是否包含指定元素
 table.includes = function(t, e)
     return table.any(t, function(x) return x == e end)
 end
 
+--- 判断表是否为空（没有任何键）
 table.isempty = function(t)
     for _ in pairs(t) do
         return false
@@ -589,22 +834,25 @@ table.isempty = function(t)
     return true
 end
 
+--- 判断字符串 s 是否包含列表 t 中的任意子串
 string.includes = function(s, t)
     for _, v in pairs(t) do if s:find(v, 1, true) then return true end end
 end
 
+--- 将数组 e 中的所有元素追加到数组 t 末尾
 table.extend = function(t, e)
     for k, v in pairs(e) do table.insert(t, v) end
     return t
 end
 
+--- 将一组数组按顺序拼接成一个大数组
 table.cat = function(t)
     local ans = {}
     for _, v in pairs(t) do for _, n in pairs(v) do table.insert(ans, n) end end
     return ans
 end
 
---  in = {
+-- in = {
 --    "A" = {1,4,5,7},
 --    "B" = {1,2,5,6},
 --    "C" = {3,4,6,7},
@@ -612,6 +860,7 @@ end
 --  }
 -- out = { {"A","B"},...}
 -- n:key, m:value O(mmn)
+--- 根据“值到键列表”的关系反向索引，构造“每个值对应在哪些键中出现”的映射
 table.reverseIndex = function(t)
     local r = {}
     local s = {}
@@ -626,6 +875,7 @@ table.reverseIndex = function(t)
     return r
 end
 
+--- 在表中查找第一个使函数 f 返回 true 的元素，并返回其键
 table.find =
     function(t, f) for k, v in pairs(t) do if f(v) then return k end end end
 
@@ -771,6 +1021,9 @@ table2string = function(t)
 end
 
 -- log_history = {}
+--- 日志输出函数（由脚本运行环境提供）
+--- 会把所有参数序列化后打印到控制台/日志窗口。
+--- @type fun(...:any)  -- 可接受任意数量、任意类型的参数
 log = function(...)
     if disable_log then return end
     if os.time() - log_time > tonumber(max_log_time) * 60 then
@@ -861,6 +1114,15 @@ findOne_game_up_check_last_time = 0
 findOne_keepalive_check_last_time = time()
 findOne_last_time = time()
 findOne_locked = false
+--- 在当前画面中查找一个目标（UI 点/颜色模板/节点等）
+--- @param x string|table|fun():any
+---        - string: point 名称（会从全局 point 表中取坐标模板）
+---        - table:  坐标/节点表，或空表（空表时会退化为 findNode 调用）
+---        - fun():any: 回调函数，直接执行并返回结果
+--- @param confidence? integer  颜色匹配置信度，默认 default_findcolor_confidence
+--- @return table|nil
+---         - 对于颜色模板：返回 {x, y} 坐标表或 nil
+---         - 对于节点：返回节点表或 nil
 findOne = function(x, confidence)
     if type(x) == "function" then return x() end
 
@@ -1311,6 +1573,19 @@ auto_total_timeout_hook = function()
     end
 end
 -- 为什么auto要有两组状态： 第二组状态点唯一性不足，比如返回与邮件同时出现时，需要的是邮件。没有优先级。
+--- 自动状态机：
+--- 根据状态表 p 不断轮询画面，出现某个 key（通过 findOne 判断）时，点击对应的 value（通常是坐标/点位），直到完成或超时。
+--- - 若 total_timeout 未设置：理论上会一直循环，直到某个状态点击成功（finish=true）。
+--- - 若 total_timeout 设置：
+---     * total_timeout_restart=true 时，超时后会执行一次重启流程（带“登录未完成”的特殊处理），然后 stop 脚本。
+---     * total_timeout_restart=false 时，超时直接返回 true。
+--- - fallback 为真且本轮 wait 未命中任何状态时，会调用一次 `auto(path.fallback, nil, nil, 0)` 作为兜底。
+--- @param p table<string, any>|fun():any  状态表（key 为状态名/识别点，value 为点击目标），或直接是一个函数（直接执行并返回）
+--- @param fallback? boolean               是否启用 fallback 自动机（只在本轮 wait 无事件时触发一次）
+--- @param timeout? number                 单次 wait 超时时间（秒），为 nil/0 表示不等待
+--- @param total_timeout? number           auto 整体最长运行时间（秒），为 nil 表示不限制
+--- @param total_timeout_restart? boolean  超时后是否走“重启游戏 + 钩子 + stop”流程
+--- @return boolean?                       true 表示已完成/无需处理（包括超时返回），nil 表示在内部重启/stop 中断
 auto = function(p, fallback, timeout, total_timeout, total_timeout_restart)
     if type(p) == "function" then return p() end
     if type(p) ~= "table" then return true end
@@ -4398,14 +4673,4 @@ get_cpu_arch = function()
         [" "] = "",
         ["　"] = "",
     })
-end
-
-string.finds = function(x, targetStr)
-    local targetStr = targetStr or {}
-    for _, v in ipairs(targetStr) do
-        if string.find(x, v, 1, true) then
-            return true
-        end
-    end
-    return false
 end
