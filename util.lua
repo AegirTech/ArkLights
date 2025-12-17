@@ -627,8 +627,8 @@ table.sum = function(t)
     return a
 end
 
---- 求表中所有数值元素之和
-table.sum = function(t)
+-- 从t中选出长度为n的所有组合，结果在ans，
+table.combination = function(t, n)
     local ans = {}
     local cur = {}
     local k = 1
