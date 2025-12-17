@@ -621,6 +621,8 @@ table.reduce = function(t, f, a)
     for _, c in pairs(t) do a = f(a, c) end
     return a
 end
+
+--- 求表中所有数值元素之和
 table.sum = function(t)
     local a = 0
     for _, c in pairs(t) do a = a + c end
