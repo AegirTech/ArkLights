@@ -6710,6 +6710,7 @@ path.公开招募 = function()
         if findOne("公开招募确认蓝") then tap("返回") end
         log(1286)
         if not appear("公开招募箭头", 1) then return end
+        if findOne("公开招募数量红") and appear("公开招募标签刷新灰", 0.5) then return end
         log(1287)
         local see
         -- 有灰，等待检测所有状态
