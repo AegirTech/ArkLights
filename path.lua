@@ -1315,10 +1315,7 @@ path.限时活动 = function(retry)
     retry = retry or 0
     if retry > 10 then return end
     path.跳转("首页")
-    if notify_sub_expire and findOne("月卡即将到期") and not 月卡到期状态 then
-        captureqqimagedeliver("WARN", "月卡到期提醒", "月卡即将到期，请及时续费")
-        月卡到期状态 = true
-    end
+    log(240, retry)
 
     local p = findAny({
         "面板限时活动", "面板限时活动2", "面板限时活动3",
@@ -1392,11 +1389,16 @@ path.限时活动 = function(retry)
             return
         end
     end
-
+    log(241)
     path.跳转("首页")
-
+    log(242)
     -- 需要点时间才能找到 面板限时活动2 与 单抽
     if not wait(function()
+            if notify_sub_expire and not 月卡到期状态 and findAny({ "月卡即将到期", "月卡即将到期2" }) then
+                captureqqimagedeliver("WARN", "月卡到期提醒", "月卡即将到期，请及时续费")
+                log("月卡到期提醒发送")
+                月卡到期状态 = true
+            end
             if not findOne("面板") then return true end
             if findAny({
                     "面板限时活动", "面板限时活动2", "面板限时活动3",

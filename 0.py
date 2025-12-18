@@ -199,6 +199,8 @@ def upload_to_image_hosting(file_path: Path, host="gitcode"):
     # print(response.text)
     file_url = response.json().get("url")
     cdn_url = response.json().get("resourceUrl")
+    need_headers = response.json().get("header", {})
+    headers.update(need_headers if isinstance(need_headers, dict) else {})
     body = response.json().get("body", {})
     dict.pop(body, "file", None)
     module = response.json().get("module", "POST")
@@ -227,6 +229,7 @@ def run(now=True):
     import win32com.client
     import win32con
     import win32gui
+
     myWindowMgr = WindowMgr()
     hwnd = myWindowMgr.find_window_wildcard(None, ".*?懒人精灵 - .*?")
     if hwnd is not None:
@@ -282,9 +285,9 @@ def save():
         for line in lines:
             if re.match('release_date = ".*"', line):
                 line = (
-                        'release_date = "'
-                        + str(datetime.datetime.now().strftime("%m.%d %H:%M"))
-                        + '"\n'
+                    'release_date = "'
+                    + str(datetime.datetime.now().strftime("%m.%d %H:%M"))
+                    + '"\n'
                 )
             ss += line
     with open("main.lua", "w", encoding="utf-8") as f:
@@ -304,7 +307,7 @@ def save():
         with open(lua_file, "r", encoding="utf-8") as f:
             file_name = os.path.basename(lua_file)
             with open(
-                    os.path.join(path, "脚本", file_name), "w", encoding="GB18030"
+                os.path.join(path, "脚本", file_name), "w", encoding="GB18030"
             ) as f1:
                 f1.write(f.read())
 
@@ -314,7 +317,7 @@ def save():
         # 把ui_file以utf-8的格式打开，然后以GB18030的格式写入到path+界面目录下
         with open(ui_file, "r", encoding="utf-8") as f:
             with open(
-                    os.path.join(path, "界面", ui_file), "w", encoding="GB18030"
+                os.path.join(path, "界面", ui_file), "w", encoding="GB18030"
             ) as f1:
                 f1.write(f.read())
 
@@ -416,7 +419,7 @@ def upload_to_backup_server(file_type):
     #         ),
     #     )
     # ]
-    cdn_url = upload_to_image_hosting(Path(up_file), host="keep")
+    cdn_url = upload_to_image_hosting(Path(up_file), host="beisu")
     if cdn_url is None:
         print("上传至文件服务器失败。")
         return
