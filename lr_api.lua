@@ -32,7 +32,7 @@ function extractAssets(assets, outdir, pattern) end
 ---@return any 前台app包名
 function frontAppName() end
 
---- 获取壳子版本 - 功能说明:获取当前apk壳子的版本号，返回一个整数
+--- 获取壳子版本：获取当前apk壳子的版本号，返回一个整数
 function getApkVerInt() end
 
 --- 获取设备电量
@@ -53,11 +53,11 @@ function getCpuAbi2() end
 --- cpu支持类型
 function getCpuAbi() end
 
---- 获取最顶层activity名称 - 说明:此函数需要开启节点服务或者无障碍服务
+--- 获取最顶层activity名称：此函数需要开启节点服务或者无障碍服务
 ---@return any 获取最顶层activity名称
 function getCurrentActivity() end
 
---- 获取设备id号 - 功能说明:获取设备id号
+--- 获取设备id号：获取设备id号
 function getDeviceId() end
 
 --- 获取设备别名
@@ -142,7 +142,7 @@ function installApk(apkpath, callback) end
 ---@param lrpath any 待安装的更新包文件绝对路径
 function installLrPkg(lrpath) end
 
---- 保持屏幕长亮 - 功能说明:保持屏幕不熄灭，一直长亮
+--- 保持屏幕长亮：保持屏幕不熄灭，一直长亮
 function lockScreen() end
 
 --- 拨号或者打出
@@ -165,7 +165,7 @@ function readPasteboard() end
 --- 重置用户数据配置
 function resetConfig() end
 
---- 恢复为默认的系统分辩率和dpi - 说明:此方法不能在无障碍模式下使用
+--- 恢复为默认的系统分辩率和dpi：此方法不能在无障碍模式下使用
 ---@return boolean 布尔类型，true成功，false失败
 function resetDisplaySize() end
 
@@ -211,17 +211,17 @@ function setAirplaneMode(state) end
 ---@param state any
 function setBTEnable(state) end
 
---- 设置悬浮窗位置 - 功能说明:设置悬浮窗位置
+--- 设置悬浮窗位置：设置悬浮窗位置
 ---@param x any
 ---@param y any
 function setControlBarPosNew(x, y) end
 
---- 设置悬浮窗位置 - 功能说明:设置悬浮窗位置
+--- 设置悬浮窗位置：设置悬浮窗位置
 ---@param pos any
 ---@param type any
 function setControlBarPos(pos, type) end
 
---- 设置真实的物理分辨率和dpi - 说明:此方法不能在无障碍模式下使用
+--- 设置真实的物理分辨率和dpi：此方法不能在无障碍模式下使用
 -- 语法: setDisplaySize(w,h,[dpi])
 ---@param w any 整数类型，表示宽度
 ---@param h any 整数类型，表示高度
@@ -234,7 +234,7 @@ function setDisplaySize(w, h, dpi) end
 ---@param value any
 function setNumberConfig(key, value) end
 
---- 设置停止脚本的回调函数 - 功能说明:如果想在脚本结束的时候能处理一些收尾的事情可以用此方法设置结束时的回调方法 注意使用此方法的回调函数中不能使用ui显示操作
+--- 设置停止脚本的回调函数：如果想在脚本结束的时候能处理一些收尾的事情可以用此方法设置结束时的回调方法 注意使用此方法的回调函数中不能使用ui显示操作
 function setStopCallBack() end
 
 --- 写入键值对
@@ -242,7 +242,7 @@ function setStopCallBack() end
 ---@param value any
 function setStringConfig(key, value) end
 
---- 设置悬浮按钮菜单自定义事件回调函数(注意只有新版悬浮菜单才能触发此回调函数) - 功能说明:用户通过点击悬浮按钮菜单来触发一个事件给脚本
+--- 设置悬浮按钮菜单自定义事件回调函数(注意只有新版悬浮菜单才能触发此回调函数)：用户通过点击悬浮按钮菜单来触发一个事件给脚本
 ---@param cb any
 function setUserEventCallBack(cb) end
 
@@ -275,7 +275,7 @@ function unLockScreen() end
 ---@param pass any 字符类型，解压密码，没有密码可以不填写
 function unZip(zippath, outdir, pass) end
 
---- 震动 - 功能说明:震动设备
+--- 震动：震动设备
 function vibrate() end
 
 --- 写数据到剪贴板
@@ -336,7 +336,7 @@ function httpGet(url, timeout, header) end
 ---@return string 字符串类型，http响应状态码
 function httpPost(url, postdata, timeout, header) end
 
---- import 加载java类 - 功能说明:此方法是为了能更加方便扩展安卓原生调用，具体详细的使用例子请进群下载 注意事项:此方法只支持android端，后续ios端不支持此方法
+--- import 加载java类：此方法是为了能更加方便扩展安卓原生调用，具体详细的使用例子请进群下载 注意事项:此方法只支持android端，后续ios端不支持此方法
 ---@param className any 字符串类型,表示一个java类名
 function import(className) end
 
@@ -364,7 +364,7 @@ function LuaEngine.httpPostData(url, params, headers, timeout) end
 ---@param timeout any 整数型，超时时间
 function LuaEngine.httpPost(url, params, headers, timeout) end
 
---- LuaEngine.loadApk 加载一个apk插件 - 说明:此函数还可以加载autojs的插件
+--- LuaEngine.loadApk 加载一个apk插件：此函数还可以加载autojs的插件
 ---@param name any 字符串类型，如果apk插件放到资源中则只需要写名字，如果需要从sd卡加载则这里写绝对路径
 ---@return table 返回一个插件对象
 function LuaEngine.loadApk(name) end
@@ -578,7 +578,7 @@ function scaleImage(src, dst, w, h) end
 ---@param tid any
 function stopThread(tid) end
 
---- useRes 指定资源文件为默认查找的对象 - 说明:指定为默认查找对象后图色以及资源获取都是默认从此rc文件中获取
+--- useRes 指定资源文件为默认查找的对象：指定为默认查找对象后图色以及资源获取都是默认从此rc文件中获取
 ---@param name any
 function useRes(name) end
 
@@ -597,7 +597,7 @@ function writeLog(str) end
 
 -- 触控方法
 
---- 捕捉点击屏幕坐标 - 功能说明:调用该函数后，将等待用户完成一次或多次屏幕点击，并返回点击的坐标 注意:此函数不支持在无障碍模式下使用，只能在激活或者root模式下使用，获取运行环境类型函数为getRunEnvType
+--- 捕捉点击屏幕坐标：调用该函数后，将等待用户完成一次或多次屏幕点击，并返回点击的坐标 注意:此函数不支持在无障碍模式下使用，只能在激活或者root模式下使用，获取运行环境类型函数为getRunEnvType
 ---@param count any 捕捉触摸屏幕的次数
 ---@return number 返回一个数组类型，数组长度为触摸的次数，数组内容是每次触摸的坐标值
 function catchTouchPoint(count) end
@@ -673,46 +673,46 @@ function touchUp(id) end
 
 -- 互交方法
 
---- 创建一个HUD用于显示 - 功能说明:HUD是一个悬浮在屏幕上的画面可以实时更新
+--- 创建一个HUD用于显示：HUD是一个悬浮在屏幕上的画面可以实时更新
 ---@return number 是一个HUD实例句柄
 function createHUD() end
 
---- 获取按钮标题内容 - 功能说明:获取当前窗口中指定id的按钮的标题，可以在点击事件或者加载完成事件中获取
+--- 获取按钮标题内容：获取当前窗口中指定id的按钮的标题，可以在点击事件或者加载完成事件中获取
 ---@param handle any
 ---@param id any
 function getButtonText(handle, id) end
 
---- 获取多选组合框当前选项 - 功能说明:获取当前窗口中指定id的多选组合框当前选项，可以在点击事件或者加载完成事件中获取
+--- 获取多选组合框当前选项：获取当前窗口中指定id的多选组合框当前选项，可以在点击事件或者加载完成事件中获取
 ---@param handle any
 ---@param id any
 function getCheckGroupSel(handle, id) end
 
---- 获取下拉框当前选项 - 功能说明:获取当前窗口中指定id的下拉框当前选项，可以在点击事件或者加载完成事件中获取
+--- 获取下拉框当前选项：获取当前窗口中指定id的下拉框当前选项，可以在点击事件或者加载完成事件中获取
 ---@param handle any
 ---@param id any
 function getDropSel(handle, id) end
 
---- 获取输入框文本 - 功能说明:获取当前窗口中指定id的文本框中的文本，可以在点击事件或者加载完成事件中获取
+--- 获取输入框文本：获取当前窗口中指定id的文本框中的文本，可以在点击事件或者加载完成事件中获取
 ---@param handle any
 ---@param id any
 function getEditText(handle, id) end
 
---- 获取静态Lable的文本 - 功能说明:获取当前窗口中指定id的Lable中的文本，可以在点击事件或者加载完成事件中获取
+--- 获取静态Lable的文本：获取当前窗口中指定id的Lable中的文本，可以在点击事件或者加载完成事件中获取
 ---@param handle any
 ---@param id any
 function getLableText(handle, id) end
 
---- 获取单选组合框当前选项 - 功能说明:获取当前窗口中指定id的单选组合框当前选项，可以在点击事件或者加载完成事件中获取
+--- 获取单选组合框当前选项：获取当前窗口中指定id的单选组合框当前选项，可以在点击事件或者加载完成事件中获取
 ---@param handle any
 ---@param id any
 function getRadioGroupSel(handle, id) end
 
---- 获取控件状态是否可用 - 功能说明:获取控件状态是否可用，可以在点击事件或者加载完成事件中获取
+--- 获取控件状态是否可用：获取控件状态是否可用，可以在点击事件或者加载完成事件中获取
 ---@param handle any
 ---@param id any
 function getViewEnable(handle, id) end
 
---- 获取控件是否可见 - 功能说明:获取控件是否可见，可以在点击事件或者加载完成事件中获取
+--- 获取控件是否可见：获取控件是否可见，可以在点击事件或者加载完成事件中获取
 ---@param handle any
 ---@param id any
 ---@return number 返回一个整数值:当取值为8表示隐藏控件不占据ui的布局空间，4表示隐藏控件但是依然占据布局空间，0是显示控件
@@ -726,53 +726,53 @@ function hideHUD(id) end
 --- 关闭消息显示
 function hideToast() end
 
---- 设置按钮标题内容 - 功能说明:设置当前窗口中指定id的按钮标题，可以在点击事件或者加载完成事件中设置
+--- 设置按钮标题内容：设置当前窗口中指定id的按钮标题，可以在点击事件或者加载完成事件中设置
 ---@param handle any
 ---@param id any
 ---@param text any
 function setButtonText(handle, id, text) end
 
---- 设置多选组合框选中某几项 - 功能说明:设置当前窗口中指定id的单选组合框的某几项被选中，可以在点击事件或者加载完成事件中设置
+--- 设置多选组合框选中某几项：设置当前窗口中指定id的单选组合框的某几项被选中，可以在点击事件或者加载完成事件中设置
 ---@param handle any
 ---@param id any
 ---@param sel any
 function setCheckGroupSel(handle, id, sel) end
 
---- 设置下拉框选中某一项 - 功能说明:设置当前窗口中指定id的下拉框的某一项被选中，可以在点击事件或者加载完成事件中设置
+--- 设置下拉框选中某一项：设置当前窗口中指定id的下拉框的某一项被选中，可以在点击事件或者加载完成事件中设置
 ---@param handle any
 ---@param id any
 ---@param sel any
 function setDropSel(handle, id, sel) end
 
---- 设置输入框内容 - 功能说明:设置当前窗口中指定id的文本框的文本，可以在点击事件或者加载完成事件中设置
+--- 设置输入框内容：设置当前窗口中指定id的文本框的文本，可以在点击事件或者加载完成事件中设置
 ---@param handle any
 ---@param id any
 ---@param text any
 function setEditText(handle, id, text) end
 
---- 设置Lable内容 - 功能说明:设置当前窗口中指定id的Lable的文本，可以在点击事件或者加载完成事件中设置
+--- 设置Lable内容：设置当前窗口中指定id的Lable的文本，可以在点击事件或者加载完成事件中设置
 ---@param handle any
 ---@param id any
 ---@param text any
 function setLableText(handle, id, text) end
 
---- 设置单选组合框选中某一项 - 功能说明:设置当前窗口中指定id的单选组合框的某一项被选中，可以在点击事件或者加载完成事件中设置
+--- 设置单选组合框选中某一项：设置当前窗口中指定id的单选组合框的某一项被选中，可以在点击事件或者加载完成事件中设置
 ---@param handle any
 ---@param id any
 ---@param sel any
 function setRadioGroupSel(handle, id, sel) end
 
---- 给指定窗口ui加载一个配置 - 说明:handle是窗口的句柄,config 是一个json字符串，可以在点击事件或者加载完成事件中设置
+--- 给指定窗口ui加载一个配置：handle是窗口的句柄,config 是一个json字符串，可以在点击事件或者加载完成事件中设置
 ---@param handle any
 ---@param config any
 function setUIConfigEx(handle, config) end
 
---- 给指定窗口ui加载一个配置 - 说明:handle是窗口的句柄,json是要加载的配置字符串{"id1":"value1","id2":"value2"},可以在点击事件或者加载完成事件中设置
+--- 给指定窗口ui加载一个配置：handle是窗口的句柄,json是要加载的配置字符串{"id1":"value1","id2":"value2"},可以在点击事件或者加载完成事件中设置
 ---@param handle any
 ---@param json any
 function setUIConfig(handle, json) end
 
---- 设置控件状态是否可用 - 功能说明:设置控件状态是否可用，如果设置为false那么控件将失去焦点无法接受事件， 可以在点击事件或者加载完成事件中设置
+--- 设置控件状态是否可用：设置控件状态是否可用，如果设置为false那么控件将失去焦点无法接受事件， 可以在点击事件或者加载完成事件中设置
 ---@param handle any
 ---@param id any
 ---@param enable any
@@ -784,13 +784,13 @@ function setViewEnable(handle, id, enable) end
 ---@param cb any
 function setWebViewJsCallBack(handle, id, cb) end
 
---- 设置浏览器地址 - 功能说明:设置当前窗口中指定id的浏览器的url，可以在点击事件或者加载完成事件中设置
+--- 设置浏览器地址：设置当前窗口中指定id的浏览器的url，可以在点击事件或者加载完成事件中设置
 ---@param handle any
 ---@param id any
 ---@param url any
 function setWebViewUrl(handle, id, url) end
 
---- 显示HUD或者刷新 - 功能说明:显示更新HUD
+--- 显示HUD或者刷新：显示更新HUD
 -- 语法: showHUD(id,text,size,color,bg,pos,x,y,width,height,[leftpadding,toppadding,rightpadding,bottompadding],[align_text])
 ---@param id any 整:数型,用于标示HUD
 ---@param text any 文本型,提示信息,将在屏幕上以HUD形式显示
@@ -812,7 +812,7 @@ function showHUD(id, text, size, color, bg, pos, x, y, width, height, leftpaddin
                  bottompadding, align_text)
 end
 
---- 显示一个自定义的界面,这个是showUI的扩展版本，该方法可以设置窗口的坐标位置 - 功能说明:显示一个用户自定义弹窗界面,当窗口关闭时返回配置数据
+--- 显示一个自定义的界面,这个是showUI的扩展版本，该方法可以设置窗口的坐标位置：显示一个用户自定义弹窗界面,当窗口关闭时返回配置数据
 -- 语法: showUIEx(uifile,[x],[y],[w],[h],[loadEvent],[clickEvent],[closeEvent])
 ---@param uifile any 可以是一个ui文件名称或路径，也可以是ui文件的字符串形式 x,y 整数型, 可选项,设置悬浮窗的位置 w,h:整数型, 可选项,设置此值来改变窗口的大小 loadEvent,clickEvent,closeEvent,selectEvent:函数类型,可选项, 设置此值可以触发窗口的加载完成事件,以及多选框，单选框，组合框选中事件(多选框选中和被反选都会有触发)， 窗口中按钮的点击事件，窗口的关闭事件，说明一下，不要在窗口关闭事件中设置或者获取窗口中控件的属性值， 因为此时窗口已经被摧毁，可以通过showUI的返回值获取
 ---@param x any
@@ -825,7 +825,7 @@ end
 ---@return number ret:整数类型,是一个用户行为，取消或者确定 result:数组类型返回用户的配置键值对
 function showUIEx(uifile, x, y, w, h, loadEvent, clickEvent, closeEvent) end
 
---- 显示一个自定义的界面 - 功能说明:显示一个用户自定义弹窗界面,当窗口关闭时返回配置数据
+--- 显示一个自定义的界面：显示一个用户自定义弹窗界面,当窗口关闭时返回配置数据
 -- 语法: showUI(uifile,[w],[h],[loadEvent],[clickEvent],[closeEvent])
 ---@param uifile any 可以是一个ui文件名称或路径，也可以是ui文件的字符串形式 w,h:整数型，可选项,设置此值来改变窗口的大小 loadEvent,clickEvent,closeEvent,selectEvent:函数类型,可选项, 设置此值可以触发窗口的加载完成事件,以及多选框，单选框，组合框选中事件(多选框选中和被反选都会有触发)， 窗口中按钮的点击事件，窗口的关闭事件，说明一下，不要在窗口关闭事件中设置或者获取窗口中控件的属性值， 因为此时窗口已经被摧毁，可以通过showUI的返回值获取
 ---@param w any
@@ -836,7 +836,7 @@ function showUIEx(uifile, x, y, w, h, loadEvent, clickEvent, closeEvent) end
 ---@return number ret:整数类型,是一个用户行为，取消或者确定 result:数组类型返回用户的配置键值对
 function showUI(uifile, w, h, loadEvent, clickEvent, closeEvent) end
 
---- 屏幕上显示信息 - 功能说明:在屏幕指定位置弹出信息框，当坐标x,y同时为0的时候，默认向下横向居中显示，5秒后自动消失
+--- 屏幕上显示信息：在屏幕指定位置弹出信息框，当坐标x,y同时为0的时候，默认向下横向居中显示，5秒后自动消失
 -- 语法: toast(text,[x,y,textsize])
 ---@param text any 要显示的字符串
 ---@param x integer 屏幕横向坐标，可以不填写默认为0
@@ -876,7 +876,7 @@ function colorDiff(color1, color2) end
 ---@return number r:整数型,十进制颜色红分量 g:整数型,十进制颜色绿分量 b:整数型,十进制颜色蓝分量
 function colorToRGB(color) end
 
---- 创建一个tresseract-ocr(4.1.0)本地光学ocr对象 - 说明:请下载群里的光学ocr训练工具可以自己针对性的训练自己的字库
+--- 创建一个tresseract-ocr(4.1.0)本地光学ocr对象：请下载群里的光学ocr训练工具可以自己针对性的训练自己的字库
 -- 语法: createOcr(lang,[mode],[engine])
 ---@param lang any 字符串型,字库语言文件名称，不填则默认eng(只支持一般的中英+数字+标点符号), 注意lang也可以是字库文件的绝对路径，如果字库比较大，那么建议先把字库放到手机sd卡下测试， 不然如果放到资源文件中，数据包会很大导致调试速度很慢
 ---@param mode any 整数型 0 仅检测方向和文本 1 自动检测方向和文本(OSD) 2 自动检测，但不进行OSD或OCR处理 3 自动PSM模式(但不含OSD) 4 所识别图片的字体大小不一 5 所识别图片当作整块竖向文字区域 6 所识别图片当作整块横向文字区域 (默认值) 7 所识别图片当作一行文字 8 所识别图片当作单个词语 9 所识别图片当作单个圆型围绕的词语 10 所识别图片当作单个英文/数字字符 11 尽可能识别更多的字符(无顺序要求) 12 分散稀疏的OSD检测
@@ -1036,7 +1036,7 @@ function getPixelColor(x, y, type) end
 ---@return number arr 是返回的数组,如果w,h小于0则表明失败
 function getScreenPixel(x1, y1, x2, y2) end
 
---- 检测屏幕区域所有色点是否变化 - 说明:该方法会阻塞住，等待颜色发生改变，区域内颜色一旦发生变化立刻返回
+--- 检测屏幕区域所有色点是否变化：该方法会阻塞住，等待颜色发生改变，区域内颜色一旦发生变化立刻返回
 ---@param x1 integer 查找区域左上X坐标
 ---@param y1 integer 查找区域左上Y坐标
 ---@param x2 integer 查找区域右下X坐标
@@ -1045,10 +1045,13 @@ function getScreenPixel(x1, y1, x2, y2) end
 ---@return boolean ret:true表示没有变化，false有变化
 function isDisplayDead(x1, y1, x2, y2, time) end
 
---- 截图到内存 - 功能说明:截取当前屏幕内容保留在内存,可以供后续图色查找
+--- 截图到内存:截取当前屏幕内容保留在内存,可以供后续图色查找
 function keepCapture() end
 
---- 二值化本地神经网络ocr - 说明:这些参数可以通过群里的神经网络ocr.exe工具进行调试到自己满意值后直接生成代码
+--- 释放内存截图:释放内存中的截图图片
+function releaseCapture() end
+
+--- 二值化本地神经网络ocr：这些参数可以通过群里的神经网络ocr.exe工具进行调试到自己满意值后直接生成代码
 -- 语法: ocrj(x1, y1, x2, y2,color_desc,[padding],[maxSlidLen],[boxscoreth],[boxthresh],[clipratio],[doAngle],[mostAngle])
 ---@param x1 integer 查找区域左上X坐标
 ---@param y1 integer 查找区域左上Y坐标
@@ -1065,7 +1068,7 @@ function keepCapture() end
 ---@return table 数组类型
 function ocrj(x1, y1, x2, y2, color_desc, padding, maxSlidLen, boxscoreth, boxthresh, clipratio, doAngle, mostAngle) end
 
---- 本地神经网络ocr - 说明:这些参数可以通过群里的神经网络ocr.exe工具进行调试到自己满意值后直接生成代码
+--- 本地神经网络ocr：这些参数可以通过群里的神经网络ocr.exe工具进行调试到自己满意值后直接生成代码
 -- 语法: ocrEx(x1, y1, x2, y2,[padding],[maxSlidLen],[boxscoreth],[boxthresh],[clipratio],[doAngle],[mostAngle])
 ---@param x1 integer 查找区域左上X坐标
 ---@param y1 integer 查找区域左上Y坐标
@@ -1091,7 +1094,7 @@ function ocrEx(x1, y1, x2, y2, padding, maxSlidLen, boxscoreth, boxthresh, clipr
 ---@return string json格式的字符串
 function ocrj(x1, y1, x2, y2, colorfmt, sim) end
 
---- 获取指定范围内的文本字符串 - 说明:请下载群里的光学ocr训练工具可以自己针对性的训练自己的字库
+--- 获取指定范围内的文本字符串：请下载群里的光学ocr训练工具可以自己针对性的训练自己的字库
 -- 语法: oocrTextExJ(handle,x1,y1,x2,y2,[splitType],[ThresholdTypes],[thresh],[maxthresh])
 ---@param handle any 整数型，tresseract-ocr对象句柄
 ---@param x1 integer 查找区域左上X坐标
@@ -1105,7 +1108,7 @@ function ocrj(x1, y1, x2, y2, colorfmt, sim) end
 ---@return table 返回查找的结果的表
 function oocrTextExJ(handle, x1, y1, x2, y2, splitType, ThresholdTypes, thresh, maxthresh) end
 
---- 获取指定范围内的文本字符串 - 说明:请下载群里的光学ocr训练工具可以自己针对性的训练自己的字库
+--- 获取指定范围内的文本字符串：请下载群里的光学ocr训练工具可以自己针对性的训练自己的字库
 -- 语法: ocrTextEx(handle,x1,y1,x2,y2,[ThresholdTypes],[thresh],[maxthresh])
 ---@param handle any 整数型，tresseract-ocr对象句柄
 ---@param x1 integer 查找区域左上X坐标
@@ -1138,7 +1141,7 @@ function ocrText(handle, x1, y1, x2, y2, colorfmt) end
 ---@return string 字符串
 function ocr(x1, y1, x2, y2, colorfmt, sim) end
 
---- 删除内存中的截图 - 功能说明:删除内存中的截图
+--- 删除内存中的截图：删除内存中的截图
 function releaseScreen() end
 
 --- 释放指定句柄的tresseract-ocr对象
@@ -1151,7 +1154,7 @@ function releaseOcr(handle) end
 ---@return any 0失败1成功
 function setDict(index, name) end
 
---- 屏幕缩放 - 功能说明:此功能用于非目标分辨率设备上找色和点击时使用
+--- 屏幕缩放：此功能用于非目标分辨率设备上找色和点击时使用
 -- 语法: setScreenScale(type,width,height,[scale])
 ---@param type any 0取消缩放，1开启缩放
 ---@param width integer 脚本开发时使用的设备宽度
@@ -1159,7 +1162,7 @@ function setDict(index, name) end
 ---@param scale any 可选参数,默认为1,0代表只对传入函数的坐标进行缩放, 从函数返回坐标的不缩放,即为当前使用设备真实坐标。 1代表传入函数的坐标进行缩放，函数返回的坐标进行反向缩放
 function setScreenScale(type, width, height, scale) end
 
---- 设置本地光学ocr白名单 - 说明:如果你选择的光学ocr识别引擎使用的是lstm神经网络模式那么白名单将失效
+--- 设置本地光学ocr白名单：如果你选择的光学ocr识别引擎使用的是lstm神经网络模式那么白名单将失效
 ---@param handle any 通过createOcr创建的句柄 whiteList:字符串类型，不在这个字符集里面的字符全部被过滤掉
 ---@param whitelist any
 ---@return any 无
@@ -1233,13 +1236,13 @@ function console.unlockConsole() end
 ---@return string 格式为年-月-日_时-分-秒的时间字符串
 function getNetWorkTime() end
 
---- 日期格式化 - 功能说明:用来格式化时间戳为可读时间,time为可选时间戳,省略时取当下
+--- 日期格式化：用来格式化时间戳为可读时间,time为可选时间戳,省略时取当下
 -- 语法: os.date(format [, time]])
 ---@param format any
 ---@param time any
 function os.date(format, time) end
 
---- 时间戳 - 功能说明:默认获取当前时间戳,也可以指定table参数
+--- 时间戳：默认获取当前时间戳,也可以指定table参数
 -- 语法: os.time([table])
 ---@param table any
 function os.time(table) end
@@ -1290,107 +1293,6 @@ function jsonLib.decode(json) end
 ---@param table any
 ---@return string json字符串
 function jsonLib.encode(table) end
-
--- 数学方法
-
---- 绝对值
----@param number any
-function math.abs(number) end
-
---- 反余弦
----@param number any
-function math.acos(number) end
-
---- 反正弦
----@param number any
-function math.asin(number) end
-
---- 反正切
----@param number any
-function math.atan(number) end
-
---- 向上取整
----@param number any
-function math.ceil(number) end
-
---- 余弦
----@param number any
-function math.cos(number) end
-
---- 弧度转角度
----@param number any
-function math.deg(number) end
-
---- e为底x次方值
----@param number any
-function math.exp(number) end
-
---- 向下取整
----@param number any
-function math.floor(number) end
-
---- 取余数
----@param 被除数 any
----@param 除数 any
-function math.fmod(被除数, 除数) end
-
---- 数字的自然对数
----@param number any
-function math.log(number) end
-
---- 取得参数中最大值
----@param number1 any
----@param number2 any
----@param number any
----@param ... any
-function math.max(number1, number2, number, ...) end
-
---- 取得参数中最小值
----@param number1 any
----@param number2 any
----@param number any
----@param ... any
-function math.min(number1, number2, number, ...) end
-
---- 取整数和小数部分
----@param number any
-function math.modf(number) end
-
---- 角度转弧度
----@param rad any
-function math.rad(rad) end
-
---- 设随机数种子
----@param seed any
-function math.randomseed(seed) end
-
---- 正弦
----@param number any
-function math.sin(number) end
-
---- 开根号
----@param number any
-function math.sqrt(number) end
-
---- 正切
----@param rad any
-function math.tan(rad) end
-
---- 转化整数 - 功能说明:如果 x 可以转换为一个整数， 返回该整数。 否则返回 nil。
----@param n any
----@return number 转化的整数
-function math.tointeger(n) end
-
---- 获取数字类型 - 功能说明:如果 x 是整数，返回 "integer"， 如果它是浮点数，返回 "float"， 如果 x 不是数字，返回 nil。
----@param n any
----@return string 字符串类型
-function math.type(n) end
-
---- 无符号数据比较 - 功能说明:如果整数 m 和 n 以无符号整数形式比较， m 在 n 之下，返回布尔真否则返回假。
----@param m any
----@param n any
----@return boolean 布尔类型
-function math.ult(m, n) end
 
 -- 节点方法
 
@@ -1542,18 +1444,18 @@ function nodeLib.updateNode() end
 ---@param matchstr any
 function splitStr(src, matchstr) end
 
---- 转换字符为整数值 - 功能说明:函数返回字符s[i], s[i+1], ···, s[j]的内部数字编码(ASCII码)，其中参数i的默认值是1，而参数j的默认值是i
+--- 转换字符为整数值：函数返回字符s[i], s[i+1], ···, s[j]的内部数字编码(ASCII码)，其中参数i的默认值是1，而参数j的默认值是i
 -- 语法: string.byte (s [, i [, j] ])
 ---@param s any
 ---@param i any
 ---@param j any
 function string.byte(s, i, j) end
 
---- 将整型数字转成字符并连接 - 功能说明:将整型数字转成字符并连接
+--- 将整型数字转成字符并连接：将整型数字转成字符并连接
 ---@param arg any
 function string.char(arg) end
 
---- 字符串中查找子字符串 - 功能说明:函数在字符串s里查找第一个和参数pattern匹配的子串，如果找到了一个匹配的子串， 就会返回这个子串的起始索引和结束索引，否则就会返回nil。另外，参数init作为一个数字，指定了搜索的起始位置， 这个数字默认为1可以一个负数，表示从后往前数的字符个数。参数plain作为第四个可选参数默认为flase， 传入参数true表示关闭模式匹配，所以函数只做简单的查找子串的操作，如果子串pattern没有字符为空字符串""将会被认为是魔法字符。 如果模式匹配子串被找到了，一个成功被找到的子串将会作为第三个返回值，放在两个索引返回值的后边而返回。 返回其具体位置。不存在则返回 nil。
+--- 字符串中查找子字符串：函数在字符串s里查找第一个和参数pattern匹配的子串，如果找到了一个匹配的子串， 就会返回这个子串的起始索引和结束索引，否则就会返回nil。另外，参数init作为一个数字，指定了搜索的起始位置， 这个数字默认为1可以一个负数，表示从后往前数的字符个数。参数plain作为第四个可选参数默认为flase， 传入参数true表示关闭模式匹配，所以函数只做简单的查找子串的操作，如果子串pattern没有字符为空字符串""将会被认为是魔法字符。 如果模式匹配子串被找到了，一个成功被找到的子串将会作为第三个返回值，放在两个索引返回值的后边而返回。 返回其具体位置。不存在则返回 nil。
 -- 语法: string.find(s, pattern [, init [, plain]] )
 ---@param s any
 ---@param pattern any
@@ -1561,28 +1463,28 @@ function string.char(arg) end
 ---@param plain any
 function string.find(s, pattern, init, plain) end
 
---- 字符格式化 - 功能说明:将一个字符串反转
+--- 字符格式化：将一个字符串反转
 ---@param ... any
 function string.format(...) end
 
---- 字符串长度 - 功能说明:获取字符串长度
+--- 字符串长度：获取字符串长度
 ---@param arg any
 function string.len(arg) end
 
---- 转为小写字母 - 功能说明:字符串全部转为小写字母
+--- 转为小写字母：字符串全部转为小写字母
 ---@param argument any
 function string.lower(argument) end
 
---- 返回字符串string的n个拷贝 - 功能说明:返回字符串string的n个拷贝
+--- 返回字符串string的n个拷贝：返回字符串string的n个拷贝
 ---@param string any
 ---@param n any
 function string.rep(string, n) end
 
---- 字符串反转 - 功能说明:将一个字符串反转
+--- 字符串反转：将一个字符串反转
 ---@param argument any
 function string.reverse(argument) end
 
---- 转为大写字母 - 功能说明:字符串全部转为大写字母
+--- 转为大写字母：字符串全部转为大写字母
 ---@param argument any
 function string.upper(argument) end
 
@@ -2049,29 +1951,6 @@ M["io.read"] = io.read
 M["io.read"] = io.read
 M["jsonLib.decode"] = jsonLib.decode
 M["jsonLib.encode"] = jsonLib.encode
-M["math.abs"] = math.abs
-M["math.acos"] = math.acos
-M["math.asin"] = math.asin
-M["math.atan"] = math.atan
-M["math.ceil"] = math.ceil
-M["math.cos"] = math.cos
-M["math.deg"] = math.deg
-M["math.exp"] = math.exp
-M["math.floor"] = math.floor
-M["math.fmod"] = math.fmod
-M["math.log"] = math.log
-M["math.max"] = math.max
-M["math.min"] = math.min
-M["math.modf"] = math.modf
-M["math.rad"] = math.rad
-M["math.randomseed"] = math.randomseed
-M["math.random"] = math.random
-M["math.sin"] = math.sin
-M["math.sqrt"] = math.sqrt
-M["math.tan"] = math.tan
-M["math.tointeger"] = math.tointeger
-M["math.type"] = math.type
-M["math.ult"] = math.ult
 M["nodeLib.click"] = nodeLib.click
 M["nodeLib.findAll"] = nodeLib.findAll
 M["nodeLib.findByIndex"] = nodeLib.findByIndex
