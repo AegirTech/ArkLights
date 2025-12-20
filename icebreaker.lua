@@ -1,5 +1,9 @@
 -- 促融共竞通用函数
 ib = {}
+
+-- 常量定义（主要常量已在 prts.lua 中定义为全局变量）
+
+
 local 角色编队作业 = { 72362, 72363, 72341, 73042, 73063 }
 local 关卡作业 = {
     ["IG-1"] = 72364,
@@ -82,6 +86,40 @@ import_room_id = function()
     ui.setEditText("extra_crgj_room", extra_crgj_room)
 end
 
+-- 选择难度和项目的公共函数
+ib.selectDifficultyAndProject = function()
+    log("选择难度", ib_difficulty)
+    if ib_difficulty == 1 then
+        ssleep(0.3)
+        tap("ib_高级赛")
+        ssleep(0.3)
+    elseif ib_difficulty == 2 then
+        ssleep(0.3)
+        tap("ib_特级赛")
+        ssleep(0.3)
+    end
+    log("选择项目", ib_object_id)
+    wait(function()
+        if ib_object_id == 0 then
+            tap("ib_随机项目")
+        elseif ib_object_id <= 9 then
+            tap("ib_项目列表" .. ib_object_id)
+        else
+            gesture({
+                {
+                    point = { { scale(990), scale(907) }, { scale(990), scale(100) } },
+                    start = 0,
+                    duration = 500,
+                },
+            })
+            sleep(1000)
+            tap("ib_项目列表" .. ib_object_id)
+        end
+        ssleep(0.3)
+        if findOne("ib_进入备赛灰") or findOne("ib_进入备赛红") then return true end
+    end, 10)
+end
+
 ib.start = function()
     if ib_grouping_method == 1 and screen.width ~= 1920 and screen.height ~= 1080 then
         stop("促融共竞仅支持1920x1080分辨率")
@@ -119,34 +157,7 @@ ib.start = function()
             ssleep(0.3)
             if findOne("ib_随机项目", .9) then return true end
         end, 10)
-        if ib_difficulty == 1 then
-            ssleep(0.3)
-            tap("ib_高级赛")
-            ssleep(0.3)
-        elseif ib_difficulty == 2 then
-            ssleep(0.3)
-            tap("ib_特级赛")
-            ssleep(0.3)
-        end
-        wait(function()
-            if ib_object_id == 0 then
-                tap("ib_随机项目")
-            elseif ib_object_id <= 9 then
-                tap("ib_项目列表" .. ib_object_id)
-            else
-                gesture({
-                    {
-                        point = { { scale(990), scale(907) }, { scale(990), scale(100) } },
-                        start = 0,
-                        duration = 500,
-                    },
-                })
-                sleep(1000)
-                tap("ib_项目列表" .. ib_object_id)
-            end
-            ssleep(0.3)
-            if findOne("ib_进入备赛灰") or findOne("ib_进入备赛红") then return true end
-        end, 10)
+        ib.selectDifficultyAndProject()
         tap("ib_复制房间号")
         ssleep(1)
     end
@@ -174,36 +185,7 @@ ib.促融共竞循环 = function()
                 ssleep(0.3)
                 if findOne("ib_随机项目", .9) then return true end
             end, 10)
-            log("选择难度", ib_difficulty)
-            if ib_difficulty == 1 then
-                ssleep(0.3)
-                tap("ib_高级赛")
-                ssleep(0.3)
-            elseif ib_difficulty == 2 then
-                ssleep(0.3)
-                tap("ib_特级赛")
-                ssleep(0.3)
-            end
-            log("选择项目", ib_object_id)
-            wait(function()
-                if ib_object_id == 0 then
-                    tap("ib_随机项目")
-                elseif ib_object_id <= 9 then
-                    tap("ib_项目列表" .. ib_object_id)
-                else
-                    gesture({
-                        {
-                            point = { { scale(990), scale(907) }, { scale(990), scale(100) } },
-                            start = 0,
-                            duration = 500,
-                        },
-                    })
-                    sleep(1000)
-                    tap("ib_项目列表" .. ib_object_id)
-                end
-                ssleep(0.3)
-                if findOne("ib_进入备赛灰") then return true end
-            end, 10)
+            ib.selectDifficultyAndProject()
         end,
         ib_准备参赛 = function()
             tap("ib_准备参赛")
@@ -302,37 +284,7 @@ ib.auto_team_formation = function(作业名, 是否自带)
     local 作业 = loadHomework(作业名, 是否自带, true)
     print(作业)
     print("读取作业成功")
-    local processSkillData = function(oper)
-        if table.findk(oper, "skill_usage") then
-            if oper["skill_usage"] == 1 then
-                table.insert(无限放技能干员, oper["name"])
-            elseif oper["skill_usage"] == 2 then
-                技能指定次数干员[oper["name"]] = { oper["skill_times"] or 1, 0 }
-            end
-        end
-
-        if table.findk(oper, "skill") then
-            队员技能[oper["name"]] = oper["skill"]
-        end
-    end
-    local groups = 作业["groups"]
-    if groups and #groups > 0 then
-        for _, group in ipairs(groups) do
-            群组[group["name"]] = group["opers"]
-            for _, oper in ipairs(group["opers"]) do
-                processSkillData(oper)
-            end
-            if table.findk(group, "skill") then
-                for _, oper in ipairs(group["opers"]) do
-                    队员技能[oper["name"]] = group["skill"]
-                end
-            end
-        end
-    end
-
-    for _, oper in ipairs(作业["opers"]) do
-        processSkillData(oper)
-    end
+    processGroupsAndOperatorsNormal(作业, 群组, 队员技能, 无限放技能干员, 技能指定次数干员)
     log("读取群组成功")
     if not findOne("ib_主页") then
         path.跳转("首页")
@@ -347,7 +299,7 @@ ib.自动编队 = function(干员, 群组)
     local 编入数量 = 0
     local 未编入 = {}
     local 未编入干员 = {}
-    local 干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+    local 干员类别 = OPERATOR_CATEGORIES
     local 未编入数量 = 0
     log(3030)
 
@@ -505,7 +457,7 @@ ib.选择干员 = function(干员目录, 字典, 是否群组, 群组需要数�
     end
     print(干员组, 技能组)
     keepCapture()
-    for i = 1, 18 do
+    for i = 1, MAX_SWIPE_PAGES do
         print("识别上")
         local 识别结果 = 干员名ocr校正(ocrex("ib_上排干员范围"))
         找干员(识别结果)
@@ -552,14 +504,7 @@ ib.部署操作 = function(干员排位, 指令)
     print("点战斗，部署第" .. 干员排位 .. "位干员")
     local 地图坐标 = 地图数据1[指令["location"][2] + 1][指令["location"][1] + 1]
     --direction: 上1 右2 下3 左4
-    local directions = {
-        Left = 4,
-        Right = 2,
-        Up = 1,
-        Down = 3,
-        None = 2
-    }
-    local direction = directions[指令["direction"]]
+    local direction = DIRECTION_MAP[指令["direction"]] or DIRECTION_MAP.None
     if 指令["location"][2] <= 2 then 地图坐标[2] = 地图坐标[2] + 10 end
     if 指令["location"][1] == 2 then 地图坐标[1] = 地图坐标[1] - 2 end
     deploy(坐标列表[干员排位][1], scale(地图坐标[1]), scale(地图坐标[2]), direction, 1)
@@ -669,7 +614,7 @@ ib.释放坐标技能 = function(坐标) --相比较原函数去掉了暂停点�
                 tap("点cost")
                 sleep(100)
                 技能未就绪 = 技能未就绪 + 1
-                if 技能未就绪 > 25 then
+                if 技能未就绪 > MAX_SKILL_NOT_READY_COUNT then
                     技能未就绪 = 0
                     波数依赖顺序 = 波数依赖顺序 + 1
                 end
@@ -700,7 +645,7 @@ ib.释放坐标技能 = function(坐标) --相比较原函数去掉了暂停点�
                 break
             else
                 技能未就绪 = 技能未就绪 + 1
-                if 技能未就绪 > 40 then
+                if 技能未就绪 > MAX_SKILL_NOT_READY_COUNT_LOW then
                     技能未就绪 = 0
                     波数依赖顺序 = 波数依赖顺序 + 1
                 end
@@ -784,63 +729,14 @@ ib.抄作业 = function(作业, maptype)
     local 需要, 找到
     local 已部署干员 = {}
     local 操作后, 部署后
-    local 延迟消失技能 = { "爆裂黎明", "黄昏", "灯火不灭", "饱和复仇", }
+    local 延迟消失技能 = DELAYED_SKILLS
 
     --点暂停(1)
     干员列表 = ib.识别未部署干员()
     下排干员数量 = 识别未部署干员数量()
 
-    --自动释放技能
-    local do_strategy = function()
-        --print("无限放技能干员", 无限放技能干员)
-        --print("技能指定次数干员")
-        for k, v in pairs(技能指定次数干员) do print(k, v) end
-
-        for k, v in pairs(已部署干员) do
-            if table.search(无限放技能干员, k) or (技能指定次数干员[k] and 技能指定次数干员[k][2] < 技能指定次数干员[k][1]) then
-                地图坐标 = 地图数据0[v[2] + 1][v[1] + 1]
-                print("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
-                local intX, intY = 查找技能(地图坐标[1], 地图坐标[2], 5)
-                if intX > -1 then
-                    print("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
-                    tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
-                    sleep(550)
-                    keepCapture()
-                    local p = findOne("技能ready")
-                    local skill_name = ocro("ib_技能名称范围")
-                    if p then
-                        tap({ p[1] - 20, p[2] - 50 })
-                    else
-                        tap("开技能")
-                    end
-                    sleep(550)
-                    releaseCapture()
-                    if not findOne("子弹时间", 0.85) then
-                        if 技能指定次数干员[k] then 技能指定次数干员[k][2] = 技能指定次数干员[k][2] + 1 end
-                        sleep(150)
-                        if skill_name ~= nil and table.includes(延迟消失技能, skill_name) then sleep(500) end
-                    end
-                    tap("点cost")
-                    sleep(100)
-                end
-            end
-        end
-    end
-
-    --等待时需要自动释放技能
-    local sleep_and_do_strategy = function(delay)
-        local start = os.time()
-        local time = ((delay - 1) / 1000)
-        --print(start, time)
-        while os.time() - start < time do
-            keepCapture()
-            do_strategy()
-            -- sleep(50)
-            ssleep(1) -- 1s检查一次 太卡了
-        end
-        releaseCapture()
-        --print(os.time())
-    end
+    local do_strategy = createDoStrategy(已部署干员, 延迟消失技能, "ib_技能名称范围", 5)
+    local sleep_and_do_strategy = createSleepAndDoStrategy(do_strategy, true)
 
     while true do
         if ask_cost_automaticlly and findOne("ib_费用请求") then
@@ -901,11 +797,11 @@ ib.抄作业 = function(作业, maptype)
                         部署顺序 = 部署顺序 + 1
                     end
                     --干员是否可部署
-                    if #需要cost > 1 and (cmpColor(需要cost[1] + scale(5), 需要cost[2], "FFFFFF", 0.95) == 1 or cmpColor(需要cost[1] + scale(5), 需要cost[2] - scale(20), "FFFFFF", 0.95) == 1) then
+                    if canDeployOperator(需要cost) then
                         部署指令 = ib.部署干员(干员排位)
                         下排干员数量 = 下排干员数量 - 1
                     end
-                elseif 部署指令["type"] == "Retreat" or 部署指令["type"] == "Retreat" or 部署指令["type"] == "撤退" then
+                elseif 部署指令["type"] == "Retreat" or 部署指令["type"] == "retreat" or 部署指令["type"] == "撤退" then
                     if not 部署指令["location"] then
                         部署指令["location"] = 已部署干员[部署指令["name"]]
                     end
@@ -940,10 +836,12 @@ ib.抄作业 = function(作业, maptype)
                     print("跳过指令")
                     部署顺序 = 部署顺序 + 1
                 end
-                if 部署指令 and 部署指令["post_delay"] then
-                    sleep_and_do_strategy(部署指令["post_delay"])
-                elseif 部署指令 and 部署指令["rear_delay"] then
-                    sleep_and_do_strategy(部署指令["rear_delay"])
+                -- 处理后置延时
+                if 部署指令 then
+                    local delay = 部署指令["post_delay"] or 部署指令["rear_delay"]
+                    if delay then
+                        sleep_and_do_strategy(delay)
+                    end
                 end
             end
         end
@@ -973,22 +871,21 @@ ib.抄作业 = function(作业, maptype)
                     elseif wave依赖指令["type"] == "Deploy" or wave依赖指令["type"] == "deploy" or wave依赖指令["type"] == "部署" then
                         干员排位 = table.findk(干员列表, wave依赖指令["name"])
                         print(wave依赖指令["name"], "干员排位", 干员排位)
-                        if 干员排位 > -1 then
+                        if 干员排位 and 干员排位 > 0 then
                             需要 = 费用列表(干员排位)
                             print(需要)
                             if cost >= 需要 then
                                 ib.部署操作(干员排位, wave依赖指令)
                                 已部署干员[wave依赖指令["name"]] = wave依赖指令["location"]
                                 下排干员数量 = 下排干员数量 - 1
-
                                 波数依赖顺序 = 波数依赖顺序 + 1
                             end
-                        elseif table.search(群组, wave依赖指令["name"]) == true then
+                        elseif 群组[wave依赖指令["name"]] then
                             print(干员列表)
                             for i, v in ipairs(群组[wave依赖指令["name"]]) do
                                 干员排位 = table.search(干员列表, v["name"])
                                 print(v["name"], "群组内干员排位", 干员排位)
-                                if 干员排位 > -1 then
+                                if 干员排位 then
                                     需要 = 费用列表(干员排位)
                                     ib.部署操作(干员排位, wave依赖指令)
                                     已部署干员[v["name"]] = wave依赖指令["location"]
@@ -1059,41 +956,8 @@ ib.battle = function(作业名, 是否自带)
     作业 = loadHomework(作业名, 是否自带)
     print(作业)
     print("读取作业成功")
-    --local 地图 = 作业["stage_name"]
 
-    --构建技能相关数据
-    local processSkillData = function(oper)
-        if table.findk(oper, "skill_usage") then
-            if oper["skill_usage"] == 1 then
-                table.insert(无限放技能干员, oper["name"])
-            elseif oper["skill_usage"] == 2 then
-                技能指定次数干员[oper["name"]] = { oper["skill_times"] or 1, 0 }
-            end
-        end
-
-        if table.findk(oper, "skill") then
-            队员技能[oper["name"]] = oper["skill"]
-        end
-    end
-
-    local groups = 作业["groups"]
-    if groups and #groups > 0 then
-        for _, group in ipairs(groups) do
-            群组[group["name"]] = group["opers"]
-            for _, oper in ipairs(group["opers"]) do
-                processSkillData(oper)
-            end
-            if table.findk(group, "skill") then
-                for _, oper in ipairs(group["opers"]) do
-                    队员技能[oper["name"]] = group["skill"]
-                end
-            end
-        end
-    end
-
-    for _, oper in ipairs(作业["opers"]) do
-        processSkillData(oper)
-    end
+    processGroupsAndOperatorsNormal(作业, 群组, 队员技能, 无限放技能干员, 技能指定次数干员)
     --text = string.sub(text, 1, -2) .. "}"
     --print(text)
 
