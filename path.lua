@@ -6359,6 +6359,7 @@ path.商店搬空 = function()
     if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1)) then
         return
     end
+    path.跳转("首页")
     log("商店清空任务")
     tap("面板活动")
     if not wait(function()
