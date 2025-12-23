@@ -1119,6 +1119,16 @@ path.fallback = {
         disappear("限时幸运签", 10)
         return path.fallback.签到返回()
     end,
+    星语共愿 = function()
+        wait(function()
+            tap("星语共愿领取1")
+            ssleep(.2)
+            tap("星语共愿领取2")
+            ssleep(.2)
+        end, 2)
+        return path.fallback.签到返回()
+    end,
+    星语共愿2 = function() return path.fallback.星语共愿() end,
     神州返回 = function()
         wait(function()
             tap("神州领取1")
