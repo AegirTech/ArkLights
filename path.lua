@@ -1128,7 +1128,6 @@ path.fallback = {
         end, 2)
         return path.fallback.签到返回()
     end,
-    星语共愿2 = function() return path.fallback.星语共愿() end,
     神州返回 = function()
         wait(function()
             tap("神州领取1")
