@@ -19,16 +19,6 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     zl_eight_daily()
 
     local in_fight_return = ''
-    local restart = function()
-        toast(in_fight_return or '重开')
-        ssleep(3)
-        if not request_memory_clean() then
-            log('点天赋')
-            path.探索者的银淞止境前瞻投资(true)
-        else
-            path.跳转("首页")
-        end
-    end
 
     --判断是否在其他界面
     local jumpout
@@ -386,82 +376,24 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     return goto_next_level()
 end
 
---萨米肉鸽战斗后拾取战利品
+--萨米肉鸽战斗后拾取战利品 (使用通用函数)
 zl_fight_after_sami = function()
-    local drop_page = false
-    if not wait(function()
-            if not drop_page then tap("战略确认") end
-            if findOne("萨米_战略帮助") then drop_page = true end
-            local x = appear({
-                "萨米_目标生命拾取", "萨米_收藏品拾取", "萨米_招募券拾取",
-                "萨米_源石锭拾取", '萨米_道具收下', '萨米_密文版拿走',
-                '萨米_密文版拾取', "萨米_密文版选择左", "萨米_已领取所有奖励"
-            })
-            log(2555, x)
-            tap(x)
+    local sami_pickup_config = {
+        strategic_help = "萨米_战略帮助",
+        regular_action = "萨米_常规行动",
+        coin_pickup = {
+            "萨米_目标生命拾取", "萨米_收藏品拾取", "萨米_招募券拾取",
+            "萨米_源石锭拾取", '萨米_道具收下', '萨米_密文版拿走',
+            '萨米_密文版拾取', "萨米_密文版选择左", "萨米_已领取所有奖励"
+        },
+        special_handling = function(x)
             if x == '萨米_密文版拾取' then
-                -- wait(function()
-                --     if tap("萨米_已领取所有奖励") then return true end
-                --     tap("萨米_密文版选择左")
-                -- end, 5)
                 appear('萨米_密文版选择左', 1)
                 findTap('萨米_密文版选择左')
             end
-
-            -- 误触到招募券处理
-            if findOne("确认招募") then
-                -- 放弃招募
-                if zl_only_coin then
-                    if not wait(function()
-                            if not findOne("确认招募") then return true end
-                            tap("放弃招募")
-                        end, 5) then
-                        return
-                    end
-
-                    if not wait(function()
-                            if findOne("编队") then return true end
-                            tap("右右确认")
-                        end, 5) then
-                        return
-                    end
-                else
-                    -- 招募
-                    if findOne("确认招募") then
-                        local start_time = time()
-                        if not wait(function()
-                                if findOne("编队") then return true end
-                                if findOne("返回确认界面") then
-                                    if time() - start_time < 2000 then
-                                        tap("左取消")
-                                    else
-                                        tap("右确认")
-                                    end
-                                    disappear("返回确认界面")
-                                    ssleep(.5)
-                                end
-                                tap("近卫招募列表" .. 1)
-                                findTap("确认招募")
-                                tap("开包skip")
-                            end, 10) then
-                            return
-                        end
-                    end
-                end
-            end
-
-            if not findOne("战略返回") then
-                if not appear({ "战略返回", "萨米_战略帮助" }) then
-                    tap("战略确认")
-                end
-            end
-            if findAny({ "萨米_常规行动", "萨米_战略帮助" }) and not findOne("确认招募") then
-                return true
-            end
-        end, 20) then
-        return false
-    end
-    return true
+        end
+    }
+    return zl.fight_after_pickup(sami_pickup_config)
 end
 
 sami.点天赋 = function()

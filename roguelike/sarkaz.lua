@@ -7,14 +7,7 @@ sarkaz = {}
 
 --萨卡兹战略重启
 sarkaz.restart = function(in_fight_return)
-    local in_fight_return = in_fight_return or ''
-    toast(in_fight_return or '重开')
-    ssleep(3)
-    if not request_memory_clean() then
-        path.萨卡兹的无终奇语前瞻投资(true)
-    else
-        path.跳转("首页")
-    end
+    zl.restart('sarkaz', in_fight_return)
 end
 
 sarkaz.不期而遇处理 = function()
@@ -93,54 +86,9 @@ sarkaz.不期而遇处理 = function()
     return true
 end
 
---手机适配的时候，之前那个zl_shop_buy有点不适用
+--萨卡兹商店购物 (使用通用函数)
 sarkaz.商店购物 = function()
-    local p = appear(point["萨卡兹_战略商品列表"], 1)
-    p = findAny(point["萨卡兹_战略商品列表"])
-    if not p then return end
-    if not wait(function()
-            local x, y = point[p]:match("(%d+)" .. coord_delimeter .. "(%d+)")
-            tap({ tonumber(x) - scale(111), tonumber(y) - scale(100) })
-            if disappear(p, 1) then return true end
-        end) then
-        return
-    end
-
-    disappear("诡意行商离开", 1)
-    if not wait(function(reset_wait_start_time)
-            tap("诡意行商确认投资")
-            if findOne("诡意行商离开") then return true end
-            if findOne("确认招募") then
-                local start_time = time()
-                if not wait(function(reset_wait_start_time2)
-                        if findOne("编队") then return true end
-                        if findOne("返回确认界面") then
-                            if time() - start_time < 2000 then
-                                tap("左取消")
-                            else
-                                tap("右确认")
-                            end
-                            disappear("返回确认界面")
-                            ssleep(.5)
-                        end
-                        if findOne("正在提交反馈至神经") then
-                            reset_wait_start_time()
-                            reset_wait_start_time2()
-                        end
-                        tap("近卫招募列表" .. 1)
-                        findTap("确认招募")
-                        tap("开包skip")
-                    end, 10) then
-                    return
-                end
-            end
-            if findOne("正在提交反馈至神经") then
-                reset_wait_start_time()
-            end
-        end, 10) then
-        return
-    end
-    return true
+    return zl_shop_buy()
 end
 
 sarkaz.跳转 = function()
@@ -178,62 +126,7 @@ sarkaz.跳转 = function()
     zl_level_coin_inquire('萨卡兹_常规行动', '萨卡兹_等级检测范围', '萨卡兹_源石锭检测范围')
 
     -- 放弃探索
-    if findOne("萨卡兹_放弃本次探索") then
-        if not wait(function()
-                if findOne("返回确认界面") then return true end
-                tap("萨卡兹_放弃本次探索")
-            end, 5) then
-            log(2608)
-            -- 无法直接放弃的情况 不处理
-            if not wait(function()
-                    if not findOne("萨卡兹_常规行动") then return true end
-                    tap("萨卡兹_继续探索")
-                    ssleep(.5)
-                    log(2613)
-                end, 5) then
-                return
-            end
-
-            if not wait(function()
-                    if findOne("萨卡兹_常规行动") then return true end
-                    -- 第一次数据更新处理
-                    if findAny({
-                            "面板", "活动公告返回", "签到返回", "签到返回黄",
-                            "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
-                        }) then
-                        jumpout = true
-                        return true
-                    end
-                    tap("新战略确认")
-                end, 5) then
-                return
-            end
-            if jumpout then return end
-        end
-        if not wait(function(reset_wait_start_time)
-                if findOne("正在提交反馈至神经") then
-                    reset_wait_start_time()
-                end
-                if findOne("返回确认界面") then
-                    tap("右右确认")
-                    return
-                end
-                tap("新战略确认")
-                if findOne("萨卡兹_常规行动") and not findOne("萨卡兹_放弃探索") then
-                    return true
-                end
-                -- 第一次数据更新处理
-                if findAny({
-                        "面板", "活动公告返回", "签到返回", "签到返回黄",
-                        "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
-                    }) then
-                    jumpout = true
-                    return true
-                end
-            end, 30) then
-            return
-        end
-    end
+    zl_abandon_explore('萨卡兹')
     if jumpout then return end
 
     local t = time()

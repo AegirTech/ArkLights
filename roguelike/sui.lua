@@ -238,104 +238,24 @@ sui.点天赋 = function()
 end
 
 sui.战斗后领取 = function()
-    local drop_page = false
-    if not wait(function()
-            if not drop_page then tap("战略确认") end
-            if findOne("界园_战略帮助") then drop_page = true end
-            if zl_only_coin then
-                local x = findAny({ "界园_不要了列表1", "界园_不要了列表2" })
-                log(2516, x)
-                tap(x)
-                if not wait(function()
-                        tap(findAny({ "界园_不要了确认列表1", "界园_不要了确认列表2" }))
-                        if findAny({ "战略返回", "界园_战略帮助" }) then return true end
-                    end, 2) then
-                end
-            end
-            local x = appear({
-                "界园_源石锭收下", "界园_通宝收下",
-                "界园_招募卷收下", "界园_通宝收下2",
-            })
-            log(2555, x)
-            tap(x)
+    local sui_pickup_config = {
+        strategic_help = "界园_战略帮助",
+        regular_action = "界园_常规行动",
+        coin_only_pickup = { "界园_不要了列表1", "界园_不要了列表2" },
+        coin_only_confirm = { "界园_不要了确认列表1", "界园_不要了确认列表2" },
+        coin_pickup = {
+            "界园_源石锭收下", "界园_通宝收下",
+            "界园_招募卷收下", "界园_通宝收下2",
+        },
+        special_handling = function(x)
             if x == "界园_通宝收下2" then
                 appearTap("界园_通宝交换左", 5)
                 disappear("界园_通宝交换左")
             end
-
             findTap("通宝替换确认")
-
-            -- 误触到招募券处理
-            if findOne("确认招募") then
-                -- 放弃招募
-                if zl_only_coin then
-                    if not wait(function()
-                            if not findOne("确认招募") then return true end
-                            tap("放弃招募")
-                        end, 5) then
-                        return
-                    end
-
-                    if not wait(function()
-                            if findOne("编队") then return true end
-                            tap("右右确认")
-                        end, 5) then
-                        return
-                    end
-                else
-                    -- 招募
-                    if findOne("确认招募") then
-                        local start_time = time()
-                        if not wait(function()
-                                if findOne("编队") then return true end
-                                if findOne("返回确认界面") then
-                                    if time() - start_time < 2000 then
-                                        tap("左取消")
-                                    else
-                                        tap("右确认")
-                                    end
-                                    disappear("返回确认界面")
-                                    ssleep(.5)
-                                end
-                                tap("近卫招募列表" .. 1)
-                                findTap("确认招募")
-                                tap("开包skip")
-                                findTap("通宝替换确认")
-                            end, 10) then
-                            return
-                        end
-                    end
-                end
-            end
-
-            if findOne("放弃招募") and not findOne("确认招募") then
-                if not wait(function()
-                        if not findOne("放弃招募") then return true end
-                        tap("放弃招募")
-                    end, 5) then
-                    return
-                end
-                if not wait(function()
-                        if findOne("编队") then return true end
-                        tap("右右确认")
-                    end, 5) then
-                    return
-                end
-            end
-
-            if not findOne("战略返回") then
-                if not appear({ "战略返回", "界园_战略帮助" }) then
-                    tap("战略确认")
-                end
-            end
-            -- if disappear("战略返回",0.5) then return true end
-            if findAny({ "界园_常规行动", "界园_战略帮助" }) and not findOne("确认招募") then
-                return true
-            end
-        end, 30) then
-        return false
-    end
-    return true
+        end
+    }
+    return zl.fight_after_pickup(sui_pickup_config)
 end
 
 sui.招募处理 = function()
