@@ -695,8 +695,6 @@ show_debug_ui = function()
     newRow(debug_layout_验证码)
     addButton(debug_layout_验证码, nil, "Aunly打码平台官网",
         make_jump_ui_command(layout, nil, [[jump_address("https://captcha.aunly.cn/")]]))
-    addButton(debug_layout_验证码, nil, "微店购买充值CDK",
-        make_jump_ui_command(layout, nil, [[jump_address("https://weidian.com/item.html?itemID=7398821178")]]))
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "Aunly打码服务Token")
