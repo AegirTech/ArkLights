@@ -107,7 +107,12 @@ end
 mizuki_restart = function(msg)
     toast(msg)
     mizuki_fight_time = mizuki_fight_time + 1
-    zl.restart('mizuki', msg)
+    -- if not restart_game_check(zl_restart_interval) then
+    if not request_memory_clean() then
+        path.水月与深蓝之树前瞻投资()
+    else
+        path.跳转("首页")
+    end
 end
 
 -- 水月肉鸽认知塑造
