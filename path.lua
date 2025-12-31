@@ -1126,6 +1126,7 @@ path.fallback = {
             tap("星语共愿领取2")
             ssleep(.2)
         end, 2)
+        back()
         return path.fallback.签到返回()
     end,
     神州返回 = function()
