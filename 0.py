@@ -420,6 +420,7 @@ def upload_to_backup_server(file_type):
     #     )
     # ]
     cdn_url = upload_to_image_hosting(Path(up_file), host="skland")
+    print("文件托管服务器上传：", "成功" if cdn_url is not None else "失败")
     if cdn_url is None:
         print("上传至文件服务器失败。")
         return
@@ -435,6 +436,7 @@ def upload_to_backup_server(file_type):
     response = requests.post(url, headers=headers, params=params, timeout=6000)
     # print(response.text)
     print("新加坡服务器上传：", "成功" if response.status_code == 200 else "失败")
+    print("CDN URL " + cdn_url)
 
 
 def statistician():
