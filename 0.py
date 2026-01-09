@@ -419,7 +419,7 @@ def upload_to_backup_server(file_type):
     #         ),
     #     )
     # ]
-    cdn_url = upload_to_image_hosting(Path(up_file), host="beisu")
+    cdn_url = upload_to_image_hosting(Path(up_file), host="skland")
     if cdn_url is None:
         print("上传至文件服务器失败。")
         return
