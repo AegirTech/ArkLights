@@ -8,10 +8,10 @@ MAX_SKILL_NOT_READY_COUNT_LOW = 40
 MAX_SWIPE_PAGES = 18
 local MAX_CARD_CHANGE = 3
 DELAYED_SKILLS = { "爆裂黎明", "黄昏", "灯火不灭", "饱和复仇" }
-local STORY_DIALOGS = { "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "生息演算剧情上" }
+STORY_DIALOGS = { "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "生息演算剧情上" }
 local BATTLE_STATES = { "作战中", "暂停中", "作战中2" }
 OPERATOR_CATEGORIES = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
-DIRECTION_MAP = { Left = 4, Right = 2, Up = 1, Down = 3, None = 2 }
+DIRECTION_MAP = { Left = 4, Right = 2, Up = 1, Down = 3, None = 2 } --部署方向
 
 -- 检查干员是否可部署（全局）
 function canDeployOperator(costPos)
@@ -814,14 +814,14 @@ auto_prts = function(作业名, 需要编队, 是否自带)
 	tap(肉鸽开始行动[1], 肉鸽开始行动[2])
 	else]===]
             if findOne("跳过剧情") then
-                print("跳过剧情")
+                log("跳过战斗前剧情")
                 path.跳过剧情()
                 sleep(3000)
             elseif findOne("战斗中剧情对话") then
                 wait(function()
                     tap("点cost")
                     ssleep(.3)
-                    if findOne("作战中") or findOne("暂停中") or findOne("作战中2") then return true end
+                    if findAny(BATTLE_STATES) then return true end
                 end, 30)
             elseif findOne("开始行动故事集S确认") then
                 tap("开始行动故事集S确认")
@@ -841,11 +841,12 @@ auto_prts = function(作业名, 需要编队, 是否自带)
 	tap(肉鸽开始行动[1], 肉鸽开始行动[2])
 	else]===]
             if findOne("跳过剧情") then
+                log("跳过战斗后剧情")
                 path.跳过剧情()
             elseif findOne("作战中") then
                 return true
             end
-        end, 5) then
+        end, 15) then
         return true
     end
     sleep(3000)
@@ -1397,36 +1398,37 @@ end
         end
 
         点战斗()
-        sleep(75)
+        sleep(50)
 
         -- 处理剧情和战斗状态检查
         if findOne("跳过剧情") then
             path.跳过剧情()
-            print("跳过剧情")
+            log(1405, "战斗中跳过剧情")
             appear("作战中", 3)
             加速()
         end
+        sleep(450)
 
-        ssleep(1)
         if not findAny(BATTLE_STATES) then
-            sleep(500)
+            sleep(1000)
             if findAny(STORY_DIALOGS) then
                 tap("剧情中")
-                tap({ scale(1218), scale(601) })
-                tap({ scale(522), scale(248) })
+                tap({ scale(531), scale(471) })
+                tap({ scale(1244), scale(341) })
+                tap("开技能")
                 print("跳过无按钮剧情")
                 appear("作战中", 2)
                 加速()
             elseif findAny(BATTLE_STATES) then
             else
-                if appear("战斗中剧情对话", 3) then
+                if appear(STORY_DIALOGS, 3) then
                     wait(function()
                         tap("点cost")
                         ssleep(.3)
                         if findAny(BATTLE_STATES) then return true end
                     end, 30)
                 else
-                    print("结束抄作业")
+                    log("结束抄作业")
                     break
                 end
             end

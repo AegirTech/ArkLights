@@ -32,8 +32,8 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "01.09 22:26"
-update_announcement = '最近更新: 未许之地导航'
+release_date = "01.10 02:32"
+update_announcement = '最近更新: ME导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -109,7 +109,7 @@ remove_lr_ad()
 detectServer()
 -- predebug_hook()
 backup_config()
-showUI()
+--showUI()
 loadUIConfig()
 restart_mode_hook()
 update_state_from_debugui()
@@ -122,9 +122,11 @@ if use_local_dictionary then
 end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
-    sleep(1000)
-    swip("HD-8")
-    exit()
+    ssleep(1)
+    -- log(findAny({ "暂停中" }))
+    -- exit()
+    -- swip("HD-8")
+    -- exit()
     --point.肉鸽干员等级识别范围 = { 682, 261, 707, 291 }
     -- log(ocro("rl_编队数量ocr范围"))
     -- --zl.分析待编队干员()

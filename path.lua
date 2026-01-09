@@ -183,7 +183,7 @@ path.base = {
                 40 * 60 * 1000) or
             (not table.includes({ "剿灭" }, fight_type) and
                 elapsed > 20 * 60 * 1000)
-        log(fight_timeout)
+        log(186, fight_timeout)
         -- 超时跳过当前关
         if fight_timeout then
             local info = table.join(qqmessage, ' ') .. " [" .. cur_fight ..
