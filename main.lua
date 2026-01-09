@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "01.10 02:32"
+release_date = "01.10 02:53"
 update_announcement = '最近更新: ME导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -109,7 +109,7 @@ remove_lr_ad()
 detectServer()
 -- predebug_hook()
 backup_config()
---showUI()
+showUI()
 loadUIConfig()
 restart_mode_hook()
 update_state_from_debugui()

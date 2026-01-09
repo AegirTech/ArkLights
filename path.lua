@@ -1291,6 +1291,7 @@ path.fallback = {
     愚人节窗口关闭 = function()
         tap("愚人节窗口关闭")
     end,
+
     相谈室活动左上角返回 = function()
         tap("相谈室活动左上角返回")
         ssleep(.3)
