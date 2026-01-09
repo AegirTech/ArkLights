@@ -38,7 +38,7 @@ import localConfig as lc
 
 if lc.mainProjectPath == "" or lc.lrPath == "":
     print("localConfig.py未配置，请配置路径")
-    exit()
+    # exit()
 else:
     path = lc.mainProjectPath
     pkgPath = lc.lrPath
