@@ -44,8 +44,8 @@ function initHomeworkData(作业名, 是否自带, 不点赞)
     无限放技能干员 = {}
     技能指定次数干员 = {}
     作业 = loadHomework(作业名, 是否自带, 不点赞)
-    print(作业)
-    print("读取作业成功")
+    log(作业)
+    log("读取作业成功")
 end
 
 -- 处理群组和干员数据（普通模式，全局）
@@ -99,7 +99,7 @@ local function initTeamVariables()
     log("读取干员职业成功")
     local printChar = function(t)
         for _, i in ipairs(t) do
-            print("需要干员", i["name"], ",职业", 干员职业[i["name"]])
+            log("需要干员", i["name"], ",职业", 干员职业[i["name"]])
         end
     end
     return 编入数量, 未编入, 未编入干员, 干员类别, 未编入数量, 干员职业, printChar
@@ -190,7 +190,7 @@ local function createChoseChar(干员职业, 干员类别, 未编入, 未编入�
                 end
 
                 if 未编入数量 == 1 and 未编入干员[1] == nil then
-                    print(i, 未编入[2])
+                    log(i, 未编入[2])
                     未编入干员 = { i, 未编入[2] }
                 elseif 是否群组 == nil and 未编入数量 > 1 then
                     log("缺少干员超过1个")
@@ -236,14 +236,14 @@ function createDoStrategy(已部署干员, 延迟消失技能, 技能名称范�
     查找技能偏移 = 查找技能偏移 or 0
     local isIB = (技能名称范围 == "ib_技能名称范围")
     return function()
-        for k, v in pairs(技能指定次数干员) do print(k, v) end
+        for k, v in pairs(技能指定次数干员) do log(k, v) end
         for k, v in pairs(已部署干员) do
             if table.search(无限放技能干员, k) or (技能指定次数干员[k] and 技能指定次数干员[k][2] < 技能指定次数干员[k][1]) then
                 地图坐标 = 地图数据0[v[2] + 1][v[1] + 1]
-                print("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
+                log("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                 local intX, intY = 查找技能(地图坐标[1], 地图坐标[2], 查找技能偏移)
                 if intX > -1 then
-                    print("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
+                    log("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                     tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
                     if isIB then
                         sleep(550)
@@ -316,13 +316,13 @@ local function processDeployInstruction(部署指令, 干员列表, 群组, 已�
     local 干员排位 = table.search(干员列表, 部署指令["name"])
     local shouldSkip = false
     local shouldMoveToEnd = false
-    print(部署指令["name"], "在第", 干员排位)
+    log(部署指令["name"], "在第", 干员排位)
 
     if 干员排位 then
         已部署干员[部署指令["name"]] = 部署指令["location"]
         需要cost = 坐标列表[干员排位]
         if not isSSS then
-            print("干员列表", 干员列表)
+            log("干员列表", 干员列表)
         end
     elseif 群组[部署指令["name"]] then
         local 找到 = false
@@ -330,15 +330,15 @@ local function processDeployInstruction(部署指令, 干员列表, 群组, 已�
         if isSSS then
             local 行 = 部署指令["location"][1]
             local 列 = 部署指令["location"][2]
-            print("群组部署命令", 部署指令["name"])
+            log("群组部署命令", 部署指令["name"])
 
             if 已部署格子[行][列]["终端"] and 已部署格子[行][列]["times"] > 5 then
-                print("行", 行, "列", 列, 已部署格子[行][列]["终端"], 已部署格子[行][列]["times"])
+                log("行", 行, "列", 列, 已部署格子[行][列]["终端"], 已部署格子[行][列]["times"])
                 shouldMoveToEnd = false
                 goto 跳过检测
             end
             if string.finds(部署指令["name"], { "终端" }) and 已部署格子[行][列]["times"] < 5 then
-                print("行", 行, "列", 列, 已部署格子[行][列]["times"])
+                log("行", 行, "列", 列, 已部署格子[行][列]["times"])
                 goto 跳过检测
             end
             if string.finds(部署指令["name"], { "工具人" }) and 已部署格子[行][列]["times"] >= 4 then
@@ -372,7 +372,7 @@ local function processDeployInstruction(部署指令, 干员列表, 群组, 已�
             shouldSkip = true
         end
     else
-        print("未找到干员,干员列表", 干员列表)
+        log("未找到干员,干员列表", 干员列表)
         if 训练地图 == 0 then
             shouldSkip = true
         end
@@ -426,7 +426,7 @@ local function processInstructionType(部署指令, 已部署干员, 波数依�
         移动相机(部署指令["distance"])
         部署顺序 = 部署顺序 + 1
     elseif 训练地图 == 0 then
-        print("跳过指令")
+        log("跳过指令")
         部署顺序 = 部署顺序 + 1
     end
     return 部署顺序, 波数依赖顺序
@@ -435,11 +435,11 @@ end
 -- 处理波数依赖指令中的Deploy类型（公共逻辑）
 local function processWaveDeployInstruction(wave依赖指令, 干员列表, 群组, 已部署干员, 下排干员数量, cost, isSSS, 已部署格子)
     local 干员排位 = table.findk(干员列表, wave依赖指令["name"])
-    print(wave依赖指令["name"], "干员排位", 干员排位)
+    log(wave依赖指令["name"], "干员排位", 干员排位)
 
     if 干员排位 and 干员排位 > 0 then
         local 需要 = 费用列表(干员排位)
-        print(需要)
+        log(需要)
         if cost >= 需要 then
             部署操作(干员排位, wave依赖指令)
             已部署干员[wave依赖指令["name"]] = wave依赖指令["location"]
@@ -454,10 +454,10 @@ local function processWaveDeployInstruction(wave依赖指令, 干员列表, 群�
             return true, 下排干员数量
         end
     elseif 群组[wave依赖指令["name"]] then
-        print(干员列表)
+        log(干员列表)
         for i, v in ipairs(群组[wave依赖指令["name"]]) do
             干员排位 = table.search(干员列表, v["name"])
-            print(v["name"], "群组内干员排位", 干员排位)
+            log(v["name"], "群组内干员排位", 干员排位)
             if 干员排位 then
                 local 需要 = 费用列表(干员排位)
                 if cost >= 需要 then
@@ -566,7 +566,7 @@ loadHomework = function(levelName, isLocal, 不点赞)
         return JsonDecode(readFile(levelName .. ".json"))
     else
         local maaCode = levelName or ''
-        print("读取MAA作业站作业", maaCode, "并自动点赞")
+        log("读取MAA作业站作业", maaCode, "并自动点赞")
 
         local url = 'https://prts.maa.plus/copilot/get/' .. maaCode
         ::重试::
@@ -670,7 +670,7 @@ auto_skill = function()
 
             if isInBlackList(skillFind, blackList) or (usedTimeGap ~= -1 and usedTimeGap < skillUse[4]) then
                 if usedTimeGap ~= -1 and usedTimeGap < skillUse[4] then
-                    print("技能CD中，忽略本次查找到的结果")
+                    log("技能CD中，忽略本次查找到的结果")
                 end
                 goto continue
             end
@@ -728,7 +728,7 @@ end
 auto_prts = function(作业名, 需要编队, 是否自带)
     local 技能未就绪 = 0
     local homework = 作业名
-    print("prts作战开始", homework)
+    log("prts作战开始", homework)
     local 干员名单 = ""
 
     initHomeworkData(作业名, 是否自带, false)
@@ -798,7 +798,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
     handleCardChange(false)
     if 地图类型 ~= 5 and not wait(function()
             local p = findAny({ "开始行动红按钮", "开始行动突袭", "开始行动演习", "开始行动肉鸽", "开始行动悖论模拟", "开始行动磨难", "开始行动故事集S" })
-            print(p)
+            log(p)
             if p then
                 tap(p)
                 -- TODO 2秒太慢 => 一开始就用0秒, 2秒内增加至2秒
@@ -831,7 +831,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
         end, 120) then
         return true
     end
-    print("抄作业")
+    log("抄作业")
     抄作业(作业, tonumber(地图类型))
 
     if not wait(function()
@@ -967,7 +967,7 @@ auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
             handleCardChange(true)
         end
         sleep(1000)
-        print("抄作业")
+        log("抄作业")
         保全抄作业(作业["stages"][当前层数], tonumber(地图类型))
 
         if not wait(function()
@@ -1013,7 +1013,7 @@ end
             tap("普通作战编队自定义排序关闭")
             appear("职业选择", 2)
         end
-        print("编入低信赖干员")
+        log("编入低信赖干员")
         for i = 编入数量, 9 do
             tap({ scale(740 + math.floor(i / 2) * 217), scale(1080 - 754 + (i % 2) * 421) })
         end
@@ -1021,7 +1021,7 @@ end
 
     tap("编队确认")
     appear("快捷编队", 3)
-    print(未编入干员)
+    log(未编入干员)
     return handleTeamComplete(未编入数量, 未编入干员, "快捷编队", false)
 end
 
@@ -1058,7 +1058,7 @@ end
 
     tap("编队确认")
     appear("保全快捷编队", 3)
-    print(未编入干员)
+    log(未编入干员)
     return handleTeamComplete(未编入数量, 未编入干员, "保全快捷编队", true)
 end
 
@@ -1077,7 +1077,7 @@ end
         for i = 1, 需要干员数 do
             -- print "需要干员", i, 干员组[i]
             if 已选择[i] == nil then
-                print(干员组[i], "未编入")
+                log(干员组[i], "未编入")
                 for _, 结果 in ipairs(识别结果) do
                     --print(结果)
                     if 结果["text"] == 干员组[i] then
@@ -1087,7 +1087,7 @@ end
                             tap({ 结果["r"] - 100, 结果["b"] - 200 }) --肉鸽?
                         end
                         --加一个appear出现角色选择的蓝框
-                        print(干员组[i], "正在编入,选择", 技能组[i], "技能")
+                        log(干员组[i], "正在编入,选择", 技能组[i], "技能")
                         sleep(300)
                         选择技能(技能组[i])
                         已选择[i] = 1
@@ -1095,32 +1095,32 @@ end
                         break
                     end
                 end
-                print("已选择", selected, "个干员")
+                log("已选择", selected, "个干员")
                 if 是否群组 and selected >= 群组需要数量 then break end
             else
-                print(干员组[i], "已编入")
+                log(干员组[i], "已编入")
             end
         end
     end
-    print(干员组, 技能组)
+    log(干员组, 技能组)
     keepCapture()
     for i = 1, MAX_SWIPE_PAGES do
-        print("识别上")
+        log("识别上")
         local 识别结果 = 干员名ocr校正(ocrex("上排干员范围"))
         找干员(识别结果)
         if 是否群组 and selected >= 群组需要数量 then return { 0 } end
 
-        print("识别下")
+        log("识别下")
         识别结果 = 干员名ocr校正(ocrex("下排干员范围"))
         找干员(识别结果)
-        print("已选择", selected, "个干员")
+        log("已选择", selected, "个干员")
 
         if 是否群组 and selected >= 群组需要数量 then return { 0 } end
         if selected >= 需要干员数 then
             return { 0 }
         end
 
-        print("下一页搜索")
+        log("下一页搜索")
         swipe_next_page()
         keepCapture()
     end
@@ -1128,7 +1128,7 @@ end
     local notselected = 0
     for i = 1, 需要干员数 do
         if 已选择[i] == nil then
-            print("干员", 干员组[i], "未选择")
+            log("干员", 干员组[i], "未选择")
             notselected = notselected + 1
         end
     end
@@ -1260,11 +1260,11 @@ end
     end
 
     local 是否剿灭图 = (maptype == 2 or maptype == 3) and 2 or 1
-    print(maptype, "是否剿灭图", 是否剿灭图)
+    log(maptype, "是否剿灭图", 是否剿灭图)
     部署顺序 = 1
     部署命令数 = #部署
     波数依赖顺序 = 1
-    print(部署命令数, 波数依赖命令数)
+    log(部署命令数, 波数依赖命令数)
 
     local cost = 0
     local wave = 0
@@ -1278,7 +1278,7 @@ end
 
     if findOne("剧情中3") then
         tap("剧情中")
-        print("跳过无按钮剧情")
+        log("跳过无按钮剧情")
         appear("作战中", 2)
         加速()
     end
@@ -1298,22 +1298,22 @@ end
         --print("当前波次", wavetxt)
         local number = tonumber(string.match(wavetxt, "%d+")) or 0
         if number and number - wave < 5 then wave = number end
-        print("当前cost", cost, "已击败敌人数", wave)
+        log("当前cost", cost, "已击败敌人数", wave)
 
         if 部署顺序 <= 部署命令数 then
             部署指令 = 部署[部署顺序]
-            print("部署指令", 部署指令)
+            log("部署指令", 部署指令)
             -- 规范化指令的kills和costs
             部署指令["kills"] = 部署指令["kills"] or 0
             部署指令["costs"] = 部署指令["costs"] or 0
             if 部署指令["pre_delay"] then
-                print("前置延时")
+                log("前置延时")
                 sleep_and_do_strategy(部署指令["pre_delay"])
             end
 
             if findAny(STORY_DIALOGS) then
                 tap("剧情中")
-                print("跳过无按钮剧情")
+                log("跳过无按钮剧情")
                 appear("作战中", 2)
                 加速()
             end
@@ -1391,7 +1391,7 @@ end
 
         -- 更新干员列表
         数量变化 = 识别未部署干员数量() - 下排干员数量
-        print("下排干员数量", 下排干员数量, "数量变化", 数量变化)
+        log("下排干员数量", 下排干员数量, "数量变化", 数量变化)
         if 数量变化 ~= 0 then
             更新未部署干员(数量变化)
             下排干员数量 = 识别未部署干员数量()
@@ -1416,7 +1416,7 @@ end
                 tap({ scale(531), scale(471) })
                 tap({ scale(1244), scale(341) })
                 tap("开技能")
-                print("跳过无按钮剧情")
+                log("跳过无按钮剧情")
                 appear("作战中", 2)
                 加速()
             elseif findAny(BATTLE_STATES) then
@@ -1445,10 +1445,10 @@ end
     波数依赖 = { "无命令" }
 
     local 是否剿灭图 = (maptype == 2 or maptype == 3) and 2 or 1
-    print(maptype, "是否剿灭图", 是否剿灭图)
+    log(maptype, "是否剿灭图", 是否剿灭图)
     部署顺序 = 1
     波数依赖顺序 = 1
-    print(#部署, 波数依赖命令数)
+    log(#部署, 波数依赖命令数)
 
     local cost = 0
     local wave = 0
@@ -1485,7 +1485,7 @@ end
 
     if findOne("剧情中3") then
         tap("剧情中")
-        print("跳过无按钮剧情")
+        log("跳过无按钮剧情")
         appear("作战中", 2)
         加速()
     end
@@ -1507,7 +1507,7 @@ end
         local number = tonumber(string.match(wavetxt, "%d+"))
         if number and number - wave < 5 then wave = number end
 
-        print("当前cost", cost, "已击败敌人数", wave)
+        log("当前cost", cost, "已击败敌人数", wave)
 
         if 部署顺序 <= #部署 then
             部署指令 = 部署[部署顺序]
@@ -1516,18 +1516,18 @@ end
             部署指令["costs"] = 部署指令["costs"] or 0
             local 行 = 部署指令["location"][1]
             local 列 = 部署指令["location"][2]
-            print("部署指令", 行, 列, 部署顺序, 部署指令)
+            log("部署指令", 行, 列, 部署顺序, 部署指令)
 
             -- 前置延时
             if 部署指令["pre_delay"] then
-                print("前置延时")
+                log("前置延时")
                 sleep_and_do_strategy(部署指令["pre_delay"])
             end
 
             -- 处理剧情
             if findAny(STORY_DIALOGS) then
                 tap("剧情中")
-                print("跳过无按钮剧情")
+                log("跳过无按钮剧情")
                 appear("作战中", 2)
                 加速()
             end
@@ -1604,16 +1604,16 @@ end
 
         -- 保全模式抽卡逻辑
         差值 = 识别未部署干员数量()
-        print("差值", 差值)
+        log("差值", 差值)
         if 差值 < 9 then
             releaseCapture()
             if findOne("保全调配干员") then
-                print("抽卡")
+                log("抽卡")
                 tap("保全抽卡")
                 sleep(300)
                 for i = 1, 9 - 差值 do
                     if findOne("保全调配干员") then
-                        print("抽卡")
+                        log("抽卡")
                         tap("保全抽卡")
                         sleep(300)
                     end
@@ -1624,7 +1624,7 @@ end
 
         -- 更新干员列表
         数量变化 = 识别未部署干员数量() - 下排干员数量
-        print("下排干员数量", 下排干员数量, "数量变化", 数量变化)
+        log("下排干员数量", 下排干员数量, "数量变化", 数量变化)
         if 数量变化 ~= 0 then
             更新未部署干员(数量变化)
             下排干员数量 = 识别未部署干员数量()
@@ -1636,7 +1636,7 @@ end
         -- 处理剧情和战斗状态检查
         if findOne("跳过剧情") then
             path.跳过剧情()
-            print("跳过剧情")
+            log("跳过剧情")
             appear("作战中", 3)
             加速()
         end
@@ -1647,7 +1647,7 @@ end
                 tap("剧情中")
                 tap({ scale(1040), scale(384) })
                 tap({ scale(1306), scale(608) })
-                print("跳过无按钮剧情")
+                log("跳过无按钮剧情")
                 appear("作战中", 2)
                 加速()
             elseif findAny(BATTLE_STATES) then
@@ -1659,7 +1659,7 @@ end
                         if findAny(BATTLE_STATES) then return true end
                     end, 30)
                 else
-                    print("结束抄作业")
+                    log("结束抄作业")
                     break
                 end
             end
@@ -1678,7 +1678,7 @@ end
 
 部署操作 = function(干员排位, 指令)
     点战斗()
-    print("点战斗，部署第" .. 干员排位 .. "位干员")
+    log("点战斗，部署第" .. 干员排位 .. "位干员")
 
     local 地图坐标 = 地图数据1[指令["location"][2] + 1][指令["location"][1] + 1]
 
@@ -1699,7 +1699,7 @@ end
     -- 重置技能释放次数
     local 干员名 = 干员列表[干员排位]
     if 干员名 and 技能指定次数干员[干员名] then
-        print("重置释放次数", 技能指定次数干员[干员名])
+        log("重置释放次数", 技能指定次数干员[干员名])
         技能指定次数干员[干员名][2] = 0
     end
     table.remove(职业列表, 干员排位)
@@ -1771,16 +1771,16 @@ end
     旧职业列表 = shallowCopy(职业列表)
     旧费用列表 = shallowCopy(费用列表)
     更新列表 = 获取费用列表()
-    print("更新未部署干员")
-    print("费用列表", 费用列表)
-    print("职业列表", 职业列表)
+    log("更新未部署干员")
+    log("费用列表", 费用列表)
+    log("职业列表", 职业列表)
 
     if 数量变化 > 0 then
-        print("干员增加", 数量变化)
+        log("干员增加", 数量变化)
         for _ = 1, 数量变化 do
-            print("旧费用列表", 旧费用列表)
-            print("旧职业列表", 旧职业列表)
-            print("旧干员列表", 干员列表)
+            log("旧费用列表", 旧费用列表)
+            log("旧职业列表", 旧职业列表)
+            log("旧干员列表", 干员列表)
 
             for i = 1, #费用列表 do
                 if 旧费用列表[i] ~= 费用列表[i] or 旧职业列表[i] ~= 职业列表[i] then
@@ -1789,27 +1789,27 @@ end
                     tap({ 坐标[1], 坐标[2] })
                     sleep(400)
                     识别结果 = 战斗识别干员()
-                    print("第", i, "位干员需要更新,是", 识别结果)
+                    log("第", i, "位干员需要更新,是", 识别结果)
                     if table.search(干员列表, 识别结果) then
                         tap({ 坐标[1], 坐标[2] })
                         sleep(300)
                         干员列表 = 识别未部署干员()
-                        print("更新后干员列表", 干员列表)
+                        log("更新后干员列表", 干员列表)
                         return
                     end
                     if 识别结果 then
                         table.insert(旧费用列表, i, 费用列表[i])
                         table.insert(旧职业列表, i, 职业列表[i])
                         table.insert(干员列表, i, 识别结果)
-                        print("更新后干员列表", 干员列表)
+                        log("更新后干员列表", 干员列表)
                         -- end
                     else
                         table.insert(旧费用列表, i, 费用列表[i])
                         table.insert(旧职业列表, i, 职业列表[i])
                         更新 = 更新列表[i]
-                        print("更新", 更新[1])
+                        log("更新", 更新[1])
                         table.insert(干员列表, i, 更新[1])
-                        print("更新后干员列表", 干员列表)
+                        log("更新后干员列表", 干员列表)
                     end
                     tap({ 坐标[1], 坐标[2] })
                     sleep(300)
@@ -1818,20 +1818,20 @@ end
             end
         end
     elseif 数量变化 < 0 then
-        print("干员减少", 数量变化)
+        log("干员减少", 数量变化)
         for _ = 1, math.abs(数量变化) do
             -- 旧费用列表 = clone(费用列表)
             -- 更新列表 = 获取费用列表()
-            print(旧费用列表)
-            print(旧职业列表)
+            log(旧费用列表)
+            log(旧职业列表)
             -- print(费用列表)
-            print(干员列表)
+            log(干员列表)
             for i = #费用列表, 1, -1 do
                 if 旧费用列表[i] ~= 费用列表[i] or 旧职业列表[i] ~= 职业列表[i] then
                     table.remove(干员列表, i)
                     table.remove(旧费用列表, i)
                     table.remove(旧职业列表, i)
-                    print("干员列表", 干员列表)
+                    log("干员列表", 干员列表)
                     break
                 end
             end
@@ -1840,7 +1840,7 @@ end
 end
 
 移动相机 = function(delta)
-    print("移动相机", delta[1], delta[2])
+    log("移动相机", delta[1], delta[2])
 
     local number = tonumber(string.match(获得敌人数(1), "%d+"))
 
@@ -1970,7 +1970,7 @@ end
 
 释放坐标技能 = function(坐标)
     点战斗()
-    print("释放技能,格子坐标", 坐标[1], 坐标[2])
+    log("释放技能,格子坐标", 坐标[1], 坐标[2])
     local 地图坐标 = 地图数据0[坐标[2] + 1][坐标[1] + 1]
     appear("作战中", 0.5)
     if 坐标[2] <= 1 then
@@ -2010,7 +2010,7 @@ end
         for i = 1, 6 do
             keepCapture()
             local intX, intY = 查找技能(地图坐标[1], 地图坐标[2])
-            print(intX, intY)
+            log(intX, intY)
             if intX > -1 then
                 tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
                 点暂停()
@@ -2048,14 +2048,14 @@ end
 end
 
 撤退干员 = function(坐标)
-    print("撤退干员,格子坐标", 坐标[1], 坐标[2])
+    log("撤退干员,格子坐标", 坐标[1], 坐标[2])
     local 地图坐标 = 地图数据0[坐标[2] + 1][坐标[1] + 1]
     点战斗()
     --if findOne("子弹时间", 0.85) then
     --    地图坐标 = 地图数据1[坐标[2] + 1][坐标[1] + 1]
     --end
     sleep(10)
-    print(坐标[1], 坐标[2], "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
+    log(坐标[1], 坐标[2], "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
     tap({ scale(地图坐标[1]), scale(地图坐标[2]) })
     点暂停()
     sleep(500)
@@ -2144,7 +2144,7 @@ end
     if t == nil or #t == 0 then return "" end
     for i = 1, #t do
         local 原文本 = (t[i]["text"])
-        print(原文本)
+        log(原文本)
         if 替换[原文本] then
             t[i]["text"] = 替换[原文本]
         elseif #原文本 >= 9 and 原文本:sub(1, 3) == 原文本:sub(4, 6) then
@@ -2166,7 +2166,7 @@ end
         --开头和结尾的半角引号替换成全角
         t[i]["text"] = t[i]["text"]:gsub("^\"(.-)\"$", "“%1”")
 
-        print(t[i]["text"])
+        log(t[i]["text"])
     end
 
     return t
