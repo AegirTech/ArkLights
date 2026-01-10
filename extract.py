@@ -141,6 +141,8 @@ def avator2operator(src="ArknightsGameData/zh_CN/gamedata/excel/character_table.
 
 # https://github.com/yuanyan3060/ArknightsGameResource 使用此解包仓库
 def skillicon2operator():
+    import zipfile
+
     char = None
     build = None
     resp = requests.get(
@@ -171,15 +173,30 @@ def skillicon2operator():
                 phase = (b2["cond"]["phase"])[-1]
                 ans[buffname].append(operator + str(phase))
 
-    file_name = os.path.join(
-        __file__,
-        "..",
-        "skillicon2operator.json",
-    )
-    # with open(file_name, "", encoding="utf-8") as f:
-    #     f.write(json.dumps(ans, ensure_ascii=False))
-    json.dump(ans, open(file_name, "w", encoding="utf-8"), ensure_ascii=False)
-    return "skillicon2operator done"
+    # 定义输出目录：当前工作目录下的 ArknightsGameResource/new
+    output_folder = os.path.join(os.getcwd(), "ArknightsGameResource/new")
+    # 定义最终的输出文件路径
+    file_name = os.path.join(output_folder, "skillicon2operator.json")
+
+    # 判断目录是否存在，不存在则递归创建（包括多级目录）
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    with open(file_name, "w", encoding="utf-8") as f:
+        json.dump(ans, f, ensure_ascii=False)
+
+    zip_file_path = os.path.join(os.path.dirname(output_folder), "skill.zip")
+    # 创建并写入压缩包
+    with zipfile.ZipFile(zip_file_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(output_folder):
+            for file in files:
+                file_full_path = os.path.join(root, file)
+                file_arcname = os.path.relpath(
+                    file_full_path, start=os.path.dirname(output_folder)
+                )
+                zipf.write(file_full_path, file_arcname)
+
+    return "skillicon2operator done && skill.zip created success"
     # return json.dumps(ans, ensure_ascii=False)
 
 
