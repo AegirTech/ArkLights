@@ -3424,9 +3424,9 @@ distance = {
     ["HD-5"] = { swip_right_max, -1020 },
     ["HD-6"] = { swip_right_max, -1344 },
     ["HD-ST-2"] = { swip_right_max, -1344 },
-    ["HD-7"] = { swip_right_max, -1825 },
-    ["HD-8"] = { swip_right_max, -2001 },
-    ["HD-ST-3"] = { swip_right_max, -2001 },
+    ["HD-7"] = { swip_right_max, -1800 },
+    ["HD-8"] = { swip_right_max, -1960 },
+    ["HD-ST-3"] = { swip_right_max, -1960 },
 
     ["CW-6"] = { swip_right_max, -1349 },
     ["GT-5"] = { swip_right_max, -1535 },
