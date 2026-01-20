@@ -787,22 +787,6 @@ path.login_change = update(path.login, {
 }, nil, true)
 
 path.fallback = {
-    -- 阿米娅大头照左上角 = function()
-    --     -- 全屏点一遍
-    --     for w = 150, screen.width - 50, 50 do
-    --         if findAny(known) then return true end
-    --         for h = 50, screen.height - 50, 50 do
-    --             tap({ w, h })
-    --             back()
-    --         end
-    --     end
-    --     if appear({ "阿米娅大头照左上角", "阿米娅大头照左下角" }, 2) then
-    --         return path.fallback.阿米娅大头照左上角()
-    --     end
-    -- end,
-    -- 阿米娅大头照左下角 = function()
-    --     return path.fallback.阿米娅大头照左上角()
-    -- end,
     同意协议 = function()
         -- findTap({text = "下一步"})
 
@@ -1119,11 +1103,11 @@ path.fallback = {
         disappear("限时幸运签", 10)
         return path.fallback.签到返回()
     end,
-    星语共愿 = function()
+    慵懒心意 = function()
         wait(function()
-            tap("星语共愿领取1")
+            tap("慵懒心意领取1")
             ssleep(.2)
-            tap("星语共愿领取2")
+            tap("慵懒心意领取2")
             ssleep(.2)
         end, 2)
         back()
