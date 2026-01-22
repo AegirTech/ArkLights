@@ -6394,26 +6394,25 @@ path.商店搬空 = function()
     if not wait(function()
             tap("活动商店导航")
             ssleep(.2)
-            if disappear("活动商店导航") then return true end
-        end, 5) then
+            if findOne("商店主页") then return true end
+        end, 10) then
     end
     ssleep(0.5)
-    disappear("正在提交反馈至神经", network_timeout)
-    -- 防止各种掉帧等导致卡在领取等页面
+    disappear("正在提交反馈至神经", network_timeout) -- 防止各种掉帧等导致卡在领取等页面
+
     local 回到商店主页 = function()
         if not wait(function()
                 if findOne("商店主页") then return true end
                 tap("商店顶栏")
-                ssleep(0.2)
-            end, 10) then
+            end, 10, .2) then
             return
         end
     end
 
-    if not appear("商店主页", 2) then
-        log(6280, "未找到商店")
-        return
-    end
+    -- if not appear("商店主页", 2) then
+    --     log(6280, "未找到商店")
+    --     return
+    -- end
     local 物品横间距, 物品纵间距 = scale(516), scale(242)
     回到商店主页()
     local t = os.time()
@@ -6425,14 +6424,17 @@ path.商店搬空 = function()
         end
         for x = 0, 2 do -- 3*3商品进行购买
             for y = 0, 2 do
-                log(x, y)
+                log("第", x, "列,第", y, "行商品")
                 for i = 1, 7 do
                     回到商店主页()
                     local intX, intY = findMultiColor(scale(120) + x * 物品横间距, scale(515) + y * 物品纵间距,
                         scale(386) + x * 物品横间距, scale(555) + y * 物品纵间距,
                         "FFFFFF", scale(17) .. "|" .. scale(-2) .. "|575757|" .. scale(-100) .. "|" ..
-                        scale(-5) .. "|5A5A5A", 0, 0.85)
-                    if intX == -1 then break end
+                        scale(-5) .. "|5A5A5A", 0, 0.83)
+                    if intX == -1 then
+                        log("未找到购买按钮,可能已购买过")
+                        break
+                    end
                     if not wait(function()
                             tap({ intX, intY })
                             ssleep(.6)
@@ -6440,7 +6442,7 @@ path.商店搬空 = function()
                         end, 1.8) then
                     end
                     if findOne("商店主页") then
-                        log("未能进入商品，大概是识别错了")
+                        log("未能进入商品支付页，大概是识别错了")
                         break
                     end
                     -- 点击购买
@@ -6463,7 +6465,7 @@ path.商店搬空 = function()
                         return true
                     end
                 end
-                log("开始下一个商品")
+                log("查找下一个商品")
             end
         end
         回到商店主页()

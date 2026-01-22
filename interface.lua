@@ -1542,12 +1542,6 @@ show_extra_ui = function()
             "extra_mode='自动升级潜能';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     addInfo(layout, "自动升级干员潜能")
 
-    newRow(layout)
-    addButton(layout, nil, "活动商店购买(测试)",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='活动商店购买';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    addInfo(layout, "不会买无限池")
-
     -------------------------------------------------------------------
     addTitle(layout, "每月采购中心")
 
