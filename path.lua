@@ -1644,7 +1644,9 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
         首页 = "面板",
         干员 = "干员界面",
         采购中心 = "可露希尔推荐",
-        任务 = "任务第一个",
+        任务 = function()
+            return findAny({ "任务第一个", "任务第一个2" })
+        end,
         终端 = "主页",
         邮件 = function() return findOne("邮件信封") and findOne("返回3") end,
     }
