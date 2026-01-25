@@ -3993,9 +3993,9 @@ path.任务收集 = function()
         log(795, p)
         -- nagivate to tab
         if not wait(function()
-                if findOne("收集全部") or findOne("特勤任务一键领取") then return true end
+                if findOne("收集全部", .9) or findOne("特勤任务一键领取") then return true end
                 tap(p)
-            end, 10) then
+            end, 10, .1) then
             return
         end
 
