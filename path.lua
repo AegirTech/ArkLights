@@ -1069,6 +1069,9 @@ path.fallback = {
         if findTap("集成战略回顾水月") then
             return path.fallback.签到返回()
         end
+        if findTap("界园肉鸽活动一键领取") then
+            return path.fallback.签到返回()
+        end
         if findTap("促融共竞目标板领取") then
             disappear("促融共竞目标板领取", 3)
             ssleep(.5)
