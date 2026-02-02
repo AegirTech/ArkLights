@@ -3471,6 +3471,10 @@ consoleInit = function()
         round(screen.height * 0.9), round(screen.height * 0.9))
     local screen = getScreen()
     local resolution = screen.width .. 'x' .. screen.height
+    if math.abs(screen.width / screen.height - 16 / 9) > 0.1
+        or (screen.width ~= 1920 and screen.width ~= 720) then
+        resolution = resolution .. "不适配的分辨率"
+    end
     local title = getApkVerInt() .. ' ' .. release_date .. '  ' .. resolution
     console.setTitle(title)
     console.show()
