@@ -4297,11 +4297,11 @@ path.采购中心商店 = function()
 
                 if findOne("凭证交易所进入") then return true end
                 if not findOne("购买物品面板") then return true end
-            end, 4) then
+            end, 6) then
         end
-        ssleep(0.5)
+        ssleep(0.8)
         -- 购买后判断
-        if findOne("购买物品面板", .97) then
+        if not findOne("获得物资", .9) and findOne("购买物品面板") then
             log("购买失败，大概是没钱了吧~")
             return true
         end
@@ -4313,7 +4313,7 @@ path.采购中心商店 = function()
                     ssleep(0.2)
                     return true
                 end
-            end, 7) then
+            end, 7, .1) then
             tap("获得物资")
             ssleep(0.2)
         end
