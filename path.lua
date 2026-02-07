@@ -1118,9 +1118,8 @@ path.fallback = {
     end,
     鸣羽颂新 = function()
         wait(function()
-            tap("鸣羽颂新")
+            tap("鸣羽颂新领取")
         end, 2, .2)
-        back()
         return path.fallback.签到返回()
     end,
     神州返回 = function()
