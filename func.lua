@@ -606,11 +606,11 @@ trySolveSlipCaptcha = function(retry)
         ssleep(0.2)
         official_choice = true
         local choices = { 3, 4, 1 }
-
+        local bbox
         if is_点选验证码 then --720p下 前面ocr识别到了，已经是点选验证码，直接给固定区域
             bbox = { l = 338, t = 22, r = 938, b = 488 }
         else
-            local bbox = getChoiceBox()
+            bbox = getChoiceBox()
         end
         log("点选验证框", bbox)
         for _, choice in ipairs(choices) do
