@@ -5412,6 +5412,7 @@ path.主线 = function(x)
                     if findOne("当前进度列表" .. i) then
                         return true
                     end
+                    findTap("前往章节")
                 end
                 tap({ wa_x, wa_y })
                 ssleep(.5)
