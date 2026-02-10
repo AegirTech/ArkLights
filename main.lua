@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "02.10 14:13"
+release_date = "02.10 14:42"
 update_announcement = '最近更新: 相见欢复刻'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -123,6 +123,7 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     ssleep(1)
+    -- hd_test_mode()
     -- log(findAny({ "暂停中" }))
     -- exit()
     -- swip("HD-8")
