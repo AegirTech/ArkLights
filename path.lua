@@ -1063,15 +1063,6 @@ path.fallback = {
         -- end, 10) then stop(217) end
     end,
     限时幸运签 = function()
-        if findOne("新春限时签到2025") then
-            return path.fallback.新春限时签到2025()
-        end
-        if findTap("集成战略回顾水月") then
-            return path.fallback.签到返回()
-        end
-        if findTap("界园肉鸽活动一键领取") then
-            return path.fallback.签到返回()
-        end
         if findTap("促融共竞目标板领取") then
             disappear("促融共竞目标板领取", 3)
             ssleep(.5)
@@ -1106,33 +1097,11 @@ path.fallback = {
         disappear("限时幸运签", 10)
         return path.fallback.签到返回()
     end,
-    慵懒心意 = function()
-        wait(function()
-            tap("慵懒心意领取1")
-            ssleep(.2)
-            tap("慵懒心意领取2")
-            ssleep(.2)
-        end, 2)
-        back()
-        return path.fallback.签到返回()
-    end,
     鸣羽颂新领取 = function()
         wait(function()
             tap("鸣羽颂新领取")
         end, 2, .2)
         return path.fallback.签到返回()
-    end,
-    神州返回 = function()
-        wait(function()
-            tap("神州领取1")
-            ssleep(.2)
-            tap("神州领取2")
-            ssleep(.2)
-        end, 2)
-        wait(function()
-            tap("神州返回")
-            if appear("面板", 1) then return true end
-        end, 5)
     end,
     -- 新春限时签到2025 = function()
     --     wait(function()
@@ -1190,6 +1159,11 @@ path.fallback = {
     --         if appear("面板", 1) then return true end
     --     end, 5)
     -- end,
+    寻访赠送十连领取 = function()
+        tap("寻访赠送十连领取")
+        ssleep(.5)
+        return path.fallback.签到返回()
+    end,
     端午签到返回 = function()
         wait(function()
             tap("端午签到左")
@@ -1199,13 +1173,6 @@ path.fallback = {
         end, 1)
         wait(function()
             tap("端午签到返回")
-            if appear("面板", 1) then return true end
-        end, 5)
-    end,
-    夏日嘉年华领取页面 = function()
-        wait(function()
-            tap("夏日嘉年华领取按钮")
-            tap("夏日嘉年华返回")
             if appear("面板", 1) then return true end
         end, 5)
     end,
