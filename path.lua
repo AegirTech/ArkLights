@@ -6384,8 +6384,9 @@ path.商店搬空 = function()
 
     if appear("活动任务导航", .6) then
         tap("活动任务导航")
-        ssleep(.2)
-        if appear("活动任务页面", 2) then
+        ssleep(0.4)
+        if appear("活动任务页面", 3) then
+            appear("活动任务一键领取", 2)
             if findOne("活动任务一键领取") then
                 tap("活动任务一键领取")
                 ssleep(.5)
@@ -6397,8 +6398,12 @@ path.商店搬空 = function()
                 end
             end
             ssleep(0.2)
-            tap("返回")
-            appear("活动商店导航", 1.5)
+            wait(function()
+                tap("返回")
+                if appear("活动商店导航", 1) then
+                    return true
+                end
+            end)
         end
     end
 
