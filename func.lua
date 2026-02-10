@@ -586,7 +586,9 @@ end
 -- 滑块验证码/官服点选 处理判断
 trySolveSlipCaptcha = function(retry)
     local retry = retry or 1
-    ssleep(1.5) -- 等待验证码出图
+    if retry == 1 then
+        ssleep(1.5) -- 等待验证码出图
+    end
     if not appear({ "滑块验证节点", "滑块验证节点3", "官服点选验证节点", "滑块验证节点新720", "滑块验证节点新", "滑块验证节点2" }, 8) then return end
     log("等待验证码出图")
     ssleep(1)
@@ -606,8 +608,8 @@ trySolveSlipCaptcha = function(retry)
         log("find 官服点选验证节点")
         ssleep(0.2)
         -- 对于图案点选额外设置
-        local tuan_res = findNodes(point["图案点选验证"])
-        log("图案点选验证节点数量", tuan_res, #tuan_res)
+        -- local tuan_res = findNodes(point["图案点选验证"])
+        -- log("图案点选验证节点数量", tuan_res, #tuan_res)
 
         official_choice = true
         local choices = { 1, 3, 4 }
@@ -635,12 +637,12 @@ trySolveSlipCaptcha = function(retry)
             tap(fo)
             ssleep(0.5)
         end, 10)
-    elseif findAny({ "滑块验证节点", "滑块验证节点2" }) and not findAny({ "官服点选验证节点" }) then -- 旧版滑块->b服
+    elseif findAny({ "滑块验证节点", "滑块验证节点2" }) and not findAny({ "图案点选验证" }) then -- 旧版滑块->b服
         log("find 旧版滑块box", box)
         ssleep(0.5)
 
         --判断是点选验证码的话  返回重试
-        if findOne("官服点选验证节点") then
+        if findOne("官服点选验证节点") or findOne("图案点选验证") then
             log("find 旧版滑块box -> 官服点选验证节点", box)
             ssleep(0.5)
             trySolveSlipCaptcha(retry + 1)
@@ -727,8 +729,8 @@ SolveSlipCaptcha = function(rect, p_type)
         end
         distance = distance - scale(60)
     end
+    log("修正后 distance", distance)
     if distance < 1 then return false end
-
     local sx, sy
     if is_old_slip then
         distance = distance + scale(4)
@@ -737,6 +739,7 @@ SolveSlipCaptcha = function(rect, p_type)
         tap({ scale(964), scale(805) })
         sx, sy = scale(750), scale(740)
     end
+    log(632)
     -- 用于模拟滑动轨迹
     gesture({
         {
