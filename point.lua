@@ -44,6 +44,10 @@ point = {
     },
 
     -- 验证码
+    极验V4完整目标 = { class = "android.view.View", level = "7", index = "0" },
+    滑块v4图片位置 = { class = "android.widget.Image", level = "11", index = "0" },
+    图案点选验证 = { class = "android.widget.Image", id = "" }, --findallnode，图案一定是3个
+    滑块验证节点3 = { text = "请拖动滑块完成拼图" },
     滑块验证节点 = { text = "请通过以下验证" },
     滑块验证节点2 = { desc = "请通过以下验证" },
     官服点选验证节点 = { text = "请在下图依次点击" },

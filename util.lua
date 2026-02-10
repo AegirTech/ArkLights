@@ -202,6 +202,14 @@ findNode = function(selector) return nodeLib.findOne(selector, true) end
 --- @return table[] 节点列表
 findNodes = function(selector) return nodeLib.findAll(selector, true) end
 
+
+--- 根据index 查找节点
+--- @param selector string|table
+--- @return table[] 节点列表
+findNodeByIndex = function(selector)
+    return nodeLib.findByIndex(selector)
+end
+
 --- 点击节点（带校验）
 --- @param x table
 clickNode = function(x) nodeLib.click(x, true) end

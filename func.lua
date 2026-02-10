@@ -587,13 +587,14 @@ end
 trySolveSlipCaptcha = function(retry)
     local retry = retry or 1
     ssleep(1.5) -- 等待验证码出图
-    if not appear({ "滑块验证节点", "官服点选验证节点", "滑块验证节点新720", "滑块验证节点新", "滑块验证节点2" }, 8) then return end
+    if not appear({ "滑块验证节点", "滑块验证节点3", "官服点选验证节点", "滑块验证节点新720", "滑块验证节点新", "滑块验证节点2" }, 8) then return end
     log("等待验证码出图")
-    is_点选验证码 = is_点选验证码 or false
+    ssleep(1)
     is_old_slip = false
-    if findOne("滑块验证节点新") or findOne("滑块验证节点新720") then
-        log("find 滑块验证节点新")
-        local box = getCaptchaBox()
+    if findOne("滑块验证节点新") or findOne("滑块验证节点新720") or findOne("滑块验证节点3") then
+        log("find 极验V4滑块")
+        local box = findOne("极验V4完整目标")
+        box = box and box.bounds
         log(box)
         local choices = { 1, 3, 2 }
         for _, choice in ipairs(choices) do
@@ -601,17 +602,17 @@ trySolveSlipCaptcha = function(retry)
             if ret then break end
             ssleep(0.5)
         end
-    elseif findOne("官服点选验证节点") or is_点选验证码 then
+    elseif findOne("官服点选验证节点") then
         log("find 官服点选验证节点")
         ssleep(0.2)
+        -- 对于图案点选额外设置
+        local tuan_res = findNodes(point["图案点选验证"])
+        log("图案点选验证节点数量", tuan_res, #tuan_res)
+
         official_choice = true
-        local choices = { 3, 4, 1 }
+        local choices = { 1, 3, 4 }
         local bbox
-        if is_点选验证码 then --720p下 前面ocr识别到了，已经是点选验证码，直接给固定区域
-            bbox = { l = 338, t = 22, r = 938, b = 488 }
-        else
-            bbox = getChoiceBox()
-        end
+        bbox = getChoiceBox()
         log("点选验证框", bbox)
         for _, choice in ipairs(choices) do
             local ret = trySolvePointSelectionCapture(bbox, choice)
@@ -634,19 +635,12 @@ trySolveSlipCaptcha = function(retry)
             tap(fo)
             ssleep(0.5)
         end, 10)
-    elseif findAny({ "滑块验证节点", "滑块验证节点2" }) then -- 旧版滑块->b服
+    elseif findAny({ "滑块验证节点", "滑块验证节点2" }) and not findAny({ "官服点选验证节点" }) then -- 旧版滑块->b服
         log("find 旧版滑块box", box)
         ssleep(0.5)
 
-        --720p下直接ocr识别是不是点选验证码
-        local ocrs = ocrex({ 367, 51, 644, 109 })
-        if ocrs and ocrs[1] and ocrs[1].text == '请在下图依次点击' then
-            log(99131, ocrs[1].text)
-            is_点选验证码 = true
-        end
-
-        --判断是点选验证码的话  返回重试，直接给赋值为点选验证码
-        if findOne("官服点选验证节点") or is_点选验证码 then
+        --判断是点选验证码的话  返回重试
+        if findOne("官服点选验证节点") then
             log("find 旧版滑块box -> 官服点选验证节点", box)
             ssleep(0.5)
             trySolveSlipCaptcha(retry + 1)
@@ -731,7 +725,7 @@ SolveSlipCaptcha = function(rect, p_type)
                 return false
             end
         end
-        distance = distance - scale(20)
+        distance = distance - scale(60)
     end
     if distance < 1 then return false end
 
