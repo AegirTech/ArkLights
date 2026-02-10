@@ -4681,3 +4681,15 @@ get_cpu_arch = function()
         ["　"] = "",
     })
 end
+
+
+hd_test_mode = function()
+    for i = 1, 11 do
+        log("测试第" .. i .. "关")
+        swip("HD-" .. i)
+        tap("作战列表HD-" .. i)
+        ssleep(1)
+        back()
+        ssleep(1.5)
+    end
+end
