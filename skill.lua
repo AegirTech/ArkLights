@@ -420,7 +420,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 base = base + 0.02 * dormitoryLevelSum
             elseif icon == 'bskill_tra_spd&dorm1' then
                 base = base + 0.01 * dormitoryLevelSum
-            elseif icon == 'bskill_tra_bd_n2' then
+            elseif icon == 'bskill_tra_bd_n2' then --乌有2
                 base = base + 0.01 * dormitoryCapacity
                 if isCharExsit["桑葚"] then
                     base = base + 0.21
@@ -2228,6 +2228,8 @@ trainingOperatorBest = function(operator, charType, targetLevel)
             elseif icon == "bskill_train_all" then
                 s = s + 0.25
             elseif icon == "bskill_train_reducetime" and targetLevel < 3 then
+                s = s + 0.7
+            elseif icon == "bskill_train_spd&level" and targetLevel == 3 then -- 望2
                 s = s + 0.7
             elseif icon == "bskill_train_fighter" and charType == "WARRIOR" then
                 s = s + 0.3
