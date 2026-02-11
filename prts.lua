@@ -9,7 +9,7 @@ MAX_SWIPE_PAGES = 18
 local MAX_CARD_CHANGE = 3
 DELAYED_SKILLS = { "爆裂黎明", "黄昏", "灯火不灭", "饱和复仇" } -- 技能黄标延迟消失技能
 STORY_DIALOGS = { "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "剧情中6", "生息演算剧情上" } -- 剧情对话标志
-local BATTLE_STATES = { "作战中", "暂停中", "作战中2" }
+local BATTLE_STATES = { "作战中", "暂停中", "作战中2", "顶部目标生命值" }
 OPERATOR_CATEGORIES = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
 DIRECTION_MAP = { Left = 4, Right = 2, Up = 1, Down = 3, None = 2 } --部署方向
 
@@ -817,7 +817,7 @@ auto_prts = function(作业名, 需要编队, 是否自带)
                 log("跳过战斗前剧情")
                 path.跳过剧情()
                 sleep(3000)
-            elseif findOne("战斗中剧情对话") then
+            elseif findOne("剧情中6", .9) then
                 wait(function()
                     tap("点cost")
                     ssleep(.3)
@@ -1652,7 +1652,7 @@ end
                 加速()
             elseif findAny(BATTLE_STATES) then
             else
-                if appear("战斗中剧情对话", 3) then
+                if appear("剧情中6", 3) then
                     wait(function()
                         tap("点cost")
                         ssleep(.3)
