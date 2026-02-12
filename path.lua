@@ -8786,7 +8786,7 @@ path.自动模组 = function()
         -- 解包干员数据
         character_table = JsonDecode(readFile("char_table.json"))
     end
-    干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+
     if not 干员职业 then
         干员职业 = JsonDecode(readFile("character_type_list.json"))
     end

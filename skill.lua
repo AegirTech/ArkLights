@@ -1296,7 +1296,7 @@ chooseOperatorByOcr = function(干员)
             local 干员名字字符串 = ""
             local 干员目录 = {}
             for _, item in ipairs(干员) do
-                if 干员职业[item] == 干员类别[i] then
+                if 干员职业[item] == operator_job[i] then
                     干员名字字符串 = 干员名字字符串 .. item
                     table.insert(干员目录, item)
                 end
@@ -1393,7 +1393,6 @@ chooseOperator = function(stationType, goodType, stationLevel,
         table.insert(operator,
             { "abyssal_hunter", "empty2", 24, { scale(301), scale(901), scale(301), scale(901) }, 20, "安哲拉" })
 
-        干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
         if not 干员职业 then
             干员职业 = JsonDecode(readFile("character_type_list.json"))
         end

@@ -10,7 +10,6 @@ local MAX_CARD_CHANGE = 3
 DELAYED_SKILLS = { "爆裂黎明", "黄昏", "灯火不灭", "饱和复仇" } -- 技能黄标延迟消失技能
 STORY_DIALOGS = { "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "剧情中6", "生息演算剧情上" } -- 剧情对话标志
 local BATTLE_STATES = { "作战中", "暂停中", "作战中2", "顶部目标生命值" }
-OPERATOR_CATEGORIES = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
 DIRECTION_MAP = { Left = 4, Right = 2, Up = 1, Down = 3, None = 2 } --部署方向
 
 -- 检查干员是否可部署（全局）
@@ -93,7 +92,6 @@ local function initTeamVariables()
     local 编入数量 = 0
     local 未编入 = {}
     local 未编入干员 = {}
-    local 干员类别 = OPERATOR_CATEGORIES
     local 未编入数量 = 0
     local 干员职业 = JsonDecode(readFile("character_type_list.json"))
     log("读取干员职业成功")
@@ -102,7 +100,7 @@ local function initTeamVariables()
             log("需要干员", i["name"], ",职业", 干员职业[i["name"]])
         end
     end
-    return 编入数量, 未编入, 未编入干员, 干员类别, 未编入数量, 干员职业, printChar
+    return 编入数量, 未编入, 未编入干员, 未编入数量, 干员职业, printChar
 end
 
 -- 等待编队界面并清空选择
@@ -133,7 +131,7 @@ local function waitTeamInterfaceAndClear(快捷编队按钮)
 end
 
 -- 创建choseChar函数（公共核心逻辑）
-local function createChoseChar(干员职业, 干员类别, 未编入, 未编入干员, 未编入数量, 编入数量, isSSS)
+local function createChoseChar(干员职业, 未编入, 未编入干员, 未编入数量, 编入数量, isSSS)
     return function(干员, 是否群组)
         local 记录未编入数量
         local group_selected = 0
@@ -149,7 +147,7 @@ local function createChoseChar(干员职业, 干员类别, 未编入, 未编入�
             local 干员名字字符串 = ""
             local 干员目录 = {}
             for _, item in ipairs(干员) do
-                if 干员职业[item["name"]] == 干员类别[i] then
+                if 干员职业[item["name"]] == operator_job[i] then
                     干员名字字符串 = 干员名字字符串 .. item["name"]
                     if not isSSS then
                         item["skill"] = item["skill"] or 1
@@ -982,13 +980,13 @@ auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
 end
 
 自动编队 = function(干员, 群组)
-    local 编入数量, 未编入, 未编入干员, 干员类别, 未编入数量, 干员职业, printChar = initTeamVariables()
+    local 编入数量, 未编入, 未编入干员, 未编入数量, 干员职业, printChar = initTeamVariables()
 
     if not waitTeamInterfaceAndClear("快捷编队") then
         return
     end
 
-    local choseChar = createChoseChar(干员职业, 干员类别, 未编入, 未编入干员, 未编入数量, 编入数量, false)
+    local choseChar = createChoseChar(干员职业, 未编入, 未编入干员, 未编入数量, 编入数量, false)
 
     printChar(干员)
     choseChar(干员)
@@ -1026,13 +1024,13 @@ end
 end
 
 保全自动编队 = function(干员, 群组)
-    local 编入数量, 未编入, 未编入干员, 干员类别, 未编入数量, 干员职业, printChar = initTeamVariables()
+    local 编入数量, 未编入, 未编入干员, 未编入数量, 干员职业, printChar = initTeamVariables()
 
     if not waitTeamInterfaceAndClear("保全快捷编队") then
         return
     end
 
-    local choseChar = createChoseChar(干员职业, 干员类别, 未编入, 未编入干员, 未编入数量, 编入数量, true)
+    local choseChar = createChoseChar(干员职业, 未编入, 未编入干员, 未编入数量, 编入数量, true)
 
     printChar(干员)
     choseChar(干员)
