@@ -589,7 +589,7 @@ trySolveSlipCaptcha = function(retry)
     if retry == 1 then
         ssleep(1.5) -- 等待验证码出图
     end
-    if not appear({ "滑块验证节点", "滑块验证节点3", "官服点选验证节点", "滑块验证节点新720", "滑块验证节点新", "滑块验证节点2" }, 8) then return end
+    if not appear({ "滑块验证节点3", "官服点选验证节点", "滑块验证节点新720", "滑块验证节点新" }, 4) then return end
     log("等待验证码出图")
     ssleep(1)
     is_old_slip = false
@@ -616,6 +616,11 @@ trySolveSlipCaptcha = function(retry)
         local bbox
         bbox = getChoiceBox()
         log("点选验证框", bbox)
+        if not bbox then
+            bbox = findOne("极验V4完整目标")
+            bbox = bbox and bbox.bounds
+            log("点选验证框2", bbox)
+        end
         for _, choice in ipairs(choices) do
             local ret = trySolvePointSelectionCapture(bbox, choice)
             ssleep(0.5)
@@ -637,27 +642,27 @@ trySolveSlipCaptcha = function(retry)
             tap(fo)
             ssleep(0.5)
         end, 10)
-    elseif findAny({ "滑块验证节点", "滑块验证节点2" }) and not findAny({ "图案点选验证" }) then -- 旧版滑块->b服
-        log("find 旧版滑块box", box)
-        ssleep(0.5)
+        -- elseif findAny({ "滑块验证节点", "滑块验证节点2" }) and not findAny({ "图案点选验证" }) then -- 旧版滑块->b服
+        --     log("find 旧版滑块box", box)
+        --     ssleep(0.5)
 
-        --判断是点选验证码的话  返回重试
-        if findOne("官服点选验证节点") or findOne("图案点选验证") then
-            log("find 旧版滑块box -> 官服点选验证节点", box)
-            ssleep(0.5)
-            trySolveSlipCaptcha(retry + 1)
-            return
-        end
-        local box = findOne(findAny({ "滑块验证节点", "滑块验证节点2" }))
-        is_old_slip = true
-        log("box", box)
-        if not box then return end
-        box = box.bounds
-        if retry % 2 == 0 then
-            SolveSlipCaptcha(box, 1)
-        else
-            SolveSlipCaptcha(box, 3)
-        end
+        --     --判断是点选验证码的话  返回重试
+        --     if findOne("官服点选验证节点") or findOne("图案点选验证") then
+        --         log("find 旧版滑块box -> 官服点选验证节点", box)
+        --         ssleep(0.5)
+        --         trySolveSlipCaptcha(retry + 1)
+        --         return
+        --     end
+        --     local box = findOne(findAny({ "滑块验证节点", "滑块验证节点2" }))
+        --     is_old_slip = true
+        --     log("box", box)
+        --     if not box then return end
+        --     box = box.bounds
+        --     if retry % 2 == 0 then
+        --         SolveSlipCaptcha(box, 1)
+        --     else
+        --         SolveSlipCaptcha(box, 3)
+        --     end
     end
     log("验证码处理完毕，等待游戏")
     if not appear("realgame", 5) then
