@@ -1886,10 +1886,9 @@ deploy = function(x1, x2, y2, d, nopause)
     --   tap({x1, y1})
     --   ssleep(.5)
     -- end
-    gesture(finger)
-    sleep(250)
     if not nopause then back() end
-    sleep(dragd + delay + dird + delay - 250)
+    gesture(finger)
+    sleep(dragd + delay + dird + delay)
     if not nopause then back() end
     log("deploy", finger)
 end

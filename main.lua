@@ -32,8 +32,8 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "02.10 21:32"
-update_announcement = '最近更新: 新年活动导航等'
+release_date = "02.24 09:42"
+update_announcement = '最近更新: 新年活动导航、新春签到'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -48,6 +48,8 @@ log_count = 0
 max_log_time = 15
 max_log_count = 1000
 console.clearLog()
+--太多地方会用到,有时候会出bug,把最后两个职业的顺序换了一下
+operator_job = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
 
 ark_api_base = "https://arkapi.enlysure.com"
 update_source = 'http://ark.aegirtech.com:8080'
@@ -129,7 +131,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     -- log(findOne("极验V4完整目标"))
     -- exit()
     -- swip("HD-8")
-    -- exit()
+    --exit()
     --point.肉鸽干员等级识别范围 = { 682, 261, 707, 291 }
     -- log(ocro("rl_编队数量ocr范围"))
     -- --zl.分析待编队干员()

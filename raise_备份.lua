@@ -131,7 +131,7 @@ raise.init = function()
         -- 解包干员数据
         character_table = JsonDecode(readFile("char_table.json"))
     end
-    干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+
     if not 干员职业 then
         干员职业 = JsonDecode(readFile("character_type_list.json"))
     end
@@ -970,7 +970,7 @@ char_choose = function(char_name)
     end
 
     for i = 1, 8 do
-        if 干员职业[char_name] == 干员类别[i] then
+        if 干员职业[char_name] == operator_job[i] then
             if not findOne("普通作战编队列表" .. i) then
                 tap("普通作战编队列表" .. i)
                 appear("普通作战编队列表" .. i)
@@ -1553,7 +1553,7 @@ raise.choose_char_be_trained = function(干员)
         for i = 1, 8 do
             local 干员名字字符串 = ""
             local 干员目录 = {}
-            if 干员职业[干员[1]["name"]] == 干员类别[i] then
+            if 干员职业[干员[1]["name"]] == operator_job[i] then
                 干员名字字符串 = 干员名字字符串 .. 干员[1]["name"]
                 table.insert(干员目录, 干员[1]["name"] .. 干员[1]["skill"])
             end

@@ -137,7 +137,7 @@ raise.init = function()
         -- 解包干员数据
         character_table = JsonDecode(readFile("char_table.json"))
     end
-    干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+
     if not 干员职业 then
         干员职业 = JsonDecode(readFile("character_type_list.json"))
     end
@@ -982,7 +982,7 @@ char_choose = function(char_name)
     end
 
     for i = 1, 8 do
-        if 干员职业[char_name] == 干员类别[i] then
+        if 干员职业[char_name] == operator_job[i] then
             if not findOne("普通作战编队列表" .. i) then
                 tap("普通作战编队列表" .. i)
                 appear("普通作战编队列表" .. i)
@@ -993,38 +993,45 @@ char_choose = function(char_name)
 
     local last_char
     local char_found = false
-    while not char_found do
-        ssleep(.1)
-        local ret = 干员名ocr校正(ocrex("干员上"))
-        log(ret)
-        if ret == "" or #ret == 0 then return false end
-        for i = 1, #ret do
-            if ret[i]["text"] == char_name then
-                char_found = true
-                tap({ (ret[i]["l"] + ret[i]["r"]) / 2, ret[i]["t"] - scale(200) })
-                appearTap("角色档案关闭", 1.5)
-                appear("干员档案", 10)
-                break
+    for j = 1, 2 do
+        while not char_found do
+            ssleep(.1)
+            local ret = 干员名ocr校正(ocrex("干员上"))
+            log(ret)
+            if ret == "" or #ret == 0 then return false end
+            for i = 1, #ret do
+                if ret[i]["text"] == char_name then
+                    char_found = true
+                    tap({ (ret[i]["l"] + ret[i]["r"]) / 2, ret[i]["t"] - scale(200) })
+                    appearTap("角色档案关闭", 1.5)
+                    appear("干员档案", 10)
+                    break
+                end
             end
-        end
-        if char_found then return true end
+            if char_found then return true end
 
-        ret = 干员名ocr校正(ocrex("干员下"))
-        log(ret)
-        if ret == "" or #ret == 0 then return false end
-        for i = 1, #ret do
-            if ret[i]["text"] == char_name then
-                char_found = true
-                tap({ (ret[i]["l"] + ret[i]["r"]) / 2, ret[i]["t"] - scale(200) })
-                appearTap("角色档案关闭", 1.5)
-                appear("干员档案", 10)
-                break
+            ret = 干员名ocr校正(ocrex("干员下"))
+            log(ret)
+            if ret == "" or #ret == 0 then return false end
+            for i = 1, #ret do
+                if ret[i]["text"] == char_name then
+                    char_found = true
+                    tap({ (ret[i]["l"] + ret[i]["r"]) / 2, ret[i]["t"] - scale(200) })
+                    appearTap("角色档案关闭", 1.5)
+                    appear("干员档案", 10)
+                    break
+                end
             end
+            if char_found then return true end
+            if ret[#ret]["text"] == last_char then break else last_char = ret[#ret]["text"] end
+            swip_char()
         end
-        if char_found then return true end
-        if ret[#ret]["text"] == last_char then break else last_char = ret[#ret]["text"] end
-        swip_char()
+        tap("干员等级降序")
+        ssleep(.2)
+        swip_char("left")
+        ssleep(.4)
     end
+
     log("未找到干员", char_name)
     path.跳转("首页")
     return false
@@ -1219,10 +1226,11 @@ raise.elite_one_phase = function(material_need)
                     ssleep(.8)
                     appear("制造站设施列表1", 2)
                     ssleep(6) --最多一次造4个，等待要超过4s
-                    tap("制造站收取")
-                    appearTap("获得物资", 10)
-                    ssleep(.2)
-                    local chip2book = function()
+                    -- tap("制造站收取")
+                    -- appearTap("获得物资", 10)
+                    -- ssleep(.2)
+
+                    local chip2book = function() --切换芯片产线到赤金
                         if not wait(function()
                                 tap("芯片站")
                                 if not findOne("制造站设施列表1") then return true end
@@ -1484,7 +1492,7 @@ raise.choose_char_be_trained = function(干员)
         for i = 1, 8 do
             local 干员名字字符串 = ""
             local 干员目录 = {}
-            if 干员职业[干员[1]["name"]] == 干员类别[i] then
+            if 干员职业[干员[1]["name"]] == operator_job[i] then
                 干员名字字符串 = 干员名字字符串 .. 干员[1]["name"]
                 table.insert(干员目录, 干员[1]["name"] .. 干员[1]["skill"])
             end
@@ -2501,6 +2509,8 @@ end
     若叶睦 = 67089,
     斩业星熊 = 73193,
     圣聆初雪 = 73227,
+    望 = 83228,
+    赤刃明宵陈 = 83211,
 }
 
 -- 自动做模组任务2

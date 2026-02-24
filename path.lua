@@ -1194,32 +1194,30 @@ path.fallback = {
         -- disappear("祈愿牌确认", 10)
         return path.fallback.签到返回()
     end,
-    -- 新年祝福返回 = function()
-    --     wait(function()
-    --         appearTap("新年祝福收下", 3)
-    --         appearTap("获得物资", 3)
-    --     end, 3)
-    --     wait(function()
-    --         tap("新年祝福签到")
-    --     end, 1.5)
-    --     wait(function()
-    --         if findAny({ "新年祝福返回", "面板" }) then return true end
-    --         tap("开包skip")
-    --     end, 2)
-    --     wait(function()
-    --         for h = 200, 951, 150 do
-    --             if findOne("新年祝福返回") then
-    --                 tap({ scale(1300), scale(h) })
-    --                 ssleep(.5)
-    --             end
-    --         end
-    --         tap("开包skip")
-    --         if findAny({ "新年祝福返回", "面板" }) then return true end
-    --     end, 10)
-    -- end,
+
     五周年专享月卡返回 = function()
         wait(function()
             tap("五周年专享月卡领取")
+        end, 2)
+        return path.fallback.签到返回()
+    end,
+    春节签到2026返回 = function()
+        --右边一列签到
+        wait(function()
+            for h = 200, 951, 150 do
+                if findOne("春节签到2026返回") then
+                    tap({ scale(1300), scale(h) })
+                    ssleep(.5)
+                end
+            end
+            tap("开包skip")
+            if findAny({ "春节签到2026返回", "面板" }) then return true end
+        end, 10)
+        return path.fallback.签到返回()
+    end,
+    春节签到2026 = function()
+        wait(function()
+            tap("春节签到2026收下祝福")
         end, 2)
         return path.fallback.签到返回()
     end,
@@ -1299,7 +1297,7 @@ path.限时活动 = function(retry)
             "限时幸运签", "月饼", '产业合作洽谈会',
             '红包', "祈愿牌返回", '五周年专享月卡返回',
             "生日设置返回", '国庆签到返回', '感谢庆典返回',
-            -- "新春限时签到2025",
+            "春节签到2026",
 
         })
         if findOne('红包') then
@@ -8786,7 +8784,7 @@ path.自动模组 = function()
         -- 解包干员数据
         character_table = JsonDecode(readFile("char_table.json"))
     end
-    干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+
     if not 干员职业 then
         干员职业 = JsonDecode(readFile("character_type_list.json"))
     end
@@ -8860,7 +8858,7 @@ path.自动升级潜能 = function()
     path.跳转("干员")
     appear("干员界面", 3)
     ssleep(.1)
-    local 红点干员数量 = tonumber(ocro("干员界面红点范围") or 0)
+    local 红点干员数量 = tonumber(ocro("干员界面红点数字范围") or 0)
     log("红点干员数量", 红点干员数量)
     tap("干员界面红点") --筛选干员
     disappear("干员界面红点", 1)

@@ -299,7 +299,6 @@ ib.自动编队 = function(干员, 群组)
     local 编入数量 = 0
     local 未编入 = {}
     local 未编入干员 = {}
-    local 干员类别 = OPERATOR_CATEGORIES
     local 未编入数量 = 0
     log(3030)
 
@@ -350,7 +349,7 @@ ib.自动编队 = function(干员, 群组)
             local 干员名字字符串 = ""
             local 干员目录 = {}
             for _, item in ipairs(干员) do
-                if 干员职业[item["name"]] == 干员类别[i] then
+                if 干员职业[item["name"]] == operator_job[i] then
                     干员名字字符串 = 干员名字字符串 .. item["name"]
                     table.insert(干员目录, item["name"] .. item["skill"])
                 end
