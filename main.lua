@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "02.24 09:32"
+release_date = "02.24 09:42"
 update_announcement = '最近更新: 新年活动导航、新春签到'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -131,7 +131,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     -- log(findOne("极验V4完整目标"))
     -- exit()
     -- swip("HD-8")
-    -- exit()
+    --exit()
     --point.肉鸽干员等级识别范围 = { 682, 261, 707, 291 }
     -- log(ocro("rl_编队数量ocr范围"))
     -- --zl.分析待编队干员()
