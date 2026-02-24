@@ -2161,6 +2161,8 @@ end
             t[i]["text"] = "荒芜拉普兰德"
         elseif 原文本:find("司") and 原文本:find("惊") then
             t[i]["text"] = "司霆惊蛰"
+        elseif 原文本:find("赤刃") and 原文本:find("陈") then
+            t[i]["text"] = "赤刃明霄陈"
         end
         -- 去除开头的书名号
         t[i]["text"] = t[i]["text"]:gsub("^《", "")
