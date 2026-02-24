@@ -8858,7 +8858,7 @@ path.自动升级潜能 = function()
     path.跳转("干员")
     appear("干员界面", 3)
     ssleep(.1)
-    local 红点干员数量 = tonumber(ocro("干员界面红点范围") or 0)
+    local 红点干员数量 = tonumber(ocro("干员界面红点数字范围") or 0)
     log("红点干员数量", 红点干员数量)
     tap("干员界面红点") --筛选干员
     disappear("干员界面红点", 1)
