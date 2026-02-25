@@ -1025,8 +1025,8 @@ Tales_within_the_sand.商店购买 = function()
                     end
                     -- 点击购买
                     if not wait(function()
-                            if findOne("生息演算繁荣馈赠商店最多") then
-                                tap("生息演算繁荣馈赠商店最多")
+                            if findOne("商店购买数量最多") then
+                                tap("商店购买数量最多")
                                 ssleep(0.2)
                             end
                             if findOne("生息演算繁荣馈赠支付") then

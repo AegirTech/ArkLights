@@ -6420,7 +6420,7 @@ path.商店搬空 = function()
                     if not wait(function()
                             tap({ intX, intY })
                             ssleep(.6)
-                            if findOne("购买物品面板") then return true end
+                            if findOne("活动商店购买物品面板") then return true end
                         end, 1.8) then
                     end
                     if findOne("商店主页") then
@@ -6429,8 +6429,8 @@ path.商店搬空 = function()
                     end
                     -- 点击购买
                     if not wait(function()
-                            if findOne("生息演算繁荣馈赠商店最多") then
-                                tap("生息演算繁荣馈赠商店最多")
+                            if findOne("商店购买数量最多") then
+                                tap("商店购买数量最多")
                                 ssleep(0.2)
                             end
                             if findOne("商店支付1") then
@@ -6438,11 +6438,11 @@ path.商店搬空 = function()
                                 ssleep(0.5)
                                 disappear("正在提交反馈至神经", network_timeout)
                             end
-                            if not findOne("购买物品面板") then return true end
+                            if not findOne("活动商店购买物品面板") then return true end
                         end, 5) then
                     end
                     --disappear("正在提交反馈至神经", network_timeout)
-                    if findOne("购买物品面板") then
+                    if findOne("活动商店购买物品面板") then
                         log("未能购买，大概是钱花完了")
                         return true
                     end
