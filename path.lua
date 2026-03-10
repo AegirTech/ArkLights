@@ -5806,16 +5806,24 @@ path.剿灭 = function(x)
     -- if x ~= "剿灭" then
     -- 都需要切换
     wait(function()
-        if findOne("切换") then return true end
+        if not findOne("返还规则") then return true end
+        -- tap("剿灭快速切换按钮右下")
         tap("主页右侧")
-        appear("切换", 1)
+        disappear("返还规则", 1)
     end, 5)
 
     if is_jmfight_enough(x) then return end
 
+    wait(function()
+        if findOne("剿灭快速切换按钮右下") then return true end
+        -- tap("剿灭快速切换按钮右下")
+        tap("主页右侧")
+        appear("剿灭快速切换按钮右下", 1)
+    end, 5)
+
     if not wait(function()
             if findOne("当前委托侧边栏") then return true end
-            tap("切换")
+            tap("剿灭快速切换按钮右下")
             appear("当前委托侧边栏")
         end, 5) then
         return

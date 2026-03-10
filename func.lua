@@ -1295,7 +1295,7 @@ check_server_is_close = function()
             return
         end
         sleep_time = sleep_time + math.random(1, 100)
-        console.println(3, "明日方舟服务器处于关闭状态，需要休眠至下午4点启动，" .. str(sleep_time))
+        console.println(3, "明日方舟服务器处于关闭状态，需要休眠至开服，" .. str(sleep_time))
         console.show()
         local last_check_update_time = 0
         cloud.stopHeartBeat()
