@@ -6474,13 +6474,10 @@ path.故事解锁 = function()
     if not shop_period then shop_period = 0 end
     if not shop_day then shop_day = 0 end
     local hd_open_time_end = hd2_open_time_end
+
     -- 搬商店时间
     local interval = t - hd_open_time_end
-    if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) then
-        return
-    elseif shop_period == 1 and not (interval > 0 and t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day) then
-        return
-    elseif shop_period == 2 and not ((t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) or (t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day)) then
+    if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1)) then
         return
     end
 
@@ -6571,12 +6568,15 @@ path.故事解锁 = function()
                 log("not find2", i)
             end
         end
+        if findOne("跳过剧情") then
+            path.跳过剧情()
+            disappear("正在提交反馈至神经", network_timeout)
+        end
     end
-end
-
-path.故事解锁 = function()
-    -- 临时禁用，有概率点进剧情内
-    return
+    if findOne("跳过剧情") then
+        path.跳过剧情()
+        disappear("正在提交反馈至神经", network_timeout)
+    end
 end
 
 path.会客厅跳转好友 = function()
