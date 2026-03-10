@@ -3324,7 +3324,7 @@ update_state_from_ui = function()
 
     -- 资源关全天开放时间段
     all_open_time_start = parse_time("202504141600")
-    all_open_time_end = parse_time("202508280400")
+    all_open_time_end = parse_time("202603170400")
     update_open_time()
 
     -- 危机合约时间段，只为加速平时的信用交易所
