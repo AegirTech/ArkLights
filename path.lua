@@ -5595,7 +5595,7 @@ update_open_time = function()
     end
     local t = parse_time()
     if all_open_time_start <= t and t < all_open_time_end then
-        log("全天开启时间表")
+        log("资源本全开")
         pr_open_time = {
             A = { 1, 2, 3, 4, 5, 6, 7 },
             B = { 1, 2, 3, 4, 5, 6, 7 },
@@ -5885,7 +5885,7 @@ path.活动 = function(x)
 
     if not skip_guide then
         path.跳转("首页")
-        tap("面板活动2")
+        tap("面板活动")
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -6341,7 +6341,7 @@ path.商店搬空 = function()
     end
     path.跳转("首页")
     log("商店清空任务")
-    tap("面板活动2")
+    tap("面板活动")
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
@@ -6480,7 +6480,7 @@ path.故事解锁 = function()
     if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1)) then
         return
     end
-
+    path.跳转("首页")
     log("故事集剧情解锁")
 
     tap("面板活动")
