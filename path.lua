@@ -5885,7 +5885,7 @@ path.活动 = function(x)
 
     if not skip_guide then
         path.跳转("首页")
-        tap("面板活动")
+        tap(hd_position)
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -6341,7 +6341,7 @@ path.商店搬空 = function()
     end
     path.跳转("首页")
     log("商店清空任务")
-    tap("面板活动")
+    tap(hd_position)
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
@@ -6483,7 +6483,7 @@ path.故事解锁 = function()
     path.跳转("首页")
     log("故事集剧情解锁")
 
-    tap("面板活动")
+    tap(hd_position)
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
@@ -9263,7 +9263,7 @@ path.宝石铭刻寻找课程 = function()
 
     path.跳转('首页')
 
-    tap("面板活动")
+    tap(hd_position)
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
@@ -10068,7 +10068,7 @@ path.烟花委员会loop = function()
     car_checked = false
     while true do
         if not appear("活动导航0", 2) then
-            tap("面板活动")
+            tap(hd_position)
             if not wait(function()
                     if findOne("活动导航0") or findOne("活动商店导航") then return true end
                     if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
@@ -10342,7 +10342,7 @@ end
 path.卫戍协议 = function()
     if not findAny({ "卫戍协议首页", "卫戍协议断线重连" }) then
         path.跳转("首页")
-        tap("面板活动2")
+        tap(hd_position)
     end
     if appear("教程关闭", 3) then tap("教程关闭") end
     while not path.卫戍协议循环() do
@@ -10354,7 +10354,7 @@ end
 path.卫戍协议循环 = function()
     if not findAny({ "卫戍协议首页", "卫戍协议断线重连" }) then
         path.跳转("首页")
-        tap("面板活动2")
+        tap(hd_position)
     end
     if not appear({ "卫戍协议首页", "卫戍协议断线重连" }, 5) then return end
     if findOne("卫戍协议断线重连") then
@@ -10577,7 +10577,7 @@ end
 path.争锋频道活动 = function()
     if not findOne("争锋频道首页") then
         path.跳转("首页")
-        tap("面板活动2")
+        tap(hd_position)
     end
     if not appear("争锋频道首页", 5) then return end
     wait(function()
@@ -11046,7 +11046,7 @@ path.喀兰贸易技术研发部 = function()
     end
     if not findAny({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }) then
         path.跳转("首页")
-        tap("面板活动2")
+        tap(hd_position)
         if not appear("喀兰贸易活动首页进入", 5) then return end
     end
     喀兰贸易重建活动(true)
