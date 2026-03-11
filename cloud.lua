@@ -389,15 +389,19 @@ m.startHeartBeat = function()
         while true do
             local res, code = m.heartBeat()
             local status, data = pcall(JsonDecode, res)
+            local cmd = 0
+            if status and type(data) == 'table' and type(data.data) == 'table' then
+                cmd = data.data.cmd or 0
+            end
             if cloud_v2_enable then
                 -- 停机流程
-                if data.data.cmd == 2 then
+                if cmd == 2 then
                     m.haltComplete()
                     log("云控", "停机上报")
                     -- 子线程不能直接stop 需要使用setTimer延时函数回调stop到主线程
-                    m.cmdReport(2, None)
+                    m.cmdReport(2, nil)
                     setTimer(stop, 100, "强制停机")
-                elseif data.data.cmd == 3 then
+                elseif cmd == 3 then
                     -- 上传截图
                     local img_src = getWorkPath() .. "/tmp.jpg"
                     hideControlBar()
@@ -411,7 +415,7 @@ m.startHeartBeat = function()
                     end
                 end
             else
-                if data.code == 500 then
+                if type(data) == 'table' and data.code == 500 then
                     m.haltComplete()
                     log("云控", "停机上报")
                     -- 子线程不能直接stop 需要使用setTimer延时函数回调stop到主线程
