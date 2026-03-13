@@ -43,8 +43,7 @@ function initHomeworkData(作业名, 是否自带, 不点赞)
     无限放技能干员 = {}
     技能指定次数干员 = {}
     作业 = loadHomework(作业名, 是否自带, 不点赞)
-    log(作业)
-    log("读取作业成功")
+    log(作业, "读取作业成功")
 end
 
 -- 处理群组和干员数据（普通模式，全局）
@@ -416,6 +415,8 @@ local function processInstructionType(部署指令, 已部署干员, 波数依�
             table.insert(无限放技能干员, 部署指令["name"])
         elseif 部署指令["skill_usage"] == 0 then
             table.removev(无限放技能干员, 部署指令["name"])
+        elseif 部署指令["skill_usage"] == 2 then
+            table.insert(无限放技能干员, 部署指令["name"])
         end
         部署顺序 = 部署顺序 + 1
     elseif 部署指令["type"] == "Output" then
@@ -2148,7 +2149,7 @@ end
         log(原文本)
         if 替换[原文本] then
             t[i]["text"] = 替换[原文本]
-        elseif #原文本 >= 9 and 原文本:sub(1, 3) == 原文本:sub(4, 6) then
+        elseif #原文本 >= 9 and 原文本:sub(1, 3) == 原文本:sub(4, 6) and 原文本 ~= "苏苏洛" then
             -- 如果原文本开头的两个汉字相同,则去掉开头第一个汉字
             t[i]["text"] = 原文本:sub(4)
         elseif 原文本:match("^白面.*$") then
