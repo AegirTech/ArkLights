@@ -10413,7 +10413,8 @@ path.卫戍协议循环 = function()
     end
     appear("卫戍协议战斗准备就绪", 60)
     tap("卫戍协议战斗返回")
-
+    ssleep(.5)
+    tap("卫戍协议金币清零确定")
     ssleep(8)
     ::relink::
     appear("卫戍协议放弃模拟", 60)
