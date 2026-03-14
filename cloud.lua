@@ -255,40 +255,25 @@ end
 m.captchaSecond = function(box)
     --第二个接口地址长度小于10则返回去用图鉴的
     log("云控打码 方式二")
-    if type(cloud_captcha_server2) ~= "string" or #cloud_captcha_server2 < 10 then
-        return false
-    end
-
+    -- if type(cloud_captcha_server2) ~= "string" or #cloud_captcha_server2 < 10 then
+    --     return false
+    -- end
+    local 打码进入时间 = time()
+    log('打码进度8')
     local img = getWorkPath() .. "/capture.jpg"
     snapShot(img, box.l, box.t, box.r, box.b)
     local img_base64 = base64(img)
     local ans = nil
-
-    wait(
-        function()
-            local text_box_pre = findOne("B服安全验证目标字符")
-            local text_slice_box_pre = findOne("B服安全验证目标字符切片")
-            local big_image_box_pre = findOne("B服安全验证泛目标图像")
-            if text_box_pre == text_box and text_slice_box_pre == text_slice_box and big_image_box_pre == big_image_box then
-                return true
-            end
-            text_box = text_box_pre
-            text_slice_box = text_slice_box_pre
-            big_image_box = big_image_box_pre
-            node_count = node_count + 1
-            log("B服云控打码节点刷新计数器2", node_count)
-            ssleep(.1)
-        end
-    )
-    -- local text_pos = { text_slice_box.bounds.r, text_box.bounds.t, big_image_box.bounds.r, text_box.bounds.b }
-    log("图像坐标2", box)
+    log("打码进度9 图像坐标2", box)
 
     local data = {
         raw_base64 = img_base64,
     }
+    log('打码进度10 ', time() - 打码进入时间)
     local res, code = httpPost(cloud_captcha_server2 .. "/captcha/select/base64", JsonEncode(data),
         30, "Content-Type: application/json;charset=UTF-8")
     log(3058, res, code)
+    log('打码进度11 ', time() - 打码进入时间)
     if code == 200 then
         -- log("code,200")
         local status, data = pcall(JsonDecode, res)
