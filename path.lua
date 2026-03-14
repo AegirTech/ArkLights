@@ -10340,9 +10340,10 @@ path.活动奖励 = function(活动)
 end
 
 path.卫戍协议 = function()
-    if not findAny({ "卫戍协议首页", "卫戍协议断线重连" }) then
+    if not findAny({ "卫戍协议首页", "卫戍协议放弃模拟" }) then
         path.跳转("首页")
-        tap(hd_position)
+        tap("面板活动")
+        ssleep(2.5)
     end
     if appear("教程关闭", 3) then tap("教程关闭") end
     while not path.卫戍协议循环() do
@@ -10352,15 +10353,15 @@ path.卫戍协议 = function()
 end
 
 path.卫戍协议循环 = function()
-    if not findAny({ "卫戍协议首页", "卫戍协议断线重连" }) then
+    log("卫戍协议循环")
+    local p = findAny({ "卫戍协议首页", "卫戍协议放弃模拟" })
+    if not p then
         path.跳转("首页")
-        tap(hd_position)
+        tap("面板活动")
+        ssleep(2.5)
     end
-    if not appear({ "卫戍协议首页", "卫戍协议断线重连" }, 5) then return end
-    if findOne("卫戍协议断线重连") then
-        --被挤下线了,休息15min
-        --ssleep(15 * 60)
-        tap("卫戍协议断线重连")
+    if not appear(p, 5) then return end
+    if p == "卫戍协议放弃模拟" then
         goto relink
     end
     if findOne("卫戍协议等级max") then
@@ -10397,7 +10398,7 @@ path.卫戍协议循环 = function()
         tap("卫戍协议准备就绪")
     end, 5, 1)
     ssleep(10)
-    appear("卫戍协议开始战斗", 40)
+    appear("卫戍协议战斗准备就绪", 40)
     for i = 1, 4 do
         if appearTap("卫戍协议战斗准备就绪", 45) then
             i = i + 1
@@ -10412,10 +10413,14 @@ path.卫戍协议循环 = function()
     end
     appear("卫戍协议战斗准备就绪", 60)
     tap("卫戍协议战斗返回")
-    ssleep(.5)
-    tap("卫戍协议金币清零确定")
+
     ssleep(8)
     ::relink::
+    appear("卫戍协议放弃模拟", 60)
+    ssleep(.5)
+    tap("卫戍协议放弃模拟")
+    ssleep(.5)
+    tap("卫戍协议金币清零确定")
     if not wait(function()
             tap("卫戍协议准备就绪")
             ssleep(2)
