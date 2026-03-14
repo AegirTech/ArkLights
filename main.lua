@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "03.13 11:09"
+release_date = "03.14 14:29"
 update_announcement = '最近更新: 故事集/剿灭'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -125,21 +125,9 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     ssleep(1)
-    -- hd_test_mode()
-    -- log(findAny({ "暂停中" }))
-    -- log(findOne("滑块v4图片位置"))
-    -- log(findOne("极验V4完整目标"))
-    --exit()
-    -- swip("HD-8")
-    --exit()
-    --point.肉鸽干员等级识别范围 = { 682, 261, 707, 291 }
-    -- log(ocro("rl_编队数量ocr范围"))
-    -- --zl.分析待编队干员()
-    -- --活动dis计算()
-    -- 肉鸽参数 = { operators = {}, }
-    -- local recruit_info = zl.加载干员招募评分()
-    -- log(recruit_info.all_opers_battle_info)
-    -- zl.自动编队(recruit_info)
+    sui.普通作战1()
+    exit()
+
 
     -- 差值 147
 end

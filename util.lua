@@ -3313,7 +3313,7 @@ update_state_from_ui = function()
     job = parse_from_ui("now_job_ui", all_job)
 
     -- 活动开放时间段
-    hd_position = "面板活动" --快捷入口位置:"面板活动"是上方,"面板活动2"是下方
+    hd_position = "面板活动2" --快捷入口位置:"面板活动"是上方,"面板活动2"是下方
     hd_nickname = "CG"
     hd_max_stage = 8
     hd_exclude = {}                                --排除哪些关卡不刷，例如{9}
