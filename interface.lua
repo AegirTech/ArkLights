@@ -700,6 +700,9 @@ show_debug_ui = function()
     addTextView(debug_layout_验证码, "Aunly打码服务Token")
     ui.addEditText(debug_layout_验证码, "cloud_captcha_token", "")
 
+    newRow(debug_layout_验证码)
+    ui.addCheckBox(debug_layout_验证码, "not_wait_aunly", "Aunly打码不等待(B服打码过慢可以勾选)", false)
+
     addTitle(debug_layout_验证码, "滑块验证码", "setting.png", 1, 1)
 
     -- newRow(debug_layout_验证码)
