@@ -158,48 +158,52 @@ end
 m.captcha = function(rect)
     log("使用云控打码")
     local node_count = 0
-    wait(
-        function()
-            local img_b_main = findOne("B服验证码_请在下图依次点击")
-            -- local text_box_pre = findOne("B服安全验证目标字符")
-            -- local text_slice_box_pre = findOne("B服安全验证目标字符切片")
-            -- local big_image_box_pre = findOne("B服安全验证泛目标图像")
-            -- if text_box_pre == text_box and text_slice_box_pre == text_slice_box and big_image_box_pre == big_image_box then
-            --     return true
-            -- end
-            if img_b_main ~= nil then
-                log("B服验证码_请在下图依次点击", "主体已稳定，等待校验验证码出现")
-                ssleep(.3)
-                if appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 5) then
-                    if disappear("B服验证码_二值化主体", 10) then
-                        log("B服验证码_二值化主体", "主体已稳定，验证码已出现")
-                        ssleep(1)
-                        return true
+    if not not_wait_aunly then
+        wait(
+            function()
+                local img_b_main = findOne("B服验证码_请在下图依次点击")
+                -- local text_box_pre = findOne("B服安全验证目标字符")
+                -- local text_slice_box_pre = findOne("B服安全验证目标字符切片")
+                -- local big_image_box_pre = findOne("B服安全验证泛目标图像")
+                -- if text_box_pre == text_box and text_slice_box_pre == text_slice_box and big_image_box_pre == big_image_box then
+                --     return true
+                -- end
+                if img_b_main ~= nil then
+                    log("B服验证码_请在下图依次点击", "主体已稳定，等待校验验证码出现")
+                    --  ssleep(.3)
+                    if appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 5) then
+                        if disappear("B服验证码_二值化主体", 10) then
+                            log("B服验证码_二值化主体", "主体已稳定，验证码已出现")
+                            --  ssleep(1)
+                            return true
+                        end
                     end
                 end
-            end
-            -- print("img_b_main", img_b_main)
-            -- print("img_b_main_pre", img_b_main_pre)
+                -- print("img_b_main", img_b_main)
+                -- print("img_b_main_pre", img_b_main_pre)
 
-            -- if text_box_pre ~= text_box then
-            --     log("text_box异常", text_box)
-            -- end
-            -- if text_slice_box_pre ~= text_slice_box then
-            --     log("text_slice_box异常", text_slice_box)
-            -- end
-            -- if big_image_box_pre ~= big_image_box then
-            --     log("big_image_box异常", big_image_box)
-            -- end
-            -- text_box = text_box_pre
-            -- text_slice_box = text_slice_box_pre
-            -- big_image_box = big_image_box_pre
-            -- img_b_main_pre = img_b_main
-            node_count = node_count + 1
-            -- log("B服云控打码节点刷新计数器", node_count)
-            ssleep(.1)
-        end, 5
-    )
-
+                -- if text_box_pre ~= text_box then
+                --     log("text_box异常", text_box)
+                -- end
+                -- if text_slice_box_pre ~= text_slice_box then
+                --     log("text_slice_box异常", text_slice_box)
+                -- end
+                -- if big_image_box_pre ~= big_image_box then
+                --     log("big_image_box异常", big_image_box)
+                -- end
+                -- text_box = text_box_pre
+                -- text_slice_box = text_slice_box_pre
+                -- big_image_box = big_image_box_pre
+                -- img_b_main_pre = img_b_main
+                node_count = node_count + 1
+                -- log("B服云控打码节点刷新计数器", node_count)
+                ssleep(.1)
+            end, 3
+        )
+    else
+        log('not_wait_aunly')
+    end
+    log(797100)
     local img = getWorkPath() .. "/capture_cloud.jpg"
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local image_img_base64 = base64(img)
@@ -207,9 +211,11 @@ m.captcha = function(rect)
     -- headers/数据生成
     local postdata = [[{"image_base64": "]] .. image_img_base64 .. [[", "captcha_type_override": "geetest_v3_click"}]]
     local headers = gen_ua()
-
+    local tt = time()
+    log('准备发送到服务器')
     local res, code = httpPost(m.captchaServer .. "/captcha/recognize", postdata, 30, headers)
     log(res, code)
+    log('响应时长', time() - tt)
     if code == 200 then
         status, data = pcall(JsonDecode, res)
         if data.code == 0 then

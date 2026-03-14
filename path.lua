@@ -527,7 +527,7 @@ path.bilibili_login = {
         --     ssleep(1)
         -- end
         path.bilibili_login.B服等待验证码弹窗加载()
-
+        log(781, 'B服弹窗已加载')
         -- 这段有点屎，不应该放在主流程里，但是为了兼容先不动他
         local box = findOne("B服安全验证框")
         -- log("box", box)
@@ -644,7 +644,7 @@ path.bilibili_login = {
         end
     end,
     B服等待验证码弹窗加载 = function()
-        if not appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 10) then
+        if not appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 5) then
             log("B服安全验证流程", "等待节点识别加载失败")
             if not checkPointColor({ 823, 605, "BAD9FF" }) then
                 log("B服安全验证流程", "弹窗加载失败")
