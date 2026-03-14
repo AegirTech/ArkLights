@@ -196,71 +196,6 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
     log(9217, operators)
 end)
 
--- 宿舍总览换班，保持原有并填满剩余的
---[[ discoverAndChoose = still_wrapper(function(operators, pngdata, pageid, mood_only, stationType)
-    local prewhite = 0
-    local y = scale(383)
-    local corner = {}
-    for x = scale(600), scale(1590) do
-        if cmpColor(x, y, 'FFFFFF', default_findcolor_confidence) == 1 then
-            prewhite = prewhite + 1
-        elseif prewhite > scale(5) and
-            cmpColor(x, y, '898989', default_findcolor_confidence) == 1 then
-            prewhite = 0
-            table.insert(corner, x)
-        end
-    end
-    log(113, #corner)
-
-    local card = {}
-    if #corner == 0 then
-        log("基建换班找不到卡片")
-        return
-    end
-    local prex = -math.huge
-    for _, x in pairs(corner) do
-        if x - prex > scale(207) then
-            prex = x
-            if 排除已经进驻 and cmpColor(x + scale(42), scale(120), 'FFFFFF', default_findcolor_confidence) == 0 then
-                -- 已经进驻，排除
-                table.insert(card, { x, scale(801), true })
-            else
-                table.insert(card, { x, scale(379), false })
-            end
-
-            if 排除已经进驻 and cmpColor(x + scale(42), scale(543), 'FFFFFF', default_findcolor_confidence) == 0 then
-                -- 已经进驻，排除
-                table.insert(card, { x, scale(801), true })
-            else
-                table.insert(card, { x, scale(801), false })
-            end
-        end
-    end
-
-    -- card = table.slice(card, 4, 4)
-    log(114, card)
-    local empty1_num = 0
-    for idx, v in pairs(card) do
-        local icon1 = {
-            v[1] + scale(7), v[2] + scale(18), v[1] + scale(60), v[2] + scale(70),
-        }
-        -- 心情判断
-        local mood = 0
-        local mood1 = { v[1] + scale(49), v[2] + scale(93) }
-        for i = 24, 1, -1 do
-            local moodi = { mood1[1] + scale((i - 1) * 5.3478), mood1[2] }
-            if cmpColor(moodi[1], moodi[2], 'FFFFFF', 0.4) == 1 then
-                mood = i
-                break
-            end
-        end
-        log(129, idx, operator, mood, v[3])
-
-        table.insert(operators, { '', '', mood, icon1, pageid, '', v[3] })
-    end
-    log(217, operators)
-end) ]]
-
 -- 贸易站干员选择
 -- operator: 列表，每个元素包含两个技能图标
 -- dormitoryCapacity: 宿舍可容纳人数
@@ -306,6 +241,16 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 base = base + 0.3 + 0.04                  -- 近似两种产物
             elseif icon == 'bskill_tra_spd&meet1' then    --伺夜
                 base = base + 0.4                         -- 近似满级会客厅
+                if isCharExsit["八幡海铃"] then
+                    base = base + 0.05
+                end
+            elseif icon == 'bskill_tra_ord_spd_ext2' then --贝洛内0
+                base = base + 0.25
+                if isCharExsit["八幡海铃"] then
+                    base = base + 0.05
+                end
+            elseif icon == 'bskill_tra_ord_spd_ext3' then --贝洛内2
+                base = base + 0.3
                 if isCharExsit["八幡海铃"] then
                     base = base + 0.05
                 end
@@ -374,7 +319,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 end
             elseif icon == "trade_ord_spd&par1" then -- 维娜·维多利亚 道格拉斯帮加成不考虑
                 base = base + 0.30
-            elseif icon == "trade_ord_spd&par2" then -- 维娜·维多利亚 道格拉斯帮加成不考虑
+            elseif icon == "trade_ord_spd&par2" then -- 维娜·维多利亚2 道格拉斯帮加成不考虑
                 base = base + 0.30
                 -- 道格拉斯帮加成0.1
             elseif icon == "bskill_tra_ord_spd_ext0" then -- 深巡1
@@ -469,6 +414,16 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
             if isCharExsit["八幡海铃"] then
                 base = base + 0.05
             end
+        end
+
+        -- 贝洛内&伺夜
+        local vigil = all["bskill_tra_spd&meet1"] -- 伺夜
+        if all['bskill_tra_ord_spd_ext2'] and vigil then
+            base = base + 0.05
+            storage = storage + 2
+        elseif all['bskill_tra_ord_spd_ext3'] and vigil then
+            base = base + 0.1
+            storage = storage + 2
         end
 
         -- 老能天使+蕾缪安2,老能天使技能不唯一(需要ocr),暂时不考虑
@@ -613,15 +568,15 @@ testManufacturingStationOperatorBest = function()
     log(best, best_score)
 end
 
--- 制造站干员选择
--- operator: 列表，每个元素包含两个技能图标与心情
--- tradingStationNum: 贸易站数量
--- powerStationNum: 发电站数量
--- dormitoryLevelSum: 宿舍等级之和
--- totalStationLevel: 等级总量
--- type: 制造物类别
--- level: 制造站等级
--- 返回效率最高的index
+--- 制造站干员选择
+---@param operator table 干员列表，每个元素包含两个技能图标与心情
+---@param tradingStationNum integer 贸易站数量
+---@param powerStationNum integer 发电站数量
+---@param dormitoryLevelSum integer 宿舍等级之和
+---@param totalStationLevel integer 建筑等级总量
+---@param goodType string 制造物类别
+---@param level integer 制造站等级
+---@return tabel 返回效率最高的index
 manufacturingStationOperatorBest = function(operator, tradingStationNum,
                                             powerStationNum, dormitoryLevelSum, totalStationLevel,
                                             goodType, level)
@@ -1718,8 +1673,13 @@ controlStationOperatorBest = function(operator)
 
     if #best <= 3 and not trading_acc then
         for _, o in pairs(operator) do
-            -- 阿米娅/诗怀雅
             if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_spd') then
+                -- 阿米娅/诗怀雅/阿斯卡纶..
+                trading_acc = true
+                table.insert(best, o)
+                break
+            elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_tra&prod') then
+                -- 望，大部分情况下是7%贸易加成
                 trading_acc = true
                 table.insert(best, o)
                 break
