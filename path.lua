@@ -866,6 +866,20 @@ path.fallback = {
     阿米娅 = function()
         for k, v in pairs(point.阿米娅右列表) do tap(v) end
         for k, v in pairs(point.阿米娅左列表) do tap(v) end
+        -- 教程
+        if not wait(function()
+                tap("卫戍协议物资调配处")
+                ssleep(.2)
+                tap("卫戍协议准备就绪")
+                ssleep(.2)
+                tap("卫戍协议物资调配处第一个干员")
+                ssleep(.2)
+                tap("卫戍协议物资调配处道具")
+                ssleep(.2)
+                if findOne("教程关闭") or findOne("卫戍协议物资调配处道具") then return true end
+            end, 20, .5) then
+            toast("教程卡住了")
+        end
         tap("返回")
         if appear("阿米娅", 5) then
             ssleep(1)

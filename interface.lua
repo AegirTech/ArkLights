@@ -1164,7 +1164,7 @@ show_extra_ui = function()
     ui.addEditText(layout, "extra_single_password", "")
     ------------------------------------------------------------
     addTitle(layout, "卫戍协议")
-    addInfo(layout, "需要自己过一下教程")
+    --addInfo(layout, "需要自己过一下教程")
     newRow(layout)
     addTextView(layout, "模式")
     ui.addSpinner(layout, "shp_game_mode", { "1 - 4回合循环" }, 0)
