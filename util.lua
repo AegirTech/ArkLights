@@ -3969,6 +3969,12 @@ restartPackage = function()
         log("debug")
     end
     if not root_mode or disable_restart_package then return restartScript() end
+    local ok_cmd = [=[sleep 1
+    eval $ok]=]
+    if restart_package_ok_by_keyevent == true then
+        ok_cmd = [=[sleep 1
+    input tap 360 1230]=]
+    end
     local cmd = [[nohup su root sh -c ' \
 while :; do
 am force-stop ]] .. oppid .. [[;
@@ -4015,8 +4021,7 @@ while [[ $(date +%s) -lt $endTime ]]; do
     eval $cancel
     continue
   elif [[ -n $ok ]]; then
-    sleep 1
-    eval $ok
+]=] .. ok_cmd .. [=[
     ok_found=1
     continue
   fi
