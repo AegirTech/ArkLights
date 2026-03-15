@@ -612,17 +612,7 @@ trySolveSlipCaptcha = function(retry)
         -- log("图案点选验证节点数量", tuan_res, #tuan_res)
 
         official_choice = true
-        -- local choices = { 1, 3, 4 }
-        local choices = {}
-        if use_captcha_aunly and type(cloud_captcha_token) == "string" and #cloud_captcha_token > 10 then
-            table.insert(choices, 3)
-        end
-        if use_captcha_free2 and type(cloud_captcha_server2) == "string" and #cloud_captcha_server2 > 4 then
-            table.insert(choices, 4)
-        end
-        if use_captcha and captcha_username then
-            table.insert(choices, 1)
-        end
+        local choices = { 1, 3, 4 }
         local bbox
         bbox = getChoiceBox()
         log("点选验证框", bbox)

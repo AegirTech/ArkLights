@@ -1026,11 +1026,6 @@ show_debug_ui = function()
     ui.addSpinner(debug_layout_其他, "app_close_way", { "不关闭", "节点强退", "懒人自带", "首页退出" }, 1)
     addInfo(debug_layout_其他, "雷电云请选择节点强退")
 
-    newRow(debug_layout_其他)
-    ui.addCheckBox(debug_layout_其他, "restart_package_ok_by_keyevent",
-        "点击中间底部的【确认】界面", false)
-
-
     local debug_layout_调试 = "debug_tab_setting"
     ui.addTab("debug_tab", debug_layout_调试, "调试")
 
