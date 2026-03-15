@@ -292,15 +292,14 @@ end
 -- 创建sleep_and_do_strategy函数（公共，全局）
 function createSleepAndDoStrategy(do_strategy, useSSleep)
     return function(delay)
-        local start = os.time()
-        local time = ((delay - 1) / 1000)
-        while os.time() - start < time do
+        local start = time()
+        while time() - start < delay do
             keepCapture()
             do_strategy()
             if useSSleep then
                 ssleep(1) -- 1s检查一次 太卡了
             else
-                sleep(50)
+                sleep(100)
             end
         end
         releaseCapture()
@@ -1305,10 +1304,6 @@ end
             -- 规范化指令的kills和costs
             部署指令["kills"] = 部署指令["kills"] or 0
             部署指令["costs"] = 部署指令["costs"] or 0
-            if 部署指令["pre_delay"] then
-                log("前置延时")
-                sleep_and_do_strategy(部署指令["pre_delay"])
-            end
 
             if findAny(STORY_DIALOGS) then
                 tap("剧情中")
@@ -1317,6 +1312,10 @@ end
                 加速()
             end
             if wave >= 部署指令["kills"] and cost >= 部署指令["costs"] then
+                if 部署指令["pre_delay"] then
+                    log("前置延时")
+                    sleep_and_do_strategy(部署指令["pre_delay"])
+                end
                 if 干员列表 and (部署指令["type"] == "Deploy" or 部署指令["type"] == "deploy" or 部署指令["type"] == "部署") then
                     local 需要cost, 干员排位, shouldSkip = processDeployInstruction(部署指令, 干员列表, 群组, 已部署干员, 训练地图, false, nil,
                         部署顺序)
@@ -1516,13 +1515,6 @@ end
             local 行 = 部署指令["location"][1]
             local 列 = 部署指令["location"][2]
             log("部署指令", 行, 列, 部署顺序, 部署指令)
-
-            -- 前置延时
-            if 部署指令["pre_delay"] then
-                log("前置延时")
-                sleep_and_do_strategy(部署指令["pre_delay"])
-            end
-
             -- 处理剧情
             if findAny(STORY_DIALOGS) then
                 tap("剧情中")
@@ -1531,6 +1523,11 @@ end
                 加速()
             end
             if wave >= 部署指令["kills"] and cost >= 部署指令["costs"] then
+                -- 前置延时
+                if 部署指令["pre_delay"] then
+                    log("前置延时")
+                    sleep_and_do_strategy(部署指令["pre_delay"])
+                end
                 if 干员列表 and (部署指令["type"] == "Deploy" or 部署指令["type"] == "deploy" or 部署指令["type"] == "部署") then
                     local 需要cost, 干员排位, shouldSkip = processDeployInstruction(部署指令, 干员列表, 群组, 已部署干员, 训练地图, true, 已部署格子,
                         部署顺序)
@@ -2170,7 +2167,7 @@ end
         --开头和结尾的半角引号替换成全角
         t[i]["text"] = t[i]["text"]:gsub("^\"(.-)\"$", "“%1”")
 
-        log(t[i]["text"])
+        log("修正后ocr结果：" .. t[i]["text"])
     end
 
     return t
