@@ -6512,9 +6512,9 @@ path.故事解锁 = function()
     end
     if not wait(function()
             tap("故事集导航")
-            if findOne("故事集相片页面") then return true end
             ssleep(0.2)
-        end, 5) then
+            if disappear("故事集导航") or findOne("故事集相片页面") then return true end
+        end, 5, .1) then
         return
     end
 
