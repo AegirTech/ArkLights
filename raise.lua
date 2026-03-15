@@ -2523,24 +2523,25 @@ raise.auto_module = function(name)
         return
     end
     -- 暂时只支持仅有1个模组的,有多个模组的需要读取json+ocr模组名字
-    if appear("模组解锁", 2) then
+    if appear("模组解锁", 3) then
         if not wait(function()
                 if not findOne("模组解锁") then return true end
                 tap("模组解锁")
-                ssleep(.2)
-            end, 5) then
+            end, 5, .2) then
             return
         end
     else
         return
     end
-    if appear("模组任务2前往按钮", 2) then
+    if appear("模组任务2前往按钮", 3) then
+        ssleep(.2)
         tap("模组任务2前往按钮")
         ssleep(1)
     else
         return
     end
-    if appear("代理指挥开", 2) then
+    if appear("代理指挥开", 3) then
+        ssleep(.2)
         tap("代理指挥开1")
         ssleep(.5)
     end

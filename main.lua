@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "03.15 14:13"
+release_date = "03.15 14:58"
 update_announcement = '最近更新: 卫戍协议盟约下期'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -125,7 +125,6 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log("dev mode")
     ssleep(1)
-    -- 差值 147
 end
 
 load(before_account_hook or '')()

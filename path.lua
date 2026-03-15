@@ -10392,9 +10392,23 @@ path.卫戍协议循环 = function()
     disappear("卫戍协议首页", 3)
     appear("卫戍协议开始模拟", 2)
     ssleep(.2)
+    -- 打过高难度之后需要滑动重置难度
+    gesture({
+        {
+            point = {
+                { scale(1481), scale(232) },
+                { scale(1481), scale(2000) },
+            },
+            start = 0,
+            duration = 300,
+        },
+    })
+    sleep(300)
+    log("滑动完毕")
+    ssleep(.3)
     for i = 1, 2 do --只打前两个难度
         tap("卫戍协议难度列表" .. i)
-        ssleep(1)
+        ssleep(.9)
     end
     -- if findOne("卫戍协议入门难度") then
     --     log("跳过教程")
