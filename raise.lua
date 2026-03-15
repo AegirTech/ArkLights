@@ -985,8 +985,9 @@ char_choose = function(char_name)
         if 干员职业[char_name] == operator_job[i] then
             if not findOne("普通作战编队列表" .. i) then
                 tap("普通作战编队列表" .. i)
-                appear("普通作战编队列表" .. i)
-                ssleep(.3)
+                ssleep(.2)
+                appear("普通作战编队列表" .. i, 2)
+                ssleep(.2)
             end
         end
     end
