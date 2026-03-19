@@ -6593,6 +6593,10 @@ path.故事解锁 = function()
     end
 end
 
+path.故事解锁 = function()
+    return
+end
+
 path.会客厅跳转好友 = function()
     -- deprecated, we now first do 访问好友, then do 基建
     if not findOne("线索传递") then return end
