@@ -253,8 +253,11 @@ _toast = toast
 --- 屏幕显示并输出日志
 --- @param x string 显示内容
 toast = function(x)
-    _toast(x)
     log(x)
+    if type(x) ~= "string" then
+        x = table.join({ table.unpack(map(table2string, { x })), }, ' ')
+    end
+    _toast(x)
 end
 
 --- 设备点击事件坐标最大值，用于把 getevent 的原始坐标换算为屏幕坐标
@@ -1035,7 +1038,7 @@ end
 --- 日志输出函数（由脚本运行环境提供）
 --- 会把所有参数序列化后打印到控制台/日志窗口。
 --- @type fun(...:any)  -- 可接受任意数量、任意类型的参数
-log = function(...)
+local logCommon = function(level, ...)
     if disable_log then return end
     if os.time() - log_time > tonumber(max_log_time) * 60 then
         console.clearLog()
@@ -1047,24 +1050,37 @@ log = function(...)
     end
     log_count = log_count + 1
     local arg = { ... }
+    local info = debug.getinfo(4, "Sl") -- 这里改成 3，才能正确获取调用行号
+    -- 去掉 ./ 和 .lua
+    local fileName = info.short_src:gsub("^./", ""):gsub("%.lua$", "")
+    local p = "[" .. fileName .. " 行号:" .. info.currentline .. "] [" .. level .. "] "
 
-    local l = table.join({
+    local l = p .. table.join({
         map(tostring, running, ' ', table.unpack(map(table2string, arg))),
     }, ' ')
-    -- l = map(removeFuncHash, l)
-    -- l = map(table2string, l)
 
     local a = os.date('%Y.%m.%d %H:%M:%S')
-    -- local a = time()
-    -- for _, v in pairs(l) do a = a .. ' ' .. v end
-    -- TODO: 有可能是日志太多导致速通停止运行
+
     print(l)
-    console.println(1, a .. ' ' .. l)
+    console.println(1, '[' .. a .. '] ' .. l)
     if write_log_local then
-        -- writeLog(l)
         writeFile(log_path .. "log_ark.txt", a .. ' ' .. l .. "\n", true)
     end
 end
+
+log = {
+    info = function(...) logCommon("INFO", ...) end,
+    debug = function(...) logCommon("DEBUG", ...) end,
+    warn = function(...) logCommon("WARN", ...) end,
+    error = function(...) logCommon("ERROR", ...) end,
+}
+
+setmetatable(log, {
+    -- 默认情况下，log() 等同于 log.info()
+    __call = function(_, ...)
+        log.info(...)
+    end
+})
 
 open = function(id)
     id = id or appid
