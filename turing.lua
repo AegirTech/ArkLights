@@ -31,7 +31,7 @@ TURING = require("TURING")
         识别库[12] = "1|5,15|0m0C0700&&&&&"
         识别库[13] = "/|8,15|00O0E0703W1m0u0S0600"
     else
-        log("本地字库不支持的分辨率")
+        log.warn("本地字库不支持的分辨率")
     end
     return 识别库
 end
@@ -80,7 +80,7 @@ cost字库 = function(h)
         识别库[10] =
         "0|30,34|00&u000V&y007&&y01&&&y0F&&&u1&m1&mFu00&W&000&7u001yV0003xu000FlW000Uy0001&m0007&0000Vy0001&m0007&0000V#0001xu000Fdm000#V0007m&000&3#00Fu7&03&0F&&&u0V&&&00V&&m00V&y000F#00"
     else
-        log("本地字库不支持的分辨率")
+        log.warn("本地字库不支持的分辨率")
     end
     return 识别库
 end

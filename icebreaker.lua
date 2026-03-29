@@ -282,10 +282,9 @@ ib.auto_team_formation = function(作业名, 是否自带)
     local 无限放技能干员 = {}
     local 技能指定次数干员 = {}
     local 作业 = loadHomework(作业名, 是否自带, true)
-    print(作业)
-    print("读取作业成功")
+    log.debug("读取作业成功", 作业)
     processGroupsAndOperatorsNormal(作业, 群组, 队员技能, 无限放技能干员, 技能指定次数干员)
-    log("读取群组成功")
+    log.debug("读取群组成功")
     if not findOne("ib_主页") then
         path.跳转("首页")
         tap("面板活动2")
@@ -300,7 +299,7 @@ ib.自动编队 = function(干员, 群组)
     local 未编入 = {}
     local 未编入干员 = {}
     local 未编入数量 = 0
-    log(3030)
+    log("自动编队开始")
 
     local 干员职业 = JsonDecode(readFile("character_type_list.json"))
     log("读取干员职业成功")
@@ -373,8 +372,8 @@ ib.自动编队 = function(干员, 群组)
                     print(i, 未编入[2])
                     未编入干员 = { i, 未编入[2] }
                 elseif 是否群组 == nil and 未编入数量 > 1 then
-                    log("缺少干员超过1个")
-                    exitScript()
+                    log.error("缺少干员超过1个")
+                    exit()
                 end
                 if not 是否群组 then 编入数量 = #干员目录 + 编入数量 end
             end
@@ -401,7 +400,7 @@ ib.自动编队 = function(干员, 群组)
     -- 增加选择风格
     back()
     if 未编入数量 >= 1 then
-        log("编队未完成，需要手动编队")
+        log.error("编队未完成，需要手动编队")
         sleep(1000)
         --有时候会在编队界面卡主 一直返回不了主页
         wait(function()
@@ -485,7 +484,7 @@ ib.选择干员 = function(干员目录, 字典, 是否群组, 群组需要数�
     if notselected == 1 then
         return { notselected, 干员组[i] }
     elseif notselected > 1 then
-        log("2名干员缺失")
+        log.warn("2名干员缺失")
         return { notselected }
     end
 end

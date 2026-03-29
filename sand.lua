@@ -19,11 +19,11 @@ Tales_within_the_sand = {}
         appear("生息演算主页进入")
     end
     if not findOne("生息演算主页进入") then
-        log("未找到主页，从头开始")
+        log.warn("未找到主页，从头开始")
         Tales_within_the_sand.生息跳转()
     end
     if not findOne("生息演算未结算_反") then
-        log("存在未结算")
+        log.warn("存在未结算")
         tap("生息演算主页进入")
         if reachFourthDay or sand_mode == 0 then
             reachFourthDay = true
@@ -71,7 +71,7 @@ Tales_within_the_sand.生息跳转 = function()
             appearTap("主页长期探索_生息演算", 0.2)
             if findOne("生息演算主页进入") then return true end
         end, 10) then
-        log(55)
+        log.debug()
         path.跳过剧情()
     end
     if findOne("生息演算主页进入") then return true end
@@ -369,7 +369,7 @@ Tales_within_the_sand.检查代币数量 = function()
     end
     if sand_nostop then return end
     if sand_noincrease_stop and Prosperity_same_number > 5 then
-        log("连续5次未增加")
+        log.warn("连续5次未增加")
         if cloud_get_task then
             log("云控上报")
             captureqqimagedeliver("INFO", "生息任务结束2", "繁荣值" .. nx, true)
@@ -403,7 +403,7 @@ Tales_within_the_sand.生息演算奇遇节点 = function()
     Tales_within_the_sand.生息演算地图缩放(true)
     ssleep(0.5)
     if not findOne("生息底栏烹饪按钮") then
-        log("生息演算奇遇节点未找到底栏")
+        log.warn("生息演算奇遇节点未找到底栏")
         return
     end
     local 判断内容 = ""
@@ -420,7 +420,7 @@ Tales_within_the_sand.生息演算奇遇节点 = function()
         end, 5) then
     end
     if not findOne(判断内容) then
-        log("生息演算奇遇节点未找到判断")
+        log.warn("生息演算奇遇节点未找到判断")
         return
     end
 
@@ -548,14 +548,14 @@ Tales_within_the_sand.生息演算奇遇 = function(关卡)
             if findOne("生息演算完成生存周期") then
                 ssleep(2)
                 local text = ocro("沙洲遗闻转化繁荣点数")
-                log(9998, text)
+                log.debug(text)
                 if text == "MAX" or (text ~= nil and tonumber(text) == nil) then
                     log("繁荣点数已满")
                     Prosperity_same_number = 6
                 end
                 tap("沙洲遗闻开启今日")
             end
-            log(563)
+            log.debug()
             appearTap("沙洲遗闻开启今日", .1)
             if findOne("沙洲遗闻开启今日") then
                 log("荒季过天")
@@ -686,7 +686,7 @@ Tales_within_the_sand.敌袭1 = function()
                     return true
                 end
                 if not findOne("生命值") then
-                    log(462)
+                    log.debug()
                     -- return true
                 end
             end, 30) then
@@ -861,7 +861,7 @@ Tales_within_the_sand.下一天 = function(check_point)
         tap("生息演算右上角生息日")
         ssleep(.2)
     end
-    log(7402)
+    log.debug()
     开启今日 = false
     if not wait(function()
             if findOne("生息演算消磨时间") or findOne("生息演算消磨时间2") then tap("生息演算消磨时间") end
@@ -992,7 +992,7 @@ Tales_within_the_sand.商店购买 = function()
     end
 
     if not appear("沙洲遗闻商店界面", 1) then
-        log("未找到商店")
+        log.warn("未找到商店")
         return
     end
     local 物品横间距, 物品纵间距 = scale(516), scale(242)
@@ -1020,7 +1020,7 @@ Tales_within_the_sand.商店购买 = function()
                         end, 1.8) then
                     end
                     if findOne("沙洲遗闻商店界面") then
-                        log("未能进入商品，大概是识别错了")
+                        log.warn("未能进入商品，大概是识别错了")
                         break
                     end
                     -- 点击购买
@@ -1039,7 +1039,7 @@ Tales_within_the_sand.商店购买 = function()
                     end
                     --disappear("正在提交反馈至神经", network_timeout)
                     if findOne("购买物品面板") then
-                        log("未能购买，大概是钱花完了")
+                        log.warn("未能购买，大概是钱花完了")
                         return true
                     end
                 end
@@ -1073,7 +1073,7 @@ Tales_within_the_sand.连续跳过 = function()
     if not findOne("生息底栏烹饪按钮") then
         log("非游戏内")
         if not findOne("生息演算主页进入") then
-            log("未找到主页，从头开始")
+            log.warn("未找到主页，从头开始")
             Tales_within_the_sand.生息跳转()
         end
         tap("生息演算主页进入")
@@ -1094,7 +1094,7 @@ Tales_within_the_sand.循环下一天 = function()
     if not findOne("生息底栏烹饪按钮") then
         log("非游戏内")
         if not findOne("生息演算主页进入") then
-            log("未找到主页，从头开始")
+            log.warn("未找到主页，从头开始")
             Tales_within_the_sand.生息跳转()
         end
         -- if not wait(function()
@@ -1284,7 +1284,7 @@ Tales_within_the_sand.基地摆放物品 = function()
                     return true
                 end
                 if not findOne("生命值") then
-                    log(462, "已有部署")
+                    log.debug("已有部署")
                     i = i - 1
                     return true
                 end

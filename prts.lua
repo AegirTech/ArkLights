@@ -215,7 +215,7 @@ end
 -- 处理编队完成后的逻辑
 local function handleTeamComplete(未编入数量, 未编入干员, 快捷编队按钮, isSSS)
     if 未编入数量 >= 1 then
-        log("编队未完成，需要手动编队")
+        log.warn("编队未完成，需要手动编队")
         sleep(1000)
         if isSSS then
             path.跳转("首页")
@@ -519,7 +519,7 @@ fetchMaps = function()
         toast("地图包更新成功")
         ui.setButton("map_online", "联网更新地图包(下载完成)")
     else
-        log("地图包版本获取失败,请稍后再试")
+        log.warn("地图包版本获取失败,请稍后再试")
         ui.setButton("map_online", "联网更新地图包(下载失败，请重试)")
     end
     load_map_version()
@@ -872,7 +872,7 @@ auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
                 end
                 if findOne("选择导能元件") then return true end
             end, 5) then
-            log("进入保全失败")
+            log.warn("进入保全失败")
             return
         end
         local 导能元件 = tonumber(作业["buff"]) or 3 --默认用第三个元件
@@ -948,7 +948,7 @@ auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
                     end
                     ssleep(.3)
                 end, 15) then
-                log("进入保全失败")
+                log.warn("进入保全失败")
                 return
             end
         end
@@ -959,7 +959,7 @@ auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
                     ssleep(.3)
                     if disappear("开始行动保全") then return true end
                 end, 15) then
-                log("进入保全失败")
+                log.warn("进入保全失败")
                 return
             end
             handleCardChange(true)
@@ -1401,7 +1401,7 @@ end
         -- 处理剧情和战斗状态检查
         if findOne("跳过剧情") then
             path.跳过剧情()
-            log(1405, "战斗中跳过剧情")
+            log.debug("战斗中跳过剧情")
             appear("作战中", 3)
             加速()
         end
@@ -1767,7 +1767,7 @@ end
     旧职业列表 = shallowCopy(职业列表)
     旧费用列表 = shallowCopy(费用列表)
     更新列表 = 获取费用列表()
-    log("更新未部署干员")
+    log.warn("更新未部署干员")
     log("费用列表", 费用列表)
     log("职业列表", 职业列表)
 

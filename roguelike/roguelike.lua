@@ -544,11 +544,11 @@ end
 zl.选择干员 = function(idx) --选择当页干员
     if not wait(function()
             if findAny({ "萨卡兹_初始招募", "战略返回" }) then
-                log(26)
+                log.debug()
                 return true
             end
             if findOne("返回确认界面") then
-                log(27)
+                log.debug()
                 -- 虽然不知道会不会走这儿
                 tap("左取消")
                 disappear("返回确认界面")
@@ -693,7 +693,7 @@ zl.fight_name_ocr = function(rogueType)
     log(zl_fight_name)
     if not wait(function()
             fight1ocr = ocr_ret(rogueType .. "_作战检测范围")
-            log(4880, fight1ocr)
+            log.debug(fight1ocr)
             if #fight1ocr > 1 then
                 for name, chars in pairs(zl_fight_name) do
                     if string.finds(fight1ocr, chars) then
@@ -706,7 +706,7 @@ zl.fight_name_ocr = function(rogueType)
             else
                 log("更换ocr")
                 fight1ocr = ocrex_ret(rogueType .. "_作战检测范围")
-                log(4882, fight1ocr)
+                log.debug(fight1ocr)
                 if #fight1ocr > 1 then
                     for name, chars in pairs(zl_fight_name) do
                         if string.finds(fight1ocr, chars) then
@@ -741,18 +741,18 @@ zl.招募近卫 = function(type)
 
     if not wait(function()
             if findAny({ rogue_tpye .. '_' .. "初始招募", "战略返回" }) then
-                log(26)
+                log.debug()
                 return true
             end
             if findOne("返回确认界面") then
-                log(27)
+                log.debug()
                 -- 虽然不知道会不会走这儿
                 tap("左取消")
                 disappear("返回确认界面")
                 -- 不等会怎么样呢，有时会闪
                 ssleep(.5)
             end
-            log(28, zl_best_operator)
+            log.debug(zl_best_operator)
             local idx = str2int(zl_best_operator, -1)
 
             if idx >= 1 and idx <= 12 then
@@ -787,11 +787,11 @@ zl.招募医疗 = function(type)
         appear('战略助战')
         if not wait(function()
                 if findAny({ rogue_tpye .. '_' .. "初始招募", "战略返回" }) then
-                    log(26)
+                    log.debug()
                     return true
                 end
                 if findOne("返回确认界面") then
-                    log(27)
+                    log.debug()
                     -- 虽然不知道会不会走这儿
                     tap("左取消")
                     disappear("返回确认界面")
@@ -1477,13 +1477,13 @@ zl_level_coin_inquire = function(常规行动, 等级检测范围, 源石锭检�
         local ans = wait(function()
             ssleep(.5)
             local r = ocro(检测范围)
-            log("4126", r)
+            log.debug(r)
             -- if x == nil or type(x) ~= "string" or #x == 0 then
             --     return 0
             -- end
             if not r then r = "" end
             x = str2int(r:match("%d+"), -1)
-            log("4127", type(x), x)
+            log.debug(type(x), x)
             if x >= 0 and x <= 999 then return x end
             prex = x
         end, 0.7) --给点检测时间
@@ -1539,13 +1539,13 @@ zl_abandon_rougelike = function(常规行动, 继续探索, 放弃探索)
                 if findOne("返回确认界面") then return true end
                 tap(放弃探索)
             end, 5) then
-            log(2608)
+            log.debug()
             -- 无法直接放弃的情况 不处理
             if not wait(function()
                     if not findOne(常规行动) then return true end
                     tap(继续探索)
                     ssleep(.5)
-                    log(2613)
+                    log.debug()
                 end, 5) then
                 return false
             end
@@ -1733,13 +1733,13 @@ zl_abandon_explore = function(type)
                 if findOne("返回确认界面") then return true end
                 tap(rogue_tpye .. "_放弃本次探索")
             end, 5) then
-            log(2608)
+            log.debug()
             -- 无法直接放弃的情况 不处理
             if not wait(function()
                     if not findOne(rogue_tpye .. "_常规行动") then return true end
                     tap(rogue_tpye .. "_继续探索")
                     ssleep(.5)
-                    log(2613)
+                    log.debug()
                 end, 5) then
                 return
             end

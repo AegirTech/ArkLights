@@ -42,7 +42,6 @@ m.enabled =
 m.getTaskEnabled = function() return cloud_get_task and m.enabled() end
 
 m.heartBeat = function()
-    -- log("32",32)
     local data = { status = m.status, deviceToken = m.deviceToken }
     local res, code = httpPost(m.server .. "/heartBeat", JsonEncode(data), 30,
         "Content-Type: application/json")
@@ -203,7 +202,7 @@ m.captcha = function(rect)
     else
         log('not_wait_aunly')
     end
-    log(797100)
+    log.debug()
     local img = getWorkPath() .. "/capture_cloud.jpg"
     snapShot(img, rect.l, rect.t, rect.r, rect.b)
     local image_img_base64 = base64(img)
@@ -278,7 +277,7 @@ m.captchaSecond = function(box)
     log('打码进度10 ', time() - 打码进入时间)
     local res, code = httpPost(cloud_captcha_server2 .. "/captcha/select/base64", JsonEncode(data),
         30, "Content-Type: application/json;charset=UTF-8")
-    log(3058, res, code)
+    log.debug(res, code)
     log('打码进度11 ', time() - 打码进入时间)
     if code == 200 then
         -- log("code,200")

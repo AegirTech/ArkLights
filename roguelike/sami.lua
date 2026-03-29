@@ -133,7 +133,7 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     if not zl.招募医疗('萨米') then return end
 
     if not appear("萨米_初始招募") then return end
-    log(2698)
+    log.debug()
     -- 进入探索 必须分为两段，否则产生位移
 
     if not wait(function()
@@ -143,7 +143,7 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
         return
     end
 
-    log(2700)
+    log.debug()
     --点击进入探索之后，有一段时间的加载界面，需要点击
     local xtime = time()
     if not wait(function()
@@ -263,7 +263,7 @@ path.探索者的银淞止境前瞻投资 = function(lighter)
     if not findOne("战略返回") then return end
 
     if not zl_fight_after_sami() then
-        log("未能完成战斗后拾取")
+        log.warn("未能完成战斗后拾取")
         return false
     end
     log("完成一次战斗")
@@ -397,7 +397,7 @@ zl_fight_after_sami = function()
                 "萨米_源石锭拾取", '萨米_道具收下', '萨米_密文版拿走',
                 '萨米_密文版拾取', "萨米_密文版选择左", "萨米_已领取所有奖励"
             })
-            log(2555, x)
+            log.debug(x)
             tap(x)
             if x == '萨米_密文版拾取' then
                 -- wait(function()

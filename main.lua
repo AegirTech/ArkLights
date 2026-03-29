@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "03.30 01:30"
+release_date = "03.30 04:35"
 update_announcement = '最近更新: 卫戍协议盟约下期'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -123,7 +123,7 @@ if use_local_dictionary then
     require("turing")
 end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
-    log("dev mode")
+    log.debug("dev mode")
     ssleep(1)
 end
 
@@ -147,8 +147,7 @@ end
 
 -- log("100",cloud.enabled(),cloud_task)
 if cloud.getTaskEnabled() and not cloud_task then
-    -- 云控模式冷启动
-    log("102", 102)
+    log("云控模式冷启动")
 elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi) and
     multi_account_enable then
     -- 多帐号模式
@@ -259,7 +258,7 @@ elseif not crontab_enable_only then
     local login_time = expand_number_config((not login_week_time or login_week_time == "") and "1-7" or
         login_week_time)
     if not table.includes(login_time, get_day_of_week()) then
-        log("不在每周上号列表，跳过")
+        log.warn("不在每周上号列表，跳过")
         skip_account = true
     end
 

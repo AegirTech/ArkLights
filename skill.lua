@@ -24,11 +24,11 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
             table.insert(corner, x)
         end
     end
-    log(113, #corner)
+    log.debug(#corner)
 
     local card = {}
     if #corner == 0 then
-        log("基建换班找不到卡片")
+        log.warn("基建换班找不到卡片")
         return
     end
     local prex = -math.huge
@@ -41,7 +41,7 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
     end
 
     -- card = table.slice(card, 4, 4)
-    log(114, card)
+    log.debug(card)
     local empty1_num = 0
     for idx, v in pairs(card) do
         -- 技能图标1坐标
@@ -115,11 +115,11 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
                 break
             end
         end
-        log(129, idx, operator, mood, name)
+        log.debug(idx, operator, mood, name)
         table.insert(operators, { png, png2, mood, icon1, pageid, name })
     end
     -- sleep(max(0, delay - (time() - start_time)))
-    log(217, operators)
+    log.debug(operators)
     -- exit()
 end)
 
@@ -138,11 +138,11 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
         end
     end
     log("dis ocr")
-    log(9113, #corner)
+    log.debug(#corner)
 
     local card = {}
     if #corner == 0 then
-        log("基建换班找不到卡片")
+        log.warn("基建换班找不到卡片")
         return
     end
     local prex = -math.huge
@@ -155,7 +155,7 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
     end
 
     -- card = table.slice(card, 4, 4)
-    log(9114, card)
+    log.debug(card)
     local empty1_num = 0
     for idx, v in pairs(card) do
         -- 技能判断
@@ -164,7 +164,7 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
         }
         local name = "干员名未识别"
         if dev_mode or (not not_use_ocr) then
-            log(9188)
+            log.debug()
             local status, charName = pcall(ocro, {
                 v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
             })
@@ -190,10 +190,10 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
                 break
             end
         end
-        log(9129, idx, operator, mood, name)
+        log.debug(idx, operator, mood, name)
         table.insert(operators, { png, png2, mood, icon1, pageid, name })
     end
-    log(9217, operators)
+    log.debug(operators)
 end)
 
 -- 贸易站干员选择
@@ -513,7 +513,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
 
         return base, only_need
     end
-    log(353)
+    log.debug()
     -- 过滤心情小于阈值的干员
     local minAllowedMood = shift_min_mood
     if disable_shift_mood then minAllowedMood = -1 end
@@ -526,7 +526,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
     local best = {}
     local best_score = -1
     local best_only_need = {}
-    log(354, #operator, maxOperator)
+    log.debug(#operator, maxOperator)
     for _, c in pairs(table.combination(range(1, #operator), maxOperator)) do
         local s, only_need = score(table.index(operatorIcon, c))
         -- log(401, table.index(operator, c), s)
@@ -538,7 +538,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
     end
 
     best = table.index(operator, best)
-    log(355, #best_only_need)
+    log.debug(#best_only_need)
     -- 特殊处理，只需要部分干员
     if #best_only_need > 0 then
         best = table.filter(best, function(v)
@@ -961,7 +961,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
     local best = {}
     local best_score = -1
     local best_only_need = {}
-    log(402, #operator, maxOperator)
+    log.debug(#operator, maxOperator)
     for _, c in pairs(table.combination(range(1, #operator), maxOperator)) do
         --log(674, c, table.index(operatorIcon, c))
         local s, only_need = score(table.index(operatorIcon, c))
@@ -974,7 +974,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
         -- if table.equal(c, {1, 2, 3}) then exit() end
     end
     best = table.index(operator, best)
-    log(403, "best", best)
+    log.debug("best", best)
     -- 特殊处理，白板干员用白板
     if #best_only_need > 0 then
         best = table.filter(best, function(v)
@@ -1356,7 +1356,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
     swipo(true, true)
     start_time = time()
 
-    log(671, operator)
+    log.debug(operator)
     -- 检查operator
     local tto = 0
     for i = 1, #operator do
@@ -1369,10 +1369,10 @@ chooseOperator = function(stationType, goodType, stationLevel,
     end
     log(#operator, tto)
     if #operator == tto then
-        log("全部干员识别失败")
+        log.warn("全部干员识别失败")
         return
     end
-    log(677)
+    log.debug()
 
 
     -- exit()
@@ -1466,7 +1466,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
 
     -- 选择干员
     operator = best
-    log(692, operator, best_score)
+    log.debug(operator, best_score)
     local pageid = 1
     for i = 1, #operator do
         log(i, operator[i])
@@ -1494,7 +1494,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
 
     local names = {}
     for i = 1, #operator do
-        log(1467, i, operator[i])
+        log.debug(i, operator[i])
         if table.findv({ "abyssal_hunter" }, operator[i][1]) then
             table.insert(names, operator[i][6])
         end
@@ -2058,7 +2058,7 @@ end
 dormitoryOperatorFiammetta = function(operator)
     -- 过滤心情小于阈值的干员
     local minAllowedMood = 24 --肥鸭技能只在满心情有效
-    log(1648, operator)
+    log.debug(operator)
     operator = table.filter(operator,
         function(x) return x ~= {} or x[3] >= minAllowedMood end)
     local best = {}
@@ -2079,7 +2079,7 @@ end
 
 powerStationOperatorBest = function(operator)
     -- 过滤心情小于阈值的干员
-    log(1925)
+    log.debug()
     local minAllowedMood = shift_min_mood
     if disable_shift_mood then minAllowedMood = -1 end
     operator = table.filter(operator,
@@ -2148,7 +2148,7 @@ powerStationOperatorBest = function(operator)
         end
         table.insert(best, { s, o })
     end
-    log(1927, best)
+    log.debug(best)
     table.sort(best, function(a, b) return a[1] > b[1] end)
     best = best[1][2]
     return { best }, best_score

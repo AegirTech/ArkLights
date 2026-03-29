@@ -21,7 +21,7 @@ sui.跳转 = function()
     end
 
     local 作战结算返回 = function()
-        log("界园_作战失败，准备返回")
+        log.warn("界园_作战失败，准备返回")
         wait(function()
             if findOne("界园_常规行动") then
                 ssleep(3)
@@ -108,10 +108,10 @@ sui.跳转 = function()
                     if findOne("返回确认界面") then return true end
                     tap("界园_放弃探索")
                 end, 5) then
-                log(2608)
+                log.debug()
                 -- 无法直接放弃的情况 不处理
                 if not appear("界园_常规行动", 5) then
-                    log(2609)
+                    log.debug()
                     return
                 end
 
@@ -142,7 +142,7 @@ sui.跳转 = function()
                 end
 
                 if findAny({ "界园_主页干员详情", "界园_主页干员详情蓝色" }) then
-                    log(2634)
+                    log.debug()
                     back()
                     ssleep(.5)
                 end
@@ -181,7 +181,7 @@ sui.跳转 = function()
             tap("新战略确认")
             tap("继续探索")
             if findAny({ "界园_主页干员详情", "界园_主页干员详情蓝色" }) then
-                log(2690)
+                log.debug()
                 back()
                 ssleep(.5)
             end
@@ -229,7 +229,7 @@ sui.点天赋 = function()
             end
             开始x坐标 = 开始x坐标 + scale(70)
             if findOne("界园_学识数量不足") then
-                log("学识数量不足，退出")
+                log.warn("学识数量不足，退出")
                 return
             end
         end
@@ -244,7 +244,7 @@ sui.战斗后领取 = function()
             if findOne("界园_战略帮助") then drop_page = true end
             if zl_only_coin then
                 local x = findAny({ "界园_不要了列表1", "界园_不要了列表2" })
-                log(2516, x)
+                log.debug(x)
                 tap(x)
                 if not wait(function()
                         tap(findAny({ "界园_不要了确认列表1", "界园_不要了确认列表2" }))
@@ -256,7 +256,7 @@ sui.战斗后领取 = function()
                 "界园_源石锭收下", "界园_通宝收下",
                 "界园_招募卷收下", "界园_通宝收下2",
             })
-            log(2555, x)
+            log.debug(x)
             tap(x)
             if x == "界园_通宝收下2" then
                 appearTap("界园_通宝交换左", 5)
@@ -339,13 +339,13 @@ sui.战斗后领取 = function()
 end
 
 sui.招募处理 = function()
-    log(1090)
+    log.debug()
     -- 第2人
     for i = 1, 2 do
         local tj = appear({ "界园_辅助招募卷", "界园_医疗招募卷" })
-        log(1091, tj, "不招募")
+        log.debug(tj, "不招募")
         if not tj then
-            log(1094, "没有招募卷")
+            log.debug("没有招募卷")
             break
         end
         if not wait(function()
@@ -373,7 +373,7 @@ sui.招募处理 = function()
         end
     end
     ssleep(.1)
-    log(1095)
+    log.debug()
     log('招募近卫')
     if not wait(function()
             tap("界园_近卫招募卷")
@@ -387,16 +387,16 @@ sui.招募处理 = function()
     disappear({ "肉鸽_右上角希望", "战略返回" })
     if not wait(function()
             if findAny({ "肉鸽_右上角希望" }) then
-                log(26)
+                log.debug()
                 return true
             end
             if findOne("返回确认界面") then
-                log(27)
+                log.debug()
                 tap("左取消")
                 disappear("返回确认界面")
                 ssleep(.5)
             end
-            log(28, zl_best_operator)
+            log.debug(zl_best_operator)
             local idx = str2int(zl_best_operator, -1)
 
             if idx >= 1 and idx <= 12 then
@@ -419,9 +419,9 @@ sui.不招募 = function()
     appear("肉鸽_右上角希望")
     for i = 1, 3 do
         local tj = appear({ "界园_辅助招募卷", "界园_近卫招募卷", "界园_医疗招募卷" })
-        log(1091, tj, "不招募")
+        log.debug(tj, "不招募")
         if not tj then
-            log(1094, "没有招募卷")
+            log.debug("没有招募卷")
             return
         end
         if not wait(function()
@@ -515,7 +515,7 @@ end
 
 sui.战斗开始 = function()
     --检查作战关卡名字
-    log(3306)
+    log.debug()
     if not zl.fight_name_ocr("界园") then return end
     toast(now_fight_name)
     ssleep(1)
@@ -523,17 +523,17 @@ sui.战斗开始 = function()
             if findOne("快捷编队") then return true end
             tap("界园_作战_进入")
         end, 5) then
-        log(3302, "无法进入")
+        log.debug("无法进入")
         zl_repos_path('界园_放弃探索')
     end
-    log(3307)
+    log.debug()
     if not wait(function()
             if findOne("确认招募") then return true end
             tap("快捷编队")
         end, 10) then
         return
     end
-    log(3309)
+    log.debug()
     if not wait(function()
             if findOne("攻击范围") and
                 (zl_skill_idx ~= 2 or zl_skill_idx == 2 and findOne("战略二技能")) then
@@ -552,7 +552,7 @@ sui.战斗开始 = function()
         end, 10) then
         return
     end
-    log(3312)
+    log.debug()
     if not wait(function()
             if not findOne("确认招募") then return true end
             tap("确认招募")
@@ -561,7 +561,7 @@ sui.战斗开始 = function()
     end
 
     if not appear("快捷编队") then return end
-    log(3319)
+    log.debug()
     -- 开始游戏
     if not wait(function()
             tap("确认招募")
@@ -574,7 +574,7 @@ sui.战斗开始 = function()
         end, 10) then
         return
     end
-    log(3390)
+    log.debug()
     -- 等待加载游戏界面
     if not wait(function()
             if findOne("单选确认框") then return true end
@@ -587,12 +587,12 @@ sui.战斗开始 = function()
 
     -- 需要等等才能点两倍速
     appearTap("两倍速", 3)
-    log(3394)
+    log.debug()
     -- 部署干员到关卡位置 只部署一个人的
     zl_deploy(point.界园_作战关卡[now_fight_name], 1)
 
     appear("生命值")
-    log(3395)
+    log.debug()
     local last_time_see_life = time()
     local skill_times = 0
     if not wait(function()
@@ -605,7 +605,7 @@ sui.战斗开始 = function()
             -- 超过3秒没看到生命值
             if time() - last_time_see_life > 5000 then
                 tap("战略确认")
-                log(3396, "超过3秒没看到生命值")
+                log.debug("超过3秒没看到生命值")
                 return true
             end
             tap("开始行动1")
@@ -634,10 +634,10 @@ sui.战斗开始 = function()
             end
             ssleep(0.5)
         end, 300) then
-        log(3399)
+        log.debug()
         return restartapp(appid)
     end
-    log(3400)
+    log.debug()
 end
 
 sui.放弃作战 = function()
@@ -647,7 +647,7 @@ sui.放弃作战 = function()
             if findOne("快捷编队") then return true end
             tap("界园_作战_进入")
         end, 5) then
-        log(3302, "无法进入")
+        log.debug("无法进入")
         zl_repos_path('界园_放弃探索')
     end
 
@@ -663,7 +663,7 @@ sui.放弃作战 = function()
         end, 10) then
         return
     end
-    log(3306)
+    log.debug()
     -- 等待加载游戏界面
     if not wait(function()
             findTap("界园_无干员进入")
@@ -674,13 +674,13 @@ sui.放弃作战 = function()
     end
 
     if not findOne("生命值") then return end
-    log(3307)
+    log.debug()
     -- 退出游戏，等待回到主线
     if not wait(function()
             tap("界园_左上角退出游戏")
             ssleep(0.5)
             if findOne("界园_放弃游戏") then
-                log(3309)
+                log.debug()
                 tap("界园_放弃游戏")
                 return true
             end
@@ -736,9 +736,9 @@ path.界园前瞻投资 = function()
     local page = nil
     if not zl_only_coin then
         -- 会出额外藏品
-        log(1056)
+        log.debug()
         if appear("界园_额外藏品选择页面", 5) and not appear("界园_选择招募卷阶段", 0.5) then
-            log(10562)
+            log.debug()
             ssleep(0.2)
             appear("界园_藏品选择横线", 5)
             ssleep(0.1)
@@ -746,12 +746,12 @@ path.界园前瞻投资 = function()
             local best = 2
             for i = 1, 3 do
                 local fret = find_color("界园_藏品范围" .. i, "C82A36", 0, 0.8)
-                log(1057, i, fret)
+                log.debug(i, fret)
                 local fretb = find_color("界园_藏品范围" .. i, "28BFE5")
-                log(1058, fretb)
+                log.debug(fretb)
                 if not fret and fretb then
                     best = i
-                    log(1059, best)
+                    log.debug(best)
                 end
             end
             if not wait(function(reset_wait_start_time)
@@ -787,7 +787,7 @@ path.界园前瞻投资 = function()
     --     return
     -- end
     ssleep(0.5)
-    log(1064)
+    log.debug()
     if not wait(function(reset_wait_start_time)
             if findOne("肉鸽_右上角希望") then
                 ssleep(1)
@@ -819,7 +819,7 @@ path.界园前瞻投资 = function()
         end, 10) then
         return
     end
-    log(1065)
+    log.debug()
     -- if not wait(function(reset_wait_start_time)
     --         if findOne("界园_招募界面") then return true end
     --         appearTap("界园_近卫招募组合", 5)
@@ -834,7 +834,7 @@ path.界园前瞻投资 = function()
         sui.招募处理()
     end
 
-    log(2698)
+    log.debug()
     if not appear({ "肉鸽_右上角希望", "界园_进入探索", "界园_每层通宝确认" }, 20) then return end
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
@@ -845,7 +845,7 @@ path.界园前瞻投资 = function()
     end
     ssleep(2)
 
-    log(2700)
+    log.debug()
     --点击进入探索之后，有一段时间的加载界面，需要点击
     local xtime = time()
     if not wait(function()
@@ -867,7 +867,7 @@ path.界园前瞻投资 = function()
     local 第二列数量 = 0
     local 节点判断 = function(x)
         第二列数量 = x
-        log(300, 第二列数量)
+        log.debug(第二列数量)
         local strx = str(x)
         for i = 1, x do
             if findOne("界园_第2列_不期而遇" .. strx .. "_列表" .. i) then
@@ -921,27 +921,27 @@ path.界园前瞻投资 = function()
             tap("萨卡兹_第一列_作战列表" .. 第一列关卡)
             if findOne('界园_作战页面加载') then return true end
             if not findOne(右上角取样) then
-                log(3209)
+                log.debug()
                 ssleep(0.5)
                 return true
             end
         end, 10) then
-        log(3301, "无法进入")
+        log.debug("无法进入")
         zl_repos_path('界园_放弃探索')
     end
-    log(3305)
+    log.debug()
     if zl_skip_fight and not zl_big_map then
         sui.放弃作战()
     else
         sui.战斗开始()
     end
     --有时光之末但没点《扩园篇》天赋
-    log(1055)
+    log.debug()
     local r = appear({ "战略返回", '界园_戛然而止', '界园_戛然而止2', "界园_作战失败结算" }, 30)
     if r ~= "战略返回" then
         -- back()
         if not appear("界园_常规行动", 5) then
-            log(3303, "无法返回常规行动")
+            log.debug("无法返回常规行动")
             restart()
             return
         end
@@ -950,12 +950,12 @@ path.界园前瞻投资 = function()
     if not findOne("战略返回") then return end
 
     if not zl_skip_fight and not sui.战斗后领取() then
-        log("未能完成战斗后拾取")
+        log.warn("未能完成战斗后拾取")
         return false
     end
 
     if zl_big_map and zl_skip_fight and not sui.战斗后领取() then
-        log("未能完成战斗后拾取")
+        log.warn("未能完成战斗后拾取")
         return false
     end
 
@@ -982,7 +982,7 @@ path.界园前瞻投资 = function()
                 findTap("界园_不期而遇_进入")
                 findTap("界园_得偿所愿_进入")
             end, 10) then
-            log("未能进入作战列表")
+            log.warn("未能进入作战列表")
             return false
         end
     end
@@ -1003,18 +1003,18 @@ path.界园前瞻投资 = function()
         if findOne("界园_作战失败结算") then
             作战结算返回()
             if not appear("界园_常规行动", 5) then
-                log(3303, "无法返回常规行动")
+                log.debug("无法返回常规行动")
                 return
             end
             return
         end
         if not findOne("战略返回") then return end
         if not zl_skip_fight and not sui.战斗后领取() then
-            log("未能完成战斗后拾取")
+            log.warn("未能完成战斗后拾取")
             return false
         end
         if zl_big_map and zl_skip_fight and not sui.战斗后领取() then
-            log("未能完成战斗后拾取")
+            log.warn("未能完成战斗后拾取")
             return false
         end
         log("完成战斗")
@@ -1062,7 +1062,7 @@ path.界园前瞻投资 = function()
                     findTap("界园_不期而遇_进入")
                     findTap("界园_得偿所愿_进入")
                 end, 10) then
-                log("未能进入作战列表")
+                log.warn("未能进入作战列表")
                 return false
             end
         end
@@ -1085,7 +1085,7 @@ path.界园前瞻投资 = function()
             if findOne("界园_作战失败结算") then
                 作战结算返回()
                 if not appear("界园_常规行动", 5) then
-                    log(3303, "无法返回常规行动")
+                    log.debug("无法返回常规行动")
                     return
                 end
                 return
@@ -1095,12 +1095,12 @@ path.界园前瞻投资 = function()
             sui.不期而遇处理()
         end
 
-        log(1055)
+        log.debug()
         local r = appear({ "战略返回", '界园_戛然而止', "界园_戛然而止2", "界园_作战失败结算" }, 30)
         if r ~= "战略返回" then
             作战结算返回()
             if not appear("界园_常规行动", 5) then
-                log(3303, "无法返回常规行动")
+                log.debug("无法返回常规行动")
                 restart()
                 return
             end
@@ -1109,7 +1109,7 @@ path.界园前瞻投资 = function()
         if not findOne("战略返回") then return end
 
         if not zl_skip_fight and not sui.战斗后领取() then
-            log("未能完成战斗后拾取")
+            log.warn("未能完成战斗后拾取")
             return false
         end
         log("完成战斗")
@@ -1208,7 +1208,7 @@ path.界园前瞻投资 = function()
             if findAny({ "界园_常规行动" }) then return true end
             ssleep(0.5)
         end, 45) then
-        log("第二层退出返回失败")
+        log.warn("第二层退出返回失败")
         back()
         return
     end
@@ -1401,7 +1401,7 @@ sui.普通作战1 = function()
     sui.招募指定干员("卡达", 肉鸽白名单)
     log(肉鸽参数["operators"])
     --if not appear("界园_初始招募") then return end
-    log(2698)
+    log.debug()
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
             if findOne("界园_投出通宝确认") then return true end
@@ -1555,7 +1555,7 @@ sui.判断路径 = function()
         log("找到最佳路径", path, "总分", score)
         return path
     else
-        log("未找到最佳路径")
+        log.warn("未找到最佳路径")
         return {}
     end
 end
@@ -1590,7 +1590,7 @@ sui.判断通路 = function(列, 起始行号1, 起始行号2, 偏移坐标)
             table.insert(大地图[出路[i]][列]["NextNode"], { 入路[i], 列 + 1 })
         end
     else
-        log("通路判断失败")
+        log.warn("通路判断失败")
     end
 end
 sui.第1列判断 = function()
@@ -1687,7 +1687,7 @@ sui.进入作战 = function()
             tap("进入节点")
             ssleep(.2)
         end, 5) then
-        log(3302, "无法进入")
+        log.debug("无法进入")
         --zl_repos_path('界园_放弃探索')
     end
 end

@@ -20,7 +20,7 @@ game_check_version = function(pkg)
     local current_version = exec("su root sh -c 'dumpsys package " .. pkg .. " | grep versionName'")
     current_version = current_version:match("versionName=([^%s]+)")
     if current_version == nil then
-        log("未安装" .. pkg)
+        log.warn("未安装" .. pkg)
         return true
     end
     current_version = string.gsub(current_version, "%.", "")
@@ -57,7 +57,7 @@ end
 --更新游戏
 auto_update_game = function()
     if not root_mode then
-        log("无root权限，跳过游戏更新")
+        log.warn("无root权限，跳过游戏更新")
         return
     end
     log("开始检查游戏更新")
@@ -107,24 +107,24 @@ install_game = function(url)
     delfile(downloadpath)
     mkdir("/storage/emulated/0/" .. package .. '/apk/')
     if not fileExist(shpath) then
-        log("curl脚本不存在，下载任务无法创建")
+        log.warn("curl脚本不存在，下载任务无法创建")
         return
     end
     local shcommand =
         [[sh -c 'setsid nohup /data/local/tmp/smart_curl.sh "]] ..
         url .. [[" "]] .. downloadpath .. [[" ]] .. curlpath .. ">/dev/null 2>&1 &'"
-    log(shcommand)
+    log.debug(shcommand)
     exec(shcommand)
     ssleep(2)
-    log(1952)
+    log.debug(1952)
     if not fileExist(downloadpath) then
-        log("没有检测到下载文件，下载任务创建失败")
+        log.warn("没有检测到下载文件，下载任务创建失败")
         return
     end
     while true do
-        log(1954)
+        log.debug()
         if not fileExist(log_file) then
-            log("创建下载任务失败")
+            log.warn("创建下载任务失败")
             return
         end
         local file = io.open(log_file, "r")
@@ -160,7 +160,7 @@ install_game = function(url)
     --     ssleep(3)
     -- end
     ssleep(2)
-    log(1954)
+    log.debug()
     --使用root权限安装
     exec("su root sh -c 'pm install -r " .. downloadpath .. "'")
     --删除apk
@@ -184,7 +184,7 @@ install_game2 = function(url)
         exec("su root rm -rf " .. downloadpath)
         --log("install finish",downloadpath)
     else
-        log("下载失败，请检查网络连接")
+        log.error("下载失败，请检查网络连接")
     end
     console.dismiss()
 end
@@ -229,7 +229,7 @@ end
 -- 设置自动登录账户的uid
 bilibili_set_login_uid = function(uid)
     if uid == nil then
-        log("uid为空")
+        log.error("uid为空")
         return false
     end
     local command = string.format("UPDATE users SET last_login = CASE WHEN uid = '%d' THEN 1 ELSE 0 END;", uid)
@@ -307,14 +307,14 @@ end
 official_set_login_user = function(data)
     local data = data or ""
     if data == "" then
-        log("data为空")
+        log.error("data为空")
         return false
     end
     -- check
     local data_token = data:gsub('&quot;', '"')
     local staus, data_token = pcall(JsonDecode, data_token)
     if not staus then
-        log("数据解析失败", data_token)
+        log.warn("数据解析失败", data_token)
         return false
     end
     local token = data_token[1]["token"]
@@ -324,7 +324,7 @@ official_set_login_user = function(data)
     if code == 200 then
         log("获取用户信息成功")
     else
-        log("获取用户信息失败", ret, code)
+        log.warn("获取用户信息失败", ret, code)
         return false
     end
     exec2(string.format(
@@ -388,7 +388,7 @@ switch_account = function()
     -- 无密码切号方案
     log("switch_account")
     if new_change_account_plan and root_mode and account_data[username] then
-        log("切号测试")
+        log.debug("切号测试")
         _G.快速切号功能状态 = false
         closeapp(appid)
         if server == 0 and account_data[username]["hyper"] then
@@ -556,16 +556,16 @@ getChoiceBox = function(retry)
     if retry > 3 then return end
     local box = { l = 0, t = 0, r = 0, b = 0 }
     local bx = find_color(nil, "5381FD", 0)
-    log(1)
+    log.debug()
     if not bx then return end
     box.l = bx[1]
     box.t = bx[2]
     bx = find_color(nil, "5381FD", 4)
-    log(2)
+    log.debug()
     if not bx then return end
     box.r = bx[1]
     bx = find_color(nil, "B2C2EE", 3)
-    log(3)
+    log.debug()
     if not bx then return end
     box.b = bx[2] - 5
     log("点选验证框2", box)
@@ -722,13 +722,13 @@ SolveSlipCaptcha = function(rect, p_type)
         local headers = gen_ua()
 
         local res, code = httpPost(cloud.captchaServer .. "/captcha/recognize", postdata, 30, headers)
-        log(res, code)
+        log.debug(res, code)
         if code == 200 then
             local status, data = pcall(JsonDecode, res)
             if data.code == 0 then
                 distance = tonumber(data.data.result.slider_distance) or 0
             else
-                log("Aunly打码失败", data.msg)
+                log.warn("Aunly打码失败", data.msg)
                 return false
             end
         end
@@ -744,7 +744,7 @@ SolveSlipCaptcha = function(rect, p_type)
         tap({ scale(964), scale(805) })
         sx, sy = scale(750), scale(740)
     end
-    log(632)
+    log.debug()
     -- 用于模拟滑动轨迹
     gesture({
         {
@@ -782,7 +782,7 @@ trySolvePointSelectionCapture = function(rect, p_type)
         log("B服安全验证流程", "正在使用图鉴")
         if not use_captcha then return end
         if not captcha_username or not captcha_password then
-            log("未配置图鉴打码，跳过")
+            log.warn("未配置图鉴打码，跳过")
             choice_map_jump[p_type] = true
             return
         end
@@ -806,16 +806,16 @@ trySolvePointSelectionCapture = function(rect, p_type)
     elseif p_type == 3 then
         log("B服安全验证流程", "正在使用aunly")
         if #cloud.captchaToken < 10 then
-            log("未配置aunly打码，跳过")
+            log.warn("未配置aunly打码，跳过")
             choice_map_jump[p_type] = true
             return
         end
         log("B服安全验证流程", "正在使用Aunly")
         if cloud.captcha(rect) then
-            log(12015, "Aunly打码成功")
+            log.debug("Aunly打码成功")
             return true
         else
-            log(12016, "Aunly打码失败")
+            log.warn(12016, "Aunly打码失败")
             return false
         end
     elseif p_type == 4 then
@@ -824,7 +824,7 @@ trySolvePointSelectionCapture = function(rect, p_type)
             return true
         else
             if type(cloud_captcha_server2) ~= "string" or #cloud_captcha_server2 < 10 then
-                log("未配置自选打码，跳过")
+                log.warn("未配置自选打码，跳过")
                 choice_map_jump[p_type] = true
             end
             return false
@@ -908,7 +908,7 @@ hidden_front_navigation = function()
         end
         return true
     end
-    log(1020)
+    log.debug()
     path.跳转("首页")
     tap("面板作战")
     if not appear("主页") then return end
@@ -918,12 +918,12 @@ hidden_front_navigation = function()
         end) then
         return
     end
-    log(1021)
+    log.debug()
     wait(function()
         tap("作战主线章节列表" .. 8)
         if not findOne("主题曲界面") then return true end
     end)
-    log(1022)
+    log.debug()
 
     if not wait(function()
             tap("隐秘战线在第14章入口")

@@ -160,7 +160,7 @@ if not openPermissionSetting then
     --- 多路径分发
     function Gesture:dispatch()
         for id, path in pairs(self.path) do
-            log(71, id, path)
+            log.debug(id, path)
             beginThread(gestureDispatchOnePath, path, id)
         end
     end
@@ -1287,7 +1287,7 @@ swipu = function(dis)
     if type(dis) == "string" then dis = distance[dis] end
     if type(dis) ~= "table" then dis = { dis } end
     if not dis then return end
-    log(705)
+    log.debug()
     -- flatten to one depth
     -- local max_once_dis = 1080
     -- local freey = scale(150)
@@ -1469,7 +1469,7 @@ swip = function(dis)
 
     -- 懒人单次手势不能添加过多定时点，理想是在插入finger时处理，偷懒直接手动切分下距离
     -- 只处理作战关卡导航中的情况
-    log(700)
+    log.debug()
     log(dis)
     local max_dis_one_gesture = 5000
     if #dis == 2 and math.abs(dis[1]) == swip_right_max and dis[2] <
@@ -1477,7 +1477,7 @@ swip = function(dis)
         table.insert(dis, dis[2] + max_dis_one_gesture)
         dis[2] = -max_dis_one_gesture
     end
-    log(701)
+    log.debug()
     log(dis)
     for i, d in pairs(dis) do
         if i ~= 1 then ssleep(0.1) end
@@ -1495,11 +1495,11 @@ zoom = function(retry)
     retry = retry or 0
     if retry > 20 then -- 20*200 = 4000（毫秒）
         -- TODO: 提示到底影响了什么，是不能缩放，还是缩放结束找不到
-        log("缩放结束未找到")
+        log.warn("缩放结束未找到")
         return true
     end
 
-    log(696, findOne("进驻总览"))
+    log.debug(findOne("进驻总览"))
     if not findOne("进驻总览") then return path.跳转("基建") end
     if findOne("缩放结束") then
         log("缩放结束")
@@ -1621,7 +1621,7 @@ auto = function(p, fallback, timeout, total_timeout, total_timeout_restart)
         if total_timeout and time() - start_time > total_timeout * 1000 then
             if total_timeout_restart then
                 if not 登录完成状态 then
-                    log("登录未完成，尝试重启游戏再试一次")
+                    log.warn("登录未完成，尝试重启游戏再试一次")
                     restartapp(appid)
                     登录完成状态 = true
                     return
@@ -2016,7 +2016,7 @@ wait_game_up = function(retry)
     }, 5)
     if p == "同意并继续" then path.bilibili_login[p]() end
     trySolveSlipCaptcha()
-    log(1701)
+    log.debug()
     checkScreenLock()
     log("wait_game_up next", retry)
     disable_game_up_check = prev
@@ -2208,7 +2208,7 @@ end
 --
 --     local candidate = findShape(type)
 --     if candidate then
---       log(11777, #candidate)
+--       log.debug(#candidate)
 --       local p = {}
 --       for j, c in pairs(candidate) do
 --         -- 宽度不超过
@@ -2805,7 +2805,7 @@ hotUpdate = function()
     end
 
     if not update_info then
-        log("热更新检查失败")
+        log.warn("热更新检查失败")
         return false
     end
 
@@ -2869,7 +2869,7 @@ gesture_capture = function()
     end
 
     if state == title then return end
-    log(200)
+    log.debug()
 
     if not wait(function()
             local p = catchClick()
@@ -2947,15 +2947,15 @@ enable_accessibility_service = function(after_killacc)
         local service = package .. "/com.nx.assist.AssistService"
         local services = exec(
             "su root sh -c 'settings get secure enabled_accessibility_services'")
-        log("3363", services)
+        log.debug(services)
         services = table.filter(services:trim():split(':'),
             function(x) return x ~= 'null' end)
 
-        log("3365", services)
+        log.debug(services)
         local other_services = table.join(table.filter(services, function(x)
             return x ~= service
         end), ':')
-        log("3366", other_services)
+        log.debug(other_services)
         local cmd = [[su root sh -c '
 settings put secure enabled_accessibility_services ]] .. other_services ..
             (#other_services > 0 and ':' or '') .. service .. [[;
@@ -2967,8 +2967,8 @@ settings put secure enabled_accessibility_services ]] .. other_services ..
 
 ' 2>&1 ]]
         local out = exec(cmd)
-        log(3386, cmd)
-        log(3387, out)
+        log.debug(cmd)
+        log.debug(out)
         if not wait(function() return isAccessibilityServiceRun() end, 2) then
             stop("无障碍服务启动失败", 'cur')
         else
@@ -3101,7 +3101,7 @@ parse_fight_config = function(fight_ui)
                     local idx = cur_fight:gsub(".-(%d+)$", '%1')
                     idx = tonumber(idx) or 0
                     cur_fight = "HD-" .. (idx or '')
-                    log(2731, cur_fight, idx)
+                    log.debug(cur_fight, idx)
                 end
 
                 homework[cur_fight] = secret_code
@@ -3397,7 +3397,7 @@ apply_multi_account_setting = function(i, visited)
 end
 
 crontab_next_time = function(text)
-    log(1056)
+    log.debug()
     log(text)
     local config = string.filterSplit(text)
     local candidate = {}
@@ -3437,7 +3437,7 @@ check_crontab = function()
     local next_time_on_start = loadConfig("crontab_next_time_on_start", "")
     saveConfig("crontab_next_time_on_start", '')
     local next_time = crontab_next_time(crontab_text)
-    log(4749, "next_time_now", next_time, "next_time_ori", next_time_on_start)
+    log.debug("next_time_now", next_time, "next_time_ori", next_time_on_start)
     multi_account_choice_idx = nil
 
     local restart = function()
@@ -3625,9 +3625,9 @@ swipzl = function(mode)
         duration = duration + delay + duration
         delay = 500
     end
-    log(28491, finger)
+    log.debug(finger)
     gesture(finger)
-    log(28501)
+    log.debug()
     sleep(duration + delay)
 end
 
@@ -3653,7 +3653,7 @@ end
 
 always_request_appid = {}
 request_game_permission = function()
-    log(2943)
+    log.debug()
     if not root_mode then return end
     if always_request_appid[appid] then return end
     always_request_appid[appid] = 1
@@ -3668,7 +3668,7 @@ android.permission.WRITE_EXTERNAL_STORAGE]]
     end
     log(cmd)
     exec("su root sh -c '" .. cmd .. "'")
-    log(2944)
+    log.debug()
 end
 
 str2int = function(number, fallback)
@@ -3743,7 +3743,7 @@ end
 restart_game_check_last_time = nil
 restart_game_check = function(timeout)
     timeout = timeout or 3600
-    log(3145, timeout)
+    log.debug(timeout)
     restart_game_check_last_time = restart_game_check_last_time or time()
     if (time() - restart_game_check_last_time) > timeout * 1000 then
         restart_game_check_last_time = time()
@@ -3935,7 +3935,7 @@ echo -1000 > /proc/$(pidof ]] .. package .. [[:acc)/oom_score_adj
 
 ' > /dev/null & ]]
 
-    log(5031)
+    log.debug()
     exec(cmd)
     -- log(4661, isAccessibilityServiceRun())
     -- log(4662, exec(cmd), isAccessibilityServiceRun())
@@ -3944,7 +3944,7 @@ echo -1000 > /proc/$(pidof ]] .. package .. [[:acc)/oom_score_adj
         enable_accessibility_service(true)
         -- stop("无障碍服务启动失败，可以勾选禁用重启acc", false)
     end
-    log(5038)
+    log.debug()
     -- log(5038)
     -- ssleep(100)
     -- exit()
@@ -4235,7 +4235,7 @@ end
 --     end
 
 --     best_left = best + point.captcha_left_area[1]
---     log(3399, best_left, best_right)
+--     log.debug(best_left, best_right)
 --     -- exit()
 
 --     -- log(table.slice(best, 1, 10))

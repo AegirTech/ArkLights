@@ -138,7 +138,7 @@ if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
     local Err = PaddLeOCR.LoadModeL(LaBeL, DbModeL, RecModeL, 640, math.floor(2, PaddLeOCR.GetCPUCoreNumBer()),
         false, nil, nil)
     if Err ~= nil then
-        log(string.format("加载模型错误 原因: %s", Err))
+        log.error(string.format("加载模型错误 原因: %s", Err))
         paddleocr_loadfailed = true
     end
     log("当前机器cpu核心数:", PaddLeOCR.GetCPUCoreNumBer())
@@ -147,7 +147,7 @@ if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
             return ocr(r)
         end
         if type(r) == "string" then r = point[r] end
-        log("ocrinput", r)
+        log.debug("ocrinput", r)
         local BitMap = LuaEngine.snapShot(r[1], r[2], r[3], r[4])
         local ret = PaddLeOCR.Detect(BitMap, 0.3, 0.5)
         local res = {}
@@ -213,7 +213,7 @@ else
             return ocr(r)
         end
         if type(r) == "string" then r = point[r] end
-        log("ocrinput", r)
+        log.debug("ocrinput", r)
         local BitMap = LuaEngine.snapShot(r[1], r[2], r[3], r[4])
         local ret = ocr1.DetectJson(BitMap, 0.3, 0.5)
         local res = {}

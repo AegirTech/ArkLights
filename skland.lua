@@ -210,7 +210,7 @@ skland.checkin = function(uid, server)
             return 2
         end
     else
-        log("json解析失败")
+        log.warn("json解析失败")
         return -1
     end
 end
@@ -266,10 +266,10 @@ skland.get_refresh_token = function()
             Skland_sign_token = get(ret, "data", "token")
             log("森空岛刷新token成功", Skland_sign_token)
         else
-            log("森空岛刷新token失败")
+            log.warn("森空岛刷新token失败")
         end
     else
-        log("json解析失败")
+        log.warn("json解析失败")
     end
 end
 
@@ -324,7 +324,7 @@ skland_daily_checkin = function(account, password)
         list = skland.get_bind_info()
     end
     if list == nil then
-        log("森空岛签到失败")
+        log.warn("森空岛签到失败")
         table.insert(qqmessage, "森空岛签到失败,获取绑定id失败")
         account_data[account]["cred"] = ""
         save_local_config()
@@ -368,11 +368,11 @@ get_timestamp_oneline = function(v)
                 return string.sub(timestamp, 1, 10)
             end
         else
-            log("获取时间戳失败")
+            log.warn("获取时间戳失败")
             return 0
         end
     else
-        log("json解析失败")
+        log.warn("json解析失败")
         return 0
     end
 end
@@ -412,19 +412,19 @@ get_game_info = function(account, password, require_uid, require_server)
     skland_init(account, password)
     list = skland.get_bind_info()
     if list == nil then
-        log("绑定列表获取失败")
+        log.warn("绑定列表获取失败")
         return false
     end
     log("list:", list)
     for i, v in pairs(list) do
         local gameuid = list[i]["uid"]
         if require_uid ~= 0 and require_uid ~= gameuid then
-            log("uid不匹配，跳过")
+            log.warn("uid不匹配，跳过")
             goto countinue
         end
         local server = list[i]["channelMasterId"]
         if require_server ~= 0 and require_server ~= server then
-            log("server不匹配，跳过")
+            log.warn("server不匹配，跳过")
             goto countinue
         end
         log(i, gameuid, server)

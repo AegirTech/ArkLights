@@ -418,7 +418,7 @@ end
 ---@return table table 刷图计划
 ---@return table final_synthesis_materials_result 存放需要合成的子材料 数据格式level:{id:count}
 raise.get_fight_plan = function(material_need)
-    log(353, "需要材料列表", material_need)
+    log.debug("需要材料列表", material_need)
     local final_materials_result = {}
     -- 存放需要合成的子材料 数据格式level:{id:count}
     local final_synthesis_materials_result = {}
@@ -863,7 +863,7 @@ raise.material_synthesis = function(id, count)
         emotion_cost = 24 / (2 ^ (level - 1))
 
         if not path.加工站选人("加工站", id, level) then
-            log("选人失败")
+            log.warn("选人失败")
             return
         end
         if not appear("加工站", 2) then return end
@@ -871,7 +871,7 @@ raise.material_synthesis = function(id, count)
         ssleep(.3)
         tap("开始加工")
         if not appearTap("获得物资", 10) then
-            log("子材料不足,合成材料失败")
+            log.warn("子材料不足,合成材料失败")
             return
         end
         appear("加工站", 3)
@@ -884,7 +884,7 @@ raise.material_synthesis = function(id, count)
     log("剩下次数", remainder)
     if remainder >= 0 then
         if not path.加工站选人("加工站", id, level) then
-            log("选人失败")
+            log.warn("选人失败")
             return
         end
         if not appear("加工站", 2) then return end
@@ -900,7 +900,7 @@ raise.material_synthesis = function(id, count)
             ssleep(.2)
             tap("获得物资")
         else
-            log("子材料不足,合成材料失败")
+            log.warn("子材料不足,合成材料失败")
             return
         end
         appear("加工站", 3)
@@ -1054,7 +1054,7 @@ raise.upgrade_char = function()
             tap("干员升级max确认")
             if findOne("干员升级提升等级") then return true end
         end, 5) then
-        log("经验书或者龙门币不足")
+        log.warn("经验书或者龙门币不足")
         return false
     end
 
@@ -1064,7 +1064,7 @@ raise.upgrade_char = function()
         appear("干员档案", 3)
         ssleep(.3)
     else
-        log("经验书或者龙门币不足")
+        log.warn("经验书或者龙门币不足")
         return false
     end
     return true
@@ -1115,7 +1115,7 @@ raise.buy_32001 = function(numb)
         end, 5) then
     end
     if findOne("凭证交易所进入") then
-        log("未能进入商品，大概是售空了吧~")
+        log.warn("未能进入商品，大概是售空了吧~")
         return
     end
     -- 点击购买
@@ -1134,7 +1134,7 @@ raise.buy_32001 = function(numb)
         end, 3) then
     end
     if findOne("购买物品面板") then
-        log("胶水购买失败，大抵是没钱了吧~")
+        log.warn("胶水购买失败，大抵是没钱了吧~")
         return true
     end
     disappear("正在提交反馈至神经", network_timeout)
@@ -1305,7 +1305,7 @@ raise.elite_one_phase = function(material_need)
             ssleep(.2)
             if findOne("干员档案") then return true end
         end, 10) then
-        log("未完成精英化")
+        log.warn("未完成精英化")
         return false
     end
     -- todo 仓库减除消耗的材料
@@ -1447,7 +1447,7 @@ raise.master_skill = function(id, skill_numb, start_level, level)
             ssleep(.2)
             if findOne("干员技能专精页面") then return true end
         end, 10) then
-        log("未完成专精")
+        log.warn("未完成专精")
         return false
     end
     path.训练室换班("训练室", 干员职业[char_id2name(id)], start_level + 1)
@@ -1520,7 +1520,7 @@ raise.choose_char_be_trained = function(干员)
     releaseCapture()
     appear("干员技能专精页面", 3)
     if 未编入数量 >= 1 then
-        log("未能识别到待训练干员")
+        log.warn("未能识别到待训练干员")
         return false
     end
     return true
@@ -1943,7 +1943,7 @@ raise.inventory_identify = function(materials)
             ssleep(.1)
             if findOne("仓库养成材料") then return true end
         end, 5) then
-        log("未进入养成材料页面")
+        log.warn("未进入养成材料页面")
         return {}
     end
     local page = 0
@@ -2062,7 +2062,7 @@ end
 -- 5.5周年后图色材料合成，支持递归合成，从加工站页面开始
 raise.材料合成 = function()
     if not findOne("加工站") then
-        log("未进入加工站")
+        log.warn("未进入加工站")
         return
     end
     local 获取材料数量 = function()
@@ -2077,7 +2077,7 @@ raise.材料合成 = function()
     local 是否为低级材料 = false
     local 待合成数量 = 获取材料数量()
     if 待合成数量 == nil then
-        log("未识别到需要合成数量")
+        log.warn("未识别到需要合成数量")
         return
     end
     if findOne("加工站返回上级材料") then
@@ -2115,7 +2115,7 @@ raise.材料合成 = function()
         local id = material_name2id(ocro("加工材料识别范围"))
         local level = 高级材料2低级材料[id]["level"] or 3
         if not path.加工站选人("加工站", id, level) then
-            log("选人失败")
+            log.warn("选人失败")
             -- 选人失败也无所谓
         end
         for i = 2, 待合成数量 do
@@ -2567,7 +2567,7 @@ raise.auto_raise = function()
         elseif raise_plan[i]["name"] then
             id = char_name2id(raise_plan[i]["name"])
         else
-            log("培养计划格式错误:未指定干员")
+            log.warn("培养计划格式错误:未指定干员")
             return true
         end
         if not char_do_not_have[name] and ((i > 1 and findOne("干员档案") and name == raise_plan[i - 1]["name"]) or char_choose(name)) then

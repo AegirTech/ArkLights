@@ -410,7 +410,7 @@ end
 ---@return table table 刷图计划
 ---@return table final_synthesis_materials_result 存放需要合成的子材料 数据格式level:{id:count}
 raise.get_fight_plan = function(material_need)
-    log(353, "需要材料列表", material_need)
+    log.debug("需要材料列表", material_need)
     local final_materials_result = {}
     -- 存放需要合成的子材料 数据格式level:{id:count}
     local final_synthesis_materials_result = {}

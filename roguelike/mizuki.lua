@@ -73,7 +73,7 @@ mizuki_help_fight = function(reflashNum)
     }
     local best = table.findv(order, function(x) return name2point[x[1]] end)
     if not best then
-        log("助战也找不到所需干员")
+        log.warn("助战也找不到所需干员")
         tapUntilCheckedPointColor(mizuki_point.刷新助战, mizuki_point.刷新助战中, 5)
         reflashNum = reflashNum + 1
         ssleep(3)
@@ -456,7 +456,7 @@ mizuki_level_selecter = function(input_info)
     -- log("关卡判决器",info)
 
     if info == nil then
-        log("关卡判决器未传入参数")
+        log.warn("关卡判决器未传入参数")
         return false
     end
 
@@ -530,7 +530,7 @@ mizuki_dice_solve = function()
                 return true
             end
         end, 10) then
-        log("骰子处理器未找到投骰子确认")
+        log.warn("骰子处理器未找到投骰子确认")
         return false
     end
 
@@ -562,7 +562,7 @@ mizuki_unexpect_solve = function()
             log("尝试进入不期而遇")
             tap(mizuki_point.进入)
             if findOneStr(unexpect_tag, 0.9) then
-                log("已进入不期而遇")
+                log.warn("已进入不期而遇")
                 return true
             end
         end, 5) then
@@ -619,7 +619,7 @@ mizuki_unexpect_solve = function()
                 elseif select_unexpect:includes({ "开", "端" }) then
                     select_unexpect = "开端"
                 else
-                    log("不期而遇识别失败")
+                    log.warn("不期而遇识别失败")
                     return
                 end
                 log("不期而遇: " .. select_unexpect)
@@ -906,7 +906,7 @@ mizuki_fight = function(firstFight)
     if not findOne("战略返回") then return false end
 
     if not mizuki_after_fight() then
-        log("未能完成战斗后拾取")
+        log.warn("未能完成战斗后拾取")
         return false
     end
     log("完成一次战斗")
@@ -989,7 +989,7 @@ mizuki_after_fight = function()
     -- if not appear("战略返回", 5) then return end
 
     if not checkPointColor(mizuki_point.战略帮助) then
-        log(2873)
+        log.debug()
         return false
     end
     log("完成拾取")
@@ -1043,7 +1043,7 @@ mizuki_buy = function()
         local p = appear(point["战略商品列表"], 1)
         p = findAny(point["战略商品列表"])
         if not p then
-            log("未找到任何商品")
+            log.warn("未找到任何商品")
             return
         end
         if not wait(function()
@@ -1246,7 +1246,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
     if mizuki_navigation() then
         log("水月肉鸽导航成功")
     else
-        log("水月肉鸽导航失败")
+        log.warn("水月肉鸽导航失败")
         return false
     end
 
@@ -1278,7 +1278,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
     local zl_level_check = function()
         if not (str2int(zl_max_level, 0) > 0) then return false end
         if not checkPointColor(mizuki_point.等待开始页面标题) then
-            log("未找到水月常规行动")
+            log.warn("未找到水月常规行动")
             return false
         end
 
@@ -1315,7 +1315,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
             log("识别等级成功")
             return x
         else
-            log("识别等级失败")
+            log.warn("识别等级失败")
             return false
         end
     end
@@ -1336,7 +1336,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
         if str2int(zl_max_coin, 0) >= 1000 then return end
 
         if not checkPointColor(mizuki_point.等待开始页面标题) then
-            log("未找到水月常规行动")
+            log.warn("未找到水月常规行动")
             return false
         end
 
@@ -1352,11 +1352,11 @@ path.水月与深蓝之树前瞻投资_旧 = function()
             ssleep(.5)
             -- if not findOne("水月_常规行动") then return 0 end
             local x = ocr("战略源石锭") or {}
-            log(4195, x)
+            log.debug(x)
             x = (x[1] or {}).text or ""
             x = number_ocr_correct(x)
             x = str2int(x:match("[^%d](%d+)$"), -1)
-            log("4128", x)
+            log.debug(x)
             if x >= 0 and x == prex then return x end
             -- if x >= 0 then return x end
             prex = x
@@ -1403,13 +1403,13 @@ path.水月与深蓝之树前瞻投资_旧 = function()
                 if findOne("返回确认界面") then return true end
                 tap("放弃本次探索")
             end, 5) then
-            log(2608)
+            log.debug()
             -- 无法直接放弃的情况 不处理
             if not wait(function()
                     if not checkPointColor(mizuki_point.等待开始页面标题) then return true end
                     tap("继续探索")
                     ssleep(.5)
-                    log(2613)
+                    log.debug()
                 end, 5) then
                 return
             end
@@ -1578,18 +1578,18 @@ path.水月与深蓝之树前瞻投资_旧 = function()
 
     if not wait(function()
             if findAny({ "水月_初始招募", "战略返回" }) then
-                log(26)
+                log.debug()
                 return true
             end
             if findOne("返回确认界面") then
-                log(27)
+                log.debug()
                 -- 虽然不知道会不会走这儿
                 tap("左取消")
                 disappear("返回确认界面")
                 -- 不等会怎么样呢，有时会闪
                 ssleep(.5)
             end
-            log(28, zl_best_operator)
+            log.debug(zl_best_operator)
             local idx = str2int(zl_best_operator, -1)
 
             if idx >= 1 and idx <= 12 then
@@ -1627,7 +1627,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
                     return true
                 end
                 if findOne("返回确认界面") then
-                    log(27)
+                    log.debug()
                     -- 虽然不知道会不会走这儿
                     tap("左取消")
                     disappear("返回确认界面")
@@ -1662,7 +1662,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
                     return true
                 end
                 if findOne("返回确认界面") then
-                    log(27)
+                    log.debug()
                     -- 虽然不知道会不会走这儿
                     tap("右右确认")
                     disappear("返回确认界面")
@@ -1714,7 +1714,7 @@ mizuki_fight_after = function()
                 "水月_源石锭收下", "水月_投资次数收下", "水月_招募券收下",
                 "水月_目标生命收下", '水月_收藏品收下', '水月_用武器砸'
             })
-            log(2555, x)
+            log.debug(x)
             tap(x)
             -- if x == '萨米_密文版拾取' then
             --     appear('萨米_密文版选择左', 1)
@@ -1893,7 +1893,7 @@ path.水月与深蓝之树前瞻投资 = function()
         end, 5)
         return
     end
-    log(4199)
+    log.debug()
 
     -- 开始探索
     local tt = time()
@@ -1960,7 +1960,7 @@ path.水月与深蓝之树前瞻投资 = function()
     if not zl.招募医疗('水月') then return end
 
     if not appear("水月_初始招募") then return end
-    log(2698)
+    log.debug()
 
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
@@ -1969,7 +1969,7 @@ path.水月与深蓝之树前瞻投资 = function()
         end, 5) then
         return
     end
-    log(2700)
+    log.debug()
     -- if not appear("战略帮助", 10) then return end
 
     --点击进入探索之后，有一段时间的加载界面，需要点击

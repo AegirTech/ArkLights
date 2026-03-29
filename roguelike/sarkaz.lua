@@ -51,7 +51,7 @@ sarkaz.不期而遇处理 = function()
             incident = ocr("萨卡兹_不期而遇事件名字检测")
             if time() - startTime > 700 then
                 startTime = time()
-                log(366)
+                log.debug()
                 if not findOne('萨米_希望源石锭界面') then tap("萨卡兹_不期而遇确认点击") end
             end
 
@@ -183,13 +183,13 @@ sarkaz.跳转 = function()
                 if findOne("返回确认界面") then return true end
                 tap("萨卡兹_放弃本次探索")
             end, 5) then
-            log(2608)
+            log.debug()
             -- 无法直接放弃的情况 不处理
             if not wait(function()
                     if not findOne("萨卡兹_常规行动") then return true end
                     tap("萨卡兹_继续探索")
                     ssleep(.5)
-                    log(2613)
+                    log.debug()
                 end, 5) then
                 return
             end
@@ -263,7 +263,7 @@ sarkaz.跳转 = function()
         return
     end
     if jumpout then return end
-    log(2650)
+    log.debug()
 end
 
 sarkaz.关卡刷新 = function()
@@ -504,7 +504,7 @@ sarkaz.蓝图速通 = function()
     sarkaz.招募并记录干员("卡达", 肉鸽白名单)
     log(肉鸽参数["operators"])
     if not appear("萨卡兹_初始招募") then return end
-    log(2698)
+    log.debug()
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
             if not findOne("萨卡兹_初始招募") then return true end
@@ -513,7 +513,7 @@ sarkaz.蓝图速通 = function()
         return
     end
 
-    log(2700)
+    log.debug()
     --点击进入探索之后，有一段时间的加载界面，需要点击
     local xtime = time()
     if not wait(function()
@@ -839,13 +839,13 @@ sarkaz.蓝图分队 = function()
                 if findOne("返回确认界面") then return true end
                 tap("萨卡兹_放弃本次探索")
             end, 5) then
-            log(2608)
+            log.debug()
             -- 无法直接放弃的情况 不处理
             if not wait(function()
                     if not findOne("萨卡兹_常规行动") then return true end
                     tap("萨卡兹_继续探索")
                     ssleep(.5)
-                    log(2613)
+                    log.debug()
                 end, 5) then
                 return
             end
@@ -925,7 +925,7 @@ sarkaz.蓝图分队 = function()
         return
     end
     if jumpout then return end
-    log(2650)
+    log.debug()
 
     -- 开始探索 一路按到 招募干员
     -- local first_time_see_first_card = 0
@@ -1043,7 +1043,7 @@ sarkaz.蓝图分队 = function()
     end
 
     if not appear("萨卡兹_初始招募") then return end
-    log(2698)
+    log.debug()
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
             if not findOne("萨卡兹_初始招募") then return true end
@@ -1052,7 +1052,7 @@ sarkaz.蓝图分队 = function()
         return
     end
 
-    log(2700)
+    log.debug()
     --点击进入探索之后，有一段时间的加载界面，需要点击
     local xtime = time()
     if not wait(function()
@@ -1113,7 +1113,7 @@ sarkaz.蓝图分队 = function()
                 local x = appear({
                     "萨卡兹_第一个思绪", "萨卡兹_思绪舍弃"
                 })
-                log(2575, x)
+                log.debug(x)
                 tap(x)
                 if x == "萨卡兹_思绪舍弃" then appear('萨卡兹_第一个思绪') end
                 if not findOne("萨卡兹_第一个思绪") then return true end
@@ -1426,13 +1426,13 @@ path.萨卡兹的无终奇语前瞻投资 = function()
                 if findOne("返回确认界面") then return true end
                 tap("萨卡兹_放弃本次探索")
             end, 5) then
-            log(2608)
+            log.debug()
             -- 无法直接放弃的情况 不处理
             if not wait(function()
                     if not findOne("萨卡兹_常规行动") then return true end
                     tap("萨卡兹_继续探索")
                     ssleep(.5)
-                    log(2613)
+                    log.debug()
                 end, 5) then
                 return
             end
@@ -1542,18 +1542,18 @@ path.萨卡兹的无终奇语前瞻投资 = function()
 
     if not wait(function()
             if findAny({ "萨卡兹_初始招募", "战略返回" }) then
-                log(26)
+                log.debug()
                 return true
             end
             if findOne("返回确认界面") then
-                log(27)
+                log.debug()
                 -- 虽然不知道会不会走这儿
                 tap("左取消")
                 disappear("返回确认界面")
                 -- 不等会怎么样呢，有时会闪
                 ssleep(.5)
             end
-            log(28, zl_best_operator)
+            log.debug(zl_best_operator)
             local idx = str2int(zl_best_operator, -1)
 
             if idx >= 1 and idx <= 12 then
@@ -1584,11 +1584,11 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     if not wait(function()
             if findOne("萨卡兹_希望源石锭界面") then
                 -- if findAny({ "", "战略返回" }) then
-                log(26)
+                log.debug()
                 return true
             end
             if findOne("返回确认界面") then
-                log(27)
+                log.debug()
                 -- 虽然不知道会不会走这儿
                 tap("左取消")
                 disappear("返回确认界面")
@@ -1616,11 +1616,11 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     if not wait(function()
             if findOne("萨卡兹_希望源石锭界面") then
                 --if findAny({ "萨米_初始招募", "战略返回" }) then
-                log(26)
+                log.debug()
                 return true
             end
             if findOne("返回确认界面") then
-                log(27)
+                log.debug()
                 -- 虽然不知道会不会走这儿
                 tap("左取消")
                 disappear("返回确认界面")
@@ -1635,7 +1635,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     end
 
     if not appear("萨卡兹_初始招募") then return end
-    log(2698)
+    log.debug()
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
             if not findOne("萨卡兹_初始招募") then return true end
@@ -1644,7 +1644,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
         return
     end
 
-    log(2700)
+    log.debug()
     --点击进入探索之后，有一段时间的加载界面，需要点击
     local xtime = time()
     if not wait(function()
@@ -1764,7 +1764,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
         end, 10) then
         return
     end
-    log(3306)
+    log.debug()
     -- 等待加载游戏界面
     if not wait(function()
             if findOne("单选确认框") then return true end
@@ -1844,7 +1844,7 @@ path.萨卡兹的无终奇语前瞻投资 = function()
     if not findOne("战略返回") then return end
 
     if not zl_fight_after_skz() then
-        log("未能完成战斗后拾取")
+        log.warn("未能完成战斗后拾取")
         return false
     end
     log("完成一次战斗")
@@ -2031,7 +2031,7 @@ zl_不期而遇处理_萨卡兹 = function()
                         incident = ocr("萨卡兹_不期而遇事件名字检测")
                         if time() - t > 1000 then
                             t = time()
-                            log(366)
+                            log.debug()
                             if not findOne('萨米_希望源石锭界面') then tap("萨卡兹_不期而遇确认点击") end
                         end
                         return incident[1] or findOne("萨卡兹_战略帮助")
@@ -2089,7 +2089,7 @@ zl_fight_after_skz = function()
                 "萨卡兹_收藏品拾取", "萨卡兹_招募券收下", "萨卡兹_源石锭收下",
                 "萨卡兹_思绪收下", --好像还有地雷收下的我没有收录
             })
-            log(2555, x)
+            log.debug(x)
             tap(x)
 
             -- 误触到招募券处理

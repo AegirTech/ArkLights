@@ -374,7 +374,7 @@ multi_account_config_export = function(simple)
                     (server == 1 and 'B服' or '官服') .. '\n'
             end
         end
-        log(account)
+        log.debug(account)
         content = account
     else
         local default = loadOneUIConfig(layout .. "_default")
@@ -435,7 +435,7 @@ parse_simple_config = function(data)
             if type(v[3]) == 'string' and string.upper(v[3]:sub(1, 1)) == 'B' then
                 server = 1
             end
-            log(i, v)
+            log.debug(i, v)
             update(cur, {
                 ['username' .. i] = username,
                 ['password' .. i] = password,
