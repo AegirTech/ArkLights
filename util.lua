@@ -1050,7 +1050,7 @@ local logCommon = function(level, ...)
     end
     log_count = log_count + 1
     local arg = { ... }
-    local info = debug.getinfo(4, "Sl") -- 这里改成 3，才能正确获取调用行号
+    local info = debug.getinfo(4, "Sl") or debug.getinfo(3, "Sl") or debug.getinfo(5, "Sl")
     -- 去掉 ./ 和 .lua
     local fileName = info.short_src:gsub("^./", ""):gsub("%.lua$", "")
     local p = "[" .. fileName .. " 行号:" .. info.currentline .. "] [" .. level .. "] "
