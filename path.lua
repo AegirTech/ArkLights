@@ -6354,8 +6354,8 @@ path.商店搬空 = function()
         return
     end
     path.跳转("首页")
-    log("商店清空任务")
     tap(hd_position)
+    log(6358, "进入活动")
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
@@ -6366,11 +6366,12 @@ path.商店搬空 = function()
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
-        end, 10) then
+        end, 10, .1) then
         return
     end
-
+    log(6372, "查找是否有未领任务")
     if appear("活动任务导航", .6) then
+        log(6374, "领取任务")
         tap("活动任务导航")
         ssleep(0.4)
         if appear("活动任务页面", 3) then
@@ -6382,17 +6383,20 @@ path.商店搬空 = function()
                         tap("活动任务一键领取")
                         ssleep(0.2)
                         if findOne("活动任务页面") then return true end
-                    end, 7) then
+                    end, 7, .2) then
                 end
             end
             ssleep(0.2)
             wait(function()
-                tap("返回")
+                back()
+                ssleep(0.2)
                 if appear("活动商店导航", 1) then
                     return true
                 end
-            end)
+            end, 2, .2)
         end
+        -- else
+        --     snapShot("/sdcard/pictures/未找到活动任务导航.jpg")
     end
 
     if not wait(function()
@@ -6403,7 +6407,7 @@ path.商店搬空 = function()
     end
     ssleep(0.5)
     disappear("正在提交反馈至神经", network_timeout) -- 防止各种掉帧等导致卡在领取等页面
-
+    log(6410, "进入商店,开始购买")
     local 回到商店主页 = function()
         if not wait(function()
                 if findOne("商店主页") then return true end

@@ -1916,7 +1916,7 @@ end
 
 --- wait until func success
 ---@param func function 循环体
----@param timeout number 循环最大时间,单位秒
+---@param timeout number 循环最大时间,单位秒,默认2s
 ---@param interval number 单次循环间隔时间,单位秒
 wait = function(func, timeout, interval)
     timeout = timeout or 2
