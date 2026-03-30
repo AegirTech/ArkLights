@@ -1049,6 +1049,12 @@ local logCommon = function(level, ...)
         log_count = 0
     end
     log_count = log_count + 1
+    local consoleLevel = {
+        DEBUG = 1,
+        INFO = 2,
+        WARN = 3,
+        ERROR = 6,
+    }
     local arg = { ... }
     local info = debug.getinfo(4, "Sl") or debug.getinfo(3, "Sl") or debug.getinfo(5, "Sl")
     -- 去掉 ./ 和 .lua
@@ -1062,15 +1068,15 @@ local logCommon = function(level, ...)
     local a = os.date('%Y.%m.%d %H:%M:%S')
 
     print(l)
-    console.println(1, '[' .. a .. '] ' .. l)
+    console.println(consoleLevel[level], '[' .. a .. '] ' .. l)
     if write_log_local then
         writeFile(log_path .. "log_ark.txt", a .. ' ' .. l .. "\n", true)
     end
 end
 
 log = {
-    info = function(...) logCommon("INFO", ...) end,
     debug = function(...) logCommon("DEBUG", ...) end,
+    info = function(...) logCommon("INFO", ...) end,
     warn = function(...) logCommon("WARN", ...) end,
     error = function(...) logCommon("ERROR", ...) end,
 }

@@ -1047,7 +1047,7 @@ detect_simulators = function()
     end
 
     设备 = (设备 == "xposed" or 设备 == "supersu") and "云手机" or 设备
-    console.println(1, "环境检测：" .. 设备)
+    log.warn("环境检测：" .. 设备)
     if 设备 == "mumu" then
         console.println(3, "如果出现任何问题，请更换雷电模拟器，不推荐使用Mumu。")
         if not root_mode then
