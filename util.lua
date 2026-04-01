@@ -1056,7 +1056,7 @@ local logCommon = function(level, ...)
         ERROR = 6,
     }
     local arg = { ... }
-    local info = debug.getinfo(4, "Sl") or debug.getinfo(3, "Sl") or debug.getinfo(5, "Sl")
+    local info = debug.getinfo(5, "Sl") or debug.getinfo(4, "Sl") or debug.getinfo(3, "Sl")
     -- 去掉 ./ 和 .lua
     local fileName = info.short_src:gsub("^./", ""):gsub("%.lua$", "")
     local p = "[" .. fileName .. " 行号:" .. info.currentline .. "] [" .. level .. "] "
