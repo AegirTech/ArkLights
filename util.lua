@@ -1034,6 +1034,32 @@ table2string = function(t)
     return t
 end
 
+local getRealLevel = function()
+    -- level 1: debug.getinfo
+    -- level 2: getRealLevel
+    -- level 3: logCommon (当前函数)
+    local level = 3
+    local info = debug.getinfo(level, "S")
+    if not info then return 4 end
+
+    local curSrc = info.short_src
+
+    while level < 7 do
+        local nextInfo = debug.getinfo(level, "Sn")
+        if not nextInfo then break end
+        -- print(nextInfo.short_src, nextInfo.name)
+        -- 持续向上跳，直到文件名不再是 logCommon 所在的文件
+        if not nextInfo.name then
+            return level
+        end
+        if nextInfo.short_src ~= curSrc then
+            return level
+        end
+        level = level + 1
+    end
+    return level
+end
+
 -- log_history = {}
 --- 日志输出函数（由脚本运行环境提供）
 --- 会把所有参数序列化后打印到控制台/日志窗口。
@@ -1056,7 +1082,9 @@ local logCommon = function(level, ...)
         ERROR = 6,
     }
     local arg = { ... }
-    local info = debug.getinfo(5, "Sl") or debug.getinfo(4, "Sl") or debug.getinfo(3, "Sl")
+    --local realLevel = getRealLevel() - 1
+    --print(realLevel)
+    local info = debug.getinfo(getRealLevel() - 1, "Sl")
     -- 去掉 ./ 和 .lua
     local fileName = info.short_src:gsub("^./", ""):gsub("%.lua$", "")
     local p = "[" .. fileName .. " 行号:" .. info.currentline .. "] [" .. level .. "] "
