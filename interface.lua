@@ -1546,7 +1546,7 @@ show_extra_ui = function()
     addInfo(layout, "自动升级干员潜能")
 
     -------------------------------------------------------------------
-    addTitle(layout, "每月采购中心")
+    --[[addTitle(layout, "每月采购中心")
 
     newRow(layout)
     addButton(layout, nil, "执行采购中心商店购买",
@@ -1599,7 +1599,7 @@ show_extra_ui = function()
             newRow(shop_layout_red, "red_ticket_shop_row" .. k)
         end
         ui.addCheckBox(shop_layout_red, "red_ticket_shop_" .. k, v, false)
-    end
+    end]] --
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
