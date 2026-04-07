@@ -1,7 +1,6 @@
 ---滑动以获得基建干员信息
 ---@param operators table 干员
 ---@param pngdata table 该组干员属于那种建筑
----@param pngdata table 该组干员属于那种建筑
 ---@param pageid number 最大翻页次数
 ---@param mood_only boolean 仅识别心情
 ---@param stationType string 建筑类型
@@ -196,16 +195,18 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
     log.debug(operators)
 end)
 
--- 贸易站干员选择
--- operator: 列表，每个元素包含两个技能图标
--- dormitoryCapacity: 宿舍可容纳人数
--- dormitoryLevelSum: 宿舍等级之和
--- goldStationNum: 赤金生产线数
--- 返回效率最高的index
+--- 贸易站干员选择
+---@param operator table 干员列表，每个元素包含两个技能图标与心情
+---@param dormitoryCapacity integer 宿舍可容纳人数
+---@param dormitoryLevelSum integer 宿舍等级之和
+---@param goldStationNum integer 赤金生产线数
+---@param goodType string 交易物类别
+---@param level integer 贸易站等级
+---@return tabel 返回效率最高的index
 tradingStationOperatorBest = function(operator, dormitoryCapacity,
                                       dormitoryLevelSum, goldStationNum,
                                       goodType, level)
-    log("194,goldStationNum,dormitoryCapacity,dormitoryLevelSum", 194,
+    log.debug("goldStationNum,dormitoryCapacity,dormitoryLevelSum",
         goldStationNum, dormitoryCapacity, dormitoryLevelSum)
     -- 参考 https://prts.wiki/w/罗德岛基建
     local maxStorage, maxOperator
@@ -591,7 +592,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
         maxStorage = 54
     end
     --log(operator)
-    log("401,goodType", goodType, operator[1])
+    log.debug("goodType", goodType, operator[1])
     -- log("maxStorage", maxStorage)
     -- log("maxOperator", maxOperator)
 
@@ -632,6 +633,10 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 -- log(272, base)
             elseif icon == 'bskill_man_exp2' then
                 if goodType == '作战记录' then base = base + 0.3001 end
+            elseif icon == 'bskill_formula_spd_headb1' then
+                if goodType == '作战记录' then base = base + 0.3 end
+            elseif icon == 'bskill_formula_spd_headb2' then
+                if goodType == '作战记录' then base = base + 0.3 end
             elseif icon == 'bskill_man_exp1' then
                 if goodType == '作战记录' then base = base + 0.2501 end
             elseif icon == 'bskill_man_exp4' then
@@ -984,21 +989,15 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
     return best, best_score
 end
 
-stationIconMask = {}
-stationIconCenterMask = {}
-w, h = 36, 36
+local stationIconMask = {}
+local w, h = 36, 36
 for i = 1, h do
     for j = 1, w do
-        if true then
-            table.insert(stationIconMask, { i, j })
-            -- log(613,i,j)
-        end
         if ((i - 18) ^ 2 + (j - 18) ^ 2) < 18.3 ^ 2 then
-            table.insert(stationIconCenterMask, { i, j })
+            table.insert(stationIconMask, { i, j })
         end
     end
 end
-stationIconMask = stationIconCenterMask
 -- exit()
 
 findBuildingSkill = function(x1, y1, x2, y2, pngdata)
@@ -1142,6 +1141,8 @@ initPngdata = function()
     for v, _ in pairs(skillpng2operator) do
         local pngdata
         if v:startsWith("bskill_man") then
+            pngdata = manufacturingPngdata
+        elseif v:startsWith("bskill_formula") then
             pngdata = manufacturingPngdata
         elseif v:startsWith("bskill_tra_") then
             pngdata = tradingPngdata
@@ -1316,19 +1317,19 @@ chooseOperator = function(stationType, goodType, stationLevel,
     -- ==> 滑动获取所有技能
 
     local maxSwipTimes = 10
-    if stationType == "肥鸭" then maxSwipTimes = 1 end
     local operator = {}
     for i = 1, maxSwipTimes do
         -- if discover(operator,
         --             (not trading) and manufacturingPngdata or tradingPngdata, i) then
         -- log(stationType, #stationType2pngData[stationType])
         if discover(operator, stationType2pngData[stationType], i, false, stationType) then break end
-
+        if stationType == "肥鸭" then break end
         -- exit()
-        -- 三次重试
+
         local state = sample("干员第一个")
+        -- 三次重试
         for j = 1, 3 do
-            log("842尝试翻页", j)
+            log.debug("尝试第", j, "次翻页")
             if findOne("正在提交反馈至神经") then
                 disappear("正在提交反馈至神经", network_timeout)
                 ssleep(.5)
@@ -1372,14 +1373,8 @@ chooseOperator = function(stationType, goodType, stationLevel,
         log.warn("全部干员识别失败")
         return
     end
-    log.debug()
 
-
-    -- exit()
-
-    -- TODO 滑动时就可以开始计算
     -- 计算最优技能
-
     local best, best_score
     if stationType == "制造站" then
         best, best_score = manufacturingStationOperatorBest(operator,
@@ -2346,7 +2341,7 @@ end
 
 workshopOperatorBest = function(operator, id, level)
     -- 暂时只考虑材料合成
-    log(id, level)
+    log.debug(id, level)
     --[[{"重装芯片组":"3232","糖聚块":"30024","固化纤维板":"31074","晶体元件":"31033","特种芯片组":"3282","辅助双芯片":"3273",
     "异铁块":"30044","化合切削液":"31053","聚合剂":"30115","烧结核凝晶":"30155","聚酸酯组":"30033","先锋芯片":"3211","源岩":"30011",
     "酮凝集":"30052","精炼溶剂":"31044","重装双芯片":"3233","轻锰矿":"30083","切削原液":"31054","酮阵列":"30054","医疗芯片":"3261",
