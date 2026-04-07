@@ -1412,6 +1412,7 @@ end
             if findAny(STORY_DIALOGS) then
                 tap("剧情中")
                 tap({ scale(531), scale(471) })
+                tap({ scale(959), scale(351) })
                 tap({ scale(1244), scale(341) })
                 tap("开技能")
                 log("跳过无按钮剧情")
