@@ -678,6 +678,28 @@ server=]] .. server
     -- end
     -- ---
 
+    -- 打码配置（云控下发，全局共享），不破坏原来结构
+    local cap = data.captcha
+    if istable(cap) then
+        for _, key in ipairs({
+            "cloud_captcha_token", "not_wait_aunly",
+            "use_free_server_captcha", "use_captcha_aunly_slip",
+            "use_jfbym", "jfbym_token",
+            "use_captcha_aunly", "use_captcha_free2",
+            "cloud_captcha_server2", "use_captcha",
+            "captcha_username", "captcha_password"
+        }) do
+            local v = cap[key]
+            if v ~= nil then
+                if type(v) == "string" then
+                    hook = hook .. ";" .. key .. "=" .. string.format("%q", v)
+                else
+                    hook = hook .. ";" .. key .. "=" .. tostring(v)
+                end
+            end
+        end
+    end
+
     hook = hook .. [[;saveConfig("restart_mode_hook",]] ..
         string.format("%q", hook) .. ')'
     log("hook", hook)
