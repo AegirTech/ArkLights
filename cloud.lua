@@ -4,6 +4,7 @@ cloud = {}
 m = cloud
 
 m.deviceToken = ''
+m.authToken = ''
 m.captchaToken = ''
 m.server = ''
 m.captchaServer = ''
@@ -14,6 +15,11 @@ m.setDeviceToken = function(deviceToken)
     deviceToken = strOr(deviceToken):trim()
     if #deviceToken < 5 then return end
     m.deviceToken = deviceToken
+end
+
+m.setAuthToken = function(authToken)
+    authToken = strOr(authToken):trim()
+    m.authToken = authToken
 end
 
 m.setCaptcha = function(server, token)
@@ -51,8 +57,11 @@ end
 
 m.getTask = function()
     -- log("40",40)
-    local res, code = httpGet(m.server .. "/getTask?" .. "deviceToken=" ..
-        m.deviceToken, 30,
+    local url = m.server .. "/getTask?" .. "deviceToken=" .. m.deviceToken
+    if #m.authToken > 0 then
+        url = url .. "&authToken=" .. m.authToken
+    end
+    local res, code = httpGet(url, 30,
         'Content-Type: application/json')
     return res, code
 end
