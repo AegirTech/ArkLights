@@ -4,6 +4,7 @@ cloud = {}
 m = cloud
 
 m.deviceToken = ''
+m.authToken = ''
 m.captchaToken = ''
 m.server = ''
 m.captchaServer = ''
@@ -14,6 +15,11 @@ m.setDeviceToken = function(deviceToken)
     deviceToken = strOr(deviceToken):trim()
     if #deviceToken < 5 then return end
     m.deviceToken = deviceToken
+end
+
+m.setAuthToken = function(authToken)
+    authToken = strOr(authToken):trim()
+    m.authToken = authToken
 end
 
 m.setCaptcha = function(server, token)
@@ -51,8 +57,11 @@ end
 
 m.getTask = function()
     -- log("40",40)
-    local res, code = httpGet(m.server .. "/getTask?" .. "deviceToken=" ..
-        m.deviceToken, 30,
+    local url = m.server .. "/getTask?" .. "deviceToken=" .. m.deviceToken
+    if #m.authToken > 0 then
+        url = url .. "&authToken=" .. m.authToken
+    end
+    local res, code = httpGet(url, 30,
         'Content-Type: application/json')
     return res, code
 end
@@ -668,6 +677,28 @@ server=]] .. server
     --   hook = hook .. [[;now_job_ui]]..i .. [[=false]]
     -- end
     -- ---
+
+    -- 打码配置（云控下发，全局共享），不破坏原来结构
+    local cap = data.captcha
+    if istable(cap) then
+        for _, key in ipairs({
+            "cloud_captcha_token", "not_wait_aunly",
+            "use_free_server_captcha", "use_captcha_aunly_slip",
+            "use_jfbym", "jfbym_token",
+            "use_captcha_aunly", "use_captcha_free2",
+            "cloud_captcha_server2", "use_captcha",
+            "captcha_username", "captcha_password"
+        }) do
+            local v = cap[key]
+            if v ~= nil then
+                if type(v) == "string" then
+                    hook = hook .. ";" .. key .. "=" .. string.format("%q", v)
+                else
+                    hook = hook .. ";" .. key .. "=" .. tostring(v)
+                end
+            end
+        end
+    end
 
     hook = hook .. [[;saveConfig("restart_mode_hook",]] ..
         string.format("%q", hook) .. ')'
