@@ -10364,7 +10364,7 @@ end
 path.卫戍协议 = function()
     if not findAny({ "卫戍协议首页", "卫戍协议放弃模拟" }) then
         path.跳转("首页")
-        tap("面板活动2")
+        tap("面板活动")
         ssleep(2.5)
     end
     if appear("教程关闭", 3) then tap("教程关闭") end
@@ -10379,7 +10379,7 @@ path.卫戍协议循环 = function()
     local p = findAny({ "卫戍协议首页", "卫戍协议放弃模拟" })
     if not p then
         path.跳转("首页")
-        tap("面板活动2")
+        tap("面板活动")
         ssleep(2.5)
     end
     if not appear(p, 5) then return end
