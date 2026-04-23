@@ -334,7 +334,7 @@ def release(file_type):
     with open("main.lua", "r", encoding="utf-8") as f:
         lines = f.readlines()
         for line in lines:
-            if re.match("--\s*hotUpdate\(\)", line):
+            if re.match(r"--\s*hotUpdate\(\)", line):
                 print("检测到热更新被注释,请重新打包")
                 return
     if file_type == "RELEASE":
@@ -446,6 +446,9 @@ def statistician():
         exit()
     url = API + "/getStatistician?token=" + token
     response = requests.request("GET", url)
+    if response.status_code != 200 or not response.text:
+        print("请求失败，状态码：", response.status_code)
+        return
     info = response.json()["data"]
     print("============统计信息============")
     print("24h下载量: \t" + str(info["downloadCount"]))
