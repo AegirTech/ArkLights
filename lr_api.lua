@@ -15,17 +15,17 @@ function appIsRunning(package_name) end
 
 --- 以当前最高权限(如果设备是root的则以root权限执行，如果是激活的则以激活权限执行)执行命令
 -- 语法: exec(cmd,[isRet])
----@param cmd any
----@param isRet any
+---@param cmd any 执行命令字符串
+---@param isRet boolean 是否返回执行的结果，默认是true
 function exec(cmd, isRet) end
 
 --- 停止脚本运行
 function exitScript() end
 
 --- 释放资源到指定目录
----@param assets any
----@param outdir any
----@param pattern any
+---@param assets any 当前项目中的资源文件名称
+---@param outdir any 要释放文件的存放路径
+---@param pattern any 匹配模式可以是模糊匹配也可以是明确的文件名称
 function extractAssets(assets, outdir, pattern) end
 
 --- 获取前台app包名
@@ -146,16 +146,16 @@ function installLrPkg(lrpath) end
 function lockScreen() end
 
 --- 拨号或者打出
----@param number any
----@param state any
+---@param number any 要发送短信的电话号
+---@param state any 为0则拨号否则打出
 function phoneCall(number, state) end
 
 --- 播放音乐
----@param audio_path any
+---@param audio_path any 声音资源文件名称
 function playAudio(audio_path) end
 
 --- 调试输出
----@param str any
+---@param str any 调试打印输出信息
 function printEx(str) end
 
 --- 读取剪贴板
@@ -176,7 +176,7 @@ function resetUIConfig(configName) end
 --- 重启当前脚本
 function restartScript() end
 
---- 生成随机数
+--- 生成随机数，开始数和结束数必须是整数
 ---@param min any
 ---@param max any
 function rnd(min, max) end
@@ -195,30 +195,30 @@ function runApp(package_name, component_name, is_open_by_super) end
 function runIntent(intent) end
 
 --- 刷新图片文件到图库
----@param imagepath any
+---@param imagepath string 图片的绝对路径
 function scanImage(imagepath) end
 
---- 发动短信
----@param number any
----@param content any
+--- 发送短信
+---@param number any 电话号
+---@param content any 短信内容
 function sendSms(number, content) end
 
 --- 打开或关闭飞行模式
----@param state any
+---@param state boolean true表示打开飞行模式，false表示关闭飞行模式
 function setAirplaneMode(state) end
 
 --- 打开或关闭蓝牙
----@param state any
+---@param state boolean true表示打开蓝牙，false表示关闭蓝牙
 function setBTEnable(state) end
 
 --- 设置悬浮窗位置：设置悬浮窗位置
----@param x any
----@param y any
+---@param x any 小数类型取值范围(0-1.0) 表示占用的长宽比
+---@param y any 小数类型取值范围(0-1.0) 表示占用的长宽比
 function setControlBarPosNew(x, y) end
 
 --- 设置悬浮窗位置：设置悬浮窗位置
----@param pos any
----@param type any
+---@param pos any 小数类型取值范围(0-1.0)
+---@param type any 整数类型暂时未用但必须填写
 function setControlBarPos(pos, type) end
 
 --- 设置真实的物理分辨率和dpi：此方法不能在无障碍模式下使用
@@ -230,32 +230,41 @@ function setControlBarPos(pos, type) end
 function setDisplaySize(w, h, dpi) end
 
 --- 写入整数键值对
----@param key any
----@param value any
+---@param key any 字符串型键值
+---@param value any 整数型值
 function setNumberConfig(key, value) end
 
---- 设置停止脚本的回调函数：如果想在脚本结束的时候能处理一些收尾的事情可以用此方法设置结束时的回调方法 注意使用此方法的回调函数中不能使用ui显示操作
+--- 设置停止脚本的回调函数：
+--- 如果想在脚本结束的时候能处理一些收尾的事情可以用此方法设置结束时的回调方法，
+--- 注意使用此方法的回调函数中不能使用ui显示操作
 function setStopCallBack() end
 
 --- 写入键值对
----@param key any
----@param value any
+---@param key any 字符串型键值
+---@param value any 字符串型值
 function setStringConfig(key, value) end
 
+--- 定时执行指定的方法
+-- 语法: setTimer(func,time,arg,...)
+---@param func function 需要调用的函数
+---@param time number 当前时间到调用函数的时间间隔，单位毫秒
+---@param ... any 传给回调函数的参数列表
+function setTimer(func, time, ...) end
+
 --- 设置悬浮按钮菜单自定义事件回调函数(注意只有新版悬浮菜单才能触发此回调函数)：用户通过点击悬浮按钮菜单来触发一个事件给脚本
----@param cb any
-function setUserEventCallBack(cb) end
+---@param call_back function 回调函数
+function setUserEventCallBack(call_back) end
 
 --- 打开或关闭wifi
----@param state any
+---@param state boolean true表示打开wifi，false表示关闭wifi
 function setWifiEnable(state) end
 
 --- 显示或者隐藏悬浮按钮
----@param isShow any
+---@param isShow boolean true表示显示悬浮按钮，false表示隐藏悬浮按钮
 function showControlBar(isShow) end
 
 --- 休眠
----@param time any
+---@param time number 休眠时间，单位毫秒
 function sleep(time) end
 
 --- 关闭app
@@ -270,8 +279,8 @@ function stopAudio() end
 function unLockScreen() end
 
 --- 解压zip文件到指定的目录
----@param zippath any
----@param outdir any
+---@param zippath any 要解压的zip文件路径
+---@param outdir any 解压后文件的存放路径
 ---@param pass any 字符类型，解压密码，没有密码可以不填写
 function unZip(zippath, outdir, pass) end
 
@@ -279,13 +288,13 @@ function unZip(zippath, outdir, pass) end
 function vibrate() end
 
 --- 写数据到剪贴板
----@param str any
+---@param str any 要写入剪贴板的字符串
 ---@return any 无
 function writePasteboard(str) end
 
 --- zip 压缩文件
----@param file any
----@param zippath any
+---@param file any 要压缩的文件或文件夹路径
+---@param zippath any 压缩后保存的zip文件路径
 function zip(file, zippath) end
 
 -- 网路方法
@@ -310,14 +319,18 @@ function asynHttpGet(callback, url, timeout, header) end
 function asynHttpPost(callback, url, postdata, timeout, header) end
 
 --- 关闭一个websocket连接
----@param handle any 数字类型，由startWebSocket返回的句柄 使用事项:该函数只能在主线程中使用，所以需要在子线程中触发此函数可以调用setTimer在回调函数中调用关闭
+--- 使用事项:该函数只能在主线程中使用，所以需要在子线程中触发此函数可以调用setTimer在回调函数中调用关闭
+---@param handle any 数字类型，由startWebSocket返回的句柄
 ---@return boolean 布尔类型，true成功，false失败
 function closeWebSocket(handle) end
 
---- 关闭一个websocket连接
----@param handle any 数字类型，由startWebSocket返回的句柄 使用事项:该函数只能在主线程中使用，所以需要在子线程中触发此函数可以调用setTimer在回调函数中调用关闭
----@return boolean 布尔类型，true成功，false失败
-function closeWebSocket(handle) end
+--- 下载文件
+-- 语法: downloadFile(url,savepath,[progress])
+---@param url any 请求的网络地址
+---@param savepath any 保存的文件路径
+---@param progress any 可选项，函数类型，下载进度回调方法
+---@return number 失败返回-1，成功返回0
+function downloadFile(url, savepath, progress) end
 
 --- HTTP GET请求
 -- 语法: httpGet(url,[timeout],[header])
@@ -383,10 +396,10 @@ function LuaEngine.loadApk(name) end
 function LuaEngine.sendMailWithFile(账号, 密码, 发送给谁, 邮箱服务器, 是否开启认证, 邮件标题, 邮件内容, 文件路径, 发送结果回调) end
 
 --- LuaEngine.snapShot java层截图方法
----@param l any
----@param t any
----@param r any
----@param b any
+---@param l any left坐标
+---@param t any top坐标
+---@param r any right坐标
+---@param b any bottom坐标
 ---@return table 返回一个java的Bitmap对象，记得一定要释放避免内存泄漏
 function LuaEngine.snapShot(l, t, r, b) end
 
@@ -575,11 +588,12 @@ function rotateImage(path, rotate) end
 function scaleImage(src, dst, w, h) end
 
 --- 停止一个线程
----@param tid any
+---@param tid integer 线程标识符，由beginThread返回
 function stopThread(tid) end
 
---- useRes 指定资源文件为默认查找的对象：指定为默认查找对象后图色以及资源获取都是默认从此rc文件中获取
----@param name any
+--- useRes 指定资源文件为默认查找的对象：
+--- 指定为默认查找对象后图色以及资源获取都是默认从此rc文件中获取
+---@param name any 资源文件名称
 function useRes(name) end
 
 --- writeFile 写字符串到文件
@@ -904,10 +918,10 @@ function findCircle(x1, y1, x2, y2, dp, minDist, param1, param2, minRadius, maxR
 function findColorT(t) end
 
 --- 在指定区域内查找指定的颜色
----@param x1 any
----@param y1 any
----@param x2 any
----@param y2 any
+---@param x1 integer 查找区域左上X坐标
+---@param y1 integer 查找区域左上Y坐标
+---@param x2 integer 查找区域右下X坐标
+---@param y2 integer 查找区域右下Y坐标
 ---@param color any
 ---@param dir integer 查找方向 0: 表示从左上向右下； 1: 表示从中心往四周查找； 2: 表示从右下向左上查找； 3: 表示从左下向右上查找； 4：表示从右上向左下查找
 ---@param sim any
@@ -1020,17 +1034,17 @@ function getColorNum(x1, y1, x2, y2, color, sim) end
 
 --- 获取指定坐标处屏幕的颜色值
 -- 语法: getPixelColor(x,y,[type])
----@param x any
----@param y any
----@param type any
+---@param x any 横坐标
+---@param y any 纵坐标
+---@param type any 返回类型，1时返回一个整数，默认不填写返回颜色的16进制字符串
 ---@return any 返回指定坐标处的颜色值
 function getPixelColor(x, y, type) end
 
 --- 获取指定范围内的像素数组
----@param x1 any
----@param y1 any
----@param x2 any
----@param y2 any
+---@param x1 integer 查找区域左上X坐标
+---@param y1 integer 查找区域左上Y坐标
+---@param x2 integer 查找区域右下X坐标
+---@param y2 integer 查找区域右下Y坐标
 ---@return number w 是获取范围的长,如果w,h小于0则表明失败
 ---@return number h 是获取范围的高,如果w,h小于0则表明失败
 ---@return number arr 是返回的数组,如果w,h小于0则表明失败
@@ -1052,21 +1066,23 @@ function keepCapture() end
 function releaseCapture() end
 
 --- 二值化本地神经网络ocr：这些参数可以通过群里的神经网络ocr.exe工具进行调试到自己满意值后直接生成代码
--- 语法: ocrj(x1, y1, x2, y2,color_desc,[padding],[maxSlidLen],[boxscoreth],[boxthresh],[clipratio],[doAngle],[mostAngle])
+-- 语法: ocrBinaryEx(x1, y1, x2, y2,color_desc,[padding],[maxSlidLen],[boxscoreth],[boxthresh],[clipratio],[doAngle],[mostAngle])
 ---@param x1 integer 查找区域左上X坐标
 ---@param y1 integer 查找区域左上Y坐标
 ---@param x2 integer 查找区域右下X坐标
 ---@param y2 integer 查找区域右下Y坐标
 ---@param color_desc string 文字的颜色格式
----@param padding integer 周围添加隔离空白区域大小,默认不写是50
----@param maxSlidLen integer 长宽按比例缩放最大值，默认不写为0 boxscoreth：浮点类型，框置信度默认不写是0.6 boxthresh：浮点类型，默认0.3 clipratio：框大小倍率，默认2.0 doAngle：布尔类型，是否角度分析默认为true
----@param boxscoreth any
----@param boxthresh any
----@param clipratio any
----@param doAngle any
----@param mostAngle any 布尔类型,是否进行方向分析默认为true
+---@param padding integer 周围添加隔离空白区域大小，默认不写是50
+---@param maxSlidLen integer 长宽按比例缩放最大值，默认不写为0
+---@param boxscoreth any 浮点类型，框置信度，默认不写是0.6
+---@param boxthresh any 浮点类型，默认0.3
+---@param clipratio any 框大小倍率，默认2.0
+---@param doAngle any 布尔类型，是否角度分析，默认为true
+---@param mostAngle any 布尔类型，是否进行方向分析，默认为true
 ---@return table 数组类型
-function ocrj(x1, y1, x2, y2, color_desc, padding, maxSlidLen, boxscoreth, boxthresh, clipratio, doAngle, mostAngle) end
+function ocrBinaryEx(x1, y1, x2, y2, color_desc, padding, maxSlidLen, boxscoreth, boxthresh, clipratio, doAngle,
+                     mostAngle)
+end
 
 --- 本地神经网络ocr：这些参数可以通过群里的神经网络ocr.exe工具进行调试到自己满意值后直接生成代码
 -- 语法: ocrEx(x1, y1, x2, y2,[padding],[maxSlidLen],[boxscoreth],[boxthresh],[clipratio],[doAngle],[mostAngle])
@@ -1074,13 +1090,13 @@ function ocrj(x1, y1, x2, y2, color_desc, padding, maxSlidLen, boxscoreth, boxth
 ---@param y1 integer 查找区域左上Y坐标
 ---@param x2 integer 查找区域右下X坐标
 ---@param y2 integer 查找区域右下Y坐标
----@param padding integer 周围添加隔离空白区域大小,默认不写是50
----@param maxSlidLen integer 长宽按比例缩放最大值，默认不写为0 boxscoreth：浮点类型，框置信度默认不写是0.6 boxthresh：浮点类型，默认0.3 clipratio：框大小倍率，默认2.0 doAngle：布尔类型，是否角度分析默认为true
----@param boxscoreth any
----@param boxthresh any
----@param clipratio any
----@param doAngle any
----@param mostAngle any 布尔类型,是否进行方向分析默认为true
+---@param padding integer 周围添加隔离空白区域大小，默认不写是50
+---@param maxSlidLen integer 长宽按比例缩放最大值，默认不写为0
+---@param boxscoreth any 浮点类型，框置信度，默认不写是0.6
+---@param boxthresh any 浮点类型，默认0.3
+---@param clipratio any 框大小倍率，默认2.0
+---@param doAngle any 布尔类型，是否角度分析，默认为true
+---@param mostAngle any 布尔类型，是否进行方向分析，默认为true
 ---@return table 数组类型
 function ocrEx(x1, y1, x2, y2, padding, maxSlidLen, boxscoreth, boxthresh, clipratio, doAngle, mostAngle) end
 
@@ -1095,18 +1111,18 @@ function ocrEx(x1, y1, x2, y2, padding, maxSlidLen, boxscoreth, boxthresh, clipr
 function ocrj(x1, y1, x2, y2, colorfmt, sim) end
 
 --- 获取指定范围内的文本字符串：请下载群里的光学ocr训练工具可以自己针对性的训练自己的字库
--- 语法: oocrTextExJ(handle,x1,y1,x2,y2,[splitType],[ThresholdTypes],[thresh],[maxthresh])
+-- 语法: ocrTextExJ(handle,x1,y1,x2,y2,[splitType],[ThresholdTypes],[thresh],[maxthresh])
 ---@param handle any 整数型，tresseract-ocr对象句柄
 ---@param x1 integer 查找区域左上X坐标
 ---@param y1 integer 查找区域左上Y坐标
 ---@param x2 integer 查找区域右下X坐标
 ---@param y2 integer 查找区域右下Y坐标
----@param splitType any 整数型，文本分割类型 0(RIL_BLOCK),1(RIL_PARA),2(RIL_TEXTLINE),3(RIL_WORD),4(RIL_SYMBOL) 默认不写是3（RIL_WORD）
----@param ThresholdTypes integer (THRESH_BINARY = 0,THRESH_BINARY_INV = 1,THRESH_TRUNC = 2,THRESH_TOZERO = 3,THRESH_TOZERO_INV = 4,THRESH_MASK = 7,THRESH_OTSU = 8,THRESH_TRIANGLE = 16)具体含义请查看opencv文档，默认不写是8(THRESH_OTSU)
----@param thresh any 整数型，阈值默认不写是150 maxthresh：整数型，最大阈值，默认不写255
----@param maxthresh any
+---@param splitType any 整数型，文本分割类型 0(RIL_BLOCK),1(RIL_PARA),2(RIL_TEXTLINE),3(RIL_WORD),4(RIL_SYMBOL)，默认不写是3(RIL_WORD)
+---@param ThresholdTypes integer 二值化类型，默认不写是8(THRESH_OTSU)。可选值：THRESH_BINARY=0, THRESH_BINARY_INV=1, THRESH_TRUNC=2, THRESH_TOZERO=3, THRESH_TOZERO_INV=4, THRESH_MASK=7, THRESH_OTSU=8, THRESH_TRIANGLE=16
+---@param thresh any 整数型，阈值，默认不写是150
+---@param maxthresh any 整数型，最大阈值，默认不写255
 ---@return table 返回查找的结果的表
-function oocrTextExJ(handle, x1, y1, x2, y2, splitType, ThresholdTypes, thresh, maxthresh) end
+function ocrTextExJ(handle, x1, y1, x2, y2, splitType, ThresholdTypes, thresh, maxthresh) end
 
 --- 获取指定范围内的文本字符串：请下载群里的光学ocr训练工具可以自己针对性的训练自己的字库
 -- 语法: ocrTextEx(handle,x1,y1,x2,y2,[ThresholdTypes],[thresh],[maxthresh])
@@ -1115,9 +1131,9 @@ function oocrTextExJ(handle, x1, y1, x2, y2, splitType, ThresholdTypes, thresh, 
 ---@param y1 integer 查找区域左上Y坐标
 ---@param x2 integer 查找区域右下X坐标
 ---@param y2 integer 查找区域右下Y坐标
----@param ThresholdTypes integer (THRESH_BINARY = 0,THRESH_BINARY_INV = 1,THRESH_TRUNC = 2,THRESH_TOZERO = 3,THRESH_TOZERO_INV = 4,THRESH_MASK = 7,THRESH_OTSU = 8,THRESH_TRIANGLE = 16)具体含义请查看opencv文档，默认不写是8(THRESH_OTSU)
----@param thresh any 整数型，阈值默认不写是150 maxthresh：整数型，最大阈值，默认不写255
----@param maxthresh any
+---@param ThresholdTypes integer 二值化类型，默认不写是8(THRESH_OTSU)。可选值：THRESH_BINARY=0, THRESH_BINARY_INV=1, THRESH_TRUNC=2, THRESH_TOZERO=3, THRESH_TOZERO_INV=4, THRESH_MASK=7, THRESH_OTSU=8, THRESH_TRIANGLE=16
+---@param thresh any 整数型，阈值，默认不写是150
+---@param maxthresh any 整数型，最大阈值，默认不写255
 ---@return string 返回查找的字符串
 function ocrTextEx(handle, x1, y1, x2, y2, ThresholdTypes, thresh, maxthresh) end
 
@@ -1163,18 +1179,18 @@ function setDict(index, name) end
 function setScreenScale(type, width, height, scale) end
 
 --- 设置本地光学ocr白名单：如果你选择的光学ocr识别引擎使用的是lstm神经网络模式那么白名单将失效
----@param handle any 通过createOcr创建的句柄 whiteList:字符串类型，不在这个字符集里面的字符全部被过滤掉
----@param whitelist any
+---@param handle any 通过createOcr创建的句柄
+---@param whitelist any 字符串类型，不在这个字符集里面的字符全部被过滤掉
 ---@return any 无
 function setWhiteList(handle, whitelist) end
 
 --- 截图并保存
 -- 语法: snapShot(path,[left,top,right,bottom])
----@param path any
----@param left any
----@param top any
----@param right any
----@param bottom any
+---@param path any 截图保存路径
+---@param left any 左边界坐标
+---@param top any 上边界坐标
+---@param right any 右边界坐标
+---@param bottom any 下边界坐标
 function snapShot(path, left, top, right, bottom) end
 
 --- 设置要查找的字典索引,后面所有的查询都是在这个字典中查找
@@ -1196,7 +1212,7 @@ function console.dismiss() end
 function console.lockConsole() end
 
 --- println 打印日志到控制台窗口
----@param level any
+---@param level integer 1.VERBOSE 2.DEBUG 3.INFO 4.WARN 5.ERROR 6.ASSERT
 ---@param log any
 ---@return any 无
 function console.println(level, log) end
@@ -1298,57 +1314,58 @@ function jsonLib.encode(table) end
 
 --- nodeLib.click 点击指定节点
 -- 语法: local node = nodeLib.click(node,[mode])
----@param node any
----@param mode any
+---@param node any 要点击的节点对象
+---@param mode any 点击模式，0或不填为无指针点击，1为模拟指针点击
 ---@return boolean 布尔类型
 function nodeLib.click(node, mode) end
 
 --- nodeLib.findAll 查找所有满足要求的节点
----@param selector any
----@param fuzzy_match any
+---@param selector table 里面的键值对通过节点工具勾选直接生成
+---@param fuzzy_match boolean true表示使用正则匹配去查询，false表示完全匹配
 ---@return any 查找所有满足要求的节点
 function nodeLib.findAll(selector, fuzzy_match) end
 
 --- nodeLib.findByIndex 根据节点所在树的每个分支顺序查找
----@param indexs any
+---@param indexs any 是从顶层节点到该节点顺序字符串
 ---@return any 查找所有满足要求的节点
 function nodeLib.findByIndex(indexs) end
 
 --- nodeLib.findChildNodes 查找所有满足要求的节点的所有子节点
----@param selector any
----@param fuzzy_match any
+---@param selector table 里面的键值对通过节点工具勾选直接生成
+---@param fuzzy_match boolean true表示使用正则匹配去查询，false表示完全匹配
 ---@return any 查找所有满足要求的节点所有子节点
 function nodeLib.findChildNodes(selector, fuzzy_match) end
 
---- nodeLib.findOne 查找出一个节点
----@param src any
----@param dst any
----@param isfindall any
----@param fuzzy_match any
+--- nodeLib.findInNode 在指定节点中查找满足要求的子节点
+-- 语法: local node = nodeLib.findInNode(src,dst,isfindall,fuzzy_match)
+---@param src any 要被查找的节点对象
+---@param dst any 要查找的节点对象
+---@param isfindall any 布尔类型，是否查找并返回所有符合要求的节点，true返回所有，false找到一个就返回
+---@param fuzzy_match boolean true表示使用正则匹配去查询，false表示完全匹配
 ---@return table 返回一个满足要求的节点或者节点数组
 function nodeLib.findInNode(src, dst, isfindall, fuzzy_match) end
 
 --- nodeLib.findNextNode 获取指定节点的下一个兄弟节点
----@param selector any
----@param fuzzy_match any
+---@param selector table 里面的键值对通过节点工具勾选直接生成
+---@param fuzzy_match boolean true表示使用正则匹配去查询，false表示完全匹配
 ---@return any 返回一个满足要求的节点的下一个兄弟节点
 function nodeLib.findNextNode(selector, fuzzy_match) end
 
 --- nodeLib.findOne 查找出一个节点
----@param selector any
----@param fuzzy_match any
+---@param selector table 里面的键值对通过节点工具勾选直接生成
+---@param fuzzy_match boolean true表示使用正则匹配去查询，false表示完全匹配
 ---@return any 返回一个满足要求的节点
 function nodeLib.findOne(selector, fuzzy_match) end
 
 --- nodeLib.findParentNode 查找出一个节点的父节点
----@param selector any
----@param fuzzy_match any
+---@param selector table 里面的键值对通过节点工具勾选直接生成
+---@param fuzzy_match boolean true表示使用正则匹配去查询，false表示完全匹配
 ---@return any 返回一个满足要求的节点的父节点
 function nodeLib.findParentNode(selector, fuzzy_match) end
 
 --- nodeLib.findPreNode 获取指定节点的上一个兄弟节点
----@param selector any
----@param fuzzy_match any
+---@param selector table 里面的键值对通过节点工具勾选直接生成
+---@param fuzzy_match boolean true表示使用正则匹配去查询，false表示完全匹配
 ---@return any 返回一个满足要求的节点的上一个兄弟节点
 function nodeLib.findPreNode(selector, fuzzy_match) end
 
@@ -1362,40 +1379,40 @@ function nodeLib.keepNode() end
 
 --- nodeLib.longClick 指针长按节点
 -- 语法: local node = nodeLib.longClick(node,[isRegMatch])
----@param node any
----@param isRegMatch any
+---@param node any 要长按的节点对象
+---@param isRegMatch any 布尔类型，true表示使用正则匹配，false表示完全匹配
 ---@return boolean 返回一个布尔值
 function nodeLib.longClick(node, isRegMatch) end
 
 --- nodeLib.matchAllAndClick 匹配出所有符合条件的节点并进行无指针点击
----@param selector any
+---@param selector table 里面的键值对通过节点工具勾选直接生成
 ---@return number 返回一个数组 匹配的所有结果
 function nodeLib.matchAllAndClick(selector) end
 
 --- nodeLib.matchAllAndInputText 匹配出一个符合条件的节点并进行输入
----@param selector any
----@param str string
+---@param selector table 里面的键值对通过节点工具勾选直接生成
+---@param str string 要输入的字符串
 ---@return number 返回一个数组 匹配的所有结果
 function nodeLib.matchAllAndInputText(selector, str) end
 
 --- nodeLib.matchAll 匹配所有符合条件的节点
----@param selector any
+---@param selector table 里面的键值对通过节点工具勾选直接生成
 ---@return number 返回一个数组 匹配的所有结果
 function nodeLib.matchAll(selector) end
 
 --- nodeLib.matchOneAndClick 匹配出一个符合条件的节点并进行无指针点击
----@param selector any
+---@param selector table 里面的键值对通过节点工具勾选直接生成
 ---@return number 返回一个数组 匹配的所有结果
 function nodeLib.matchOneAndClick(selector) end
 
 --- nodeLib.matchOneAndInputText 匹配出一个符合条件的节点并进行输入
----@param selector any
----@param str string
+---@param selector table 里面的键值对通过节点工具勾选直接生成
+---@param str string 要输入的字符串
 ---@return number 返回一个数组 匹配的所有结果
 function nodeLib.matchOneAndInputText(selector, str) end
 
 --- nodeLib.matchOne 匹配出一个符合条件的节点
----@param selector any
+---@param selector table 里面的键值对通过节点工具勾选直接生成
 ---@return number 返回一个数组
 function nodeLib.matchOne(selector) end
 
@@ -1406,31 +1423,31 @@ function nodeLib.saveNode(path) end
 
 --- nodeLib.scrollBackward 向下滚动一页
 -- 语法: local node = nodeLib.scrollBackward(node,[isRegMatch])
----@param node any
----@param isRegMatch any
+---@param node any 要滚动的节点对象
+---@param isRegMatch any 布尔类型，true表示使用正则匹配，false表示完全匹配
 ---@return boolean 返回一个布尔值
 function nodeLib.scrollBackward(node, isRegMatch) end
 
 --- nodeLib.scrollForward 向上滚动一页
 -- 语法: local node = nodeLib.scrollForward(node,[isRegMatch])
----@param node any
----@param isRegMatch any
+---@param node any 要滚动的节点对象
+---@param isRegMatch any 布尔类型，true表示使用正则匹配，false表示完全匹配
 ---@return boolean 返回一个布尔值
 function nodeLib.scrollForward(node, isRegMatch) end
 
 --- setOnMsgNotify 监听系统通知类信息
----@param callback any
+---@param callback function 回调函数，当有新通知时触发
 ---@return boolean 返回布尔值
 function nodeLib.setOnMsgNotify(callback) end
 
 --- nodeLib.setOnNodeEvent 设置监听节点事件回调函数
----@param callback any
+---@param callback function 回调函数，当节点事件发生时触发
 ---@return boolean 布尔类型
 function nodeLib.setOnNodeEvent(callback) end
 
---- nodeLib.setText 给文文本输入框节点输入文字
----@param node any
----@param text any
+--- nodeLib.setText 给文本输入框节点输入文字
+---@param node any 目标文本输入框节点对象
+---@param text any 要输入的文字
 ---@return boolean 布尔类型
 function nodeLib.setText(node, text) end
 
@@ -1545,197 +1562,390 @@ function utf8.strReverse(string1) end
 
 --- ui.addButton 创建一个按钮
 -- 语法: ui.addButton(layout,name,text,[w],[h])
----@param layout any
----@param name any
----@param text any
----@param w any
----@param h any
+---@param layout any 布局名称
+---@param name any 按钮名称
+---@param text any 按钮显示内容
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
 ---@return boolean 布尔类型
 function ui.addButton(layout, name, text, w, h) end
 
---- ui.addCheckBox 创建输入框控件
+--- ui.addCheckBox 创建多选框控件
 -- 语法: ui.addCheckBox(layout,name,text,[sel],[w],[h])
----@param layout any
----@param name any
----@param text any
----@param sel any
----@param w any
----@param h any
+---@param layout any 布局名称
+---@param name any 控件名称
+---@param text any 显示内容
+---@param sel any 布尔值类型，true表示选中,false不选中
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
 ---@return boolean 布尔类型
 function ui.addCheckBox(layout, name, text, sel, w, h) end
 
---- ui.addCheckBox 创建输入框控件
--- 语法: ui.addCheckBox(layout,name,text,[sel],[w],[h])
----@param layout any
----@param name any
----@param text any
----@param sel any
----@param w any
----@param h any
+--- ui.addEditText 创建输入框控件
+-- 语法: ui.addEditText(layout,name,text,[w],[h])
+---@param layout any 布局名称
+---@param name any 控件名称
+---@param text any 显示内容
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
 ---@return boolean 布尔类型
-function ui.addCheckBox(layout, name, text, sel, w, h) end
+function ui.addEditText(layout, name, text, w, h) end
+
+--- ui.addImageView 创建图像控件
+-- 语法: ui.addImageView(layout,name,path,[w],[h])
+---@param layout any 布局名称
+---@param name any 控件名称
+---@param path any 图片路径
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@return boolean 布尔类型
+function ui.addImageView(layout, name, path, w, h) end
+
+--- ui.addLine 创建线控件
+-- 语法: ui.addLine(layout,name)
+---@param layout any 布局名称
+---@param name any 控件名称
+---@return boolean 布尔类型
+function ui.addLine(layout, name) end
+
+--- ui.addRadioGroup 创建单选框控件
+-- 语法: ui.addRadioGroup(layout,name,list,[select],[w],[h],[horiziontal])
+---@param layout any 布局名称
+---@param name any 控件名称
+---@param list any 表格类型,显示内容
+---@param select any 整数类型,默认选中第几个单选框(默认0),可省略
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param horiziontal any 布尔类型是否横向布局
+---@return boolean 布尔类型
+function ui.addRadioGroup(layout, name, list, select, w, h, horiziontal) end
+
+--- ui.addSpinner 创建下拉框控件
+-- 语法: ui.addSpinner(layout,name,list,select,[w],[h])
+---@param layout any 布局名称
+---@param name any 控件名称
+---@param list any 表格类型,显示内容
+---@param select any 整数类型,默认选中第几个(默认0),可省略
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@return boolean 布尔类型
+function ui.addSpinner(layout, name, list, select, w, h) end
+
+--- ui.addTabView 创建标签页控件
+-- 语法: ui.addTabView(layout,name,[h])
+---@param layout any 布局名称
+---@param name any 控件名称
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@return boolean 布尔类型
+function ui.addTabView(layout, name, h) end
+
+--- ui.addTab 创建子标签页控件
+-- 语法: ui.addTab(tabName,name,text)
+---@param tabName any 父标签控件名称
+---@param name any 子标签控件名称
+---@param text any 标签显示内容
+---@return boolean 布尔类型
+function ui.addTab(tabName, name, text) end
+
+--- ui.addTextView 创建文字框控件
+-- 语法: ui.addTextView(layout,name,text,[w],[h])
+---@param layout any 布局名称
+---@param name any 控件名称
+---@param text any 显示内容
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@return boolean 布尔类型
+function ui.addTextView(layout, name, text, w, h) end
+
+--- ui.addWebView 创建一个浏览器控件
+-- 语法: ui.addWebView(layout,name,url,[w],[h])
+---@param layout any 布局名称
+---@param name any 控件名称
+---@param url any 访问的地址
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@return boolean 布尔类型
+function ui.addWebView(layout, name, url, w, h) end
+
+--- ui.callJs 调用webview打开的网页中的js函数
+-- 语法: ui.callJs(name,js)
+---@param name any 控件名称
+---@param js any 字符串类型，js回调函数字符串
+---@return boolean 布尔类型
+function ui.callJs(name, js) end
+
+--- ui.dismiss 关闭一个布局
+-- 语法: ui.dismiss(name)
+---@param name any 要关闭的布局名称
+---@return boolean 布尔类型
+function ui.dismiss(name) end
+
+--- ui.getData 获取当前界面所有控件的值
+-- 语法: ui.getData()
+---@return table 表格类型
+function ui.getData() end
+
+--- ui.getEnabled 获取控件可用状态
+-- 语法: ui.getEnabled(name)
+---@param name any 控件名称
+---@return boolean 布尔类型
+function ui.getEnabled(name) end
+
+--- ui.getTextColor 获取文字颜色
+-- 语法: ui.getTextColor(name)
+---@param name any 控件名称
+---@return string 字符串类型
+function ui.getTextColor(name) end
+
+--- ui.getText 获取文字
+-- 语法: ui.getText(name)
+---@param name any 控件名称
+---@return string 字符串类型
+function ui.getText(name) end
+
+--- ui.getValue 获取控件值
+-- 语法: ui.getValue(name)
+---@param name any 控件名称
+---@return string 字符串类型
+function ui.getValue(name) end
+
+--- ui.getVisible 获取显示状态
+-- 语法: ui.getVisible(name)
+---@param name any 控件名称
+---@return boolean 布尔类型
+function ui.getVisible(name) end
+
+--- ui.loadProfile 读取设置
+-- 语法: ui.loadProfile(path)
+---@param path any 配置文件路径
+---@return boolean 布尔类型
+function ui.loadProfile(path) end
+
+--- ui.newLayout 创建一个新的布局
+-- 语法: ui.newLayout(name,[w],[h])
+---@param name any 字符串型,要新建的布局名称，即标题
+---@param w any 宽(-1表示填满,-2是自适应)(默认值:自适应大小),可省略
+---@param h any 高(-1表示填满,-2是自适应)(默认值:自适应大小),可省略
+---@return boolean 布尔类型
+function ui.newLayout(name, w, h) end
+
+--- ui.newRow 布局换行排列
+-- 语法: ui.newRow(layout,rowid,[w],[h])
+---@param layout any 布局名称
+---@param rowid any 换行布局名称
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@return boolean 布尔类型
+function ui.newRow(layout, rowid, w, h) end
+
+--- ui.saveProfile 保存设置
+-- 语法: ui.saveProfile(path)
+---@param path any 配置文件路径
+---@return boolean 布尔类型
+function ui.saveProfile(path) end
+
+--- ui.setBackground 设置控件背景颜色
+-- 语法: ui.setBackground(name,color)
+---@param name any 控件名称
+---@param color any 字符串类型,颜色格式例子:"#ffff00ff"
+---@return boolean 布尔类型
+function ui.setBackground(name, color) end
+
+--- ui.setButton 重设按钮控件
+-- 语法: ui.setButton(name,text,[w],[h])
+---@param name any 按钮控件名称
+---@param text any 按钮显示文字内容
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@return boolean 布尔类型
+function ui.setButton(name, text, w, h) end
+
+--- ui.setCheckBox 重设多选框控件
+-- 语法: ui.setCheckBox(name,text,sel,[w],[h])
+---@param name any 控件名称
+---@param text any 文本框显示文字内容
+---@param sel any true表示选中，false不选中
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@return boolean 布尔类型
+function ui.setCheckBox(name, text, sel, w, h) end
 
 --- ui.setEditText 重设输入框控件
 -- 语法: ui.setEditText(name,text,[w],[h])
----@param name any
----@param text any
----@param w any
----@param h any
+---@param name any 控件名称
+---@param text any 输入框显示文字内容
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
 ---@return boolean 布尔类型
 function ui.setEditText(name, text, w, h) end
 
 --- ui.setEnable 设置控件可用状态
----@param name any
----@param enable any
+-- 语法: ui.setEnable(name,enable)
+---@param name any 控件名称
+---@param enable any 布尔类型，true可用，false不可用
 ---@return boolean 布尔类型
 function ui.setEnable(name, enable) end
 
 --- ui.setFullScreen 设置控件宽度全屏
----@param name any
----@return string 字符串类型
-function ui.getTextColor(name) end
+-- 语法: ui.setFullScreen(name)
+---@param name any 控件名称
+---@return boolean 布尔类型
+function ui.setFullScreen(name) end
 
 --- ui.setGravity 设置控件对齐方式
----@param name any
----@param alignMode any
+-- 语法: ui.setGravity(name,alignMode)
+---@param name any 控件名称
+---@param alignMode any 整数类型,48上对齐,80下对齐,3左对齐,5右对齐,16垂直居中对齐,17居中对齐
 ---@return boolean 布尔类型
 function ui.setGravity(name, alignMode) end
 
 --- ui.setImageView 重设图像控件
 -- 语法: ui.setImageView(name,path,[w],[h])
----@param name any
----@param path any
----@param w any
----@param h any
+---@param name any 控件名称
+---@param path any 图片路径
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
 ---@return boolean 布尔类型
 function ui.setImageView(name, path, w, h) end
 
 --- ui.setInputType 设置输入类型
----@param name any
----@param type any
+-- 语法: ui.setInputType(name,type)
+---@param name any 控件名称
+---@param type any 整数类型,1普通文本,2数字文本,3电话号码,4日期和时间,128密码
 ---@return boolean 布尔类型
 function ui.setInputType(name, type) end
 
 --- ui.setLine 重设线控件
 -- 语法: ui.setLine(name,[w],[h])
----@param name any
----@param w any
----@param h any
+---@param name any 线控件名称
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
 ---@return boolean 布尔类型
 function ui.setLine(name, w, h) end
 
---- ui.setOnChange 设置控件单击事件
----@param name any
----@param event any
+--- ui.setOnChange 设置控件值变化事件
+-- 语法: ui.setOnChange(name,event)
+---@param name any 控件名称
+---@param event any 字符串类型，可以是一个lua代码字符串
 ---@return boolean 布尔类型
 function ui.setOnChange(name, event) end
 
 --- ui.setOnClick 设置控件单击事件
----@param name any
----@param event any
+-- 语法: ui.setOnClick(name,event)
+---@param name any 控件名称
+---@param event any 字符串类型，可以是一个lua代码字符串
 ---@return boolean 布尔类型
 function ui.setOnClick(name, event) end
 
---- ui.setOnClose 设置控件单击事件
----@param event any
+--- ui.setOnClose 设置布局关闭事件
+-- 语法: ui.setOnClose(event)
+---@param event any 字符串类型，可以是一个lua代码字符串
 ---@return boolean 布尔类型
 function ui.setOnClose(event) end
 
 --- ui.setPadding 设置控件内边距
----@param name any
----@param l any
----@param t any
----@param r any
----@param b any
----@return string 字符串类型
+-- 语法: ui.setPadding(name,l,t,r,b)
+---@param name any 控件名称
+---@param l any 整数类型,内边距左
+---@param t any 整数类型,内边距上
+---@param r any 整数类型,内边距右
+---@param b any 整数类型,内边距下
+---@return boolean 布尔类型
 function ui.setPadding(name, l, t, r, b) end
 
 --- ui.setRadioGroup 重设单选框控件
 -- 语法: ui.setRadioGroup(name,list,select,[w],[h],[horiziontal])
----@param name any
----@param list any
----@param select any
----@param w any
----@param h any
----@param horiziontal any
+---@param name any 控件名称
+---@param list any 表格类型,显示内容
+---@param select any 整数类型，表示第几个选中
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param horiziontal any 布尔类型是否横向布局
 ---@return boolean 布尔类型
 function ui.setRadioGroup(name, list, select, w, h, horiziontal) end
 
 --- ui.setRowVisibleByGid 批量设置行控件显示状态通过gid
----@param layoutid any
----@param name any
----@param state any
+-- 语法: ui.setRowVisibleByGid(layoutid,name,state)
+---@param layoutid any 布局id
+---@param name any 控件名称
+---@param state any 整数类型,2隐藏控件，3隐藏且让控件不占用布局空间
 ---@return boolean 布尔类型
 function ui.setRowVisibleByGid(layoutid, name, state) end
 
 --- ui.setSpinner 重设下拉框控件
 -- 语法: ui.setSpinner(name,list,select,[w],[h])
----@param name any
----@param list any
----@param select any
----@param w any
----@param h any
+---@param name any 控件名称
+---@param list any 表格类型,显示内容
+---@param select any 整数类型，表示第几个选中
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
 ---@return boolean 布尔类型
 function ui.setSpinner(name, list, select, w, h) end
 
 --- ui.setTextColor 设置文字颜色
----@param name any
----@param color any
+-- 语法: ui.setTextColor(name,color)
+---@param name any 控件名称
+---@param color any 字符串类型,颜色格式例子:"#ffff00ff"
 ---@return boolean 布尔类型
 function ui.setTextColor(name, color) end
 
 --- ui.setTextSize 设置文字大小
----@param layout any
----@param size any
+-- 语法: ui.setTextSize(layout,size)
+---@param layout any 布局名称
+---@param size any 整数类型文字大小
 ---@return boolean 布尔类型
 function ui.setTextSize(layout, size) end
 
 --- ui.setTextView 重设文本框控件
 -- 语法: ui.setTextView(name,text,[w],[h])
----@param name any
----@param text any
----@param w any
----@param h any
+---@param name any 控件名称
+---@param text any 文本框显示文字内容
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
 ---@return boolean 布尔类型
 function ui.setTextView(name, text, w, h) end
 
 --- ui.setText 控件设置文字
----@param name any
----@param text any
+-- 语法: ui.setText(name,text)
+---@param name any 控件名称
+---@param text any 文字内容
 ---@return boolean 布尔类型
 function ui.setText(name, text) end
 
---- ui.setTitleBackground 设置控件背景颜色
----@param layout1 any
----@param color any
+--- ui.setTitleBackground 设置布局标题背景颜色
+-- 语法: ui.setTitleBackground(layout1,color)
+---@param layout1 any 控件名称
+---@param color any 字符串类型,颜色格式例子:"#ffff00ff"
 ---@return boolean 布尔类型
-function ui.setBackground(layout1, color) end
+function ui.setTitleBackground(layout1, color) end
 
 --- ui.setTitleText 设置布局标题
----@param layout any
----@param text any
+-- 语法: ui.setTitleText(layout,text)
+---@param layout any 布局名称
+---@param text any 文字内容
 ---@return boolean 布尔类型
-function ui.setText(layout, text) end
+function ui.setTitleText(layout, text) end
 
 --- ui.setVisiblity 设置控件显示状态
----@param name any
----@param state any
+-- 语法: ui.setVisiblity(name,state)
+---@param name any 控件名称
+---@param state any 整数类型,2隐藏控件，3隐藏且让控件不占用布局空间
 ---@return boolean 布尔类型
 function ui.setVisiblity(name, state) end
 
 --- ui.setWebView 重设浏览器控件
 -- 语法: ui.setWebView(name,url,[w],[h])
----@param name any
----@param url any
----@param w any
----@param h any
+---@param name any 控件名称
+---@param url any 访问的地址
+---@param w any 宽(-1表示填满,-2是自适应)默认可以不填写表示自适应
+---@param h any 高(-1表示填满,-2是自适应)默认可以不填写表示自适应
 ---@return boolean 布尔类型
 function ui.setWebView(name, url, w, h) end
 
 --- ui.show 显示一个布局
 -- 语法: ui.show(name,[isShowBottom])
----@param name any
----@param isShowBottom any
+---@param name string 要显示的布局名称
+---@param isShowBottom boolean 是否显示底部默认继续和退出按钮控制栏，默认不写是true
 ---@return boolean 布尔类型
 function ui.show(name, isShowBottom) end
 
@@ -1800,6 +2010,7 @@ M["setDisplaySize"] = setDisplaySize
 M["setNumberConfig"] = setNumberConfig
 M["setStopCallBack"] = setStopCallBack
 M["setStringConfig"] = setStringConfig
+M["setTimer"] = setTimer
 M["setUserEventCallBack"] = setUserEventCallBack
 M["setWifiEnable"] = setWifiEnable
 M["showControlBar"] = showControlBar
@@ -1814,7 +2025,7 @@ M["zip"] = zip
 M["asynHttpGet"] = asynHttpGet
 M["asynHttpPost"] = asynHttpPost
 M["closeWebSocket"] = closeWebSocket
-M["closeWebSocket"] = closeWebSocket
+M["downloadFile"] = downloadFile
 M["httpGet"] = httpGet
 M["httpPost"] = httpPost
 M["import"] = import
@@ -1916,10 +2127,11 @@ M["getPixelColor"] = getPixelColor
 M["getScreenPixel"] = getScreenPixel
 M["isDisplayDead"] = isDisplayDead
 M["keepCapture"] = keepCapture
-M["ocrj"] = ocrj
+M["releaseCapture"] = releaseCapture
+M["ocrBinaryEx"] = ocrBinaryEx
 M["ocrEx"] = ocrEx
 M["ocrj"] = ocrj
-M["oocrTextExJ"] = oocrTextExJ
+M["ocrTextExJ"] = ocrTextExJ
 M["ocrTextEx"] = ocrTextEx
 M["ocrText"] = ocrText
 M["ocr"] = ocr
@@ -1948,7 +2160,7 @@ M["io.input"] = io.input
 M["io.open"] = io.open
 M["io.output"] = io.output
 M["io.read"] = io.read
-M["io.read"] = io.read
+M["io.write"] = io.write
 M["jsonLib.decode"] = jsonLib.decode
 M["jsonLib.encode"] = jsonLib.encode
 M["nodeLib.click"] = nodeLib.click
@@ -1996,10 +2208,33 @@ M["utf8.strCut"] = utf8.strCut
 M["utf8.strReverse"] = utf8.strReverse
 M["ui.addButton"] = ui.addButton
 M["ui.addCheckBox"] = ui.addCheckBox
-M["ui.addCheckBox"] = ui.addCheckBox
+M["ui.addEditText"] = ui.addEditText
+M["ui.addImageView"] = ui.addImageView
+M["ui.addLine"] = ui.addLine
+M["ui.addRadioGroup"] = ui.addRadioGroup
+M["ui.addSpinner"] = ui.addSpinner
+M["ui.addTabView"] = ui.addTabView
+M["ui.addTab"] = ui.addTab
+M["ui.addTextView"] = ui.addTextView
+M["ui.addWebView"] = ui.addWebView
+M["ui.callJs"] = ui.callJs
+M["ui.dismiss"] = ui.dismiss
+M["ui.getData"] = ui.getData
+M["ui.getEnabled"] = ui.getEnabled
+M["ui.getTextColor"] = ui.getTextColor
+M["ui.getText"] = ui.getText
+M["ui.getValue"] = ui.getValue
+M["ui.getVisible"] = ui.getVisible
+M["ui.loadProfile"] = ui.loadProfile
+M["ui.newLayout"] = ui.newLayout
+M["ui.newRow"] = ui.newRow
+M["ui.saveProfile"] = ui.saveProfile
+M["ui.setBackground"] = ui.setBackground
+M["ui.setButton"] = ui.setButton
+M["ui.setCheckBox"] = ui.setCheckBox
 M["ui.setEditText"] = ui.setEditText
 M["ui.setEnable"] = ui.setEnable
-M["ui.getTextColor"] = ui.getTextColor
+M["ui.setFullScreen"] = ui.setFullScreen
 M["ui.setGravity"] = ui.setGravity
 M["ui.setImageView"] = ui.setImageView
 M["ui.setInputType"] = ui.setInputType
@@ -2015,8 +2250,8 @@ M["ui.setTextColor"] = ui.setTextColor
 M["ui.setTextSize"] = ui.setTextSize
 M["ui.setTextView"] = ui.setTextView
 M["ui.setText"] = ui.setText
-M["ui.setBackground"] = ui.setBackground
-M["ui.setText"] = ui.setText
+M["ui.setTitleBackground"] = ui.setTitleBackground
+M["ui.setTitleText"] = ui.setTitleText
 M["ui.setVisiblity"] = ui.setVisiblity
 M["ui.setWebView"] = ui.setWebView
 M["ui.show"] = ui.show
