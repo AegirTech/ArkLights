@@ -661,7 +661,7 @@ end
 
 show_debug_ui = function()
     local layout = "debug"
-    debug_page_width = screen.width * 0.5
+    local debug_page_width = screen.width * 0.55
     ui.newLayout(layout, debug_page_width, -2)
     ui.setTitleText(layout, "高级设置")
 
@@ -1023,7 +1023,7 @@ show_debug_ui = function()
     addTextView(debug_layout_其他, "天内")
 
     newRow(debug_layout_其他)
-    addTextView(debug_layout_其他, "因为活动关闭后可能会点到新活动导致卡教程，所以不再支持活动结束后购买商店")
+    addInfo(debug_layout_其他, "因为活动关闭后可能会点到新活动导致卡教程，所以不再支持活动结束后购买商店")
 
     newRow(debug_layout_其他)
     addTextView(debug_layout_其他, "无障碍模式关闭app方式")
@@ -1170,16 +1170,16 @@ show_extra_ui = function()
     addTextView(layout, "密码")
     ui.addEditText(layout, "extra_single_password", "")
     ------------------------------------------------------------
-    addTitle(layout, "卫戍协议")
-    --addInfo(layout, "需要自己过一下教程")
-    newRow(layout)
-    addTextView(layout, "模式")
-    ui.addSpinner(layout, "shp_game_mode", { "1 - 4回合循环" }, 0)
-    ui.addCheckBox(layout, "shp_only_daily_task", "只做每日", false)
-    newRow(layout)
-    addButton(layout, nil, "卫戍协议开始",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    -- addTitle(layout, "卫戍协议")
+    -- --addInfo(layout, "需要自己过一下教程")
+    -- newRow(layout)
+    -- addTextView(layout, "模式")
+    -- ui.addSpinner(layout, "shp_game_mode", { "1 - 4回合循环" }, 0)
+    -- ui.addCheckBox(layout, "shp_only_daily_task", "只做每日", false)
+    -- newRow(layout)
+    -- addButton(layout, nil, "卫戍协议开始",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     -------------------------------------------------------------
     -- addTitle(layout, "宝石铭刻")
     -- addInfo(layout, "最好是1080p，平板模式")
@@ -1192,23 +1192,23 @@ show_extra_ui = function()
     -- ui.addEditText(layout, "宝石铭刻_放牌延迟", "100")
     -- newRow(layout)
     ------------------------------------------------------------
-    -- addTitle(layout, "争锋频道(限时)")
-    -- newRow(layout)
-    -- addTextView(layout, "匹配模式")
-    -- ui.addSpinner(layout, "duel_channel_mode", { "礼物对决" }, 0)
-    -- newRow(layout)
-    -- addTextView(layout, "策略")
-    -- ui.addSpinner(layout, "duel_channel_game_mode", { "保持观望", "随大流" }, 0)
+    addTitle(layout, "争锋频道(限时)")
+    newRow(layout)
+    addTextView(layout, "匹配模式")
+    ui.addSpinner(layout, "duel_channel_mode", { "礼物对决" }, 0)
+    newRow(layout)
+    addTextView(layout, "策略")
+    ui.addSpinner(layout, "duel_channel_game_mode", { "保持观望", "随大流" }, 0)
 
-    -- newRow(layout)
-    -- ui.addCheckBox(layout, "duel_auto_stop", "代币不增加则停止", false)
+    newRow(layout)
+    ui.addCheckBox(layout, "duel_auto_stop", "代币不增加则停止", false)
 
-    -- addInfo(layout, "注意：默认不会选择all，分辨率只支持720/1080p")
+    addInfo(layout, "注意：默认不会选择all，分辨率只支持720/1080p")
 
-    -- newRow(layout)
-    -- addButton(layout, nil, "赌博开始",
-    --     make_jump_ui_command(layout, nil,
-    --         "extra_mode='争锋频道活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    newRow(layout)
+    addButton(layout, nil, "赌博开始",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='争锋频道活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     ---------------------------------------------------------------------
 
     -- addTitle(layout, "喀兰贸易技术研发部(只支持1080p)")
