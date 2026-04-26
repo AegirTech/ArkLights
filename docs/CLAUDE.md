@@ -40,6 +40,7 @@ python res/maps/maps.py
 - **`interface.lua`** — 动态 UI 构建。涉及参数开关、输入框、任务入口时先参考此处已有布局和命名。
 - **`lr_api.lua`** — 懒人精灵 API 声明文件，包含 `sleep`、`clickPoint`、UI 接口等底层能力签名。
 - **`func.lua`** — 游戏交互工具函数。
+- **`raise.lua`** — 培养逻辑函数。
 - **`prts.lua`** — 地图/代理作战操作：在线/本地地图包更新（`fetchMaps`、`fetchLocalMaps`）、通过 `https://prts.maa.plus/copilot` API 拉取和点赞代理作战作业。
 - **`skill.lua`、`raise.lua`** — 基建技能管理与干员培养逻辑。
 - **`skland.lua`** — 森空岛平台集成。
