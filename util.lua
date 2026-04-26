@@ -1003,7 +1003,8 @@ map = function(...)
     return r
 end
 
--- 休眠x秒，x不填默认1s
+--- 休眠
+---@param x integer 秒，不填默认1s
 ssleep = function(x)
     if x == nil then x = 1 end
     sleep(x * 1000)

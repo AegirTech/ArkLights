@@ -1192,6 +1192,9 @@ raise.elite_one_phase = function(material_need)
                     tap("芯片制造" .. k)
                     appear("芯片站", 3)
 
+                    -- 会出现没有紫色芯片或者胶水,这时候无法跳转
+                    -- 因为没有对紫色芯片数量做识别,如果是没有紫色芯片,就会每次都买胶水
+                    -- 所以没识别出来的时候就不买芯片(强制识别结果为v)
                     local numb_32001 = tonumber(ocro("胶水数量识别范围") or v)
                     local numb_32001_2 = string.match(ocro("胶水库存识别范围"), "%d+") or v --识别不出来时不购买
                     log("芯片助剂数量", numb_32001, "库存", numb_32001_2)
