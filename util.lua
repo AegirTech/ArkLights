@@ -1250,6 +1250,10 @@ tap = function(x, noretry, allow_outside_game)
     if type(x) == "function" then return x() end
     if type(x) == "string" and not x:find(coord_delimeter) then
         x = point[x]
+        if type(x) == "function" then
+            x = x()
+            x = point[x]
+        end
         if type(x) == "string" then
             local p = x:find(coord_delimeter)
             local q = x:find(coord_delimeter, p + 1)
