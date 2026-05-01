@@ -1111,6 +1111,13 @@ path.fallback = {
         disappear("限时幸运签", 10)
         return path.fallback.签到返回()
     end,
+    七周年限时幸运签 = function()
+        tapAll(point.限时幸运签列表)
+        ssleep(.25)
+        tap("限时幸运签抽取")
+        disappear("七周年限时幸运签", 10)
+        return path.fallback.签到返回()
+    end,
     鸣羽颂新领取 = function()
         wait(function()
             tap("鸣羽颂新领取")
@@ -1304,7 +1311,7 @@ path.限时活动 = function(retry)
     retry = retry or 0
     if retry > 10 then return end
     path.跳转("首页")
-    log.debug(retry)
+    log.debug("第" .. retry .. "次")
 
     local p = findAny({
         "面板限时活动", "面板限时活动2", "面板限时活动3",
@@ -1317,9 +1324,8 @@ path.限时活动 = function(retry)
             "限时幸运签", "月饼", '产业合作洽谈会',
             '红包', "祈愿牌返回", '五周年专享月卡返回',
             "生日设置返回", '国庆签到返回', '感谢庆典返回',
-            "春节签到2026",
+            "春节签到2026", "七周年限时幸运签",
             '回望泰拉限时登录签到'
-
         })
         if findOne('红包') then
             wait(function()
