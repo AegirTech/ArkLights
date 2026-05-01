@@ -160,15 +160,13 @@ with open("uniequip_table.json", "r", encoding="utf-8") as f:
         # print(char_name, "有", len(char_equip_group), "个模组")
         for i in range(len(char_equip_group)):
             equip_id = char_equip_group[i]
-            equip_name = character_equipment_dict["equipDict"][equip_id]["uniEquipName"]
+            equip_data = character_equipment_dict["equipDict"][equip_id]
+            equip_name = equip_data["uniEquipName"]
             if "证章" in equip_name:
                 continue
-            equip_mission_2 = character_equipment_dict["equipDict"][equip_id][
-                "missionList"
-            ][1]
-            stage_id = character_equipment_dict["missionList"][equip_mission_2][
-                "paramList"
-            ][1]
+            mission_list = equip_data.get("missionList", [])
+            if len(mission_list) < 2:
+                continue
             character_equip_list[char_name][i] = equip_name
 
     # 修改保存调用 - 只传文件名，不要路径前缀
