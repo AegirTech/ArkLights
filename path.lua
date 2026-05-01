@@ -10626,7 +10626,7 @@ end
 path.争锋频道活动 = function()
     if not findOne("争锋频道首页") then
         path.跳转("首页")
-        tap(hd_position)
+        tap("面板活动2")
     end
     if not appear("争锋频道首页", 5) then return end
     wait(function()
