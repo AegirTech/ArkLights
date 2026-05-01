@@ -192,7 +192,7 @@ def skillicon2operator():
             for file in files:
                 file_full_path = os.path.join(root, file)
                 file_arcname = os.path.relpath(
-                    file_full_path, start=os.path.dirname(output_folder)
+                    file_full_path, start=output_folder
                 )
                 zipf.write(file_full_path, file_arcname)
 
@@ -487,8 +487,8 @@ def screencap_distance2(path="screencap"):
             # text = text.replace("TR-1", "")
             # text = text.replace("EX", "")
             text = text.replace("--", "-")
-            m = re.search("^.?.-(\d+)$", text)
-            n = re.search("^.?.-.?.-(\d+)$", text)
+            m = re.search(r"^.?.-(\d+)$", text)
+            n = re.search(r"^.?.-.?.-(\d+)$", text)
 
             m = m or n
             if not m:
@@ -584,7 +584,7 @@ def screencap_distance(path="screencap"):
             text = text.replace("1-1", "11")
             text = text.replace("-HD", "-16")
             print("m0", text)
-            m = re.search("^.?.-(\d+)$", text)
+            m = re.search(r"^.?.-(\d+)$", text)
             print("m", m)
             if not m:
                 continue
