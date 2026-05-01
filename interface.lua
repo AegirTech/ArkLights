@@ -1550,7 +1550,7 @@ show_extra_ui = function()
     addInfo(layout, "自动升级干员潜能")
 
     -------------------------------------------------------------------
-    --[[addTitle(layout, "每月采购中心")
+    addTitle(layout, "每月采购中心")
 
     newRow(layout)
     addButton(layout, nil, "执行采购中心商店购买",
@@ -1565,7 +1565,7 @@ show_extra_ui = function()
     newRow(shop_layout_green)
     ui.addCheckBox(shop_layout_green, "green_ticket_shop", "购买绿票商店", true)
 
-    green_ticket_shop_good = { "寻访凭证", "合成玉", "龙门币", "家具零件", "招聘许可", "中级作战记录", "赤金", "2层寻访凭证", "2层招聘许可" }
+    green_ticket_shop_good = { "第1层尽量买", "2层寻访凭证", "2层招聘许可" }
 
     local max_checkbox_one_row = 4
     for k, v in pairs(green_ticket_shop_good) do
@@ -1603,7 +1603,7 @@ show_extra_ui = function()
             newRow(shop_layout_red, "red_ticket_shop_row" .. k)
         end
         ui.addCheckBox(shop_layout_red, "red_ticket_shop_" .. k, v, false)
-    end]] --
+    end
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)

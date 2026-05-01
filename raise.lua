@@ -1122,10 +1122,10 @@ raise.buy_32001 = function(numb)
     if not wait(function()
             if findOne("购买物品面板") then
                 for i = 1, numb - 1 do
-                    tap("交易所商品加")
+                    tap("凭证交易所商品加")
                     ssleep(0.5)
                 end
-                tap("采购商店支付")
+                tap("凭证交易所支付")
                 -- tap("商店顶栏")
             end
             ssleep(1)
@@ -1954,7 +1954,7 @@ raise.inventory_identify = function(materials)
     while true do
         if page >= 5 then break end
 
-        if findOne("商店最后一页") then
+        if findOne("仓库最后一页") then
             page = 5
             log("已经是最后一页")
             sx = scale(210)

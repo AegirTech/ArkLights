@@ -4275,7 +4275,10 @@ path.采购中心商店 = function()
     local red_ticket_shop_good_need = {}
 
     local buy_good = function(good)
-        if not findOne(good) then return end
+        if not findOne(good) then
+            log.warn("没有" .. good)
+            return
+        end
 
         if not wait(function()
                 tap(good)
@@ -4286,9 +4289,9 @@ path.采购中心商店 = function()
         -- 点击购买
         if not wait(function()
                 if findOne("购买物品面板") then
-                    tap("交易所商品最多")
+                    tap("凭证交易所商品最多")
                     ssleep(0.3)
-                    tap("采购商店支付")
+                    tap("凭证交易所支付")
                     ssleep(0.3)
                 end
                 disappear("正在提交反馈至神经", network_timeout)
@@ -4327,32 +4330,36 @@ path.采购中心商店 = function()
     end
     disappear("正在提交反馈至神经", network_timeout)
     appear("绿票商店选中", 3)
-    sleep(500)
+    ssleep(0.5)
     if findOne("绿票第1层确认") then
-        for i = 1, 7 do
-            if _G["green_ticket_shop_" .. i] == true then
+        if green_ticket_shop_1 == true then
+            for i = 1, 7 do
                 appear("绿票第1层确认", 3)
-                buy_good("凭证交易所购买列表" .. i)
+                buy_good("凭证交易所购买列表" .. 1)
                 if findOne("绿票第2层确认") then break end
             end
         end
     end
-    sleep(500)
+    ssleep(0.5)
+    log("绿票商店第一层已买完")
 
-    for i = 8, 9, 1 do
-        if _G["green_ticket_shop_" .. i] == true then
-            tap("绿票第2层确认")
-            appear("绿票第2层确认", 4)
-            if i == 8 then
-                buy_good("凭证交易所购买列表2")
-            elseif i == 9 then
-                appear("绿票第2层确认", 4)
-                buy_good("凭证交易所购买列表6")
+    if green_ticket_shop_2 == true or green_ticket_shop_3 == true then
+        tap("绿票第2层确认")
+        appear("绿票第2层确认", 4)
+        if green_ticket_shop_2 == true and
+            findOne("绿票第2层寻访凭证") then
+            buy_good("凭证交易所购买列表" .. 2)
+        end
+        ssleep(0.5)
+        appear("绿票第2层确认", 4)
+        if green_ticket_shop_3 == true then
+            if findOne("绿票第2层招聘许可列表1") then
+                buy_good("凭证交易所购买列表" .. 2)
+            elseif findOne("绿票第2层招聘许可列表2") then
+                buy_good("凭证交易所购买列表" .. 6)
             end
         end
     end
-    --[===[log(green_ticket_shop_good_need)
-	log(green_ticket_shop_good_need2)]===]
 
     for i = 1, #yellow_ticket_shop_good do
         if _G["yellow_ticket_shop_" .. i] == true then
@@ -4408,9 +4415,9 @@ path.采购中心商店 = function()
             -- 点击购买
             if not wait(function()
                     if findOne("购买物品面板") then
-                        tap("交易所商品最多")
+                        tap("凭证交易所商品最多")
                         ssleep(0.5)
-                        tap("采购商店支付")
+                        tap("凭证交易所支付")
                     end
                     ssleep(1)
                     -- tap("商店顶栏")
@@ -4490,9 +4497,9 @@ path.采购中心商店 = function()
             -- 点击购买
             if not wait(function()
                     if findOne("购买物品面板") then
-                        tap("交易所商品最多")
+                        tap("凭证交易所商品最多")
                         ssleep(0.5)
-                        tap("采购商店支付")
+                        tap("凭证交易所支付")
                         -- tap("商店顶栏")
                     end
                     ssleep(1)
