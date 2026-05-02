@@ -513,7 +513,7 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
 
         -- 可露希尔，禁用巫恋、但书
         if not all['bskill_tra_against'] and not all['bskill_tra_against2'] and
-            not all['bskill_tra_vodfox'] and not all['bskill_tra_closure'] and goodType == "贵金属" then
+            not all['bskill_tra_vodfox'] and goodType == "贵金属" then
             if all['bskill_tra_closure'] then base = (1 + base) * 1.804 - 1 end
         end
 
@@ -522,7 +522,6 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
 
         return base, only_need
     end
-    log.debug()
     -- 过滤心情小于阈值的干员
     local minAllowedMood = shift_min_mood
     if disable_shift_mood then minAllowedMood = -1 end
@@ -535,10 +534,10 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
     local best = {}
     local best_score = -1
     local best_only_need = {}
-    log.debug(#operator, maxOperator)
+    --log.debug(#operator, maxOperator)
     for _, c in pairs(table.combination(range(1, #operator), maxOperator)) do
         local s, only_need = score(table.index(operatorIcon, c))
-        -- log(401, table.index(operator, c), s)
+        --log.debug("组合:", table.index(operator, c), "评分:", s)
         if s > best_score then
             best = c
             best_score = s
@@ -1374,7 +1373,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
     swipo(true, true)
     start_time = time()
 
-    log.debug(operator)
+    log.debug("所有干员识别结果:", operator)
     -- 检查operator
     local tto = 0
     for i = 1, #operator do
@@ -1385,7 +1384,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
             tto = tto + 1
         end
     end
-    log(#operator, tto)
+    log("所有干员识别数量:", #operator, "失败数量:", tto)
     if #operator == tto then
         log.warn("全部干员识别失败")
         return
@@ -2111,7 +2110,7 @@ powerStationOperatorBest = function(operator)
                 end
             elseif icon == "bskill_pow_spd1" then
                 s = s + 0.1
-                if table.findv({ "Lancet-2", "Castle-3", "THRM-EX", "正义骑士号", "Friston-3", "PhonoR-0" }, o[6]) and isCharExsit["承曦格雷伊"] then
+                if table.findv({ "Lancet-2", "Castle-3", "THRM-EX", "正义骑士号", "Friston-3", "PhonoR-0", "CONFESS-47", "GALLUS²" }, o[6]) and isCharExsit["承曦格雷伊"] then
                     s = s - 1
                 end
                 if table.findv({ "Lancet-2" }, o[6]) and isCharExsit["正义骑士号"] and not isCharExsit["承曦格雷伊"] then
@@ -2131,7 +2130,7 @@ powerStationOperatorBest = function(operator)
                 s = s + 0.22
             elseif icon == "bskill_pow_spd3" then
                 s = s + 0.2
-                if table.findv({ "Lancet-2", "Castle-3", "THRM-EX", "正义骑士号", "Friston-3", "PhonoR-0" }, o[6]) then
+                if table.findv({ "Lancet-2", "Castle-3", "THRM-EX", "正义骑士号", "Friston-3", "PhonoR-0", "CONFESS-47", "GALLUS²" }, o[6]) then
                     --防止误判
                     s = s - 0.2
                 end
@@ -2492,6 +2491,7 @@ correctCharName = function(t)
         ["势"] = "芬",
         ["淫灭之相"] = "湮灭之相",
         ["漂御银灰"] = "凛御银灰",
+        ["GALLUS"] = "GALLUS²",
     }
 
     local 原文本 = t
