@@ -247,17 +247,16 @@ putClipboard = writePasteboard
 getClipboard = readPasteboard
 
 --- 原始 toast 函数
---- @type fun(text:string)
 _toast = toast
 
 --- 屏幕显示并输出日志
---- @param x string 显示内容
-toast = function(x)
-    log(x)
-    if type(x) ~= "string" then
-        x = table.join({ table.unpack(map(table2string, { x })), }, ' ')
+--- @param text string 显示内容
+toast = function(text, x, y, size)
+    log(text)
+    if type(text) ~= "string" then
+        text = table.join({ table.unpack(map(table2string, { x })), }, ' ')
     end
-    _toast(x)
+    _toast(text, x, y, size)
 end
 
 --- 设备点击事件坐标最大值，用于把 getevent 的原始坐标换算为屏幕坐标
