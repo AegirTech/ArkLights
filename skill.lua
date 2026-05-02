@@ -301,6 +301,8 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
             elseif icon == 'bskill_tra_spd&limit1' then
                 base = base + 0.1
                 storage = storage + 2
+            elseif icon == 'bskill_tra_closure' then --可露希尔2
+                base = base + 0.1
             elseif icon == 'bskill_tra_spd2' then
                 base = base + 0.3
             elseif icon == 'bskill_tra_spd1' then
@@ -503,10 +505,16 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
             end
         end
 
-        -- 但书，禁用巫恋
-        if not all['bskill_tra_vodfox'] and goodType == "贵金属" then
+        -- 但书，禁用巫恋、可露希尔
+        if not all['bskill_tra_vodfox'] and not all['bskill_tra_closure'] and goodType == "贵金属" then
             if all['bskill_tra_against'] then base = (1 + base) * 1.276 - 1 end
             if all['bskill_tra_against2'] then base = (1 + base) * 1.556 - 1 end
+        end
+
+        -- 可露希尔，禁用巫恋、但书
+        if not all['bskill_tra_against'] and not all['bskill_tra_against2'] and
+            not all['bskill_tra_vodfox'] and not all['bskill_tra_closure'] and goodType == "贵金属" then
+            if all['bskill_tra_closure'] then base = (1 + base) * 1.804 - 1 end
         end
 
         -- 禁用尤里卡
@@ -645,7 +653,14 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 if goodType == '作战记录' then base = base + 0.35 end
             elseif icon == 'bskill_man_exp&spd&limit&cost1' then -- 酒神0
                 if goodType == '作战记录' then base = base + 0.20 end
-            elseif icon == 'bskill_man_gold2' then               -- 砾
+            elseif icon == 'bskill_formula_spd_headb1' then      -- 怒潮凛冬0
+                if goodType == '作战记录' then base = base + 0.3 end
+            elseif icon == 'bskill_formula_spd_headb2' then      -- 怒潮凛冬2
+                -- 乌萨斯学生团暂时不考虑
+                if goodType == '作战记录' then base = base + 0.3 end
+            elseif icon == 'bskill_man_exp&spd&cost1' then --裂响2
+                if goodType == '作战记录' then base = base + 0.34999 end
+            elseif icon == 'bskill_man_gold2' then         -- 砾
                 if goodType == '贵金属' then
                     base = base + 0.35
                     metallics = metallics + 1
@@ -771,6 +786,8 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
             elseif icon == 'bskill_man_spd_add1' then
                 -- 8小时平均收益 ((0.2+0.24)/2*5+0.25*3)/8
                 base = base + 0.23125
+            elseif icon == 'bskill_man_spd_veen' then   --维伊2,认为训练室3级
+                base = base + 0.299
             elseif icon == 'bskill_man_spd_reduce' then --铅踝
                 base = base + 0.22
             elseif icon == 'bskill_man_spd_add2' then
@@ -1574,6 +1591,8 @@ officeStationOperatorBest = function(operator)
                 s = s + 0.35 + 0.01
             elseif icon == "bskill_hire_spd2" then
                 s = s + 0.3
+            elseif icon == "bskill_ws_p_kalts2" then --凯尔希·思衡托2
+                s = s + 0.3
             elseif icon == "bskill_hire_spd&ursus2" then
                 s = s + 0.2
             elseif icon == "bskill_hire_spd_memento" then --絮雨2
@@ -2189,6 +2208,10 @@ trainingOperatorBest = function(operator, charType, targetLevel)
                 s = s + 0.3
             elseif icon == "bskill_train_vanguard&sniper" and (charType == "WARRIOR" or charType == "SNIPER") then
                 s = s + 0.3
+            elseif icon == "bskill_train_caster&vanguard1" and (charType == "WARRIOR" or charType == "CASTER") then
+                s = s + 0.3
+            elseif icon == "bskill_train_caster&vanguard2" and (charType == "WARRIOR" or charType == "CASTER") then
+                s = s + 0.45
             elseif icon == "bskill_train_lord" and charType == "WARRIOR" then
                 s = s + 0.3
             elseif icon == "bskill_train_guard1" and charType == "WARRIOR" then
@@ -2369,7 +2392,9 @@ workshopOperatorBest = function(operator, id, level)
                 s = s + 0.7
             elseif icon == "bskill_ws_asc2" and #id == 4 and utf8.left(id, 2) == "32" then
                 s = s + 0.8
-            elseif icon == "bskill_ws_p5" then --凯尔希，尽量让在中枢上班
+            elseif icon == "bskill_hire_kalts2" then --凯尔希·思衡托2，尽量让在中枢上班
+                s = s + 0.8
+            elseif icon == "bskill_ws_p5" then       --凯尔希，尽量让在中枢上班
                 --s = s + 0.70
             elseif icon == "bskill_ws_p4" then
                 s = s + 0.65
