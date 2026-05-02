@@ -6058,8 +6058,8 @@ path.活动 = function(x)
         ssleep(.5)
     end
 
+    toast(x, screen.width * 0.05, screen.height * 0.8)
     swip(x)
-    toast(x)
     ssleep(.5)
     --exit() --活动手动取点时取消注释
     if x:includes({ "ST-", "TR-", "-P-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
