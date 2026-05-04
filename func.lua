@@ -1260,37 +1260,40 @@ upload_device_info = function()
 end
 
 upload_launch_info = function(l_type, ex_data)
-    local ex_data = ex_data or {}
-    local device_id = get_device_id()
-    if not device_id then
-        log("error 01")
-        return
-    end
-    local url = ark_api_base .. "/statistic/report?verify=arklights"
-    local data = {
-        id = device_id,
-        type = l_type,
-        data = {
-        }
-    }
-    if l_type == "account" then
-        if not username or not server then
+    local f = function(l_type, ex_data)
+        local ex_data = ex_data or {}
+        local device_id = get_device_id()
+        if not device_id then
+            log("error 01")
             return
         end
-        data.data = {
-            account = username,
-            server = server,
-            type = get_run_type(),
-            cloud_url = cloud_server,
+        local url = ark_api_base .. "/statistic/report?verify=arklights"
+        local data = {
+            id = device_id,
+            type = l_type,
+            data = {
+            }
         }
-    end
+        if l_type == "account" then
+            if not username or not server then
+                return
+            end
+            data.data = {
+                account = username,
+                server = server,
+                type = get_run_type(),
+                cloud_url = cloud_server,
+            }
+        end
 
-    for k, v in pairs(ex_data) do
-        data.data[k] = v
+        for k, v in pairs(ex_data) do
+            data.data[k] = v
+        end
+        local headers = [[Content-Type: application/json]]
+        local res, code = httpPost(url, JsonEncode(data), 5, headers)
+        log("success 20")
     end
-    local headers = [[Content-Type: application/json]]
-    local res, code = httpPost(url, JsonEncode(data), 5, headers)
-    log("success 20")
+    beginThread(f(l_type, ex_data), 1)
 end
 
 
