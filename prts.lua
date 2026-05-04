@@ -168,12 +168,13 @@ local function createChoseChar(干员职业, 未编入, 未编入干员, 未编�
                 if not isSSS then
                     log("未编入结果", 未编入[1], 未编入[2])
                     if 未编入[1] > 0 then
-                        --按等级升序再找一遍
+                        --按等级升序再找一遍，只传入未选择的干员避免重复选择
+                        local 未选择目录 = 未编入[3]
                         tap("等级降序")
                         ssleep(.8)
                         swipe_next_page(1)
                         ssleep(.8)
-                        未编入 = 选择干员(干员目录, "待编队干员", 是否群组)
+                        未编入 = 选择干员(未选择目录, "待编队干员", 是否群组)
                         tap("等级降序")
                         ssleep(.8)
                     end
@@ -1124,17 +1125,21 @@ end
     end
 
     local notselected = 0
+    local 未选择目录 = {}
+    local 未选择干员名 = nil
     for i = 1, 需要干员数 do
         if 已选择[i] == nil then
             log("干员", 干员组[i], "未选择")
             notselected = notselected + 1
+            未选择干员名 = 干员组[i]
+            table.insert(未选择目录, 干员目录[i])
         end
     end
     if notselected == 1 then
-        return { notselected, 干员组[i] }
+        return { notselected, 未选择干员名, 未选择目录 }
     elseif notselected > 1 then
         log("2名干员缺失")
-        return { notselected }
+        return { notselected, nil, 未选择目录 }
     end
 end
 
@@ -2147,7 +2152,7 @@ end
     if t == nil or #t == 0 then return "" end
     for i = 1, #t do
         local 原文本 = (t[i]["text"])
-        log(原文本)
+        log.debug(原文本)
         if 替换[原文本] then
             t[i]["text"] = 替换[原文本]
         elseif #原文本 >= 9 and 原文本:sub(1, 3) == 原文本:sub(4, 6) and 原文本 ~= "苏苏洛" then

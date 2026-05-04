@@ -5020,7 +5020,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 "单选确认框", "源石恢复理智不足", "当期委托侧边栏",
                 "行动结束", "开始行动故事集S", "沙盘推演确定",
             })
-            log.debug(state)
+            log.debug("当前状态:", state)
             -- 剿灭后一直按开始行动导致开始行动界面消失，可能出现下面的界面
             if state == "当前委托侧边栏" then
                 path.跳转("首页")
@@ -5037,8 +5037,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 reset_wait_start_time()
             end
             local p = findAny({ "开始行动", "全权委托确认使用", "开始突袭", "开始险地作战" })
-            log.debug(p)
-            log.debug(findOne("开始行动"))
+            log.debug("在开始行动按钮:", p)
             if p then
                 tap("开始行动蓝")
                 ssleep(.2)
