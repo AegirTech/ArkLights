@@ -163,6 +163,7 @@ make_account_ui = function(layout, prefix)
 end
 
 show_multi_account_ui = function()
+    local start_time = os.clock()
     local num = multi_account_num
     toast("正在加载多账号设置...")
     local layout = "multi_account"
@@ -350,6 +351,7 @@ show_multi_account_ui = function()
     -- end
 
     ui.show(layout, false)
+    log.debug("多账号页面加载耗时: " .. string.format("%.2f", os.clock() - start_time) .. " 秒")
 end
 
 multi_account_config_export = function(simple)

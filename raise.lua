@@ -1142,9 +1142,12 @@ raise.buy_32001 = function(numb)
         return true
     end
     disappear("正在提交反馈至神经", network_timeout)
-    appearTap("获得物资", 3)
-    appear("红票商店面板", 5)
-    tap("返回")
+    ssleep(.5)
+    appearTap("获得物资", 5)
+    ssleep(.2)
+    appear("红票商店面板", 3)
+    back()
+    ssleep(.8)
 end
 
 -- 精英化操作一次
@@ -1172,7 +1175,9 @@ raise.elite_one_phase = function(material_need)
                 if #k == 4 and k:sub(4, 4) == "3" then
                     -- 识别已经拥有的芯片数量
                     local n = tonumber(ocro("干员精英化芯片数字") or 0)
+                    --实际需要的芯片数量
                     v = v - n
+                    log("已拥有芯片数量:", n, "缺少芯片数量", v)
                     if not wait(function()
                             tap("干员精英化芯片白")
                             if findOne("制造站设施列表1") then return true end
@@ -1201,6 +1206,10 @@ raise.elite_one_phase = function(material_need)
                     -- 所以没识别出来的时候就不买芯片(强制识别结果为v)
                     local numb_32001 = tonumber(ocro("胶水数量识别范围") or v)
                     local numb_32001_2 = string.match(ocro("胶水库存识别范围"), "%d+") or v --识别不出来时不购买
+                    if findOne("选芯片界面胶水红") and findOne("制造站选芯片类") then
+                        numb_32001 = 0
+                        numb_32001_2 = 0
+                    end
                     log("芯片助剂数量", numb_32001, "库存", numb_32001_2)
                     if numb_32001 + numb_32001_2 < v then
                         raise.buy_32001(v - numb_32001 - numb_32001_2)
