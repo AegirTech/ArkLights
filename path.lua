@@ -8908,7 +8908,7 @@ path.自动升级潜能 = function()
     appear("干员界面", 3)
     ssleep(.1)
     local 红点干员数量 = tonumber(ocro("干员界面红点数字范围") or 0)
-    log("红点干员数量", 红点干员数量)
+    toast("红点干员数量" .. 红点干员数量)
     tap("干员界面红点") --筛选干员
     disappear("干员界面红点", 1)
 
@@ -8952,6 +8952,7 @@ path.自动升级潜能 = function()
     end
 
     for i = 1, 红点干员数量 do
+        toast("还剩 " .. (红点干员数量 - i + 1) .. " 个干员")
         auto_upgrade_potentiality()
         gesture({
             {
