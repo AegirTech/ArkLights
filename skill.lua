@@ -1716,7 +1716,9 @@ controlStationOperatorBest = function(operator)
     -- 夕
     if #best < 5 and isCharExsit["絮雨"] then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') and o[3] > 22 then
+            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd2') and
+                o[3] > 22 then
                 table.insert(best, o)
             end
         end
@@ -2452,8 +2454,8 @@ is_training = function()
     return ret and true or false
 end
 
+--主要是720p下面基建中干员名的校正
 correctCharName = function(t)
-    --主要是720p下面的校正
     if t == nil then return end
     local 替换 = {
         ["森"] = "森蚺",
@@ -2462,6 +2464,7 @@ correctCharName = function(t)
         ["3"] = "山",
         ["白面鸦"] = "白面鸮",
         ["白面鹗"] = "白面鸮",
+        ["日面骂"] = "白面鸮",
         ["0"] = "山",
         ["E"] = "山",
         ["1"] = "山",
@@ -2488,8 +2491,8 @@ correctCharName = function(t)
         ["圣约送葬"] = "圣约送葬人",
         ["霸叶"] = "霜叶",
         ["灰亳"] = "灰毫",
+        ["野鬘"] = "野鬃",
         ["势"] = "芬",
-        ["淫灭之相"] = "湮灭之相",
         ["漂御银灰"] = "凛御银灰",
         ["GALLUS"] = "GALLUS²",
     }
