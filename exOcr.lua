@@ -1,6 +1,7 @@
 import("com.nx.assist.lua.LuaEngine")
 local PaddLeOCR = {}
 local PluGinObject
+local work = "mnt/sdcard/Pictures"
 function PaddLeOCR.IniTiaLModeL(Object)
     if type(Object) ~= "userdata" or Object == nil then
         return "变量类型错误"
@@ -84,32 +85,23 @@ function PaddLeOCR.Detect(BitMap, Confidence, ProbabiLity)
     return jsonLib.decode(Data)
 end
 
--- 优先使用新ocr
-if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
-    extractAssets("main.rc", "mnt/sdcard/Pictures/", "yoloppv4.apk")
-    extractAssets("main.rc", "mnt/sdcard/Pictures/", "ppocrv4.zip")
-end
-
-if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
-    --local PaddLeOCR = require("PaddLeOCRPluGin")
-    local 模型存储目录 = "mnt/sdcard/Pictures"
-    if not fileExist(模型存储目录 .. "/ppocr.zip") then
+-- 优先使用新ocr (yoloocr.apk)
+if not fileExist("mnt/sdcard/Pictures/yoloocr.apk") then
+    if not fileExist(work .. "/ppocr.zip") then
         toast("未找到飞浆ocr模型文件，正在尝试下载。")
-        -- 模型存储目录 = getWorkPath() .. "/model"
-        -- mkdir(模型存储目录)
-        if not download_from_alist("ppocr.zip", 模型存储目录) then
+        if not download_from_alist("ppocr.zip", work) then
             toast("飞浆ocr模型下载失败,已禁用")
             paddleocr_loadfailed = true
             return
         end
     end
-    if not fileExist(模型存储目录 .. "/PaddLeOCR.apk") then
-        extractAssets("main.rc", 模型存储目录, "ppocr.zip")
-        unZip(模型存储目录 .. "/ppocr.zip", 模型存储目录)
+    if not fileExist(work .. "/PaddLeOCR.apk") then
+        extractAssets("main.rc", work, "ppocr.zip")
+        unZip(work .. "/ppocr.zip", work)
     end
 
     -- 加载插件 有时会加载不上插件 加载不上时请把APK删除重新释放即可
-    local Loader = LuaEngine.loadApk(模型存储目录 .. "/PaddLeOCR.apk")
+    local Loader = LuaEngine.loadApk(work .. "/PaddLeOCR.apk")
     -- 初始化OCR插件 需要把 LuaEngine.loadApk函数返回的插件对象传递过去
     local Err = PaddLeOCR.IniTiaLModeL(Loader)
     if Err ~= nil then
@@ -121,18 +113,18 @@ if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
 
     -- 文本检测模型 文件名带有Db的文件 数组下标1为param文件 下标2为bin文件
     local DbModeL = {
-        模型存储目录 .. "/PaddLeOCR/Db/PaddLeOCR_Db.param",
-        模型存储目录 .. "/PaddLeOCR/Db/PaddLeOCR_Db.bin"
+        work .. "/PaddLeOCR/Db/PaddLeOCR_Db.param",
+        work .. "/PaddLeOCR/Db/PaddLeOCR_Db.bin"
     }
 
     -- 文本识别模型 文件名带有Rec的文件 数组下标1为param文件 下标2为bin文件
     local RecModeL = {
-        模型存储目录 .. "/PaddLeOCR/Rec/PaddLeOCR_Rec.param",
-        模型存储目录 .. "/PaddLeOCR/Rec/PaddLeOCR_Rec.bin"
+        work .. "/PaddLeOCR/Rec/PaddLeOCR_Rec.param",
+        work .. "/PaddLeOCR/Rec/PaddLeOCR_Rec.bin"
     }
 
     -- 生成数据时创建的txt文件 又名: 标签文件 字典文件
-    local LaBeL = 模型存储目录 .. "/PaddLeOCR/Rec/Label.txt"
+    local LaBeL = work .. "/PaddLeOCR/Rec/Label.txt"
 
     -- 加载模型
     local Err = PaddLeOCR.LoadModeL(LaBeL, DbModeL, RecModeL, 640, math.floor(2, PaddLeOCR.GetCPUCoreNumBer()),
@@ -160,10 +152,6 @@ if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
                 b = r[2] + ret[i]["Y3"],
             }
         end
-        --[[if max_height then
-	r = table.filter(r, function(x) return (x.b - x.t) <= max_height end)
-	end]]
-        --log("ocroutput", res)
 
         --释放 LuaEngine.snapShot 截取的图片 如不释放会导致内存溢出
         if BitMap ~= nil and BitMap.isRecycled() == false then
@@ -174,39 +162,9 @@ if not fileExist("mnt/sdcard/Pictures/yoloppv4.apk") then
         return res
     end
 else
-    import('java.io.File')
-    import('java.lang.*')
-    import('java.util.Arrays')
-    import('android.content.Context')
-    import('android.hardware.Sensor')
-    import('android.hardware.SensorEvent')
-    import('android.hardware.SensorEventListener')
-    import('android.hardware.SensorManager')
-
-    local work = "mnt/sdcard/Pictures"
-    local ocrzipfile = work .. "/ppocrv4.zip" --飞桨ocr模型地址
-
-    if not fileExist(work .. "/yoloppv4.apk") then
-        extractAssets("main.rc", work, "yoloppv4.apk")
-        extractAssets("main.rc", work, "ppocrv4.zip")
-    end
-
-    if not fileExist(work .. "/yoloppv4.apk") then
-        toast("飞桨ocr加载失败,请重新安装或者禁用飞桨ocr")
-        console.show()
-        ssleep(10)
-        console.dismiss()
-    end
-
-    local loader = LuaEngine.loadApk(work .. "/yoloppv4.apk")
-
-    local ocr1
-    if loader ~= nil then
-        --ocr
-        local plugin = loader.loadClass("com.tencent.paddleocrncnn.PaddleOCRNcnn")
-        ocr1 = plugin.initOcr(ocrzipfile)
-        --print(fileExist(yolozipfile))
-    end
+    log("使用 SpeedRun AI Plugin (yoloocr.apk)")
+    local loader = LuaEngine.loadApk(work .. "/yoloocr.apk")
+    local plugin = loader.loadClass("com.yolocr.speedrun.MyAIPlugin")
 
     ocrex = function(r)
         if disable_paddleocr then
@@ -215,25 +173,22 @@ else
         if type(r) == "string" then r = point[r] end
         log.debug("ocrinput", r)
         local BitMap = LuaEngine.snapShot(r[1], r[2], r[3], r[4])
-        local ret = ocr1.DetectJson(BitMap, 0.3, 0.5)
+        local retJson = plugin.runOCR(BitMap)
+        local ret = jsonLib.decode(retJson)
         local res = {}
-        if #ret > 0 then
-            ret = jsonLib.decode(ret)
-            for i = 1, #ret, 1 do
+        if ret and ret.code == 0 and ret.data then
+            for i = 1, #ret.data do
+                local item = ret.data[i]
                 res[i] = {
-                    text = ret[i].label,
-                    l = r[1] + ret[i]["x0"],
-                    r = r[1] + ret[i]["x1"],
-                    t = r[2] + ret[i]["y0"],
-                    b = r[2] + ret[i]["y3"],
+                    text = item.text,
+                    l = r[1] + item.x1,
+                    r = r[1] + item.x2,
+                    t = r[2] + item.y1,
+                    b = r[2] + item.y4,
                 }
             end
         end
-        --[[if max_height then
-	r = table.filter(r, function(x) return (x.b - x.t) <= max_height end)
-	end]]
-        --print("ocroutput", res)
-
+        log.debug("ocroutput", res)
         --释放 LuaEngine.snapShot 截取的图片 如不释放会导致内存溢出
         if BitMap ~= nil and BitMap.isRecycled() == false then
             BitMap.recycle()
