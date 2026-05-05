@@ -85,8 +85,8 @@ function PaddLeOCR.Detect(BitMap, Confidence, ProbabiLity)
     return jsonLib.decode(Data)
 end
 
--- 优先使用新ocr (yoloocr.apk)
-if not fileExist("mnt/sdcard/Pictures/yoloocr.apk") then
+-- 优先使用新ocr (yolocr.apk)
+if not fileExist(work .. "/yolocr.apk") then
     if not fileExist(work .. "/ppocr.zip") then
         toast("未找到飞浆ocr模型文件，正在尝试下载。")
         if not download_from_alist("ppocr.zip", work) then
@@ -162,8 +162,8 @@ if not fileExist("mnt/sdcard/Pictures/yoloocr.apk") then
         return res
     end
 else
-    log("使用 SpeedRun AI Plugin (yoloocr.apk)")
-    local loader = LuaEngine.loadApk(work .. "/yoloocr.apk")
+    log("使用 SpeedRun AI Plugin (yolocr.apk)")
+    local loader = LuaEngine.loadApk(work .. "/yolocr.apk")
     local plugin = loader.loadClass("com.yolocr.speedrun.MyAIPlugin")
 
     ocrex = function(r)
