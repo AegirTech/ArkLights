@@ -188,7 +188,7 @@ else
                 }
             end
         end
-        log.debug("ocroutput", res)
+        --log.debug("ocroutput", res)
         --释放 LuaEngine.snapShot 截取的图片 如不释放会导致内存溢出
         if BitMap ~= nil and BitMap.isRecycled() == false then
             BitMap.recycle()

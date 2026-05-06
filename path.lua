@@ -6454,10 +6454,13 @@ path.商店搬空 = function()
                 log("第", x, "列,第", y, "行商品")
                 for i = 1, 7 do
                     回到商店主页()
-                    local intX, intY = findMultiColor(scale(120) + x * 物品横间距, scale(515) + y * 物品纵间距,
+                    local intX, intY = findMultiColor(
+                        scale(120) + x * 物品横间距, scale(515) + y * 物品纵间距,
                         scale(386) + x * 物品横间距, scale(555) + y * 物品纵间距,
-                        "FFFFFF", scale(17) .. "|" .. scale(-2) .. "|575757|" .. scale(-100) .. "|" ..
-                        scale(-5) .. "|5A5A5A", 0, 0.83)
+                        "FFFFFF",
+                        scale(17) .. "|" .. scale(-2) .. "|575757|" ..
+                        scale(-100) .. "|" .. scale(-5) .. "|5A5A5A",
+                        0, 0.83)
                     if intX == -1 then
                         log.warn("未找到购买按钮,可能已购买过")
                         break

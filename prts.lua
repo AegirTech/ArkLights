@@ -238,7 +238,7 @@ function createDoStrategy(已部署干员, 延迟消失技能, 技能名称范�
         for k, v in pairs(已部署干员) do
             if table.search(无限放技能干员, k) or (技能指定次数干员[k] and 技能指定次数干员[k][2] < 技能指定次数干员[k][1]) then
                 地图坐标 = 地图数据0[v[2] + 1][v[1] + 1]
-                log("干员" .. k .. "实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
+                log("干员 " .. k .. " 实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
                 local intX, intY = 查找技能(地图坐标[1], 地图坐标[2], 查找技能偏移)
                 if intX > -1 then
                     log("干员" .. k .. "技能就绪,实际坐标", scale(地图坐标[1]), scale(地图坐标[2]))
@@ -1183,21 +1183,29 @@ swipe_next_page = function(left, nodelay)
 end
 
 查找技能 = function(地图坐标1, 地图坐标2, x)
-    local x = x or 0 --其他模式的技能图标横向偏移
+    keepCapture()
+    local x = x or 5 --其他模式的技能图标横向偏移
     --local y = y or 0
     local intX, intY = findMultiColor(scale(地图坐标1 - 10 - x), scale(地图坐标2 - 180), scale(地图坐标1 + 10 + x),
         scale(地图坐标2 - 80), "F29F02-101010",
-        scale(-21) ..
-        "|" ..
-        scale(-21) ..
-        "|F0A102-101010|" ..
-        scale(5) ..
-        "|" ..
-        scale(-11) ..
-        "|280500-101010|" ..
-        scale(21) ..
-        "|" .. scale(-21) .. "|F3A901-101010|" .. scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
+        -- x|y|主色-容差|
+        scale(-21) .. "|" .. scale(-21) .. "|F0A102-101010|" ..
+        scale(5) .. "|" .. scale(-11) .. "|280500-101010|" ..
+        scale(21) .. "|" .. scale(-21) .. "|F3A901-101010|" ..
+        scale(-6) .. "|" .. scale(-9) .. "|2E1501-101010",
         0, 0.87)
+    if intX == -1 then
+        log.debug("技能图标未找到")
+        intX, intY = findMultiColor(scale(地图坐标1 - 10 - x), scale(地图坐标2 - 170), scale(地图坐标1 + 10 + x),
+            scale(地图坐标2 - 70), "F9D400-101010",
+            -- x|y|主色-容差|
+            scale(-21) .. "|" .. scale(-11) .. "|F0A102-101010|" ..
+            scale(5) .. "|" .. scale(-1) .. "|280500-101010|" ..
+            scale(21) .. "|" .. scale(-11) .. "|F3A901-101010|" ..
+            scale(-6) .. "|" .. scale(1) .. "|2E1501-101010",
+            0, 0.86)
+    end
+    releaseCapture()
     return intX, intY --中心点坐标
 end
 
@@ -1714,13 +1722,11 @@ end
     坐标列表 = {}
     while true do
         local intX = findMultiColor(scale(19), scale(896), BX, scale(896), "000000",
-            scale(5) ..
-            "|" ..
-            scale(-5) ..
-            "|000000|" ..
-            scale(5) ..
-            "|" .. scale(4) .. "|000000|" .. scale(4) .. "|" ..
-            scale(-7) .. "|FFFFFF-808080|" .. scale(6) .. "|0|FFFFFF-808080", 2, 0.95)
+            scale(5) .. "|" .. scale(-5) .. "|000000|" ..
+            scale(5) .. "|" .. scale(4) .. "|000000|" ..
+            scale(4) .. "|" .. scale(-7) .. "|FFFFFF-808080|" ..
+            scale(6) .. "|0|FFFFFF-808080",
+            2, 0.95)
         if intX < 0 then
             break
         else
@@ -1871,13 +1877,11 @@ end
 
     while true do
         local intX = findMultiColor(scale(19), scale(896), BX, scale(896), "000000",
-            scale(5) ..
-            "|" ..
-            scale(-5) ..
-            "|000000|" ..
-            scale(5) ..
-            "|" .. scale(4) .. "|000000|" .. scale(4) .. "|" ..
-            scale(-7) .. "|FFFFFF-808080|" .. scale(6) .. "|0|FFFFFF-808080", 2, 0.95)
+            scale(5) .. "|" .. scale(-5) .. "|000000|" ..
+            scale(5) .. "|" .. scale(4) .. "|000000|" ..
+            scale(4) .. "|" .. scale(-7) .. "|FFFFFF-808080|" ..
+            scale(6) .. "|0|FFFFFF-808080",
+            2, 0.95)
 
         if intX < 0 then
             break
