@@ -1195,17 +1195,20 @@ show_extra_ui = function()
     -- newRow(layout)
     ------------------------------------------------------------
     addTitle(layout, "争锋频道(限时)")
+    addInfo(layout, "注意：默认不会选择all，分辨率只支持720/1080p")
     newRow(layout)
     addTextView(layout, "匹配模式")
-    ui.addSpinner(layout, "duel_channel_mode", { "礼物对决" }, 0)
+    ui.addSpinner(layout, "duel_channel_mode", { "自娱自乐", "礼物对决" }, 0)
     newRow(layout)
     addTextView(layout, "策略")
-    ui.addSpinner(layout, "duel_channel_game_mode", { "保持观望", "随大流" }, 0)
+    ui.addSpinner(layout, "duel_channel_strategy", { "保持观望", "随大流" }, 0)
 
     newRow(layout)
-    ui.addCheckBox(layout, "duel_auto_stop", "代币不增加则停止", false)
+    ui.addCheckBox(layout, "duel_channel_only_daily_task", "只做每日", false)
 
-    addInfo(layout, "注意：默认不会选择all，分辨率只支持720/1080p")
+    ui.addCheckBox(layout, "duel_channel_auto_stop", "代币不增加则停止", false)
+
+
 
     newRow(layout)
     addButton(layout, nil, "赌博开始",

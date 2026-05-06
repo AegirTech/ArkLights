@@ -1645,7 +1645,7 @@ end
 ---     * total_timeout_restart=true 时，超时后会执行一次重启流程（带“登录未完成”的特殊处理），然后 stop 脚本。
 ---     * total_timeout_restart=false 时，超时直接返回 true。
 --- - fallback 为真且本轮 wait 未命中任何状态时，会调用一次 `auto(path.fallback, nil, nil, 0)` 作为兜底。
---- @param p table<string, any>|fun():any  状态表（key 为状态名/识别点，value 为点击目标），或直接是一个函数（直接执行并返回）
+--- @param p table<string, any>|fun():any  状态表（key 为状态名/识别点，value 为点击目标,当 value 为 point 中的 key 字符串时执行 tap(value) 并退出循环），或直接是一个函数（直接执行并返回）
 --- @param fallback? boolean               是否启用 fallback 自动机（只在本轮 wait 无事件时触发一次）
 --- @param timeout? number                 单次 wait 超时时间（秒），为 nil/0 表示不等待
 --- @param total_timeout? number           auto 整体最长运行时间（秒），为 nil 表示不限制

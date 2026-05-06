@@ -965,6 +965,10 @@ path.fallback = {
         tap("争锋频道回到游戏首页")
         ssleep(0.6)
     end,
+    争锋频道返回2 = function()
+        tap("争锋频道返回2")
+        ssleep(0.6)
+    end,
     回归返回 = function()
         tap("回归返回")
         ssleep(1)
@@ -10645,21 +10649,40 @@ path.争锋频道活动 = function()
         tap("面板活动2")
     end
     if not appear("争锋频道首页", 5) then return end
+    if duel_channel_only_daily_task and findOne("争锋频道每日打满") then
+        log("争锋频道每日已完成")
+        goto duel_channel_reward
+    end
     wait(function()
+        if findOne("自娱自乐第一位") then
+            tap("自娱自乐第一位")
+            ssleep(.5)
+        end
+        if duel_channel_mode == 0 and findOne("自娱自乐第三位") then
+            tap("自娱自乐第三位")
+            ssleep(.5)
+        end
         tap("加入赛事")
         if findOne("礼物对决") then return true end
-    end, 10)
+    end, 10, .2)
     log("加入赛事完成")
-
-    争锋左边投票人数 = 0
-    争锋右边投票人数 = 0
     auto(争锋频道循环, nil, 0, nil, false)
+    ::duel_channel_reward::
+    path.活动奖励("争锋频道")
 end
 
 
 争锋频道循环 = {
-    礼物对决 = function()
-        tap("礼物对决")
+    争锋频道选择模式 = function()
+        if duel_channel_mode == 0 then
+            tap("自娱自乐第三位")
+        elseif duel_channel_mode == 1 then
+            tap("礼物对决")
+        end
+        ssleep(0.5)
+    end,
+    自娱自乐第一位 = function()
+        tap("自娱自乐第一位")
         ssleep(0.5)
     end,
     开始匹配 = function()
@@ -10670,35 +10693,44 @@ end
         tap("结算_离开比赛")
         ssleep(0.5)
     end,
-    继续匹配频道 = function()
-        if duel_auto_stop then
+    争锋频道继续匹配 = function()
+        if duel_channel_auto_stop then
             local 代币增加 = (ocr("结算代币ocr范围")[1] or {}).text or ""
             if string.finds(代币增加, { "+" }) then
                 local 代币增加数量 = int(string.match(代币增加, "%d+")) or 1
                 log("代币增加数量", 代币增加, 代币增加数量)
                 if 代币增加数量 == 0 then
                     log("停止匹配")
-                    stop("争锋活动已经打完", '', true, true)
+                    return "返回"
                 end
             end
         end
-        tap("继续匹配频道")
+        tap("争锋频道继续匹配")
         ssleep(0.5)
     end,
+    争锋频道首页 = function()
+        ssleep(0.5)
+        if duel_channel_only_daily_task and findOne("争锋频道每日打满") then
+            return "争锋频道每日打满"
+        else
+            tap("加入赛事")
+            ssleep(.8)
+        end
+    end,
     支持左侧 = function()
-        if duel_channel_game_mode == 1 then
-            local zuotext = (ocr("左边支持人数ocr范围")[1] or {}).text or ""
-            local youtext = (ocr("右边支持人数ocr范围")[1] or {}).text or ""
-            local zuonumber = str2int(string.match(zuotext, "%d+"), 0)
-            local younumber = str2int(string.match(youtext, "%d+"), 0)
-            log("左边支持人数", zuotext, zuonumber)
-            log("右边支持人数", youtext, younumber)
-            if zuonumber > 0 or younumber > 0 then
-                if zuonumber > younumber then
+        if duel_channel_strategy == 1 then
+            local left_text = (ocr("左边支持人数ocr范围")[1] or {}).text or ""
+            local right_text = (ocr("右边支持人数ocr范围")[1] or {}).text or ""
+            local left_number = str2int(string.match(left_text, "%d+"), 0)
+            local right_number = str2int(string.match(right_text, "%d+"), 0)
+            log("左边支持人数", left_text, left_number)
+            log("右边支持人数", right_text, right_number)
+            if left_number > 0 or right_number > 0 then
+                if left_number > right_number then
                     log("支持左侧")
                     tap("支持左侧按钮")
                     ssleep(0.5)
-                elseif younumber > zuonumber then
+                elseif right_number > left_number then
                     log("支持右侧")
                     tap("支持右侧按钮")
                     ssleep(0.5)
@@ -10713,7 +10745,10 @@ end
     end,
     支持右侧 = function()
         return 争锋频道循环.支持左侧()
-    end
+    end,
+    礼物不足 = function()
+        return 争锋频道循环.支持左侧()
+    end,
 }
 
 
