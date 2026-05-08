@@ -10369,6 +10369,7 @@ path.活动奖励 = function(活动)
     if appear(活动 .. "奖励入口", 1) then
         tap(活动 .. "奖励入口")
     else
+        log(活动 .. "奖励入口未找到")
         return
     end
     appear(活动 .. "奖励页面", 3)
@@ -10649,7 +10650,7 @@ path.争锋频道活动 = function()
         tap("面板活动2")
     end
     if not appear("争锋频道首页", 5) then return end
-    if duel_channel_only_daily_task and findOne("争锋频道每日打满") then
+    if duel_channel_only_daily_task and appear("争锋频道每日打满", 2) then
         log("争锋频道每日已完成")
         goto duel_channel_reward
     end
