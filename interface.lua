@@ -1195,7 +1195,7 @@ show_extra_ui = function()
     -- newRow(layout)
     ------------------------------------------------------------
     addTitle(layout, "争锋频道(限时)")
-    addInfo(layout, "注意：默认不会选择all，分辨率只支持720/1080p")
+    addInfo(layout, "注意：默认选择all，分辨率只支持720/1080p")
     newRow(layout)
     addTextView(layout, "匹配模式")
     ui.addSpinner(layout, "duel_channel_mode", { "自娱自乐", "礼物对决" }, 0)
