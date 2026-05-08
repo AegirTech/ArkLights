@@ -10667,7 +10667,7 @@ path.争锋频道活动 = function()
         if findOne("礼物对决") then return true end
     end, 10, .2)
     log("加入赛事完成")
-    auto(争锋频道循环, nil, 0, nil, false)
+    auto(争锋频道循环, true, 0, nil, false)
     ::duel_channel_reward::
     path.活动奖励("争锋频道")
 end
