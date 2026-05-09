@@ -575,7 +575,7 @@ make_jump_ui = function(layout)
         { nil, "高级设置", make_jump_ui_command(layout, "debug") },
         { "join_qq", "加入QQ群", make_jump_ui_command(layout, nil, "jump_qq_qun()") },
         -- { "join_channel", "QQ频道", make_jump_ui_command(layout, nil, "jump_qq_channel()") },
-        { "jump_afadian", "爱发电赞助", make_jump_ui_command(layout, nil, "jump_address('https://afdian.com/a/arklights')") },
+        { "jump_afadian", "爱发电赞助", make_jump_ui_command(layout, nil, "copy_address('https://afdian.com/a/arklights')") },
         { "readme_btn", "使用文档", make_jump_ui_command(layout, nil, "saveConfig('readme_already_read','1');jump_readme()") },
     }
 
@@ -604,6 +604,12 @@ jump_address = function(address)
     }
     runIntent(intent)
     toast("正在跳转到地址")
+    peaceExit()
+end
+
+copy_address = function(address)
+    putClipboard(address)
+    toast("地址已复制到剪贴板")
     peaceExit()
 end
 
@@ -692,11 +698,12 @@ show_debug_ui = function()
     ui.addTab("debug_tab", debug_layout_验证码, "验证码")
 
     newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "Aunly打码平台，平台注册&购买地址(打码每次0.012元)")
-
+    addTextView(debug_layout_验证码, "Aunly打码平台(打码每次0.012元)")
     newRow(debug_layout_验证码)
-    addButton(debug_layout_验证码, nil, "Aunly打码平台官网",
+    addButton(debug_layout_验证码, nil, "官网跳转",
         make_jump_ui_command(layout, nil, [[jump_address("https://captcha.aunly.cn/")]]))
+    addButton(debug_layout_验证码, nil, "复制",
+        make_jump_ui_command(layout, nil, [[copy_address("https://captcha.aunly.cn/")]]))
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "Aunly打码服务Token")
@@ -717,9 +724,10 @@ show_debug_ui = function()
 
     newRow(debug_layout_验证码)
     ui.addCheckBox(debug_layout_验证码, "use_jfbym", "3.使用云码API(会逐步废弃)", false)
-    addButton(debug_layout_验证码, nil, "云码官网",
+    addButton(debug_layout_验证码, nil, "官网跳转",
         make_jump_ui_command(layout, nil, [[jump_address("https://www.jfbym.com/")]]))
-
+    addButton(debug_layout_验证码, nil, "复制",
+        make_jump_ui_command(layout, nil, [[copy_address("https://www.jfbym.com/")]]))
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "云码Token")
     ui.addEditText(debug_layout_验证码, "jfbym_token", "")
@@ -738,9 +746,10 @@ show_debug_ui = function()
 
     newRow(debug_layout_验证码)
     ui.addCheckBox(debug_layout_验证码, "use_captcha", "3.使用图鉴打码", true)
-    addButton(debug_layout_验证码, nil, "图鉴官网",
+    addButton(debug_layout_验证码, nil, "官网跳转",
         make_jump_ui_command(layout, nil, [[jump_address("https://www.ttshitu.com/")]]))
-
+    addButton(debug_layout_验证码, nil, "复制",
+        make_jump_ui_command(layout, nil, [[copy_address("https://www.ttshitu.com/")]]))
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "图鉴用户名")
     ui.addEditText(debug_layout_验证码, "captcha_username", "")
@@ -1835,7 +1844,7 @@ jump_arkntools = function()
         uri = "https://arkntools.app/#/material",
     }
     runIntent(intent)
-    toast("跳转失败搜索【明日方舟工具箱】")
+    toast("跳转失败请搜索【明日方舟工具箱】")
     while true do ssleep(1) end
     peaceExit()
 end
