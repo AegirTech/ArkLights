@@ -1194,27 +1194,27 @@ show_extra_ui = function()
     -- ui.addEditText(layout, "宝石铭刻_放牌延迟", "100")
     -- newRow(layout)
     ------------------------------------------------------------
-    addTitle(layout, "争锋频道(限时)")
-    addInfo(layout, "注意：默认选择all，分辨率只支持720/1080p")
-    newRow(layout)
-    addTextView(layout, "匹配模式")
-    ui.addSpinner(layout, "duel_channel_mode", { "自娱自乐", "礼物对决" }, 0)
-    newRow(layout)
-    addTextView(layout, "策略")
-    ui.addSpinner(layout, "duel_channel_strategy", { "保持观望", "随大流" }, 0)
+    -- addTitle(layout, "争锋频道(限时)")
+    -- addInfo(layout, "注意：默认选择all，分辨率只支持720/1080p")
+    -- newRow(layout)
+    -- addTextView(layout, "匹配模式")
+    -- ui.addSpinner(layout, "duel_channel_mode", { "自娱自乐", "礼物对决" }, 0)
+    -- newRow(layout)
+    -- addTextView(layout, "策略")
+    -- ui.addSpinner(layout, "duel_channel_strategy", { "保持观望", "随大流" }, 0)
 
-    newRow(layout)
-    ui.addCheckBox(layout, "duel_channel_only_daily_task", "只做每日", false)
+    -- newRow(layout)
+    -- ui.addCheckBox(layout, "duel_channel_only_daily_task", "只做每日", false)
 
-    ui.addCheckBox(layout, "duel_channel_auto_stop", "代币不增加则停止", false)
+    -- ui.addCheckBox(layout, "duel_channel_auto_stop", "代币不增加则停止", false)
 
 
 
-    newRow(layout)
-    addButton(layout, nil, "赌博开始",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='争锋频道活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    ---------------------------------------------------------------------
+    -- newRow(layout)
+    -- addButton(layout, nil, "赌博开始",
+    --     make_jump_ui_command(layout, nil,
+    --         "extra_mode='争锋频道活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    -- ---------------------------------------------------------------------
 
     -- addTitle(layout, "喀兰贸易技术研发部(只支持1080p)")
     -- addInfo(layout, "测试阶段，可能存在bug")
