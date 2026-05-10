@@ -8,7 +8,7 @@ MAX_SKILL_NOT_READY_COUNT_LOW = 40
 MAX_SWIPE_PAGES = 18
 local MAX_CARD_CHANGE = 3
 DELAYED_SKILLS = { "爆裂黎明", "黄昏", "灯火不灭", "饱和复仇" } -- 技能黄标延迟消失技能
-STORY_DIALOGS = { "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "剧情中6", "生息演算剧情上" } -- 剧情对话标志
+STORY_DIALOGS = { "剧情中", "剧情中2", "剧情中3", "剧情中4", "剧情中5", "剧情中6", "剧情中7", "生息演算剧情上" } -- 剧情对话标志
 local BATTLE_STATES = { "作战中", "暂停中", "作战中2", "顶部目标生命值" }
 DIRECTION_MAP = { Left = 4, Right = 2, Up = 1, Down = 3, None = 2 } --部署方向
 
