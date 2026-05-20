@@ -5486,7 +5486,7 @@ path.主线 = function(x)
             ssleep(1.5)
         end
     end
-    -- 10秒内需要完成章节/环境切换
+    -- 20秒内需要完成章节/环境切换
     auto(p, nil, 20, 20)
 
     path.开始游戏(x)
@@ -8495,7 +8495,9 @@ path.生息演算任务 = function()
         沙洲遗闻()
     end
     if sx_cqmd then
-        log("咕咕")
+        if sand_mode == 0 then
+            Relaunch_anchor.RA15()
+        end
     end
 end
 
