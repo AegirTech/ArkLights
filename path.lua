@@ -8512,9 +8512,7 @@ path.生息演算任务 = function()
         沙洲遗闻()
     end
     if sx_cqmd then
-        if sand_mode == 0 then
-            Relaunch_anchor.RA15()
-        end
+        重启锚点()
     end
 end
 

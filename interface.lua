@@ -1543,8 +1543,8 @@ show_extra_ui = function()
     ui.addSpinner(sand_layout_重启锚点, "sand2_mode", {
         "重复刷RA-15(圣聆初雪)",
     }, 0)
+
     newRow(sand_layout_重启锚点)
-    addTextView(sand_layout_重启锚点, "刷点数模式没写完，只写了商店")
     addTextView(sand_layout_重启锚点, "调试选项")
     newRow(sand_layout_重启锚点)
     ui.addCheckBox(sand_layout_重启锚点, "sand2_fullbuff", "基地满战斗加成", false)

@@ -1565,34 +1565,41 @@ end
 
 Relaunch_anchor.开始演算 = function(sand2_mode)
     log("开始演算")
-    if sand2_mode == 0 then
+    if findOne("生息演算_重启锚点_主页进入开始建设") then
+        tap("生息演算_重启锚点_主页进入开始建设")
+        appear("生息演算_重启锚点_基地图标", 3)
+    end
+    --[[if sand2_mode == 4 then
         Relaunch_anchor.ra_15()
     else
         path.跳转("首页")
-    end
+    end]]--
+    
+        Relaunch_anchor.ra_15()
 end
 
 Relaunch_anchor.ra_15 = function()
     log("重复刷RA-15")
     if findOne("生息演算_重启锚点_基地图标") then
         if Relaunch_anchor_firsttime then
-            appeartap("生息演算_重启锚点_基地图标", 3)
-            appeartap("生息演算左上角返回", 3)
-            appeartap("生息演算_重启锚点_大地图左下ra15", 3)
+            appearTap("生息演算_重启锚点_基地图标", 3)
+            appear("生息演算_重启锚点_基地介绍页")
+            tap("生息演算左上角返回")
+            appearTap("生息演算_重启锚点_大地图左下ra15", 3)
         else
-            appeartap("生息演算_重启锚点_大地图正中ra15", 3)
+            appearTap("生息演算_重启锚点_大地图正中ra15", 3)
         end
-        appeartap("生息演算_重启锚点_开启建设", 3)
-        appeartap("生息演算_重启锚点_战术倾向", 3)
-        appeartap("生息演算_重启锚点_战术倾向确认选择", 3)
-        appeartap("生息演算_重启锚点_干员招募", 3)
-        appeartap("生息演算_重启锚点_确认招募", 3)
-        appeartap("生息演算_重启锚点_确认", 3)
-        appeartap("生息演算_重启锚点_开启建设", 3)
+        appearTap("生息演算_重启锚点_开启建设", 3)
+        appearTap("生息演算_重启锚点_战术倾向", 3)
+        appearTap("生息演算_重启锚点_战术倾向确认选择", 3)
+        appearTap("生息演算_重启锚点_干员招募", 3)
+        appearTap("生息演算_重启锚点_确认招募", 3)
+        appearTap("生息演算_重启锚点_确认", 3)
+        appearTap("生息演算_重启锚点_开启建设", 3)
         appear("生息演算_重启锚点_剧情")
         if not wait(function()
                 if findOne("生息演算_重启锚点_战斗退出") then return true end
-                Tap("生息演算_重启锚点_战斗加速", 0.1)
+                Tap("两倍速", 0.1)
             end, 10) then
         end
         if sand2_fullbuff then
