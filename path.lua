@@ -5415,6 +5415,7 @@ path.主线 = function(x)
                         return true
                     end
                     findTap("前往章节")
+                    ssleep(1)
                 end
                 tap({ wa_x, wa_y })
                 ssleep(.5)
@@ -5483,7 +5484,7 @@ path.主线 = function(x)
         end
         for i = 1, next_tap_index do
             tap("当前进度列表右")
-            ssleep(.5)
+            ssleep(1.5)
         end
     end
     -- 10秒内需要完成章节/环境切换
