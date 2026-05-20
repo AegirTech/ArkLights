@@ -163,7 +163,6 @@ make_account_ui = function(layout, prefix)
 end
 
 show_multi_account_ui = function()
-    local start_time = os.clock()
     local num = multi_account_num
     toast("正在加载多账号设置...")
     local layout = "multi_account"
@@ -351,7 +350,6 @@ show_multi_account_ui = function()
     -- end
 
     ui.show(layout, false)
-    log.debug("多账号页面加载耗时: " .. string.format("%.2f", os.clock() - start_time) .. " 秒")
 end
 
 multi_account_config_export = function(simple)
@@ -376,7 +374,7 @@ multi_account_config_export = function(simple)
                     (server == 1 and 'B服' or '官服') .. '\n'
             end
         end
-        log.debug(account)
+        log(account)
         content = account
     else
         local default = loadOneUIConfig(layout .. "_default")
@@ -437,7 +435,7 @@ parse_simple_config = function(data)
             if type(v[3]) == 'string' and string.upper(v[3]:sub(1, 1)) == 'B' then
                 server = 1
             end
-            log.debug(i, v)
+            log(i, v)
             update(cur, {
                 ['username' .. i] = username,
                 ['password' .. i] = password,
@@ -575,7 +573,7 @@ make_jump_ui = function(layout)
         { nil, "高级设置", make_jump_ui_command(layout, "debug") },
         { "join_qq", "加入QQ群", make_jump_ui_command(layout, nil, "jump_qq_qun()") },
         -- { "join_channel", "QQ频道", make_jump_ui_command(layout, nil, "jump_qq_channel()") },
-        { "jump_afadian", "爱发电赞助", make_jump_ui_command(layout, nil, "copy_address('https://afdian.com/a/arklights')") },
+        { "jump_afadian", "爱发电赞助", make_jump_ui_command(layout, nil, "jump_address('https://afdian.com/a/arklights')") },
         { "readme_btn", "使用文档", make_jump_ui_command(layout, nil, "saveConfig('readme_already_read','1');jump_readme()") },
     }
 
@@ -604,12 +602,6 @@ jump_address = function(address)
     }
     runIntent(intent)
     toast("正在跳转到地址")
-    peaceExit()
-end
-
-copy_address = function(address)
-    putClipboard(address)
-    toast("地址已复制到剪贴板")
     peaceExit()
 end
 
@@ -669,7 +661,7 @@ end
 
 show_debug_ui = function()
     local layout = "debug"
-    local debug_page_width = screen.width * 0.55
+    debug_page_width = screen.width * 0.5
     ui.newLayout(layout, debug_page_width, -2)
     ui.setTitleText(layout, "高级设置")
 
@@ -698,19 +690,15 @@ show_debug_ui = function()
     ui.addTab("debug_tab", debug_layout_验证码, "验证码")
 
     newRow(debug_layout_验证码)
-    addTextView(debug_layout_验证码, "Aunly打码平台(打码每次0.012元)")
+    addTextView(debug_layout_验证码, "Aunly打码平台，平台注册&购买地址(打码每次0.012元)")
+
     newRow(debug_layout_验证码)
-    addButton(debug_layout_验证码, nil, "官网跳转",
+    addButton(debug_layout_验证码, nil, "Aunly打码平台官网",
         make_jump_ui_command(layout, nil, [[jump_address("https://captcha.aunly.cn/")]]))
-    addButton(debug_layout_验证码, nil, "复制",
-        make_jump_ui_command(layout, nil, [[copy_address("https://captcha.aunly.cn/")]]))
 
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "Aunly打码服务Token")
     ui.addEditText(debug_layout_验证码, "cloud_captcha_token", "")
-
-    newRow(debug_layout_验证码)
-    ui.addCheckBox(debug_layout_验证码, "not_wait_aunly", "Aunly打码不等待(B服打码过慢可以勾选)", false)
 
     addTitle(debug_layout_验证码, "滑块验证码", "setting.png", 1, 1)
 
@@ -724,10 +712,9 @@ show_debug_ui = function()
 
     newRow(debug_layout_验证码)
     ui.addCheckBox(debug_layout_验证码, "use_jfbym", "3.使用云码API(会逐步废弃)", false)
-    addButton(debug_layout_验证码, nil, "官网跳转",
+    addButton(debug_layout_验证码, nil, "云码官网",
         make_jump_ui_command(layout, nil, [[jump_address("https://www.jfbym.com/")]]))
-    addButton(debug_layout_验证码, nil, "复制",
-        make_jump_ui_command(layout, nil, [[copy_address("https://www.jfbym.com/")]]))
+
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "云码Token")
     ui.addEditText(debug_layout_验证码, "jfbym_token", "")
@@ -746,10 +733,9 @@ show_debug_ui = function()
 
     newRow(debug_layout_验证码)
     ui.addCheckBox(debug_layout_验证码, "use_captcha", "3.使用图鉴打码", true)
-    addButton(debug_layout_验证码, nil, "官网跳转",
+    addButton(debug_layout_验证码, nil, "图鉴官网",
         make_jump_ui_command(layout, nil, [[jump_address("https://www.ttshitu.com/")]]))
-    addButton(debug_layout_验证码, nil, "复制",
-        make_jump_ui_command(layout, nil, [[copy_address("https://www.ttshitu.com/")]]))
+
     newRow(debug_layout_验证码)
     addTextView(debug_layout_验证码, "图鉴用户名")
     ui.addEditText(debug_layout_验证码, "captcha_username", "")
@@ -773,10 +759,6 @@ show_debug_ui = function()
     newRow(debug_layout_云控)
     addTextView(debug_layout_云控, "审判庭设备标识")
     ui.addEditText(debug_layout_云控, "cloud_device_token", "")
-
-    newRow(debug_layout_云控)
-    addTextView(debug_layout_云控, "审判庭AuthToken")
-    ui.addEditText(debug_layout_云控, "cloud_auth_token", "")
 
     addInfo(debug_layout_云控, [[已知审判庭的开源版本存在重大漏洞，可能导致账户密码被窃取。
 不建议将审判庭服务开放在公网上。
@@ -1034,7 +1016,7 @@ show_debug_ui = function()
     addTextView(debug_layout_其他, "天内")
 
     newRow(debug_layout_其他)
-    addInfo(debug_layout_其他, "因为活动关闭后可能会点到新活动导致卡教程，所以不再支持活动结束后购买商店")
+    addTextView(debug_layout_其他, "因为活动关闭后可能会点到新活动导致卡教程，所以不再支持活动结束后购买商店")
 
     newRow(debug_layout_其他)
     addTextView(debug_layout_其他, "无障碍模式关闭app方式")
@@ -1182,7 +1164,7 @@ show_extra_ui = function()
     ui.addEditText(layout, "extra_single_password", "")
     ------------------------------------------------------------
     -- addTitle(layout, "卫戍协议")
-    -- --addInfo(layout, "需要自己过一下教程")
+    -- addInfo(layout, "需要自己过一下教程")
     -- newRow(layout)
     -- addTextView(layout, "模式")
     -- ui.addSpinner(layout, "shp_game_mode", { "1 - 4回合循环" }, 0)
@@ -1204,26 +1186,23 @@ show_extra_ui = function()
     -- newRow(layout)
     ------------------------------------------------------------
     -- addTitle(layout, "争锋频道(限时)")
-    -- addInfo(layout, "注意：默认选择all，分辨率只支持720/1080p")
     -- newRow(layout)
     -- addTextView(layout, "匹配模式")
-    -- ui.addSpinner(layout, "duel_channel_mode", { "自娱自乐", "礼物对决" }, 0)
+    -- ui.addSpinner(layout, "duel_channel_mode", { "礼物对决" }, 0)
     -- newRow(layout)
     -- addTextView(layout, "策略")
-    -- ui.addSpinner(layout, "duel_channel_strategy", { "保持观望", "随大流" }, 0)
+    -- ui.addSpinner(layout, "duel_channel_game_mode", { "保持观望", "随大流" }, 0)
 
     -- newRow(layout)
-    -- ui.addCheckBox(layout, "duel_channel_only_daily_task", "只做每日", false)
+    -- ui.addCheckBox(layout, "duel_auto_stop", "代币不增加则停止", false)
 
-    -- ui.addCheckBox(layout, "duel_channel_auto_stop", "代币不增加则停止", false)
-
-
+    -- addInfo(layout, "注意：默认不会选择all，分辨率只支持720/1080p")
 
     -- newRow(layout)
     -- addButton(layout, nil, "赌博开始",
     --     make_jump_ui_command(layout, nil,
     --         "extra_mode='争锋频道活动';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    -- ---------------------------------------------------------------------
+    ---------------------------------------------------------------------
 
     -- addTitle(layout, "喀兰贸易技术研发部(只支持1080p)")
     -- addInfo(layout, "测试阶段，可能存在bug")
@@ -1438,7 +1417,7 @@ show_extra_ui = function()
     ui.addEditText(rouge_layout_萨卡兹, "zl_max_coin_skz", [[]])
 
     ------------------------------------------------------------
-    local rouge_layout_萨卡兹 = "extra_tab_zl5"
+    local rouge_layout_界园 = "extra_tab_zl5"
     ui.addTab("extra_tab", rouge_layout_界园, "界园")
 
     newRow(rouge_layout_界园)
@@ -1495,15 +1474,31 @@ show_extra_ui = function()
     addTitle(layout, "生息演算")
 
     newRow(layout)
-    addButton(layout, nil, "沙洲遗闻刷点数启动",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='生息沙洲遗闻';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    addButton(layout, nil, "沙洲遗闻自动商店购买",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='生息沙洲遗闻商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    ui.addCheckBox(layout, "sx_szyw", "沙洲遗闻", false)
+    ui.addCheckBox(layout, "sx_cqmd", "重启锚点", true)
     newRow(layout)
-    addTextView(layout, "刷点数模式")
-    ui.addSpinner(layout, "sand_mode", {
+    addTextView(layout, "调试选项")
+    newRow(layout)
+    ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
+    ui.addCheckBox(layout, "sand_noincrease_stop", "代币不增加则停止", true)
+    newRow(layout)
+    addButton(layout, nil, "生息刷点数启动",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='生息演算任务';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    addButton(layout, nil, "生息自动商店购买",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='生息演算商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+
+    ui.addTabView(layout, "extra_sx")
+
+    local sand_layout_沙洲遗闻 = "extra_sx_zl1"
+    ui.addTab("extra_sx", sand_layout_沙洲遗闻, "沙洲遗闻")
+    newRow(sand_layout_沙洲遗闻)
+
+
+    newRow(sand_layout_沙洲遗闻)
+    addTextView(sand_layout_沙洲遗闻, "刷点数模式")
+    ui.addSpinner(sand_layout_沙洲遗闻, "sand_mode", {
         "标准:从4-7天开始循环(手动过1-3天)",
         "标准:从0开始,自动过1-3天,4-7天循环(建议这个)",
         -- "注意：如果无法过第三天的战斗,那么手动打一下,然后选4-7循环",
@@ -1511,14 +1506,24 @@ show_extra_ui = function()
         "休养:手动开完奇遇后升至三本198木",
         "休养:三本后荧光棒(普难100天+也可,不删档,3天循环)",
         "休养:持续下一天(不回档不删档)",
-    }, 4)
+    }, 1)
 
-    newRow(layout)
-    addTextView(layout, "调试选项")
-    ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
-    ui.addCheckBox(layout, "sand_noincrease_stop", "代币不增加则停止", true)
-    newRow(layout)
-    ui.addCheckBox(layout, "skip_make", "跳过合成种植箱", false)
+    newRow(sand_layout_沙洲遗闻)
+    addTextView(sand_layout_沙洲遗闻, "调试选项")
+    newRow(sand_layout_沙洲遗闻)
+    ui.addCheckBox(sand_layout_沙洲遗闻, "skip_make", "跳过合成种植箱", false)
+
+    ---------------------------------------------------------------------
+    local sand_layout_重启锚点 = "extra_sx_zl2"
+    ui.addTab("extra_sx", sand_layout_重启锚点, "重启锚点")
+    newRow(sand_layout_重启锚点)
+
+    addTextView(sand_layout_重启锚点, "刷点数模式")
+    ui.addSpinner(sand_layout_重启锚点, "sand2_mode", {
+        "重复刷RA-15(圣聆初雪)",
+    }, 0)
+    newRow(sand_layout_重启锚点)
+    addTextView(sand_layout_重启锚点, "刷点数模式没写完，只写了商店")
     ---------------------------------------------------------------------
     addTitle(layout, "隐秘战线(1080p)")
     addInfo(layout, "十四章小游戏")
@@ -1563,6 +1568,12 @@ show_extra_ui = function()
             "extra_mode='自动升级潜能';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     addInfo(layout, "自动升级干员潜能")
 
+    newRow(layout)
+    addButton(layout, nil, "活动商店购买(测试)",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='活动商店购买';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    addInfo(layout, "不会买无限池")
+
     -------------------------------------------------------------------
     addTitle(layout, "每月采购中心")
 
@@ -1579,7 +1590,7 @@ show_extra_ui = function()
     newRow(shop_layout_green)
     ui.addCheckBox(shop_layout_green, "green_ticket_shop", "购买绿票商店", true)
 
-    green_ticket_shop_good = { "第1层尽量买", "2层寻访凭证", "2层招聘许可" }
+    green_ticket_shop_good = { "寻访凭证", "合成玉", "龙门币", "家具零件", "招聘许可", "中级作战记录", "赤金", "2层寻访凭证", "2层招聘许可" }
 
     local max_checkbox_one_row = 4
     for k, v in pairs(green_ticket_shop_good) do
@@ -1844,7 +1855,7 @@ jump_arkntools = function()
         uri = "https://arkntools.app/#/material",
     }
     runIntent(intent)
-    toast("跳转失败请搜索【明日方舟工具箱】")
+    toast("跳转失败搜索【明日方舟工具箱】")
     while true do ssleep(1) end
     peaceExit()
 end

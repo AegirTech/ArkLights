@@ -19,11 +19,11 @@ Tales_within_the_sand = {}
         appear("生息演算主页进入")
     end
     if not findOne("生息演算主页进入") then
-        log.warn("未找到主页，从头开始")
+        log("未找到主页，从头开始")
         Tales_within_the_sand.生息跳转()
     end
     if not findOne("生息演算未结算_反") then
-        log.warn("存在未结算")
+        log("存在未结算")
         tap("生息演算主页进入")
         if reachFourthDay or sand_mode == 0 then
             reachFourthDay = true
@@ -68,10 +68,14 @@ Tales_within_the_sand.生息跳转 = function()
     tap("面板作战")
     if not wait(function()
             appearTap("主页长期探索", 0.2)
-            appearTap("主页长期探索_生息演算", 0.2)
+            appearTap("主页长期探索_生息演算_全部主题", 0.2)
+            if appear("主页长期探索_生息演算_进入主题") then
+                tap("主页长期探索_生息演算_沙洲遗闻")
+            end
+            appearTap("主页长期探索_生息演算_进入主题", 0.2)
             if findOne("生息演算主页进入") then return true end
         end, 10) then
-        log.debug()
+        log(55)
         path.跳过剧情()
     end
     if findOne("生息演算主页进入") then return true end
@@ -369,7 +373,7 @@ Tales_within_the_sand.检查代币数量 = function()
     end
     if sand_nostop then return end
     if sand_noincrease_stop and Prosperity_same_number > 5 then
-        log.warn("连续5次未增加")
+        log("连续5次未增加")
         if cloud_get_task then
             log("云控上报")
             captureqqimagedeliver("INFO", "生息任务结束2", "繁荣值" .. nx, true)
@@ -403,7 +407,7 @@ Tales_within_the_sand.生息演算奇遇节点 = function()
     Tales_within_the_sand.生息演算地图缩放(true)
     ssleep(0.5)
     if not findOne("生息底栏烹饪按钮") then
-        log.warn("生息演算奇遇节点未找到底栏")
+        log("生息演算奇遇节点未找到底栏")
         return
     end
     local 判断内容 = ""
@@ -420,7 +424,7 @@ Tales_within_the_sand.生息演算奇遇节点 = function()
         end, 5) then
     end
     if not findOne(判断内容) then
-        log.warn("生息演算奇遇节点未找到判断")
+        log("生息演算奇遇节点未找到判断")
         return
     end
 
@@ -548,14 +552,14 @@ Tales_within_the_sand.生息演算奇遇 = function(关卡)
             if findOne("生息演算完成生存周期") then
                 ssleep(2)
                 local text = ocro("沙洲遗闻转化繁荣点数")
-                log.debug(text)
+                log(9998, text)
                 if text == "MAX" or (text ~= nil and tonumber(text) == nil) then
                     log("繁荣点数已满")
                     Prosperity_same_number = 6
                 end
                 tap("沙洲遗闻开启今日")
             end
-            log.debug()
+            log(563)
             appearTap("沙洲遗闻开启今日", .1)
             if findOne("沙洲遗闻开启今日") then
                 log("荒季过天")
@@ -686,7 +690,7 @@ Tales_within_the_sand.敌袭1 = function()
                     return true
                 end
                 if not findOne("生命值") then
-                    log.debug()
+                    log(462)
                     -- return true
                 end
             end, 30) then
@@ -861,7 +865,7 @@ Tales_within_the_sand.下一天 = function(check_point)
         tap("生息演算右上角生息日")
         ssleep(.2)
     end
-    log.debug()
+    log(7402)
     开启今日 = false
     if not wait(function()
             if findOne("生息演算消磨时间") or findOne("生息演算消磨时间2") then tap("生息演算消磨时间") end
@@ -970,7 +974,7 @@ Tales_within_the_sand.商店购买 = function()
     if not findAny({ "生息演算主页进入", "生息演算繁荣馈赠判断" }) then
         Tales_within_the_sand.生息跳转()
     end
-    log("生息商店购买")
+    log("生息沙洲遗闻商店购买")
     appear("生息演算繁荣馈赠", 1)
     if not wait(function()
             if findOne("沙洲遗闻商店界面") then return true end
@@ -992,7 +996,7 @@ Tales_within_the_sand.商店购买 = function()
     end
 
     if not appear("沙洲遗闻商店界面", 1) then
-        log.warn("未找到商店")
+        log("未找到商店")
         return
     end
     local 物品横间距, 物品纵间距 = scale(516), scale(242)
@@ -1009,10 +1013,9 @@ Tales_within_the_sand.商店购买 = function()
                 for i = 1, 7 do
                     回到商店主页()
                     local intX, intY = findMultiColor(scale(120) + x * 物品横间距, scale(515) + y * 物品纵间距,
-                        scale(386) + x * 物品横间距, scale(555) + y * 物品纵间距, "FFFFFF",
-                        scale(17) .. "|" .. scale(-2) .. "|575757|" ..
-                        scale(-100) .. "|" .. scale(-5) .. "|5A5A5A",
-                        0, 0.85)
+                        scale(386) + x * 物品横间距, scale(555) + y * 物品纵间距,
+                        "FFFFFF", scale(17) .. "|" .. scale(-2) .. "|575757|" .. scale(-100) .. "|" ..
+                        scale(-5) .. "|5A5A5A", 0, 0.85)
                     if intX == -1 then break end
                     if not wait(function()
                             tap({ intX, intY })
@@ -1021,13 +1024,13 @@ Tales_within_the_sand.商店购买 = function()
                         end, 1.8) then
                     end
                     if findOne("沙洲遗闻商店界面") then
-                        log.warn("未能进入商品，大概是识别错了")
+                        log("未能进入商品，大概是识别错了")
                         break
                     end
                     -- 点击购买
                     if not wait(function()
-                            if findOne("商店购买数量最多") then
-                                tap("商店购买数量最多")
+                            if findOne("生息演算繁荣馈赠商店最多") then
+                                tap("生息演算繁荣馈赠商店最多")
                                 ssleep(0.2)
                             end
                             if findOne("生息演算繁荣馈赠支付") then
@@ -1040,7 +1043,7 @@ Tales_within_the_sand.商店购买 = function()
                     end
                     --disappear("正在提交反馈至神经", network_timeout)
                     if findOne("购买物品面板") then
-                        log.warn("未能购买，大概是钱花完了")
+                        log("未能购买，大概是钱花完了")
                         return true
                     end
                 end
@@ -1074,7 +1077,7 @@ Tales_within_the_sand.连续跳过 = function()
     if not findOne("生息底栏烹饪按钮") then
         log("非游戏内")
         if not findOne("生息演算主页进入") then
-            log.warn("未找到主页，从头开始")
+            log("未找到主页，从头开始")
             Tales_within_the_sand.生息跳转()
         end
         tap("生息演算主页进入")
@@ -1095,7 +1098,7 @@ Tales_within_the_sand.循环下一天 = function()
     if not findOne("生息底栏烹饪按钮") then
         log("非游戏内")
         if not findOne("生息演算主页进入") then
-            log.warn("未找到主页，从头开始")
+            log("未找到主页，从头开始")
             Tales_within_the_sand.生息跳转()
         end
         -- if not wait(function()
@@ -1285,7 +1288,7 @@ Tales_within_the_sand.基地摆放物品 = function()
                     return true
                 end
                 if not findOne("生命值") then
-                    log.debug("已有部署")
+                    log(462, "已有部署")
                     i = i - 1
                     return true
                 end
@@ -1525,4 +1528,125 @@ Tales_within_the_sand.后舍对话 = function()
         end, 20) then
     end
     log("会聚之地兑换结束")
+end
+
+
+-- ===========================================
+--               生息演算
+--               重启锚点
+-- ===========================================
+Relaunch_anchor = {}
+
+Relaunch_anchor.生息跳转 = function()
+    path.跳转("首页")
+    -- Tales_within_the_sand.掉线状态判断()
+    tap("面板作战")
+    if not wait(function()
+            appearTap("主页长期探索", 0.2)
+            appearTap("主页长期探索_生息演算_全部主题", 0.2)
+            if appear("主页长期探索_生息演算_进入主题") then
+                tap("主页长期探索_生息演算_重启锚点")
+            end
+            appearTap("主页长期探索_生息演算_进入主题", 0.2)
+            if findOne("生息演算_重启锚点_主页进入开始建设") then return true end
+        end, 10) then
+        log(56)
+        path.跳过剧情()
+    end
+    if findOne("生息演算_重启锚点_主页进入开始建设") then return true end
+end
+
+
+Relaunch_anchor.商店购买 = function()
+    if not findAny({ "生息演算_重启锚点_主页进入开始建设", "生息演算繁荣馈赠判断" }) then
+        Relaunch_anchor.生息跳转()
+    end
+    log("生息重启锚点商店购买")
+    appear("生息演算_重启锚点_进入商店", 1)
+    if not wait(function()
+            if findOne("生息演算_重启锚点_商店界面") then return true end
+            appearTap("生息演算_重启锚点_进入商店", 0.1)
+        end, 5) then
+    end
+
+    disappear("正在提交反馈至神经", network_timeout)
+
+    -- 防止各种掉帧等导致卡在领取等页面
+    local 回到商店主页 = function()
+        if not wait(function()
+                if findOne("生息演算_重启锚点_商店界面") then return true end
+                tap("商店顶栏")
+                ssleep(0.2)
+            end, 10) then
+            return
+        end
+    end
+
+    if not appear("生息演算_重启锚点_商店界面", 1) then
+        log("未找到商店")
+        return
+    end
+    local 物品横间距, 物品纵间距 = scale(516), scale(242)
+    回到商店主页()
+    local t = os.time()
+    while true do
+        if os.time() - t > 5 * 60 then -- 任务总时长5分钟
+            log("商店任务超时")
+            return
+        end
+        for x = 0, 2 do -- 3*3商品进行购买
+            for y = 0, 2 do
+                log(x, y)
+                for i = 1, 7 do
+                    回到商店主页()
+                    local intX, intY = findMultiColor(scale(120) + x * 物品横间距, scale(515) + y * 物品纵间距,
+                        scale(386) + x * 物品横间距, scale(555) + y * 物品纵间距,
+                        "FFFFFF", scale(17) .. "|" .. scale(-2) .. "|575757|" .. scale(-100) .. "|" ..
+                        scale(-5) .. "|5A5A5A", 0, 0.85)
+                    if intX == -1 then break end
+                    if not wait(function()
+                            tap({ intX, intY })
+                            ssleep(.6)
+                            if findOne("购买物品面板") then return true end
+                        end, 1.8) then
+                    end
+                    if findOne("生息演算_重启锚点_商店界面") then
+                        log("未能进入商品，大概是识别错了")
+                        break
+                    end
+                    -- 点击购买
+                    if not wait(function()
+                            if findOne("生息演算繁荣馈赠商店最多") then
+                                tap("生息演算繁荣馈赠商店最多")
+                                ssleep(0.2)
+                            end
+                            if findOne("生息演算繁荣馈赠支付") then
+                                tap("生息演算繁荣馈赠支付")
+                                ssleep(0.5)
+                                disappear("正在提交反馈至神经", network_timeout)
+                            end
+                            if not findOne("购买物品面板") then return true end
+                        end, 5) then
+                    end
+                    --disappear("正在提交反馈至神经", network_timeout)
+                    if findOne("购买物品面板") then
+                        log("未能购买，大概是钱花完了")
+                        return true
+                    end
+                end
+                log("开始下一个商品")
+            end
+        end
+        回到商店主页()
+        ssleep(.5)
+        local sx = { screen.width * 0.8, screen.height * 0.5 }
+        local oricol = getColor(sx[1], sx[2])
+        path.swip_hd_shop()
+        ssleep(.5)
+        if getColor(sx[1], sx[2]) == oricol then
+            log("大概滑动到底了吧~")
+            return true
+        end
+    end
+    return true
 end
