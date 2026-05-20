@@ -5415,7 +5415,6 @@ path.主线 = function(x)
                         return true
                     end
                     findTap("前往章节")
-                    ssleep(1)
                 end
                 tap({ wa_x, wa_y })
                 ssleep(.5)
@@ -5488,7 +5487,7 @@ path.主线 = function(x)
         end
     end
     -- 10秒内需要完成章节/环境切换
-    auto(p, nil, 10, 10)
+    auto(p, nil, 20, 20)
 
     path.开始游戏(x)
 end
