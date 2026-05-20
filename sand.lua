@@ -227,8 +227,10 @@ Tales_within_the_sand.掉线状态判断 = function()
     if findOne("生息演算_其他界面1") then
         return 沙洲遗闻()
     end
-    if findOne("主页长期探索_生息演算") then
-        tap("主页长期探索_生息演算")
+    if findOne("主页长期探索_生息演算_沙洲遗闻") then
+        tap("主页长期探索_生息演算_沙洲遗闻")
+        ssleep(1)
+        tap("主页长期探索_生息演算_进入主题")
         return 沙洲遗闻()
     end
 
@@ -1072,8 +1074,8 @@ end
 Tales_within_the_sand.连续跳过 = function()
     ssleep(1)
     log("沙洲遗闻")
-    if findOne("主页长期探索_生息演算") then
-        tap("主页长期探索_生息演算", 0.1)
+    if findOne("主页长期探索_生息演算_沙洲遗闻") then
+        tap("主页长期探索_生息演算_沙洲遗闻", 0.1)
     end
     if not findOne("生息底栏烹饪按钮") then
         log("非游戏内")
@@ -1537,6 +1539,99 @@ end
 --               重启锚点
 -- ===========================================
 Relaunch_anchor = {}
+Relaunch_anchor_firsttime = true
+
+重启锚点 = function()
+    log("重启锚点开始")
+    if findOne("主页长期探索_生息演算_重启锚点") then
+        tap("主页长期探索_生息演算_重启锚点", 0.1)
+    end
+    if findOne("生息演算_重启锚点_基地图标") then
+        log("检测到在游戏内")
+        tap("生息演算左上角返回")
+        appear("生息演算_重启锚点_主页进入开始建设")
+    end
+    if not findOne("生息演算_重启锚点_主页进入开始建设") then
+        log.warn("未找到主页，从头开始")
+        Relaunch_anchor.生息跳转()
+    end
+    Tales_within_the_sand.掉线状态判断()
+    if Tales_within_the_sand.检查代币数量() then
+        return true
+    end
+
+    Relaunch_anchor.开始演算(sand_mode)
+end
+
+Relaunch_anchor.开始演算 = function(sand2_mode)
+    log("开始演算")
+    if sand2_mode == 0 then
+        Relaunch_anchor.ra_15()
+    else
+        path.跳转("首页")
+    end
+end
+
+Relaunch_anchor.ra_15 = function()
+    log("重复刷RA-15")
+    if findOne("生息演算_重启锚点_基地图标") then
+        if Relaunch_anchor_firsttime then
+            appeartap("生息演算_重启锚点_基地图标", 3)
+            appeartap("生息演算左上角返回", 3)
+            appeartap("生息演算_重启锚点_大地图左下ra15", 3)
+        else
+            appeartap("生息演算_重启锚点_大地图正中ra15", 3)
+        end
+        appeartap("生息演算_重启锚点_开启建设", 3)
+        appeartap("生息演算_重启锚点_战术倾向", 3)
+        appeartap("生息演算_重启锚点_战术倾向确认选择", 3)
+        appeartap("生息演算_重启锚点_干员招募", 3)
+        appeartap("生息演算_重启锚点_确认招募", 3)
+        appeartap("生息演算_重启锚点_确认", 3)
+        appeartap("生息演算_重启锚点_开启建设", 3)
+        appear("生息演算_重启锚点_剧情")
+        if not wait(function()
+                if findOne("生息演算_重启锚点_战斗退出") then return true end
+                Tap("生息演算_重启锚点_战斗加速", 0.1)
+            end, 10) then
+        end
+        if sand2_fullbuff then
+            sx_deploy13(point.生息演算_重启锚点_作战关卡[RA15], 2)
+        else
+            sx_deploy7(point.生息演算_重启锚点_作战关卡[RA15], 2)
+        end
+        appearTap("两倍速", 3)
+        appearTap("生息演算_重启锚点_战斗任务可领取", 3)
+        appearTap("生息演算_重启锚点_战斗任务2绿", 3)
+        appearTap("生息演算_重启锚点_战斗任务确认领取", 3)
+        if not wait(function()
+                if findOne("生息演算_重启锚点_战斗任务2红") then return true end
+                Tap("生息演算_重启锚点_战斗任务可领取", 0.2)
+            end, 1) then
+        end
+        if findOne("生息演算_重启锚点_战斗退出") then
+            tap("生息演算_重启锚点_战斗退出")
+        else
+            tap("生息演算_重启锚点_战斗任务可领取")
+            appearTap("生息演算_重启锚点_战斗退出", 3)
+        end
+        appearTap("生息演算_重启锚点_确认终止", 3)
+        if not wait(function()
+                if findOne("生息演算_重启锚点_完成建设") then return true end
+                Tap("生息演算_重启锚点_完成建设", 0.2)
+            end, 1) then
+        end
+
+
+        --完成建设界面 ocr得分
+
+
+        appearTap("生息演算_重启锚点_完成建设", 3)
+        Relaunch_anchor_firsttime = false
+    end
+end
+
+
 
 Relaunch_anchor.生息跳转 = function()
     path.跳转("首页")
@@ -1557,6 +1652,47 @@ Relaunch_anchor.生息跳转 = function()
     if findOne("生息演算_重启锚点_主页进入开始建设") then return true end
 end
 
+Relaunch_anchor.掉线状态判断 = function()
+    log("生息掉线检测")
+
+    if findOne("主页长期探索_生息演算_重启锚点") then
+        tap("主页长期探索_生息演算_重启锚点")
+        ssleep(1)
+        tap("主页长期探索_生息演算_进入主题")
+        return 重启锚点()
+    end
+
+    if findOne("生息演算关卡左上角退出") then
+        -- 不清楚某些情况会没结束的
+        if not wait(function()
+                if findOne("生息演算_重启锚点_基地图标") then
+                    return true
+                end
+                appearTap("生息演算关卡左上角退出", 0.1)
+                tap("生息演算_确认按钮")
+            end, 20) then
+        end
+        return 重启锚点()
+    end
+    if findOne("生息演算_重启锚点_开始行动") then
+        tap("生息演算_全局_返回")
+        return 重启锚点()
+    end
+    if findAny({
+            "开始唤醒", "bilibili_framelayout_only", "framelayout_only",
+            "手机验证码登录", "生息演算_游戏设置页面", "生息演算_游戏设置弹窗",
+        }) then
+        path.跳转("首页")
+        return 重启锚点()
+    end
+    --[[if not findAny({ "生息演算主页进入", "生息底栏烹饪按钮", "沙洲遗闻开启今日", }) then
+        -- 未知页面
+        --snapShot("/mnt/sdcard/test.png")
+        restartapp(appid)
+        path.跳转("首页")
+        return 重启锚点()
+    end]]
+end
 
 Relaunch_anchor.商店购买 = function()
     if not findAny({ "生息演算_重启锚点_主页进入开始建设", "生息演算繁荣馈赠判断" }) then
@@ -1650,4 +1786,93 @@ Relaunch_anchor.商店购买 = function()
         end
     end
     return true
+end
+
+
+-- 生息干员摆放
+sx_deploy7 = function(deploy_table, number)
+    local number = number or 2
+    for i = 1, number do
+        if not wait(function()
+                if findOne("干员费用够列表1") then return true end
+                if not findOne("生命值") then
+                    log("没找到生命值，继续等待")
+                end
+            end, 30) then
+            return false
+        end
+        if i > 3 then i = 3 end
+        wait(function()
+            tap("干员费用够列表1")
+            disappear("干员费用够列表1", 0.5)
+
+            if i == 1 then
+                Deploy7(7, deploy_table[i], 7)
+            elseif i == 2 then
+                Deploy7(1, deploy_table[i], 7)
+            end
+
+
+            if i == 1 then
+                if not appear("干员部署_黄", 5) then return true end
+            elseif i == 2 then
+                if not appear("干员部署_2蓝", 8) then return true end
+            elseif i == 3 then
+                if not appear("干员部署_蓝", 5) then return true end
+            end
+        end, 20)
+    end
+end
+
+sx_deploy13 = function(deploy_table, number)
+    local number = number or 2
+    for i = 1, number do
+        if not wait(function()
+                if findOne("干员费用够列表1") then return true end
+                if not findOne("生命值") then
+                    log("没找到生命值，继续等待")
+                end
+            end, 30) then
+            return false
+        end
+        if i > 3 then i = 3 end
+        wait(function()
+            tap("干员费用够列表1")
+            disappear("干员费用够列表1", 0.5)
+
+            if i == 1 then
+                Deploy7(13, deploy_table[i], 13)
+            elseif i == 2 then
+                Deploy7(1, deploy_table[i], 13)
+            end
+
+
+            if i == 1 then
+                if not appear("干员部署_黄", 5) then return true end
+            elseif i == 2 then
+                if not appear("干员部署_2蓝", 8) then return true end
+            elseif i == 3 then
+                if not appear("干员部署_蓝", 5) then return true end
+            end
+        end, 20)
+    end
+end
+
+-- src: 从右数第几个干员
+-- dst: 目标位置，格式{x,y,direction} direction: 上1 右2 下3 左4
+-- total: 当前有几个干员，不同干员数影响干员位置
+Deploy7 = function(src, dst, total)
+    total = total or 1
+    local max_op_width = scale(178) --  in loose mode, each operator's width
+    local x1
+    if total * max_op_width > screen.width then
+        -- tight
+        max_op_width = screen.width // total
+        x1 = src * max_op_width - max_op_width // 2
+    else
+        -- loose
+        -- x1 = screen.width - (total - src) * max_op_width - max_op_width // 2
+        x1 = screen.width - src * max_op_width + max_op_width // 2
+    end
+    deploy(x1, dst[1], dst[2], dst[3])
 end
