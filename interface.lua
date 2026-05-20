@@ -1495,15 +1495,31 @@ show_extra_ui = function()
     addTitle(layout, "生息演算")
 
     newRow(layout)
-    addButton(layout, nil, "沙洲遗闻刷点数启动",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='生息沙洲遗闻';extra_mode_multi=true;lock:remove(main_ui_lock)"))
-    addButton(layout, nil, "沙洲遗闻自动商店购买",
-        make_jump_ui_command(layout, nil,
-            "extra_mode='生息沙洲遗闻商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    ui.addCheckBox(layout, "sx_szyw", "沙洲遗闻", false)
+    ui.addCheckBox(layout, "sx_cqmd", "重启锚点", true)
     newRow(layout)
-    addTextView(layout, "刷点数模式")
-    ui.addSpinner(layout, "sand_mode", {
+    addTextView(layout, "调试选项")
+    newRow(layout)
+    ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
+    ui.addCheckBox(layout, "sand_noincrease_stop", "代币不增加则停止", true)
+    newRow(layout)
+    addButton(layout, nil, "生息刷点数启动",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='生息演算任务';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    addButton(layout, nil, "生息自动商店购买",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='生息演算商店';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+
+    ui.addTabView(layout, "extra_sx")
+
+    local sand_layout_沙洲遗闻 = "extra_sx_zl1"
+    ui.addTab("extra_sx", sand_layout_沙洲遗闻, "沙洲遗闻")
+    newRow(sand_layout_沙洲遗闻)
+
+
+    newRow(sand_layout_沙洲遗闻)
+    addTextView(sand_layout_沙洲遗闻, "刷点数模式")
+    ui.addSpinner(sand_layout_沙洲遗闻, "sand_mode", {
         "标准:从4-7天开始循环(手动过1-3天)",
         "标准:从0开始,自动过1-3天,4-7天循环(建议这个)",
         -- "注意：如果无法过第三天的战斗,那么手动打一下,然后选4-7循环",
@@ -1511,14 +1527,24 @@ show_extra_ui = function()
         "休养:手动开完奇遇后升至三本198木",
         "休养:三本后荧光棒(普难100天+也可,不删档,3天循环)",
         "休养:持续下一天(不回档不删档)",
-    }, 4)
+    }, 1)
 
-    newRow(layout)
-    addTextView(layout, "调试选项")
-    ui.addCheckBox(layout, "sand_nostop", "不判断代币数量", false)
-    ui.addCheckBox(layout, "sand_noincrease_stop", "代币不增加则停止", true)
-    newRow(layout)
-    ui.addCheckBox(layout, "skip_make", "跳过合成种植箱", false)
+    newRow(sand_layout_沙洲遗闻)
+    addTextView(sand_layout_沙洲遗闻, "调试选项")
+    newRow(sand_layout_沙洲遗闻)
+    ui.addCheckBox(sand_layout_沙洲遗闻, "skip_make", "跳过合成种植箱", false)
+
+    ---------------------------------------------------------------------
+    local sand_layout_重启锚点 = "extra_sx_zl2"
+    ui.addTab("extra_sx", sand_layout_重启锚点, "重启锚点")
+    newRow(sand_layout_重启锚点)
+
+    addTextView(sand_layout_重启锚点, "刷点数模式")
+    ui.addSpinner(sand_layout_重启锚点, "sand2_mode", {
+        "重复刷RA-15(圣聆初雪)",
+    }, 0)
+    newRow(sand_layout_重启锚点)
+    addTextView(sand_layout_重启锚点, "刷点数模式没写完，只写了商店")
     ---------------------------------------------------------------------
     addTitle(layout, "隐秘战线(1080p)")
     addInfo(layout, "十四章小游戏")

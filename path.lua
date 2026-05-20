@@ -8476,26 +8476,36 @@ path.跳过剧情 = function()
     tap({ txt.r, txt.b })
 end
 
-path.生息沙洲遗闻 = function()
-    if sand_mode == 3 then
-        Tales_within_the_sand.六天奇遇循环()
-        Tales_within_the_sand.下一天()
-        Tales_within_the_sand.下一天()
-        Tales_within_the_sand.下一天()
-        Tales_within_the_sand.连续跳过()
-        return
-    elseif sand_mode == 4 then
-        Tales_within_the_sand.连续跳过()
-        return
-    elseif sand_mode == 5 then
-        Tales_within_the_sand.循环下一天()
-        return
+path.生息演算任务 = function()
+    if sx_szyw then
+        if sand_mode == 3 then
+            Tales_within_the_sand.六天奇遇循环()
+            Tales_within_the_sand.下一天()
+            Tales_within_the_sand.下一天()
+            Tales_within_the_sand.下一天()
+            Tales_within_the_sand.连续跳过()
+            return
+        elseif sand_mode == 4 then
+            Tales_within_the_sand.连续跳过()
+            return
+        elseif sand_mode == 5 then
+            Tales_within_the_sand.循环下一天()
+            return
+        end
+        沙洲遗闻()
     end
-    沙洲遗闻()
+    if sx_cqmd then
+        log("咕咕")
+    end
 end
 
-path.生息沙洲遗闻商店 = function()
-    Tales_within_the_sand.商店购买()
+path.生息演算商店 = function()
+    if sx_szyw then
+        Tales_within_the_sand.商店购买()
+    end
+    if sx_cqmd then
+        Relaunch_anchor.商店购买()
+    end
 end
 
 path.生息沙洲遗闻wrapper = function()
