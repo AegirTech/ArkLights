@@ -1353,7 +1353,7 @@ swipu = function(dis)
             }
             local start = 0
             local duration = 150
-            local interval = 50
+            local interval = 250 --尝试给右移的时候 延迟加多一点，可能能够解决超时问题
             local end_delay = 50
             local flipy = swipu_flipy or 0
             local flipx = swipu_flipx or 0

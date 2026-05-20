@@ -5312,6 +5312,7 @@ path.主线 = function(x)
             log("剧情关教学关")
             if findOne("作战列表" .. x) then return true end
         end
+        ssleep(1) --尝试加上延迟，避免出现导航超时
         tap("作战列表" .. x)
         if appear("开始剧情", 1) then
             if not wait(function()
@@ -5418,7 +5419,7 @@ path.主线 = function(x)
                 end
                 tap({ wa_x, wa_y })
                 ssleep(.5)
-            end) then
+            end, 5) then --默认的2s可能太短了  在【章节选择列表】进入到关卡列表的时候，可能超时了
             log.warn("跳转失败4")
             return
         end
@@ -5484,6 +5485,22 @@ path.主线 = function(x)
         for i = 1, next_tap_index do
             tap("当前进度列表右")
             ssleep(1.5)
+        end
+        -- 15+ 章特殊处理: 这里 next_tap_index > 0, 表示前面已经 tap 了 N 次 "当前进度列表右",
+        -- 把章节卡片从 14 章翻到了 15/16/17 章。
+        --
+        -- 此时 point.lua 里 当前进度列表 数组只到 index 15 (即 14 章), 没有 16/17/18 的点位,
+        -- 所以下面那个 auto(p, ...) 的 p 表里只有 "当前进度列表15" 这一个 key,
+        -- 翻到 15+ 章后这个 key 永远不会再命中, auto 会闷等 20s 超时, 然后导航失败。
+        --
+        -- 解决: 翻到目标章节后直接调 go() 完成 swip + tap(作战列表), 然后进 开始游戏。
+        -- 不需要再走下面的 auto, 因为 auto 在这种场景下没有可命中的 state。
+        --
+        -- 如果未来给 当前进度列表 数组补了 15/16/17 章的多点找色, 并且 chapter_index 不再被
+        -- 强制覆盖为 15, 这段可以删除, 让下面的 auto 统一处理。
+        if next_tap_index > 0 then
+            go()
+            return path.开始游戏(x)
         end
     end
     -- 10秒内需要完成章节/环境切换
