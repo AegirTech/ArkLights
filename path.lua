@@ -46,7 +46,7 @@ path.base = {
             启动界面卡住的时间 = time()
         end
         if time() - 启动界面卡住的时间 > 20 * 1000 then
-            log('检测该界面停留超过10s')
+            log.warn('检测该界面停留超过10s')
             if findOne('启动卡黑屏界面') then
                 toast('启动界面卡住超过了10s，准备重启游戏界面' .. appid)
                 exec('su root am force-stop  ' .. appid)
@@ -80,7 +80,7 @@ path.base = {
         end
         快速切号功能状态 = false
         if #username > 0 then
-            log(44)
+            log.debug()
             if not wait(function()
                     tap("账号左侧")
                     tap("账号")
@@ -88,25 +88,25 @@ path.base = {
                 end, 10) then
                 return
             end
-            log(45)
+            log.debug()
             if not wait(function()
                     wait(function() input("inputbox", username) end, 1)
-                    log(45.1)
+                    log.debug()
                     tap("okbutton")
                     -- appear("手机验证码登录")
                     if appear("手机验证码登录", 1) and not findOne("okbutton") then
                         return true
                     end
-                    log(45.2)
+                    log.debug()
                 end, 3) then
                 return
             end
-            log(46)
+            log.debug()
         end
         if not appear("手机验证码登录", 1) then return end
 
         if #password > 0 then
-            log(44)
+            log.debug()
             if not wait(function()
                     tap("账号左侧")
                     tap("密码")
@@ -115,29 +115,29 @@ path.base = {
                 end, 10) then
                 return
             end
-            log(45)
+            log.debug()
             -- if not appear('inputbox') then return end
             -- ssleep(1) -- 等待输入法弹出
             -- ssleep(.5) -- 等待输入法弹出
             if not wait(function()
                     wait(function() input("inputbox", password) end, 1)
-                    log(45.1)
+                    log.debug()
                     tap("okbutton")
                     -- appear("手机验证码登录")
                     if appear("手机验证码登录", 1) and not findOne("okbutton") then
                         return true
                     end
-                    log(45.2)
+                    log.debug()
                 end, 3) then
                 return
             end
-            log(46)
+            log.debug()
             -- appear("手机验证码登录")
         end
 
-        log(47)
+        log.debug()
         if not appear("手机验证码登录", 1) then return end
-        log(48)
+        log.debug()
 
         -- local login_error_times = 0
         wait(function(reset_wait_start_time)
@@ -183,7 +183,7 @@ path.base = {
                 40 * 60 * 1000) or
             (not table.includes({ "剿灭" }, fight_type) and
                 elapsed > 20 * 60 * 1000)
-        log(fight_timeout)
+        log.debug(fight_timeout)
         -- 超时跳过当前关
         if fight_timeout then
             local info = table.join(qqmessage, ' ') .. " [" .. cur_fight ..
@@ -235,7 +235,7 @@ path.base = {
                 end
 
                 if findOne("开始行动") and findOne("代理指挥开") then
-                    log(59)
+                    log.debug()
                     normal = true
                     return true
                 end
@@ -282,7 +282,7 @@ path.base = {
                         "手机验证码登录",
                     }) then
                     home = true
-                    log(60)
+                    log.debug()
                     return true
                 end
 
@@ -303,13 +303,13 @@ path.base = {
 
         log("回到首页")
         log("代理结束", cur_fight, "失败次数", fight_failed_times[cur_fight])
-        log(139, first_time_see_zero_star, zero_star)
+        log.debug(first_time_see_zero_star, zero_star)
         log("zero_star", zero_star)
         log("see_end", see_end)
         log("home", home)
         log("normal", normal)
         if zero_star or not see_end or home then
-            log("代理失败返回首页")
+            log.warn("代理失败返回首页")
 
             if not qqnotify_nofailedfight then
                 local info = table.join(qqmessage, ' ') .. " [" .. cur_fight ..
@@ -321,7 +321,7 @@ path.base = {
             end
             -- 一次代理失败直接认为无效：不行，因为可能是掉线造成的失败
             fight_failed_times[cur_fight] = max(0, fight_failed_times[cur_fight] or 0)
-            log(161)
+            log.debug()
             return path.跳转("首页")
         end
 
@@ -341,17 +341,17 @@ path.base = {
             return path.跳转("首页")
         end
 
-        log(89, fight_times, repeat_fight_mode)
+        log.debug(fight_times, repeat_fight_mode)
         if repeat_fight_mode then return path.开始游戏('') end
 
         -- current fight success
-        log(348, cur_fight, fight_tick, fight)
+        log.debug(cur_fight, fight_tick, fight)
         pre_fight = cur_fight
         fight_failed_times[cur_fight] = -3
         -- if same fight or same page fight
-        log(90)
+        log.debug()
         if fight == nil or #fight == 0 then
-            log("fight is empty, return to home")
+            log.warn("fight is empty, return to home")
             return
         end
 
@@ -466,7 +466,7 @@ path.bilibili_login = {
         appear("bilibili_username_inputbox")
     end,
     bilibili_username_inputbox = disable_game_up_check_wrapper(function()
-        log(149)
+        log.debug()
         -- 把输入法关了
         wait(function()
             if findOne("bilibili_login") then return true end
@@ -514,7 +514,7 @@ path.bilibili_login = {
     bilibili_change2 = function()
         check_login_frequency()
         disappear("bilibili_change2", 10)
-        log(271)
+        log.debug()
     end,
 
     B服安全验证320DPI = function()
@@ -527,7 +527,7 @@ path.bilibili_login = {
         --     ssleep(1)
         -- end
         path.bilibili_login.B服等待验证码弹窗加载()
-
+        log.debug('B服弹窗已加载')
         -- 这段有点屎，不应该放在主流程里，但是为了兼容先不动他
         local box = findOne("B服安全验证框")
         -- log("box", box)
@@ -548,7 +548,7 @@ path.bilibili_login = {
         if use_captcha and captcha_username then
             table.insert(choices, 1)
         end
-        log(154, 'choices', choices)
+        log.debug('choices', choices)
         local choice_map = {}
         choice_map[1] = "图鉴"
         choice_map[3] = "Aunly"
@@ -586,7 +586,7 @@ path.bilibili_login = {
                 })
                 tap(ft)
             end, 2) then
-            log("未找到b服提交按钮1")
+            log.warn("未找到b服提交按钮1")
             findTap("B服安全验证提交320DPI")
             tapIfCheckedColor({ 823, 605, "539FFE" }, { 823, 605, "539FFE" }, { 692, 552, "539FFE" })
         end
@@ -611,7 +611,7 @@ path.bilibili_login = {
         wait(function()
             if not findAny({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮", }) then
                 -- 这个log是阿点写的 不知道什么意思
-                log("B服安全验证提交未找到，可能提交成功")
+                log.warn("B服安全验证提交未找到，可能提交成功")
                 return true
             end
             ssleep(2)
@@ -644,7 +644,7 @@ path.bilibili_login = {
         end
     end,
     B服等待验证码弹窗加载 = function()
-        if not appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 10) then
+        if not appear({ "B服安全验证提交", "B服安全验证提交320DPI", "B服安全验证确认按钮" }, 5) then
             log("B服安全验证流程", "等待节点识别加载失败")
             if not checkPointColor({ 823, 605, "BAD9FF" }) then
                 log("B服安全验证流程", "弹窗加载失败")
@@ -704,7 +704,7 @@ path.login = {
     captcha = function() trySolveSlipCaptcha() end,
     ogame = true,
     username_inputbox = disable_game_up_check_wrapper(function()
-        log(589, login_time_history)
+        log.debug(login_time_history)
 
         -- 把输入法关了
         wait(function()
@@ -715,7 +715,7 @@ path.login = {
 
         -- 存在两个输入框时，输入帐密
         if findOne("username_inputbox") then
-            log(590)
+            log.debug()
             local input_box = findNodes(point["username_inputbox"])
             if type(input_box) == 'table' and #input_box == 2 then
                 if not username or #username == 0 or not password or #password == 0 then
@@ -724,7 +724,7 @@ path.login = {
                 end
                 wait(function() nodeLib.setText(input_box[1], username) end, 1)
                 wait(function() nodeLib.setText(input_box[2], password) end, 1)
-                log(591)
+                log.debug()
                 -- 同意登录
                 local checkbox = findNodes(point["login_checkbox"])
                 if type(checkbox) == 'table' and checkbox[#checkbox].checked == false then
@@ -740,7 +740,7 @@ path.login = {
         end
 
         ssleep(.5) -- checkbox 需要延时
-        log(626, login_time_history)
+        log.debug(login_time_history)
         -- if debug_mode then ssleep(1000) end
         -- 开始唤醒时已经check了
         -- check_login_frequency()
@@ -787,22 +787,6 @@ path.login_change = update(path.login, {
 }, nil, true)
 
 path.fallback = {
-    -- 阿米娅大头照左上角 = function()
-    --     -- 全屏点一遍
-    --     for w = 150, screen.width - 50, 50 do
-    --         if findAny(known) then return true end
-    --         for h = 50, screen.height - 50, 50 do
-    --             tap({ w, h })
-    --             back()
-    --         end
-    --     end
-    --     if appear({ "阿米娅大头照左上角", "阿米娅大头照左下角" }, 2) then
-    --         return path.fallback.阿米娅大头照左上角()
-    --     end
-    -- end,
-    -- 阿米娅大头照左下角 = function()
-    --     return path.fallback.阿米娅大头照左上角()
-    -- end,
     同意协议 = function()
         -- findTap({text = "下一步"})
 
@@ -882,6 +866,20 @@ path.fallback = {
     阿米娅 = function()
         for k, v in pairs(point.阿米娅右列表) do tap(v) end
         for k, v in pairs(point.阿米娅左列表) do tap(v) end
+        -- 教程
+        if not wait(function()
+                tap("卫戍协议物资调配处")
+                ssleep(.2)
+                tap("卫戍协议准备就绪")
+                ssleep(.2)
+                tap("卫戍协议物资调配处第一个干员")
+                ssleep(.2)
+                tap("卫戍协议物资调配处道具")
+                ssleep(.2)
+                if findOne("教程关闭") or findOne("卫戍协议物资调配处道具") then return true end
+            end, 20, .5) then
+            toast("教程卡住了")
+        end
         tap("返回")
         if appear("阿米娅", 5) then
             ssleep(1)
@@ -934,13 +932,13 @@ path.fallback = {
                 -- 曾出现 返回确认 误判为 活动公告返回
                 -- 返回确认3按back太快弹不出来
                 if findOne("侧边栏收起") then
-                    log(236)
+                    log.debug()
                     tap("侧边栏收起")
                     ssleep(0.5)
                 end
 
                 local timeout = min(2, (time() - start_time + 1000) / 1000 * 2 / 10)
-                log(237, timeout)
+                log.debug(timeout)
                 -- timeout = 0
                 x = appear({
                     "返回确认", "返回确认3", "主题曲已开放", "回归返回",
@@ -965,6 +963,10 @@ path.fallback = {
     end,
     争锋频道首页 = function()
         tap("争锋频道回到游戏首页")
+        ssleep(0.6)
+    end,
+    争锋频道返回2 = function()
+        tap("争锋频道返回2")
         ssleep(0.6)
     end,
     回归返回 = function()
@@ -1019,7 +1021,7 @@ path.fallback = {
     end,
     国庆签到返回 = function() return path.fallback.活动签到返回() end,
     返回确认 = function()
-        log(191)
+        log.debug()
         leaving_jump = false
         if not wait(function()
                 if findOne("进驻总览") then zoom() end
@@ -1079,12 +1081,6 @@ path.fallback = {
         -- end, 10) then stop(217) end
     end,
     限时幸运签 = function()
-        if findOne("新春限时签到2025") then
-            return path.fallback.新春限时签到2025()
-        end
-        if findTap("集成战略回顾水月") then
-            return path.fallback.签到返回()
-        end
         if findTap("促融共竞目标板领取") then
             disappear("促融共竞目标板领取", 3)
             ssleep(.5)
@@ -1119,26 +1115,18 @@ path.fallback = {
         disappear("限时幸运签", 10)
         return path.fallback.签到返回()
     end,
-    星语共愿 = function()
-        wait(function()
-            tap("星语共愿领取1")
-            ssleep(.2)
-            tap("星语共愿领取2")
-            ssleep(.2)
-        end, 2)
+    七周年限时幸运签 = function()
+        tapAll(point.限时幸运签列表)
+        ssleep(.25)
+        tap("限时幸运签抽取")
+        disappear("七周年限时幸运签", 10)
         return path.fallback.签到返回()
     end,
-    神州返回 = function()
+    鸣羽颂新领取 = function()
         wait(function()
-            tap("神州领取1")
-            ssleep(.2)
-            tap("神州领取2")
-            ssleep(.2)
-        end, 2)
-        wait(function()
-            tap("神州返回")
-            if appear("面板", 1) then return true end
-        end, 5)
+            tap("鸣羽颂新领取")
+        end, 2, .2)
+        return path.fallback.签到返回()
     end,
     -- 新春限时签到2025 = function()
     --     wait(function()
@@ -1196,6 +1184,11 @@ path.fallback = {
     --         if appear("面板", 1) then return true end
     --     end, 5)
     -- end,
+    寻访赠送十连领取 = function()
+        tap("寻访赠送十连领取")
+        ssleep(.5)
+        return path.fallback.签到返回()
+    end,
     端午签到返回 = function()
         wait(function()
             tap("端午签到左")
@@ -1205,13 +1198,6 @@ path.fallback = {
         end, 1)
         wait(function()
             tap("端午签到返回")
-            if appear("面板", 1) then return true end
-        end, 5)
-    end,
-    夏日嘉年华领取页面 = function()
-        wait(function()
-            tap("夏日嘉年华领取按钮")
-            tap("夏日嘉年华返回")
             if appear("面板", 1) then return true end
         end, 5)
     end,
@@ -1233,32 +1219,36 @@ path.fallback = {
         -- disappear("祈愿牌确认", 10)
         return path.fallback.签到返回()
     end,
-    -- 新年祝福返回 = function()
-    --     wait(function()
-    --         appearTap("新年祝福收下", 3)
-    --         appearTap("获得物资", 3)
-    --     end, 3)
-    --     wait(function()
-    --         tap("新年祝福签到")
-    --     end, 1.5)
-    --     wait(function()
-    --         if findAny({ "新年祝福返回", "面板" }) then return true end
-    --         tap("开包skip")
-    --     end, 2)
-    --     wait(function()
-    --         for h = 200, 951, 150 do
-    --             if findOne("新年祝福返回") then
-    --                 tap({ scale(1300), scale(h) })
-    --                 ssleep(.5)
-    --             end
-    --         end
-    --         tap("开包skip")
-    --         if findAny({ "新年祝福返回", "面板" }) then return true end
-    --     end, 10)
-    -- end,
+
     五周年专享月卡返回 = function()
         wait(function()
             tap("五周年专享月卡领取")
+        end, 2)
+        return path.fallback.签到返回()
+    end,
+    回望泰拉限时登录签到界面 = function()
+        wait(function()
+            tap("回望泰拉限时登录领取")
+        end, 2)
+        return path.fallback.签到返回()
+    end,
+    春节签到2026返回 = function()
+        --右边一列签到
+        wait(function()
+            for h = 200, 951, 150 do
+                if findOne("春节签到2026返回") then
+                    tap({ scale(1300), scale(h) })
+                    ssleep(.5)
+                end
+            end
+            tap("开包skip")
+            if findAny({ "春节签到2026返回", "面板" }) then return true end
+        end, 10)
+        return path.fallback.签到返回()
+    end,
+    春节签到2026 = function()
+        wait(function()
+            tap("春节签到2026收下祝福")
         end, 2)
         return path.fallback.签到返回()
     end,
@@ -1290,6 +1280,7 @@ path.fallback = {
     愚人节窗口关闭 = function()
         tap("愚人节窗口关闭")
     end,
+
     相谈室活动左上角返回 = function()
         tap("相谈室活动左上角返回")
         ssleep(.3)
@@ -1302,10 +1293,10 @@ path.fallback = {
             "抽签返回", "战略返回", '限时开放许可', "限时幸运签",
             "线索传递界面", "阿米娅", "可露希尔", "生日设置返回", "愚人节剧情检测", "愚人节窗口关闭",
             -- "新春限时签到2025"
-            '五周年专享月卡返回',
+            '五周年专享月卡返回', '回望泰拉限时登录签到'
             --"新年祝福返回", "国庆签到返回", '感谢庆典返回',
         }, .1)
-        log(251, x)
+        log.debug(x)
         if x then return tap(path.fallback[x]) end
         -- back()
         tap("返回")
@@ -1324,7 +1315,7 @@ path.限时活动 = function(retry)
     retry = retry or 0
     if retry > 10 then return end
     path.跳转("首页")
-    log(240, retry)
+    log.debug("第" .. retry .. "次")
 
     local p = findAny({
         "面板限时活动", "面板限时活动2", "面板限时活动3",
@@ -1337,8 +1328,8 @@ path.限时活动 = function(retry)
             "限时幸运签", "月饼", '产业合作洽谈会',
             '红包', "祈愿牌返回", '五周年专享月卡返回',
             "生日设置返回", '国庆签到返回', '感谢庆典返回',
-            -- "新春限时签到2025",
-
+            "春节签到2026", "七周年限时幸运签",
+            '回望泰拉限时登录签到'
         })
         if findOne('红包') then
             wait(function()
@@ -1398,9 +1389,9 @@ path.限时活动 = function(retry)
             return
         end
     end
-    log(241)
+    log.debug()
     path.跳转("首页")
-    log(242)
+    log.debug()
     -- 需要点时间才能找到 面板限时活动2 与 单抽
     if not wait(function()
             if notify_sub_expire and not 月卡到期状态 and findAny({ "月卡即将到期", "月卡即将到期2" }) then
@@ -1507,7 +1498,7 @@ path.基建收获 = function()
         }, 3)
         -- 没看到灯泡或线索提示
         if not x then
-            log(448)
+            log.debug()
             leaving_jump = true
             return
         end
@@ -1524,7 +1515,7 @@ path.基建收获 = function()
         end
     end
 
-    log(130)
+    log.debug()
     wait(function()
         if not findOne("进驻总览") then return true end
         tap("点击全部收取2")
@@ -1532,26 +1523,26 @@ path.基建收获 = function()
         tap(x)
         ssleep(.1)
     end, 10)
-    log(131)
+    log.debug()
 
     wait(function()
-        log(132)
+        log.debug()
         if findAny({ "小蓝圈", "基建收获干员休整", "进驻总览", "训练室完成小蓝圈", "会客室线索小蓝圈" }) then return true end
-        log(133)
+        log.debug()
         tap("点击全部收取2")
         ssleep(.2)
     end, 10)
     log(findAny({ "小蓝圈", "基建收获干员休整", "进驻总览" }))
-    log(134)
+    log.debug()
 
     if false and findOne("小蓝圈") and findOne("训练室") then
         tap("点击全部收取2")
         ssleep(.2)
-        log(135)
+        log.debug()
         zoom()
         if not wait(function()
                 tap("训练室")
-                log(678)
+                log.debug()
                 disappear("训练室", 1)
                 if not findAny({ "进驻信息", "进驻信息选中" }) then
                     return true
@@ -1655,7 +1646,9 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
         首页 = "面板",
         干员 = "干员界面",
         采购中心 = "可露希尔推荐",
-        任务 = "任务第一个",
+        任务 = function()
+            return findAny({ "任务第一个", "任务第一个2" })
+        end,
         终端 = "主页",
         邮件 = function() return findOne("邮件信封") and findOne("返回3") end,
     }
@@ -1685,7 +1678,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
         return true
     end
 
-    log(218, x, home_target)
+    log.debug(x, home_target)
 
     local bypass = function(t)
         log("bypass 基建返回确认", prev_jump)
@@ -1706,7 +1699,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
         面板 = function()
             p["主页"] = nil
             tap(plain[x])
-            log(208)
+            log.debug()
             if x == "基建" and appear("语音资源未下载", 1) then
                 tap("左取消")
             end
@@ -1716,7 +1709,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
                 "单选确认框", "返回3", "阿米娅", "生日设置返回",
                 -- "新春限时签到2025"
             }, timeout)
-            log(209)
+            log.debug()
         end,
         主页 = function()
             if not wait(function()
@@ -1802,9 +1795,9 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
     stay_in_dorm_once = x == "基建"
 
     -- 1分钟跳转失败
-    log(230, target, x)
+    log.debug(target, x)
     auto(p, path.fallback, 0, default_auto_timeout_second, true)
-    log(231)
+    log.debug()
 
     -- post processing especially for 基建
     if x == "基建" and not disable_postprocess then zoom() end
@@ -1820,7 +1813,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
 
     -- disable repeat fight after any jump complete
     repeat_fight_mode = false
-    log(233)
+    log.debug()
 end
 
 start_time = parse_time("202101010400")
@@ -1987,7 +1980,7 @@ path.宿舍清空 = function()
         end
 
         if not appear({ "进驻信息", "进驻信息选中" }, 5) then
-            log("621")
+            log.debug()
             return
         end
         path.基建确认进入设施()
@@ -2065,7 +2058,7 @@ path.宿舍换班 = function()
             end
         end
 
-        log(1923)
+        log.debug()
         进入宿舍并清空干员()
         local operator
         -- 根据心情阈值选择
@@ -2074,12 +2067,12 @@ path.宿舍换班 = function()
         operator = table.filter(operator, function(x)
             return math.abs(x[3]) < shift_min_mood + 1
         end)
-        log(5819, operator, shift_min_mood)
+        log.debug(operator, shift_min_mood)
         if i < 4 and not not_use_ocr and fiammetta_used == false then
             local char_after_fiammetta
             if table.any(operator,
                     function(x)
-                        if table.includes({ "但书", "清流" }, x[6]) then
+                        if table.includes({ "可露希尔", "清流", "但书" }, x[6]) then
                             char_after_fiammetta = x[4]
                             return true
                         end
@@ -2091,7 +2084,7 @@ path.宿舍换班 = function()
                 -- 取消选择需要被换心情的干员,防止识别错误
                 tap("干员选择列表1")
                 ssleep(.2)
-                log(10001)
+                log.debug()
                 if chooseOperator("肥鸭") then
                     ssleep(.4)
                     tap("干员选择列表1") -- 这时候是肥鸭,干员,需要把他们换个顺序
@@ -2110,7 +2103,7 @@ path.宿舍换班 = function()
                     ssleep(.2)
                     fiammetta_used = true
                     isCharExsit["肥鸭"] = true
-                    log(10005)
+                    log.debug()
                     if not wait(function()
                             if findOne("筛选") then return true end
                             tap("宿舍列表" .. i)
@@ -2120,14 +2113,14 @@ path.宿舍换班 = function()
                     进入宿舍并清空干员()
                     operator = {}
                     discover(operator, {}, 1, true)
-                    log(7818, operator, shift_min_mood)
+                    log.debug(operator, shift_min_mood)
                     operator = table.filter(operator, function(x)
                         return math.abs(x[3]) < shift_min_mood + 1
                     end)
                 else
                     fiammetta_used = true -- 找不到也当做用过了
                     ssleep(.1)
-                    log("未找到满心情菲亚梅塔")
+                    log.warn("未找到满心情菲亚梅塔")
                     if findOne("基建心情降序", .85) then tap("基建心情降序") end
                     ssleep(.3)
                 end
@@ -2163,7 +2156,7 @@ path.宿舍换班 = function()
             return
         end
 
-        log(842, #operator)
+        log.debug(#operator)
 
         确认干员选择()
     end
@@ -2458,7 +2451,7 @@ path.基建信息获取 = function(retry)
 
     releaseCapture()
     log(powerStation, tradingStation, manufacturingStation, dormitoryStation)
-    log(1216, tradingStationLevel, manufacturingStationLevel, powerStationLevel,
+    log.debug(tradingStationLevel, manufacturingStationLevel, powerStationLevel,
         dormitoryLevel)
     local retry = retry or 0
     if retry > 2 then return end
@@ -2467,7 +2460,7 @@ path.基建信息获取 = function(retry)
         return path.基建信息获取(retry + 1)
     end
     if #tradingStationLevel + #manufacturingStationLevel + #powerStationLevel < 9 then
-        log("基建信息获取可能失败2")
+        log.warn("基建信息获取可能失败2")
         return path.基建信息获取(retry + 3)
     end
 end
@@ -2566,13 +2559,13 @@ path.制造换班 = function(trading)
             -- 确认类型
             -- 计算赤金站数量，用于贸易站技能计算
             if good == "赤金站" then goldStationNum = goldStationNum + 1 end
-            log(854, good)
+            log.debug(good)
             if not good then
                 log("not support", i)
                 return
             end
             type = good2type[good]
-            log(524, type)
+            log.debug(type)
             if not disappear("制造站补货通知", 10) then return end
 
             -- 制造站进入干员列表
@@ -2589,13 +2582,13 @@ path.制造换班 = function(trading)
             good = findAny({ "龙门商法", "开采协力" }) or "龙门商法"
 
             -- 确认类型
-            log(855, good)
+            log.debug(good)
             if not good then
                 log("not support", i)
                 return
             end
             type = good2type[good]
-            log(525, type)
+            log.debug(type)
             if not disappear("制造站补货通知", 10) then return end
 
             -- 贸易站进入干员列表
@@ -2618,11 +2611,11 @@ path.制造换班 = function(trading)
                 end
                 tap("清空选择")
             end, 5) then
-            log(1037)
+            log.debug()
             return
         end
 
-        log(1217, tradingStationLevel, manufacturingStationLevel, powerStationLevel,
+        log.debug(tradingStationLevel, manufacturingStationLevel, powerStationLevel,
             dormitoryLevel)
 
         local stationType = trading and "贸易站" or "制造站"
@@ -2724,7 +2717,7 @@ path.总览换班 = function()
     end
 
     path.控制中枢换班()
-    log(1034)
+    log.debug()
 
     path.跳转("基建")
     if not wait(function()
@@ -2744,7 +2737,7 @@ path.总览换班 = function()
         end, 10) then
         return
     end
-    log(1035)
+    log.debug()
 
     if appearTap("总览换班锁定编辑", 1.5) then
         ssleep(.5)
@@ -2774,7 +2767,7 @@ path.总览换班 = function()
 
     local f2 = function() -- 迷迭香配套换班,换上塑心爱丽丝车尔尼
         -- 进入最后一间宿舍
-        log(800, "迷迭香宿舍换班")
+        log.debug("迷迭香宿舍换班")
         if not wait(function()
                 if findOne("确认蓝") then return true end
                 if findOne("基建总览非工作区") then
@@ -2828,7 +2821,7 @@ path.总览换班 = function()
                 end
                 tap("清空选择")
             end, 5) then
-            log(1037)
+            log.debug()
             return
         end
 
@@ -2836,7 +2829,7 @@ path.总览换班 = function()
 
         local operator = {}
         discover(operator, {}, 1, true)
-        log("1905", operator)
+        log.debug(operator)
         operator = table.filter(operator, function(x) return x[3] >= 0 end)
         operator = map(function(x) return x[4] end, operator)
         operator = table.slice(operator, 1, limit)
@@ -2876,7 +2869,7 @@ path.总览换班 = function()
         -- local timeout = (first_look and .5 or .25)
         local timeout = .25
         local p
-        log(800, "普通宿舍换班")
+        log.debug("普通宿舍换班")
         总次数 = 总次数 + 1
         -- first_look = false
         -- 至少做两次"入驻干员"检测，慢机只靠timeout不够可能，强制加一次
@@ -2976,7 +2969,7 @@ path.总览换班 = function()
             f2()
         else
             if findOne("宿舍未满员列表" .. i) then
-                log(2687, "换第" .. i .. "间宿舍")
+                log.debug("换第" .. i .. "间宿舍")
                 wait(function()
                     if findOne("确认蓝") then return true end
                     tap("宿舍未满员列表" .. i)
@@ -2985,7 +2978,7 @@ path.总览换班 = function()
                 f()
             end
         end
-        log(476)
+        log.debug()
         appear("基建总览非工作区", 3)
         if findOne("确认蓝") then
             back()
@@ -3133,7 +3126,7 @@ path.发电站换班 = function()
             return
         end
 
-        log(1217, tradingStationLevel, manufacturingStationLevel, powerStationLevel,
+        log.debug(tradingStationLevel, manufacturingStationLevel, powerStationLevel,
             dormitoryLevel)
 
         local stationType = "发电站"
@@ -3185,7 +3178,7 @@ path.发电站换班 = function()
             return
         end
 
-        log(1217, tradingStationLevel, manufacturingStationLevel, powerStationLevel,
+        log.debug(tradingStationLevel, manufacturingStationLevel, powerStationLevel,
             dormitoryLevel)
 
         local stationType = "发电站"
@@ -3227,9 +3220,9 @@ path.办公室换班 = function(stationType)
     stationType = stationType or "办公室"
     local p = stationType
     -- if findOne("基建总览发电站") then
-    --     log(3082, "在总览换办公室")
+    --     log.debug("在总览换办公室")
     -- else
-    --     log(3089, "不在总览") -- 不在总览有概率直接点到活动室
+    --     log.debug("不在总览") -- 不在总览有概率直接点到活动室
     --     path.跳转("基建")
 
     --     if not wait(function()
@@ -3240,14 +3233,14 @@ path.办公室换班 = function(stationType)
     --         return
     --     end
     -- end
-    log(3089, "不在总览")
+    log.debug("不在总览")
     path.跳转("基建")
     -- if not wait(function()
     --         if findOne("基建总览工作区") then return true end
     --         tap("进驻总览")
     --         ssleep(.2)
     --     end, 10) then
-    --     log(3102)
+    --     log.debug()
     --     return
     -- end
     -- for i = 1, 7 do -- 可能设备会卡 多滑动几次
@@ -3265,7 +3258,7 @@ path.办公室换班 = function(stationType)
             end
             tap(p)
         end) then
-        log(3104)
+        log.debug()
         return
     end
 
@@ -3275,7 +3268,7 @@ path.办公室换班 = function(stationType)
             if findOne("确认蓝") then return true end
             tap("制造站进度")
         end, 10) then
-        log(3105)
+        log.debug()
         return
     end
     ssleep(.5)
@@ -3303,7 +3296,7 @@ path.办公室换班 = function(stationType)
             ssleep(.8)
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
         end, 3) then
-        log(3109)
+        log.debug()
         return
     end
 end
@@ -3404,7 +3397,7 @@ end
 -- 2025基建更新之后改为在基建总览换班
 path.会客厅换班 = function(stationType, force_change)
     stationType = stationType or "会客厅"
-    log(2946, stationType)
+    log.debug(stationType)
 
     -- 检查是否缺人，不缺不换
     if not force_change and not appear("入驻干员" .. stationType, .5) and findOne("基建总览工作区") and
@@ -3433,7 +3426,7 @@ path.会客厅换班 = function(stationType, force_change)
             end
             tap("清空选择")
         end, 5) then
-        log(1037)
+        log.debug()
         return
     end
 
@@ -3465,7 +3458,7 @@ path.贸易站加速 = function()
             break
         end
     end
-    log(2035)
+    log.debug()
     if not station then return end
     log(station)
     if not wait(function()
@@ -3486,13 +3479,13 @@ path.贸易站加速 = function()
 
     good = findAny({ "龙门商法", "开采协力" }) or "龙门商法"
 
-    log(2036, good)
+    log.debug(good)
     if not good then
-        log("未进入")
+        log.warn("未进入")
         return
     end
     if not disappear("制造站补货通知", 10) then return end
-    log(2037)
+    log.debug()
 
     local 无人机使用完毕 = false
     local f = function()
@@ -3544,7 +3537,7 @@ path.贸易站加速 = function()
         appear("贸易站第一订单加速", 5)
         tap("贸易站第一订单加速")
         f()
-        log(2038)
+        log.debug()
         appear({ "贸易站第一订单加速", "贸易站第一可交付", "贸易站第一不可交付" }, 2.5)
         ssleep(1)
         if os.time() - start_time > 60 * 2 then
@@ -3575,7 +3568,7 @@ path.制造加速 = function(only)
                 break
             end
         end
-        log(526)
+        log.debug()
         if not station then return end
         log(station)
         if not wait(function()
@@ -3622,7 +3615,7 @@ end
 
 path.线索交流 = function()
     path.跳转("基建")
-    log(166)
+    log.debug()
     local f
 
     if not wait(function()
@@ -3642,7 +3635,7 @@ path.线索交流 = function()
         return
     end
 
-    log(1028)
+    log.debug()
 
     -- 进入可控状态
     if not wait(function()
@@ -3656,7 +3649,7 @@ path.线索交流 = function()
         return
     end
 
-    log(1029)
+    log.debug()
 
     -- 回到线索主界面，处理交流结束情况
     if not wait(function()
@@ -3672,16 +3665,16 @@ path.线索交流 = function()
         return
     end
 
-    log(1030)
+    log.debug()
 
     -- 等待前一任务的通知消失
     appear("接收线索白", 5)
     appear("线索传递", 5)
-    log(1031)
+    log.debug()
 
     -- 接收线索
     wait(function()
-        log(1052)
+        log.debug()
         if not findOne("线索传递") then return true end
         -- TODO 暂时妥协这0.5秒，丢失率太高
         if not appear("接收线索有", .5) then return true end
@@ -3691,25 +3684,25 @@ path.线索交流 = function()
             end, 5) then
             return true
         end
-        log(1055)
+        log.debug()
         if not appear("接收线索", 5) then return true end
         wait(function() tap("全部收取") end, 1)
-        log(1055)
+        log.debug()
         if not wait(function()
                 if findOne("线索传递") then return true end
                 tap("解锁线索上")
             end, 5) then
             return true
         end
-        log(1057)
+        log.debug()
     end, 10)
     if not appear("线索传递") then return end
 
-    log(1032)
+    log.debug()
 
     -- 信用奖励，已满则传递线索
     f = function(retry)
-        log(1033)
+        log.debug()
         if retry > 10 or no_friend then return true end
 
         -- 进入信用奖励界面
@@ -3720,7 +3713,7 @@ path.线索交流 = function()
             return
         end
 
-        log(1034)
+        log.debug()
 
         -- 已满则传递，并循环
         if not appear("未达线索上限", .5) then
@@ -3736,13 +3729,13 @@ path.线索交流 = function()
                 clue_unlocked = true
             end
             -- path.线索布置()
-            log(10351, clue_unlocked)
+            log.debug(clue_unlocked)
             if not clue_unlocked then path.线索传递() end
             path.线索布置()
             return f(retry + 1)
         end
 
-        log(1035)
+        log.debug()
 
         -- 未满则收取奖励
         if findOne("信用奖励领取") then
@@ -3788,7 +3781,7 @@ path.会客室信用收集 = function()
         end, 5) then
         return
     end
-    log(1036)
+    log.debug()
     if not appear({ "进驻信息", "会客室点开信用家具" }) then return end
     if not wait(function()
             if findOne("会客室点开信用家具变黄") then return true end
@@ -3799,16 +3792,16 @@ path.会客室信用收集 = function()
 
     local ret = find_color("会客室信用家具查找范围", "FFE30A", 0, 0.9)
     if not ret then return end
-    log(1037, ret)
+    log.debug(ret)
     if not wait(function()
             if findOne("会客室信用右上角橙") then return true end
             tap(ret)
             ssleep(.5)
         end, 5) then
-        log(1099)
+        log.debug()
         return
     end
-    log(1038)
+    log.debug()
     if findOne("会客室信用领取橙") then
         tap("会客室信用领取橙")
     end
@@ -3816,12 +3809,12 @@ end
 
 path.线索布置 = function()
     -- internal
-    log(642)
+    log.debug()
     if not findOne("线索传递") then
-        log("线索布置未找到线索传递")
+        log.warn("线索布置未找到线索传递")
         return
     end
-    log(643)
+    log.debug()
 
     if disable_clue_unlock then
         path.线索传递()
@@ -3829,7 +3822,7 @@ path.线索布置 = function()
         path.线索传递()
         return
     end
-    log(699)
+    log.debug()
     if findOne("线索快速置入") then
         tap("线索快速置入")
         disappear("线索快速置入", 2)
@@ -3843,7 +3836,7 @@ path.线索布置 = function()
         tap("线索布置5")
     end, 5)
 
-    log(644)
+    log.debug()
     if true then
         for i = 1, 7 do
             if findOne("线索布置左列表" .. i) then
@@ -3877,7 +3870,7 @@ path.线索布置 = function()
                 end
             end
         end
-        log(648)
+        log.debug()
         if not wait(function()
                 if findOne("线索传递") then return true end
                 tap("解锁线索上")
@@ -3892,27 +3885,27 @@ path.线索布置 = function()
 
     if findOne("解锁线索") and not disable_clue_unlock then
         clue_unlocked = true
-        log(1649)
+        log.debug()
         wait(function() tap("解锁线索") end, .5)
 
         if not appear({ "进驻信息", "进驻信息选中" }, 5) then
             return path.线索交流()
         end
-        log(1652)
+        log.debug()
         if not wait(function()
                 if findOne("线索传递") then return true end
                 tap("制造站进度")
             end, 10) then
             return path.线索交流()
         end
-        log(1655)
+        log.debug()
         return path.线索布置()
     end
 end
 
 path.线索传递 = function()
     -- internal
-    log(651)
+    log.debug()
     disappear("正在提交反馈至神经", network_timeout)
     if not findTap("线索传递") then return end
 
@@ -3935,11 +3928,11 @@ path.线索传递 = function()
             end, 5) then
             return
         end
-        log(653)
+        log.debug()
         if findOne("线索传递数字重复") and findOne("线索列表1") then
             break
         end
-        log(654)
+        log.debug()
     end
 
     if not wait(function()
@@ -3995,18 +3988,18 @@ end
 
 path.任务收集 = function()
     path.跳转("任务")
-    log(9012)
+    log.debug()
     appear({ "任务未选中列表2", "任务有列表2", "任务无列表2" })
     for _ = 1, #point.任务有列表 do
         local p = appear(point.任务有列表, 0.5)
         if not p then break end
 
-        log(795, p)
+        log.debug(p)
         -- nagivate to tab
         if not wait(function()
-                if findOne("收集全部") or findOne("特勤任务一键领取") then return true end
+                if findOne("收集全部", .9) or findOne("特勤任务一键领取") then return true end
                 tap(p)
-            end, 10) then
+            end, 10, .1) then
             return
         end
 
@@ -4099,7 +4092,7 @@ path.信用购买 = function()
             return
         end
 
-        log(832)
+        log.debug()
         if not appear({
                 "信用交易所列表" .. 5, "信用交易所已购列表" .. 5,
             }) then
@@ -4108,7 +4101,7 @@ path.信用购买 = function()
         -- if not appear({
         --   "信用交易所列表" .. i, "信用交易所已购列表" .. i,
         -- }) then return end
-        log(833)
+        log.debug()
 
         -- if not findOne("信用交易所列表" .. i) then
         --   log(845, i)
@@ -4146,19 +4139,19 @@ path.信用购买 = function()
 
         -- 有可能进皮肤界面
         if findOne("信用不足") and findOne("主页") then
-            log("信用不足")
+            log.warn("信用不足")
             return true
         end
 
-        log(830)
+        log.debug()
         disappear("信用交易所横线", 5)
-        log(831)
+        log.debug()
 
         if not wait(function()
                 if findOne("信用交易所横线") then return true end
                 tap("信用交易所2")
             end, 5) then
-            log(832)
+            log.debug()
             return
         end
     end
@@ -4194,7 +4187,7 @@ path.信用购买 = function()
         order = range(1, 10)
     end
 
-    log(1635, "信用物品排序", order)
+    log.debug("信用物品排序", order)
     -- exit()
     for _, i in pairs(order) do if f() then break end end
     -- for _, i in pairs(range(20)) do if f() then break end end
@@ -4286,7 +4279,10 @@ path.采购中心商店 = function()
     local red_ticket_shop_good_need = {}
 
     local buy_good = function(good)
-        if not findOne(good) then return end
+        if not findOne(good) then
+            log.warn("没有" .. good)
+            return
+        end
 
         if not wait(function()
                 tap(good)
@@ -4297,21 +4293,21 @@ path.采购中心商店 = function()
         -- 点击购买
         if not wait(function()
                 if findOne("购买物品面板") then
-                    tap("交易所商品最多")
+                    tap("凭证交易所商品最多")
                     ssleep(0.3)
-                    tap("采购商店支付")
+                    tap("凭证交易所支付")
                     ssleep(0.3)
                 end
                 disappear("正在提交反馈至神经", network_timeout)
 
                 if findOne("凭证交易所进入") then return true end
                 if not findOne("购买物品面板") then return true end
-            end, 4) then
+            end, 6) then
         end
-        ssleep(0.5)
+        ssleep(0.8)
         -- 购买后判断
-        if findOne("购买物品面板", .97) then
-            log("购买失败，大概是没钱了吧~")
+        if not findOne("获得物资", .9) and findOne("购买物品面板") then
+            log.warn("购买失败，大概是没钱了吧~")
             return true
         end
         disappear("正在提交反馈至神经", network_timeout)
@@ -4322,7 +4318,7 @@ path.采购中心商店 = function()
                     ssleep(0.2)
                     return true
                 end
-            end, 7) then
+            end, 7, .1) then
             tap("获得物资")
             ssleep(0.2)
         end
@@ -4338,32 +4334,36 @@ path.采购中心商店 = function()
     end
     disappear("正在提交反馈至神经", network_timeout)
     appear("绿票商店选中", 3)
-    sleep(500)
+    ssleep(0.5)
     if findOne("绿票第1层确认") then
-        for i = 1, 7 do
-            if _G["green_ticket_shop_" .. i] == true then
+        if green_ticket_shop_1 == true then
+            for i = 1, 7 do
                 appear("绿票第1层确认", 3)
-                buy_good("凭证交易所购买列表" .. i)
+                buy_good("凭证交易所购买列表" .. 1)
                 if findOne("绿票第2层确认") then break end
             end
         end
     end
-    sleep(500)
+    ssleep(0.5)
+    log("绿票商店第一层已买完")
 
-    for i = 8, 9, 1 do
-        if _G["green_ticket_shop_" .. i] == true then
-            tap("绿票第2层确认")
-            appear("绿票第2层确认", 4)
-            if i == 8 then
-                buy_good("凭证交易所购买列表2")
-            elseif i == 9 then
-                appear("绿票第2层确认", 4)
-                buy_good("凭证交易所购买列表6")
+    if green_ticket_shop_2 == true or green_ticket_shop_3 == true then
+        tap("绿票第2层确认")
+        appear("绿票第2层确认", 4)
+        if green_ticket_shop_2 == true and
+            findOne("绿票第2层寻访凭证") then
+            buy_good("凭证交易所购买列表" .. 2)
+        end
+        ssleep(0.5)
+        appear("绿票第2层确认", 4)
+        if green_ticket_shop_3 == true then
+            if findOne("绿票第2层招聘许可列表1") then
+                buy_good("凭证交易所购买列表" .. 2)
+            elseif findOne("绿票第2层招聘许可列表2") then
+                buy_good("凭证交易所购买列表" .. 6)
             end
         end
     end
-    --[===[log(green_ticket_shop_good_need)
-	log(green_ticket_shop_good_need2)]===]
 
     for i = 1, #yellow_ticket_shop_good do
         if _G["yellow_ticket_shop_" .. i] == true then
@@ -4412,16 +4412,16 @@ path.采购中心商店 = function()
             end
 
             if findOne("凭证交易所进入") then
-                log("未能进入商品，大概是售空了吧~")
+                log.warn("未能进入商品，大概是售空了吧~")
                 goto continue
             end
 
             -- 点击购买
             if not wait(function()
                     if findOne("购买物品面板") then
-                        tap("交易所商品最多")
+                        tap("凭证交易所商品最多")
                         ssleep(0.5)
-                        tap("采购商店支付")
+                        tap("凭证交易所支付")
                     end
                     ssleep(1)
                     -- tap("商店顶栏")
@@ -4432,7 +4432,7 @@ path.采购中心商店 = function()
             disappear("正在提交反馈至神经", network_timeout)
             -- 购买后判断
             if findOne("购买物品面板") then
-                log("购买失败，大抵是没钱了吧~")
+                log.warn("购买失败，大抵是没钱了吧~")
                 return true
             end
             ::continue::
@@ -4495,15 +4495,15 @@ path.采购中心商店 = function()
                 end, 5) then
             end
             if findOne("凭证交易所进入") then
-                log("未能进入商品，大概是售空了吧~")
+                log.warn("未能进入商品，大概是售空了吧~")
                 return
             end
             -- 点击购买
             if not wait(function()
                     if findOne("购买物品面板") then
-                        tap("交易所商品最多")
+                        tap("凭证交易所商品最多")
                         ssleep(0.5)
-                        tap("采购商店支付")
+                        tap("凭证交易所支付")
                         -- tap("商店顶栏")
                     end
                     ssleep(1)
@@ -4512,7 +4512,7 @@ path.采购中心商店 = function()
                 end, 3) then
             end
             if findOne("购买物品面板") then
-                log("购买失败，大抵是没钱了吧~")
+                log.warn("购买失败，大抵是没钱了吧~")
                 return true
             end
             disappear("正在提交反馈至神经", network_timeout)
@@ -4641,7 +4641,7 @@ path.轮次作战 = function()
         if request_memory_clean() then path.跳转("首页") end
 
         cur_fight = fight[fight_tick]
-        log(971, cur_fight)
+        log.debug(cur_fight)
         if cur_fight == 'BREAK' then break end
         log(pre_fight, cur_fight)
         if not same_page_fight(pre_fight, cur_fight) then
@@ -4650,7 +4650,7 @@ path.轮次作战 = function()
         else
             skip_guide = true
         end
-        log(820, fight, fight_tick_ui)
+        log.debug(fight, fight_tick_ui)
 
         pre_fight = nil
 
@@ -4674,7 +4674,7 @@ path.轮次作战 = function()
         end
 
         -- 清光理智: 第一次理智不足时，转为1-7
-        log(9921, zero_san_after_fight, zero_san)
+        log.debug(zero_san_after_fight, zero_san)
         if zero_san_after_fight and zero_san then
             if zero_san_hit > 0 then break end
             zero_san_hit = zero_san_hit + 1
@@ -4830,7 +4830,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
     -- log(findOne("开始行动"))
     -- safeexit()
 
-    log(4552, "抄作业模式", copy_homework, "作业代码", homework[x])
+    log.debug("抄作业模式", copy_homework, "作业代码", homework[x])
     if not appear("代理指挥开", .5) then
         if copy_homework and findOne("突袭模式") then
             log("进入突袭难度")
@@ -4864,13 +4864,13 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 ssleep(.5)
                 goto wait_for_maa
             else
-                log("未找到")
+                log.warn("未找到")
                 return true
             end
         end
         tap("代理指挥开1")
         if not appear("代理指挥开", .5) then
-            log(4591)
+            log.debug()
             if copy_homework and homework[x] then
                 need_copy_homework = true
                 log("准备抄作业")
@@ -4883,7 +4883,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                     appear({ "切换到险地作战", "切换到常规作战", }, 3)
                     local st = findAny({ "切换到险地作战", "切换到常规作战" })
                     if not st then
-                        log("切换到作战失败")
+                        log.warn("切换到作战失败")
                         if not appear("主页") then back() end
                         return path.跳转("首页")
                     end
@@ -4895,7 +4895,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                                 return true
                             end
                         end, 5) then
-                        log("切换到作战失败")
+                        log.warn("切换到作战失败")
                         if not appear("主页") then back() end
                         return path.跳转("首页")
                     end
@@ -4945,11 +4945,11 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 tap("多倍代理按钮")
                 if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 1) then return true end
             end, 10)
-            log(4721)
+            log.debug()
             -- 出现面板后给一点时间等待展开
             ssleep(0.5)
             battle_times = 1
-            log(4722)
+            log.debug()
             appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 3)
             if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
                 if findOne("多倍代理处于选择状态") then -- 首先清空到1倍状态再判断
@@ -4964,7 +4964,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                     end, 10)
                     ssleep(.5)
                 end
-                log(4724)
+                log.debug()
                 ssleep(0.2)
                 if multiple_proxy_commander then
                     ssleep(1)
@@ -5005,12 +5005,12 @@ path.开始游戏 = function(x, disable_ptrs_check)
             end
         end
     end
-    log(4562)
+    log.debug()
     if is_jmfight_enough(x) then return end
 
     if findOne("全权委托") then path.fallback.全权委托() end
     -- quick tap .5s
-    log(4563)
+    log.debug()
     wait(function()
         if not findOne("代理指挥开") then return true end
         tap("开始行动蓝")
@@ -5024,7 +5024,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 "单选确认框", "源石恢复理智不足", "当期委托侧边栏",
                 "行动结束", "开始行动故事集S", "沙盘推演确定",
             })
-            log(4791, state)
+            log.debug("当前状态:", state)
             -- 剿灭后一直按开始行动导致开始行动界面消失，可能出现下面的界面
             if state == "当前委托侧边栏" then
                 path.跳转("首页")
@@ -5037,12 +5037,11 @@ path.开始游戏 = function(x, disable_ptrs_check)
             if state == "行动结束" then return true end
             if state and not disappear(state, .5) then return true end
             if findOne("正在提交反馈至神经") and not findOne("开始行动") then
-                log(4804, "正在提交反馈至神经")
+                log.debug("正在提交反馈至神经")
                 reset_wait_start_time()
             end
             local p = findAny({ "开始行动", "全权委托确认使用", "开始突袭", "开始险地作战" })
-            log(4808, p)
-            log(4809, findOne("开始行动"))
+            log.debug("在开始行动按钮:", p)
             if p then
                 tap("开始行动蓝")
                 ssleep(.2)
@@ -5056,7 +5055,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         path.跳转("首页")
         return
     end
-    log(30448, state)
+    log.debug(state)
     if state == "行动结束" then
         no_success_one_loop = 0
         return path.base.接管作战()
@@ -5132,12 +5131,12 @@ path.开始游戏 = function(x, disable_ptrs_check)
         tap("源石恢复理智")
         state = "源石恢复理智取消"
         if not appear({ state, '源石恢复理智不足' }) then
-            log(2143)
+            log.debug()
             tap("开始行动蓝")
             return
         end
         if findOne('源石恢复理智不足') then
-            log(2144)
+            log.debug()
             tap("开始行动蓝")
             return
         end
@@ -5177,12 +5176,12 @@ path.开始游戏 = function(x, disable_ptrs_check)
         end)
         if deadline.text:endsWith("时") then idx = 1 end
         idx = idx or 0
-        log(2318, idx)
+        log.debug(idx)
         local max_times = _G['max_drug_times_' .. idx .. 'day']
         local times = _G['drug_times_' .. idx .. 'day']
 
         if not max_times or times >= max_times or max_drug_times == -1 then
-            log(2326, idx, times, max_times)
+            log.debug(idx, times, max_times)
             zero_san = true
             tap("开始行动蓝")
             -- 云控理智上报，普通用户跳过
@@ -5304,7 +5303,7 @@ path.主线 = function(x)
     local go = function()
         ssleep(.5)
         hard_mode_switch()
-        log(928, x)
+        log.debug(x)
         swip(x)
 
         --exit() -- 主线手动取点时取消注释
@@ -5339,11 +5338,11 @@ path.主线 = function(x)
         next_tap_index = chapter_index - 15
         chapter_index = 15 -- 固定点击14章，然后点击下一章进行跳转
     end
-    log("111", chapter_index, next_tap_index)
+    log.debug(chapter_index, next_tap_index)
     local p
     p = {
         [state_with_home("当前进度列表" .. chapter_index)] = function()
-            log(929, chapter_index)
+            log.debug(chapter_index)
             go()
             return true
         end,
@@ -5374,25 +5373,25 @@ path.主线 = function(x)
     -- exit()
 
     -- chapter_index 比实际章节index大1，因为有第零章
-    log(1040, chapter_index)
+    log.debug(chapter_index)
     if not findAny(table.keys(p)) then
-        log(1041)
+        log.debug()
         path.跳转("首页")
         tap("面板作战")
         if not appear("主页") then return end
-        log(1042)
+        log.debug()
         if not wait(function()
                 if findOne("主题曲界面") then return true end
                 tap("主题曲")
             end) then
             return
         end
-        log(1043)
+        log.debug()
         ssleep(.3)
         appearTap("乐章收录按钮")
         ssleep(.4)
         appear("主题曲白色圆点", 1)
-        log(1044)
+        log.debug()
         if not wait(function()
                 if appear("主题曲白色圆点", 1) then return true end
                 -- tap("乐章收录")
@@ -5400,26 +5399,27 @@ path.主线 = function(x)
                 -- tap("乐章收录")
                 swip_formula(true)
             end, 10) then
-            log("跳转失败3")
+            log.warn("跳转失败3")
             return
         end
-        log(1045)
+        log.debug()
         local tap_chat_index = chapter_index - 1
         local wa_x, wa_y = point["主线第零章点击位置"][1] + tap_chat_index % 5 * scale(315),
             point["主线第零章点击位置"][2] + math.floor(tap_chat_index / 5) * scale(310)
         log("wa_x", wa_x, "wa_y", wa_y)
-        log("1046", chapter, chapter_index, tap_chat_index % 5, math.floor(tap_chat_index / 5))
+        log.debug(chapter, chapter_index, tap_chat_index % 5, math.floor(tap_chat_index / 5))
         if not wait(function()
                 -- if not findOne(samp) then return true end
                 for i = 1, 16 do
                     if findOne("当前进度列表" .. i) then
                         return true
                     end
+                    findTap("前往章节")
                 end
                 tap({ wa_x, wa_y })
                 ssleep(.5)
             end) then
-            log("跳转失败4")
+            log.warn("跳转失败4")
             return
         end
         --小号有可能前面章节没解锁
@@ -5427,7 +5427,7 @@ path.主线 = function(x)
         for i = chapter_index, 16 do
             if findOne("当前进度列表" .. i) then
                 cur_chapter = i
-                log("1047", cur_chapter)
+                log.debug(cur_chapter)
                 if i - chapter_index > 0 then
                     for j = 1, i - chapter_index do
                         ssleep(.5)
@@ -5571,9 +5571,9 @@ path.别传 = function(x)
 end
 
 path.上一次 = function(x)
-    log("1265")
+    log.debug()
     if findOne("开始行动") then return path.开始游戏(x) end
-    log("1266")
+    log.debug()
     path.跳转("首页")
     tap("面板作战")
     if not appear("主页") then return end
@@ -5632,7 +5632,7 @@ update_open_time = function()
     end
     local t = parse_time()
     if all_open_time_start <= t and t < all_open_time_end then
-        log("全天开启时间表")
+        log("资源本全开")
         pr_open_time = {
             A = { 1, 2, 3, 4, 5, 6, 7 },
             B = { 1, 2, 3, 4, 5, 6, 7 },
@@ -5788,7 +5788,7 @@ is_jmfight_enough = function(x, outside)
 
     -- use state, jmfight only
     if not table.includes(table.values(jianpin2name), x) then
-        log(1738)
+        log.debug()
         return false
     end
     if jmfight_enough then return true end
@@ -5843,16 +5843,24 @@ path.剿灭 = function(x)
     -- if x ~= "剿灭" then
     -- 都需要切换
     wait(function()
-        if findOne("切换") then return true end
+        if not findOne("返还规则") then return true end
+        -- tap("剿灭快速切换按钮右下")
         tap("主页右侧")
-        appear("切换", 1)
+        disappear("返还规则", 1)
     end, 5)
 
     if is_jmfight_enough(x) then return end
 
+    wait(function()
+        if findOne("剿灭快速切换按钮右下") then return true end
+        -- tap("剿灭快速切换按钮右下")
+        tap("主页右侧")
+        appear("剿灭快速切换按钮右下", 1)
+    end, 5)
+
     if not wait(function()
             if findOne("当前委托侧边栏") then return true end
-            tap("切换")
+            tap("剿灭快速切换按钮右下")
             appear("当前委托侧边栏")
         end, 5) then
         return
@@ -5866,10 +5874,10 @@ path.剿灭 = function(x)
         return
     end
 
-    log(1287)
+    log.debug()
     -- end
     if is_jmfight_enough(x) then return end
-    log(1289)
+    log.debug()
     -- ssleep(1)
     -- log(1290)
     appear("开始行动", 5)
@@ -5914,7 +5922,7 @@ path.活动 = function(x)
 
     if not skip_guide then
         path.跳转("首页")
-        tap("面板活动2")
+        tap(hd_position)
         log(x)
         if string.find(x, "HD-EX-", 1, true) then
             point["活动导航0"] = point["活动导航EX"]
@@ -5994,14 +6002,14 @@ path.活动 = function(x)
     --             if findOne("活动导航0") then return true end
     --             back()
     --         end, 10) then
-    --         log("活动导航0未找到")
+    --         log.warn("活动导航0未找到")
     --         return
     --     end
     --     path.跳转("首页")
     -- end
 
     if not skip_guide and not appear({ "活动导航0", "活动商店导航" }, 5) then
-        log("未找到活动导航")
+        log.warn("未找到活动导航")
         return
     end
 
@@ -6053,8 +6061,8 @@ path.活动 = function(x)
         ssleep(.5)
     end
 
+    toast(x, screen.width * 0.05, screen.height * 0.8)
     swip(x)
-    toast(x)
     ssleep(.5)
     --exit() --活动手动取点时取消注释
     if x:includes({ "ST-", "TR-", "-P-", "-MO-1" }) or (x:includes({ "-S-" }) and hd_mod == "故事集") then
@@ -6088,7 +6096,7 @@ path.活动 = function(x)
             back()
         end, 30)
     end
-    log(629)
+    log.debug()
     path.开始游戏(x)
 end
 
@@ -6244,31 +6252,31 @@ end
 --                     商店采样判断 = sample("商店")
 --                     tap({ 商品x, 商品y }) --点击商品
 --                 else
---                     log(979)
+--                     log.debug()
 --                     goto continue
 --                 end
 
 --                 -- 点击购买
 --                 if not disappear(商店采样判断, 10) then
---                     log("未能进入购买页面")
+--                     log.warn("未能进入购买页面")
 --                     sd_retry = sd_retry + 1
 --                     goto startshop
 --                 end
---                 log(989)
+--                 log.debug()
 --                 wait(function()
 --                     tap_x = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
 --                     if tap_x then return true end
 --                     ssleep(.1)
 --                 end, 2)
 --                 if not tap_x then
---                     log("未找到购买按钮")
+--                     log.warn("未找到购买按钮")
 --                     sd_retry = sd_retry + 1
 --                     goto continue
 --                 end
 --                 log("tapx", tap_x)
 --                 tap_x = { tap_x[1] + scale(10), tap_x[2] + scale(10) }
 --                 appear("商店最多", 0.5)
---                 log(994)
+--                 log.debug()
 --                 商店购买前采样 = sample("商店")
 --                 if not wait(function()
 --                         tap("商店最多")
@@ -6280,7 +6288,7 @@ end
 --                         end
 --                         tmp_col = find_color("商店支付范围", point["商店主题色"], 1, 0.9)
 --                         if tmp_col then
---                             log("购买失败，没钱2")
+--                             log.warn("购买失败，没钱2")
 --                             没钱计数 = 没钱计数 + 1
 --                         end
 --                         if 没钱计数 > 4 then
@@ -6288,7 +6296,7 @@ end
 --                             return true
 --                         end
 --                         if not findOne(商店购买前采样) then
---                             log(999)
+--                             log.debug()
 --                             return true
 --                         end
 --                     end, 5) then
@@ -6314,7 +6322,7 @@ end
 --                 end
 --                 disappear("正在提交反馈至神经", network_timeout)
 --                 回到商店主页()
---                 log(998)
+--                 log.debug()
 --                 goto startshop
 --                 ::continue::
 --                 回到商店主页()
@@ -6328,20 +6336,20 @@ end
 --             log("滑动到底部,退出")
 --             return
 --         end
---         log(1052)
+--         log.debug()
 --         商店滑动前采样 = sample("商店")
 --         if find_color("商店第四列货币范围", point["商店菜单钱币颜色"], 0, 0.8) and not 滑动翻页 then
---             log(1054)
+--             log.debug()
 --             path.swip_hd_shop()
 --             滑动翻页 = true
 --         else
 --             滑动翻页 = false
 --             -- 如果第四列不存在，则退出重进商店，自动进入下一列表
---             log(1056)
+--             log.debug()
 --             back()
 --             ssleep(1)
 --             if not appear("活动商店导航", 5) then
---                 log(952)
+--                 log.debug()
 --                 return
 --             end
 --             appear("活动商店导航", 3)
@@ -6369,8 +6377,8 @@ path.商店搬空 = function()
         return
     end
     path.跳转("首页")
-    log("商店清空任务")
-    tap("面板活动2")
+    tap(hd_position)
+    log.debug("进入活动")
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
@@ -6381,14 +6389,16 @@ path.商店搬空 = function()
 
     if not wait(function()
             if findOne("活动商店导航") then return true end
-        end, 10) then
+        end, 10, .1) then
         return
     end
-
+    log.debug("查找是否有未领任务")
     if appear("活动任务导航", .6) then
+        log.debug("领取任务")
         tap("活动任务导航")
-        ssleep(.2)
-        if appear("活动任务页面", 2) then
+        ssleep(0.4)
+        if appear("活动任务页面", 3) then
+            appear("活动任务一键领取", 2)
             if findOne("活动任务一键领取") then
                 tap("活动任务一键领取")
                 ssleep(.5)
@@ -6396,38 +6406,44 @@ path.商店搬空 = function()
                         tap("活动任务一键领取")
                         ssleep(0.2)
                         if findOne("活动任务页面") then return true end
-                    end, 7) then
+                    end, 7, .2) then
                 end
             end
             ssleep(0.2)
-            tap("返回")
-            appear("活动商店导航", 1.5)
+            wait(function()
+                back()
+                ssleep(0.2)
+                if appear("活动商店导航", 1) then
+                    return true
+                end
+            end, 2, .2)
         end
+        -- else
+        --     snapShot("/sdcard/pictures/未找到活动任务导航.jpg")
     end
 
     if not wait(function()
             tap("活动商店导航")
             ssleep(.2)
-            if disappear("活动商店导航") then return true end
-        end, 5) then
+            if findOne("商店主页") then return true end
+        end, 10) then
     end
     ssleep(0.5)
-    disappear("正在提交反馈至神经", network_timeout)
-    -- 防止各种掉帧等导致卡在领取等页面
+    disappear("正在提交反馈至神经", network_timeout) -- 防止各种掉帧等导致卡在领取等页面
+    log.debug("进入商店,开始购买")
     local 回到商店主页 = function()
         if not wait(function()
                 if findOne("商店主页") then return true end
                 tap("商店顶栏")
-                ssleep(0.2)
-            end, 10) then
+            end, 10, .2) then
             return
         end
     end
 
-    if not appear("商店主页", 2) then
-        log(6280, "未找到商店")
-        return
-    end
+    -- if not appear("商店主页", 2) then
+    --     log.debug("未找到商店")
+    --     return
+    -- end
     local 物品横间距, 物品纵间距 = scale(516), scale(242)
     回到商店主页()
     local t = os.time()
@@ -6439,28 +6455,34 @@ path.商店搬空 = function()
         end
         for x = 0, 2 do -- 3*3商品进行购买
             for y = 0, 2 do
-                log(x, y)
+                log("第", x, "列,第", y, "行商品")
                 for i = 1, 7 do
                     回到商店主页()
-                    local intX, intY = findMultiColor(scale(120) + x * 物品横间距, scale(515) + y * 物品纵间距,
+                    local intX, intY = findMultiColor(
+                        scale(120) + x * 物品横间距, scale(515) + y * 物品纵间距,
                         scale(386) + x * 物品横间距, scale(555) + y * 物品纵间距,
-                        "FFFFFF", scale(17) .. "|" .. scale(-2) .. "|575757|" .. scale(-100) .. "|" ..
-                        scale(-5) .. "|5A5A5A", 0, 0.85)
-                    if intX == -1 then break end
+                        "FFFFFF",
+                        scale(17) .. "|" .. scale(-2) .. "|575757|" ..
+                        scale(-100) .. "|" .. scale(-5) .. "|5A5A5A",
+                        0, 0.83)
+                    if intX == -1 then
+                        log.warn("未找到购买按钮,可能已购买过")
+                        break
+                    end
                     if not wait(function()
                             tap({ intX, intY })
                             ssleep(.6)
-                            if findOne("购买物品面板") then return true end
+                            if findOne("活动商店购买物品面板") then return true end
                         end, 1.8) then
                     end
                     if findOne("商店主页") then
-                        log("未能进入商品，大概是识别错了")
+                        log.warn("未能进入商品支付页，大概是识别错了")
                         break
                     end
                     -- 点击购买
                     if not wait(function()
-                            if findOne("生息演算繁荣馈赠商店最多") then
-                                tap("生息演算繁荣馈赠商店最多")
+                            if findOne("商店购买数量最多") then
+                                tap("商店购买数量最多")
                                 ssleep(0.2)
                             end
                             if findOne("商店支付1") then
@@ -6468,16 +6490,16 @@ path.商店搬空 = function()
                                 ssleep(0.5)
                                 disappear("正在提交反馈至神经", network_timeout)
                             end
-                            if not findOne("购买物品面板") then return true end
+                            if not findOne("活动商店购买物品面板") then return true end
                         end, 5) then
                     end
                     --disappear("正在提交反馈至神经", network_timeout)
-                    if findOne("购买物品面板") then
-                        log("未能购买，大概是钱花完了")
+                    if findOne("活动商店购买物品面板") then
+                        log.warn("未能购买，大概是钱花完了")
                         return true
                     end
                 end
-                log("开始下一个商品")
+                log("查找下一个商品")
             end
         end
         回到商店主页()
@@ -6496,19 +6518,16 @@ path.故事解锁 = function()
     if not shop_period then shop_period = 0 end
     if not shop_day then shop_day = 0 end
     local hd_open_time_end = hd2_open_time_end
+
     -- 搬商店时间
     local interval = t - hd_open_time_end
-    if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) then
-        return
-    elseif shop_period == 1 and not (interval > 0 and t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day) then
-        return
-    elseif shop_period == 2 and not ((t > hd_open_time_end - 86400 * (shop_day + 1) and t < hd_open_time_end - 86400 * shop_day) or (t < hd_open_time_end + 86400 * (shop_day + 1) and t > hd_open_time_end + 86400 * shop_day)) then
+    if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1)) then
         return
     end
-
+    path.跳转("首页")
     log("故事集剧情解锁")
 
-    tap("面板活动")
+    tap(hd_position)
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
@@ -6518,14 +6537,14 @@ path.故事解锁 = function()
     end
 
     if not appear("故事集导航", 5) then
-        log("未找到故事集导航")
+        log.warn("未找到故事集导航")
         return
     end
     if not wait(function()
             tap("故事集导航")
-            if findOne("故事集相片页面") then return true end
             ssleep(0.2)
-        end, 5) then
+            if disappear("故事集导航") or findOne("故事集相片页面") then return true end
+        end, 5, .1) then
         return
     end
 
@@ -6593,11 +6612,18 @@ path.故事解锁 = function()
                 log("not find2", i)
             end
         end
+        if findOne("跳过剧情") then
+            path.跳过剧情()
+            disappear("正在提交反馈至神经", network_timeout)
+        end
+    end
+    if findOne("跳过剧情") then
+        path.跳过剧情()
+        disappear("正在提交反馈至神经", network_timeout)
     end
 end
 
 path.故事解锁 = function()
-    -- 临时禁用，有概率点进剧情内
     return
 end
 
@@ -6639,7 +6665,7 @@ path.会客厅跳转好友 = function()
 end
 
 path.添加好友 = function()
-    log(3001)
+    log.debug()
     if not findOne("添加好友红点") then return end
     if not wait(function()
             tap("添加好友红点")
@@ -6647,7 +6673,7 @@ path.添加好友 = function()
         end, 2) then
         return
     end
-    log(3002)
+    log.debug()
     if not wait(function()
             if findOne("添加好友确认") then
                 tap("添加好友确认")
@@ -6658,14 +6684,14 @@ path.添加好友 = function()
         end, 10) then
         return
     end
-    log(3003)
+    log.debug()
 end
 
 path.访问好友 = function()
     if communication_enough then return end
-    log(2253)
+    log.debug()
     path.跳转("好友")
-    log(2254)
+    log.debug()
     if not disable_add_friend then
         path.添加好友()
     end
@@ -6675,7 +6701,7 @@ path.访问好友 = function()
         end, 10) then
         return
     end
-    log(2255)
+    log.debug()
     if not wait(function()
             tap('访问基建')
             if findAny({ "访问下位灰", "访问下位橘" }) and
@@ -6686,7 +6712,7 @@ path.访问好友 = function()
         end, 30) then
         return
     end -- 无好友或网络超时10秒
-    log(2256)
+    log.debug()
 
     if not wait(function(reset_wait_start_time)
             if findOne("今日参与交流已达上限") then
@@ -6705,42 +6731,42 @@ path.访问好友 = function()
         end, 30) then
         return
     end
-    log(2257)
+    log.debug()
 end
 
 path.公开招募 = function()
-    log(1355)
+    log.debug()
     path.跳转("公开招募")
-    log(1356)
+    log.debug()
     local f, g
     local success = 0
 
     f = function(i)
-        log(1044, i)
+        log.debug(i)
         if findOne("公开招募确认蓝") then tap("返回") end
-        log(1286)
+        log.debug()
         if not appear("公开招募箭头", 1) then return end
-        log(1287)
+        log.debug()
         local see
         -- 有灰，等待检测所有状态
         see = appear({
             "聘用候选人列表" .. i, "公开招募列表" .. i,
             "立即招募列表" .. i,
         })
-        log(1288)
+        log.debug()
         if see == "立即招募列表" .. i and recruit_accelerate_mode then
-            log(2236)
+            log.debug()
             if not appear("公开招募箭头") then return end
             wait(function()
                 if not findOne("公开招募箭头") then return true end
                 tapCard("立即招募列表" .. i)
             end, 5)
-            log(2237)
+            log.debug()
             wait(function()
                 if findOne("公开招募箭头") then return true end
                 tap("中右确认")
             end, 5)
-            log(2238)
+            log.debug()
             appear("聘用候选人列表" .. i)
             return
         end
@@ -6756,7 +6782,7 @@ path.公开招募 = function()
                     --   return true
                     -- end
                     if findTap("聘用候选人列表" .. i) then
-                        log(1052)
+                        log.debug()
                         -- disappear("公开招募", 1)
                     end
                     tap("开包skip")
@@ -6802,7 +6828,7 @@ path.公开招募 = function()
                         return true
                     end
                     tags = {}
-                    log(1091, tags)
+                    log.debug(tags)
                 end, 5)
 
                 local skip = false
@@ -6818,7 +6844,7 @@ path.公开招募 = function()
                         true, true)
                 end
 
-                log(1092, tags, skip)
+                log.debug(tags, skip)
                 -- exit()
                 local tag4 = table.filter(tag5, function(rule)
                     return table.all(rule[1], function(m) return tags[m] end)
@@ -6833,7 +6859,7 @@ path.公开招募 = function()
                     table.extend(tag4, tag0)
                 end
 
-                log(1093, tag4)
+                log.debug(tag4)
                 -- toast(JsonEncode(tags))
 
                 if #tag4 == 0 or skip then
@@ -7141,11 +7167,11 @@ path.前瞻投资 = function(lighter)
             local r = point["战略等级"]
             local x = ocrBinaryEx(r[1], r[2], r[3], r[4], "000000-feb525") or {}
             -- local x = ocrEx(r[1], r[2], r[3], r[4]) or {}
-            log("4126", x)
+            log.debug(x)
             x = (x[1] or {}).text or ""
             x = number_ocr_correct(x)
             x = str2int(x:match("^(%d+).*"), -1)
-            log("4127", x)
+            log.debug(x)
             if x == 125 and not findOne("战略等级" .. x) then return end
             if x >= 0 and x <= 155 and x == prex then return x end
             -- if x >= 0 and x <= 140 then return x end
@@ -7188,11 +7214,11 @@ path.前瞻投资 = function(lighter)
             ssleep(.5)
             -- if not findOne("常规行动") then return 0 end
             local x = ocr("战略源石锭") or {}
-            log(4195, x)
+            log.debug(x)
             x = (x[1] or {}).text or ""
             x = number_ocr_correct(x)
             x = str2int(x:match("[^%d](%d+)$"), -1)
-            log("4128", x)
+            log.debug(x)
             if x >= 0 and x == prex then return x end
             -- if x >= 0 then return x end
             prex = x
@@ -7214,7 +7240,7 @@ path.前瞻投资 = function(lighter)
         傀影肉鸽完成 = true
         return
     end
-    log(4192)
+    log.debug()
 
     -- 等级/源石锭 阶段性通知
     if not zl_captcha_time or time() - zl_captcha_time > 3600 * 1000 then
@@ -7239,13 +7265,13 @@ path.前瞻投资 = function(lighter)
                 if findOne("返回确认界面") then return true end
                 tap("放弃本次探索")
             end, 5) then
-            log(2608)
+            log.debug()
             -- 无法直接放弃的情况 不处理
             if not wait(function()
                     if not findOne("常规行动") then return true end
                     tap("继续探索")
                     ssleep(.5)
-                    log(2613)
+                    log.debug()
                 end, 5) then
                 return
             end
@@ -7312,7 +7338,7 @@ path.前瞻投资 = function(lighter)
         return
         -- return path.fallback.签到返回()
     end
-    log(4199)
+    log.debug()
     -- 回到常规行动？
 
     -- 点幕后筹备后继续
@@ -7557,18 +7583,18 @@ path.前瞻投资 = function(lighter)
 
     if not wait(function()
             if findAny({ "初始招募", "战略返回" }) then
-                log(26)
+                log.debug()
                 return true
             end
             if findOne("返回确认界面") then
-                log(27)
+                log.debug()
                 -- 虽然不知道会不会走这儿
                 tap("左取消")
                 disappear("返回确认界面")
                 -- 不等会怎么样呢，有时会闪
                 ssleep(.5)
             end
-            log(28, zl_best_operator)
+            log.debug(zl_best_operator)
             local idx = str2int(zl_best_operator, -1)
 
             if idx >= 1 and idx <= 12 then
@@ -7588,7 +7614,7 @@ path.前瞻投资 = function(lighter)
 
     if not appear("初始招募") then return end
 
-    log(2698)
+    log.debug()
     -- 进入古堡 必须分为两段，否则产生位移
     if not wait(function()
             if not findOne("初始招募") then return true end
@@ -7602,7 +7628,7 @@ path.前瞻投资 = function(lighter)
     --   tap("进入古堡")
     -- end, 10) then return end
 
-    log(2700)
+    log.debug()
     if not appear("战略帮助", 10) then return end
 
     -- 幻觉选择性放弃
@@ -7720,7 +7746,7 @@ path.前瞻投资 = function(lighter)
     log("第二列 ", unexpect1ocr)
     log("第三列 ", unexpect2ocr)
 
-    log(2723)
+    log.debug()
     -- 根据不期而遇来选择路径，只有边上两个均为不期而遇才行
     local unexpect1, unexpect2
     if unexpect1ocr[1].text == "不期而遇" and unexpect2ocr[1].text ==
@@ -7770,7 +7796,7 @@ path.前瞻投资 = function(lighter)
             fight1ocr = ocr("第一层作战")
 
             if #fight1ocr > 1 then
-                log("4880", 4880, fight1ocr)
+                log.debug(4880, fight1ocr)
                 local fight1 = fight1ocr[2]
                 -- 只支持三种作战
                 if fight1.text:includes({ "意", "外" }) then
@@ -7907,7 +7933,7 @@ path.前瞻投资 = function(lighter)
     if not wait(function()
             if findOne("干员费用够列表1") then return true end
             if not findOne("生命值") then
-                log(2827)
+                log.debug()
                 -- return true
             end
         end, 30) then
@@ -7916,7 +7942,7 @@ path.前瞻投资 = function(lighter)
 
     -- 重复拖拽
     wait(function()
-        log(4105)
+        log.debug()
         tap("干员费用够列表1")
         disappear("干员费用够列表1", 0.5)
         -- 部署 拖拽当前第一个干员至部署位dst，方向朝左或右
@@ -7926,21 +7952,21 @@ path.前瞻投资 = function(lighter)
         end
         if fight1.text == '死斗' then direction = 1 end
         deploy3(1, fight1.text, direction)
-        log(4106)
+        log.debug()
         wait(function()
             if findOne("生命值") then return true end
             tap("开始行动1")
         end)
 
-        log(4107)
+        log.debug()
         if not appear("干员费用够列表1", 5) then return true end
-        log(4108)
+        log.debug()
     end, 20)
-    log(4109)
+    log.debug()
 
     appear("生命值")
 
-    log(4110)
+    log.debug()
     -- 超时作战不对劲 超5分钟
     local last_time_see_life = time()
     local skill_times = 0
@@ -7985,7 +8011,7 @@ path.前瞻投资 = function(lighter)
             findTap("收藏品")
             if findTap("源石锭") then drop_page = true end
             local p = findOne("不要了")
-            log(4233)
+            log.debug()
             if p and findOne("战略返回") then
                 tap({ p[1] + scale(765 - 668), scale(774) })
                 tap({ p[1] + scale(765 - 668), scale(774) })
@@ -8051,7 +8077,7 @@ path.前瞻投资 = function(lighter)
     -- if not appear("战略返回", 5) then return end
 
     if not findOne("战略帮助") then
-        log(2873)
+        log.debug()
         return
     end
 
@@ -8105,7 +8131,7 @@ path.前瞻投资 = function(lighter)
         tap("不期而遇第三选项")
         tap("不期而遇第三选项")
         tap("不期而遇第二选项")
-        log(2960, findOne("确认招募"))
+        log.debug(findOne("确认招募"))
     end, 10)
 
     if not appear("战略帮助", 5) then return end
@@ -8158,7 +8184,7 @@ path.前瞻投资 = function(lighter)
         tap("不期而遇第三选项")
         tap("不期而遇第三选项")
         tap("不期而遇第二选项")
-        log(2961, findOne("确认招募"))
+        log.debug(findOne("确认招募"))
     end, 10)
 
     if not appear("战略帮助", 5) then return end
@@ -8450,43 +8476,32 @@ path.跳过剧情 = function()
     tap({ txt.r, txt.b })
 end
 
-path.生息演算任务 = function()
-    if sx_szyw then
-        if sand_mode == 3 then
-            Tales_within_the_sand.六天奇遇循环()
-            Tales_within_the_sand.下一天()
-            Tales_within_the_sand.下一天()
-            Tales_within_the_sand.下一天()
-            Tales_within_the_sand.连续跳过()
-            return
-        elseif sand_mode == 4 then
-            Tales_within_the_sand.连续跳过()
-            return
-        elseif sand_mode == 5 then
-            Tales_within_the_sand.循环下一天()
-            return
-        end
-        沙洲遗闻()
+path.生息沙洲遗闻 = function()
+    if sand_mode == 3 then
+        Tales_within_the_sand.六天奇遇循环()
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.下一天()
+        Tales_within_the_sand.连续跳过()
+        return
+    elseif sand_mode == 4 then
+        Tales_within_the_sand.连续跳过()
+        return
+    elseif sand_mode == 5 then
+        Tales_within_the_sand.循环下一天()
+        return
     end
-    if sx_cqmd then
-        log("咕咕")
-    end
+    沙洲遗闻()
 end
 
-path.生息演算商店 = function()
-    if sx_szyw then
-        Tales_within_the_sand.商店购买()
-    end
-    if sx_cqmd then
-        Relaunch_anchor.商店购买()
-    end
+path.生息沙洲遗闻商店 = function()
+    Tales_within_the_sand.商店购买()
 end
 
 path.生息沙洲遗闻wrapper = function()
     path.跳转("首页")
     沙洲遗闻()
 end
-
 
 悖论模拟作业 = {
     ["维多利亚之矛"] = 36048,
@@ -8796,7 +8811,7 @@ path.悖论模拟 = function()
                                     return true
                                 end
                                 if findOne("悖论模拟界面") then
-                                    log("悖论模拟失败")
+                                    log.warn("悖论模拟失败")
                                     bl = false
                                     return true
                                 end
@@ -8808,7 +8823,7 @@ path.悖论模拟 = function()
                         break
                     end
                 else
-                    log("未进入悖论模拟界面")
+                    log.warn("未进入悖论模拟界面")
                     break
                 end
             end
@@ -8825,7 +8840,7 @@ path.自动模组 = function()
         -- 解包干员数据
         character_table = JsonDecode(readFile("char_table.json"))
     end
-    干员类别 = { "PIONEER", "WARRIOR", "TANK", "SNIPER", "CASTER", "MEDIC", "SPECIAL", "SUPPORT" }
+
     if not 干员职业 then
         干员职业 = JsonDecode(readFile("character_type_list.json"))
     end
@@ -8899,8 +8914,8 @@ path.自动升级潜能 = function()
     path.跳转("干员")
     appear("干员界面", 3)
     ssleep(.1)
-    local 红点干员数量 = tonumber(ocro("干员界面红点范围") or 0)
-    log("红点干员数量", 红点干员数量)
+    local 红点干员数量 = tonumber(ocro("干员界面红点数字范围") or 0)
+    toast("红点干员数量" .. 红点干员数量)
     tap("干员界面红点") --筛选干员
     disappear("干员界面红点", 1)
 
@@ -8944,6 +8959,7 @@ path.自动升级潜能 = function()
     end
 
     for i = 1, 红点干员数量 do
+        toast("还剩 " .. (红点干员数量 - i + 1) .. " 个干员")
         auto_upgrade_potentiality()
         gesture({
             {
@@ -9248,7 +9264,7 @@ path.森空岛签到 = function()
         if isPhoneNumber(username) then
             skland_daily_checkin(username, password)
         else
-            log("不符合签到条件跳过")
+            log.warn("不符合签到条件跳过")
             table.insert(qqmessage, "不符合签到条件跳过")
         end
         return true
@@ -9296,7 +9312,7 @@ path.宝石铭刻寻找课程 = function()
 
     path.跳转('首页')
 
-    tap("面板活动")
+    tap(hd_position)
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
@@ -9630,21 +9646,21 @@ path.宝石铭刻第2345课教程 = function(当前课程序号)
         end
 
         if jump then break end --遇到课程完事了情况 跳出
-        log(3580)
+        log.debug()
         if not wait(function()
                 tap('宝石铭刻_铭刻完下一轮')
                 if not findOne('宝石铭刻_铭刻完下一轮') then return true end
             end, 10, .2) then
             return
         end
-        log(3581)
+        log.debug()
         if not appear('宝石铭刻_购买工艺界面') then return end
         if not wait(function()
                 if findOne('宝石铭刻_工艺购买') and findOne('宝石铭刻_购买工艺界面') then return true end
             end, 10, .2) then
             return
         end
-        log(3582)
+        log.debug()
         当前轮数 = 当前轮数 + 1
         --优先级为  升级> 0刷新 > 购买底座
         --目前是在下一轮界面内
@@ -9873,21 +9889,21 @@ path.宝石铭刻第678课教程 = function(当前课程序号)
         end
 
         if jump then break end --遇到课程完事了情况 跳出
-        log(3580)
+        log.debug()
         if not wait(function()
                 tap('宝石铭刻_铭刻完下一轮')
                 if not findOne('宝石铭刻_铭刻完下一轮') then return true end
             end, 10, .2) then
             return
         end
-        log(3581)
+        log.debug()
         if not appear('宝石铭刻_购买工艺界面') then return end
         if not wait(function()
                 if findOne('宝石铭刻_工艺购买') and findOne('宝石铭刻_购买工艺界面') then return true end
             end, 10, .2) then
             return
         end
-        log(3582)
+        log.debug()
         当前轮数 = 当前轮数 + 1
         --优先级为  升级> 0刷新 > 购买底座
         --目前是在下一轮界面内
@@ -10020,21 +10036,21 @@ path.宝石铭刻第9课教程 = function()
             第九关打完了 = true
             break
         end --遇到课程完事了情况 跳出
-        log(3580)
+        log.debug()
         if not wait(function()
                 tap('宝石铭刻_铭刻完下一轮')
                 if not findOne('宝石铭刻_铭刻完下一轮') then return true end
             end, 10, .2) then
             return
         end
-        log(3581)
+        log.debug()
         if not appear('宝石铭刻_购买工艺界面') then return end
         if not wait(function()
                 if findOne('宝石铭刻_周边部') and findOne('宝石铭刻_购买工艺界面') then return true end
             end, 10, .2) then
             return
         end
-        log(3582)
+        log.debug()
         当前轮数 = 当前轮数 + 1
         --优先级为  升级> 0刷新 > 购买底座
         --目前是在下一轮界面内
@@ -10101,7 +10117,7 @@ path.烟花委员会loop = function()
     car_checked = false
     while true do
         if not appear("活动导航0", 2) then
-            tap("面板活动")
+            tap(hd_position)
             if not wait(function()
                     if findOne("活动导航0") or findOne("活动商店导航") then return true end
                     if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
@@ -10353,6 +10369,7 @@ path.活动奖励 = function(活动)
     if appear(活动 .. "奖励入口", 1) then
         tap(活动 .. "奖励入口")
     else
+        log(活动 .. "奖励入口未找到")
         return
     end
     appear(活动 .. "奖励页面", 3)
@@ -10373,9 +10390,10 @@ path.活动奖励 = function(活动)
 end
 
 path.卫戍协议 = function()
-    if not findAny({ "卫戍协议首页", "卫戍协议断线重连" }) then
+    if not findAny({ "卫戍协议首页", "卫戍协议放弃模拟" }) then
         path.跳转("首页")
-        tap("面板活动2")
+        tap("面板活动")
+        ssleep(2.5)
     end
     if appear("教程关闭", 3) then tap("教程关闭") end
     while not path.卫戍协议循环() do
@@ -10385,15 +10403,15 @@ path.卫戍协议 = function()
 end
 
 path.卫戍协议循环 = function()
-    if not findAny({ "卫戍协议首页", "卫戍协议断线重连" }) then
+    log("卫戍协议循环")
+    local p = findAny({ "卫戍协议首页", "卫戍协议放弃模拟" })
+    if not p then
         path.跳转("首页")
-        tap("面板活动2")
+        tap("面板活动")
+        ssleep(2.5)
     end
-    if not appear({ "卫戍协议首页", "卫戍协议断线重连" }, 5) then return end
-    if findOne("卫戍协议断线重连") then
-        --被挤下线了,休息15min
-        --ssleep(15 * 60)
-        tap("卫戍协议断线重连")
+    if not appear(p, 5) then return end
+    if p == "卫戍协议放弃模拟" then
         goto relink
     end
     if findOne("卫戍协议等级max") then
@@ -10410,9 +10428,23 @@ path.卫戍协议循环 = function()
     disappear("卫戍协议首页", 3)
     appear("卫戍协议开始模拟", 2)
     ssleep(.2)
+    -- 打过高难度之后需要滑动重置难度
+    gesture({
+        {
+            point = {
+                { scale(1481), scale(232) },
+                { scale(1481), scale(2000) },
+            },
+            start = 0,
+            duration = 300,
+        },
+    })
+    sleep(300)
+    log("滑动完毕")
+    ssleep(.3)
     for i = 1, 2 do --只打前两个难度
         tap("卫戍协议难度列表" .. i)
-        ssleep(1)
+        ssleep(.9)
     end
     -- if findOne("卫戍协议入门难度") then
     --     log("跳过教程")
@@ -10430,7 +10462,7 @@ path.卫戍协议循环 = function()
         tap("卫戍协议准备就绪")
     end, 5, 1)
     ssleep(10)
-    appear("卫戍协议开始战斗", 40)
+    appear("卫戍协议战斗准备就绪", 40)
     for i = 1, 4 do
         if appearTap("卫戍协议战斗准备就绪", 45) then
             i = i + 1
@@ -10449,6 +10481,11 @@ path.卫戍协议循环 = function()
     tap("卫戍协议金币清零确定")
     ssleep(8)
     ::relink::
+    appear("卫戍协议放弃模拟", 60)
+    ssleep(.5)
+    tap("卫戍协议放弃模拟")
+    ssleep(.5)
+    tap("卫戍协议金币清零确定")
     if not wait(function()
             tap("卫戍协议准备就绪")
             ssleep(2)
@@ -10495,7 +10532,7 @@ path.保全 = function()
         end, 5) then
         return
     end
-    log(699, cur_fight)
+    log.debug(cur_fight)
     if 继续打 then
         ssleep(4)
         appear("开始行动保全")
@@ -10512,7 +10549,7 @@ path.保全 = function()
     end
 
     if findOne("保全作战全部完成白条") then
-        log(701)
+        log.debug()
         return
     end
     ssleep(1)
@@ -10523,18 +10560,18 @@ path.保全 = function()
         --if not homework[cur_fight] then return end
         if cur_fight == "BQPZ1" then
             if findOne("保全关卡1全部完成勾") then
-                log(731)
+                log.debug()
                 return
             end
             tap("保全1进入")
         elseif cur_fight == "BQPZ2" then
             --[[if findOne("保全关卡2全部完成勾") then
-                log(732)
+                log.debug()
                 return
             end]]
             tap("保全2进入")
         else
-            log("未知保全地图")
+            log.warn("未知保全地图")
             return
         end
         if not appear("保全作战开始按钮", 3) then return end
@@ -10548,7 +10585,7 @@ path.保全 = function()
     elseif findOne("保全关卡2全部完成勾") then
         tap("保全关卡2全部完成勾") -- 中间的那个
     elseif not sss_only_complete then
-        log(777)
+        log.debug()
         if findOne("保全1可扫荡") then
             tap("保全1进入")
         elseif findOne("保全2可扫荡") then
@@ -10560,11 +10597,11 @@ path.保全 = function()
             if not appear("保全作战开始按钮", 3) then return end
             auto_sss(homework[cur_fight], true)
         else
-            log(778)
+            log.debug()
             return
         end
     else
-        log(703)
+        log.debug()
         return
     end
 
@@ -10578,7 +10615,7 @@ path.保全 = function()
             ssleep(0.5)
             if findOne("全权委托变蓝") then return true end
         end, 3) then
-        log(705)
+        log.debug()
         return
     end
 
@@ -10590,10 +10627,10 @@ path.保全 = function()
             if findOne("保全作战开始按钮") then return true end
         end, 10) then
         back()
-        log(711)
+        log.debug()
         return
     else
-        log(710)
+        log.debug()
         return true
     end
 end
@@ -10613,21 +10650,40 @@ path.争锋频道活动 = function()
         tap("面板活动2")
     end
     if not appear("争锋频道首页", 5) then return end
+    if duel_channel_only_daily_task and appear("争锋频道每日打满", 2) then
+        log("争锋频道每日已完成")
+        goto duel_channel_reward
+    end
     wait(function()
+        if findOne("自娱自乐第一位") then
+            tap("自娱自乐第一位")
+            ssleep(.5)
+        end
+        if duel_channel_mode == 0 and findOne("自娱自乐第三位") then
+            tap("自娱自乐第三位")
+            ssleep(.5)
+        end
         tap("加入赛事")
         if findOne("礼物对决") then return true end
-    end, 10)
+    end, 10, .2)
     log("加入赛事完成")
-
-    争锋左边投票人数 = 0
-    争锋右边投票人数 = 0
-    auto(争锋频道循环, nil, 0, nil, false)
+    auto(争锋频道循环, true, 0, nil, false)
+    ::duel_channel_reward::
+    path.活动奖励("争锋频道")
 end
 
 
 争锋频道循环 = {
-    礼物对决 = function()
-        tap("礼物对决")
+    争锋频道选择模式 = function()
+        if duel_channel_mode == 0 then
+            tap("自娱自乐第三位")
+        elseif duel_channel_mode == 1 then
+            tap("礼物对决")
+        end
+        ssleep(0.5)
+    end,
+    自娱自乐第一位 = function()
+        tap("自娱自乐第一位")
         ssleep(0.5)
     end,
     开始匹配 = function()
@@ -10638,35 +10694,44 @@ end
         tap("结算_离开比赛")
         ssleep(0.5)
     end,
-    继续匹配频道 = function()
-        if duel_auto_stop then
+    争锋频道继续匹配 = function()
+        if duel_channel_auto_stop then
             local 代币增加 = (ocr("结算代币ocr范围")[1] or {}).text or ""
             if string.finds(代币增加, { "+" }) then
                 local 代币增加数量 = int(string.match(代币增加, "%d+")) or 1
                 log("代币增加数量", 代币增加, 代币增加数量)
                 if 代币增加数量 == 0 then
                     log("停止匹配")
-                    stop("争锋活动已经打完", '', true, true)
+                    return "返回"
                 end
             end
         end
-        tap("继续匹配频道")
+        tap("争锋频道继续匹配")
         ssleep(0.5)
     end,
+    争锋频道首页 = function()
+        ssleep(0.5)
+        if duel_channel_only_daily_task and findOne("争锋频道每日打满") then
+            return "争锋频道每日打满"
+        else
+            tap("加入赛事")
+            ssleep(.8)
+        end
+    end,
     支持左侧 = function()
-        if duel_channel_game_mode == 1 then
-            local zuotext = (ocr("左边支持人数ocr范围")[1] or {}).text or ""
-            local youtext = (ocr("右边支持人数ocr范围")[1] or {}).text or ""
-            local zuonumber = str2int(string.match(zuotext, "%d+"), 0)
-            local younumber = str2int(string.match(youtext, "%d+"), 0)
-            log("左边支持人数", zuotext, zuonumber)
-            log("右边支持人数", youtext, younumber)
-            if zuonumber > 0 or younumber > 0 then
-                if zuonumber > younumber then
+        if duel_channel_strategy == 1 then
+            local left_text = (ocr("左边支持人数ocr范围")[1] or {}).text or ""
+            local right_text = (ocr("右边支持人数ocr范围")[1] or {}).text or ""
+            local left_number = str2int(string.match(left_text, "%d+"), 0)
+            local right_number = str2int(string.match(right_text, "%d+"), 0)
+            log("左边支持人数", left_text, left_number)
+            log("右边支持人数", right_text, right_number)
+            if left_number > 0 or right_number > 0 then
+                if left_number > right_number then
                     log("支持左侧")
                     tap("支持左侧按钮")
                     ssleep(0.5)
-                elseif younumber > zuonumber then
+                elseif right_number > left_number then
                     log("支持右侧")
                     tap("支持右侧按钮")
                     ssleep(0.5)
@@ -10681,14 +10746,17 @@ end
     end,
     支持右侧 = function()
         return 争锋频道循环.支持左侧()
-    end
+    end,
+    礼物不足 = function()
+        return 争锋频道循环.支持左侧()
+    end,
 }
 
 
 相谈室活动 = function(是否继续)
     if not 是否继续 then
         if not findAny({ "相谈室进入", "相谈室交谈进行中" }) then
-            log("6001")
+            log.debug()
             return
         end
         if not wait(function()
@@ -10769,7 +10837,7 @@ end
 
     local 获取选项文字 = function(area)
         local ret1 = ocr_ret(area)
-        log(6198, ret1)
+        log.debug(ret1)
         if string.finds(ret1, { "不休", "不", "休" }) then
             return "喋喋不休"
         elseif string.finds(ret1, { "巧语", "花言巧语", }) then
@@ -10787,7 +10855,7 @@ end
     end
     local 选哪个好点 = function(选项1, 选项2, is_max)
         if not 选项1 or not 选项2 then
-            log("选项1未识别")
+            log.warn("选项1未识别")
             return 1
         end
         local 选项1结果 = {
@@ -10819,7 +10887,7 @@ end
         local 选项1 = 获取选项文字("相谈室选项1ocr范围")
         local 选项2 = 获取选项文字("相谈室选项2ocr范围")
         local 选择结果 = 选哪个好点(选项1, 选项2, true and 回合数 < 5 or false)
-        log(6205, 选项1, 选项2, 选择结果)
+        log.debug(选项1, 选项2, 选择结果)
         if 选择结果 == 1 and 选项1 ~= nil then
             信任 = 信任 + 选项转换[选项1].信任
             兴趣 = 兴趣 + 选项转换[选项1].兴趣
@@ -10827,17 +10895,17 @@ end
             信任 = 信任 + 选项转换[选项2].信任
             兴趣 = 兴趣 + 选项转换[选项2].兴趣
         end
-        log(6206, 信任, 兴趣)
+        log.debug(信任, 兴趣)
         if not wait(function()
                 tap("相谈室选项" .. 选择结果)
                 ssleep(0.5)
                 if not findOne("相谈室当前回合页面") then return true end
             end, 10) then
-            log("相谈室选项点击失败")
+            log.warn("相谈室选项点击失败")
             return
         end
         back()
-        log(6207)
+        log.debug()
         if not wait(function()
                 findTap("相谈室开始营业", 5)
                 tap("相谈室下一轮")
@@ -10845,7 +10913,7 @@ end
                 if findAny({ "相谈室当前回合页面", "相谈室结单按钮" }) then return true end
                 if findOne("相谈室结束对话") then return true end
             end, 15) then
-            log(6229)
+            log.debug()
             return
         end
     end
@@ -10859,7 +10927,7 @@ end
             tap("相谈室结单按钮")
             break
         elseif x ~= "相谈室当前回合页面" then
-            log(6265)
+            log.debug()
             return
         end
         ssleep(0.3)
@@ -10875,7 +10943,7 @@ end
             if findAny({ "相谈室开始交谈", "相谈室开始营业" }) then return true end
             ssleep(0.5)
         end, 30) then
-        log("相谈室终止游戏点击失败")
+        log.warn("相谈室终止游戏点击失败")
         return
     end
     if findOne("相谈室开始交谈") then
@@ -10888,7 +10956,7 @@ end
                 ssleep(0.5)
                 if findOne("活动导航0") then return true end
             end, 30) then
-            log("相谈室终止游戏点击失败")
+            log.warn("相谈室终止游戏点击失败")
             return
         end
         return true
@@ -10926,7 +10994,7 @@ end
 
 --     -- 懒人单次手势不能添加过多定时点，理想是在插入finger时处理，偷懒直接手动切分下距离
 --     -- 只处理作战关卡导航中的情况
---     log(700)
+--     log.debug()
 --     log(dis)
 --     local max_dis_one_gesture = 5000
 --     if #dis == 2 and math.abs(dis[1]) == swip_right_max and dis[2] <
@@ -10934,7 +11002,7 @@ end
 --         table.insert(dis, dis[2] + max_dis_one_gesture)
 --         dis[2] = -max_dis_one_gesture
 --     end
---     log(701)
+--     log.debug()
 --     log(dis)
 --     for i, d in pairs(dis) do
 --         if i ~= 1 then ssleep(0.1) end
@@ -10953,7 +11021,7 @@ end
 --     if type(dis) == "string" then dis = distance[dis] end
 --     if type(dis) ~= "table" then dis = { dis } end
 --     if not dis then return end
---     log(705)
+--     log.debug()
 --     -- flatten to one depth
 --     -- local max_once_dis = 1080
 --     -- local freey = scale(150)
@@ -11079,7 +11147,7 @@ path.喀兰贸易技术研发部 = function()
     end
     if not findAny({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }) then
         path.跳转("首页")
-        tap("面板活动2")
+        tap(hd_position)
         if not appear("喀兰贸易活动首页进入", 5) then return end
     end
     喀兰贸易重建活动(true)
@@ -11089,7 +11157,7 @@ end
     log("喀兰贸易重建活动")
     if need_enter then
         if not appear({ "喀兰贸易活动首页进入", "喀兰贸易活动场地未开放", "喀兰贸易活动开始重建" }, 5) then return end
-        log(2)
+        log.debug()
         if not wait(function()
                 tap("喀兰贸易活动首页进入")
                 if findOne("喀兰贸易活动场地未开放") then return true end
@@ -11100,12 +11168,12 @@ end
                 end
             end, 10) then
             back()
-            log(5)
+            log.debug()
             return
         end
-        log(4)
+        log.debug()
         if findOne("喀兰贸易活动场地未开放") then
-            log(6)
+            log.debug()
             return true
         end
         while true do
@@ -11117,19 +11185,19 @@ end
                 end
                 tap('喀兰贸易活动下一关')
                 ssleep(0.2)
-                log(7)
+                log.debug()
             end
             if findOne('喀兰贸易活动开始重建', 2) then
                 tap('喀兰贸易活动开始重建')
-                log(9)
+                log.debug()
                 break
             end
             if not findOne('喀兰贸易活动下一关') then
-                log(10)
+                log.debug()
                 return
             end
         end
-        log(9)
+        log.debug()
     end
 
     if findOne("喀兰贸易结算画面") then
@@ -11257,7 +11325,7 @@ end
             appearTap("喀兰贸易结束回合红", 0.5)
             if not findOne("喀兰贸易结束回合红") then return true end
         end, 3) then
-        log("喀兰贸易结束回合点击失败")
+        log.warn("喀兰贸易结束回合点击失败")
         return
     end
     if appear("喀兰贸易结算画面", 3) then
