@@ -1546,12 +1546,11 @@ Relaunch_anchor_firsttime = true
     if findOne("主页长期探索_生息演算_重启锚点") then
         tap("主页长期探索_生息演算_重启锚点", 0.1)
     end
-    if findOne("生息演算_重启锚点_基地图标") then
-        log("检测到在游戏内")
-        tap("生息演算左上角返回")
-        appear("生息演算_重启锚点_主页进入开始建设")
-    end
     if not findOne("生息演算_重启锚点_主页进入开始建设") then
+        
+    elseif findOne("生息演算_重启锚点_基地图标") then
+        log("检测到在游戏内")
+    else
         log.warn("未找到主页，从头开始")
         Relaunch_anchor.生息跳转()
     end
@@ -1580,41 +1579,77 @@ end
 
 Relaunch_anchor.ra_15 = function()
     log("重复刷RA-15")
+            appear("生息演算_重启锚点_基地图标")
     if findOne("生息演算_重启锚点_基地图标") then
         if Relaunch_anchor_firsttime then
             appearTap("生息演算_重启锚点_基地图标", 3)
             appear("生息演算_重启锚点_基地介绍页")
-            tap("生息演算左上角返回")
+            if not wait(function()
+                if findOne("生息演算_重启锚点_基地图标") then return true end
+                tap("生息演算左上角返回")
+                ssleep(.5)
+            end, 10) then
+        end
             appearTap("生息演算_重启锚点_大地图左下ra15", 3)
         else
             appearTap("生息演算_重启锚点_大地图正中ra15", 3)
         end
+        ssleep(2)
         appearTap("生息演算_重启锚点_开启建设", 3)
-        appearTap("生息演算_重启锚点_战术倾向", 3)
-        appearTap("生息演算_重启锚点_战术倾向确认选择", 3)
+        if not wait(function()
+                if findOne("生息演算_重启锚点_战术倾向确认选择") then return true end
+                tap("生息演算_重启锚点_战术倾向")
+            end, 10) then
+        end
+        tap("生息演算_重启锚点_战术倾向确认选择")
+        ssleep(2)
         appearTap("生息演算_重启锚点_干员招募", 3)
+        ssleep(2)
         appearTap("生息演算_重启锚点_确认招募", 3)
         appearTap("生息演算_重启锚点_确认", 3)
-        appearTap("生息演算_重启锚点_开启建设", 3)
+        ssleep(3)
+        tap("生息演算_重启锚点_开启建设", 3)
         appear("生息演算_重启锚点_剧情")
         if not wait(function()
                 if findOne("生息演算_重启锚点_战斗退出") then return true end
-                Tap("两倍速", 0.1)
-            end, 10) then
+                tap("两倍速")
+                ssleep(.5)
+            end, 30) then
         end
+        log("战斗开始")
+        
         if sand2_fullbuff then
-            sx_deploy13(point.生息演算_重启锚点_作战关卡[RA15], 2)
+            log("满buff,14人")
+            --sx_deploy13(point.生息演算_重启锚点_作战关卡["RA15"], 2)
+            
+                Deploy7(1, point.生息演算_重启锚点_作战关卡["RA15"][1], 14)
+            ssleep(1)
+
+            tap("两倍速")
+                ssleep(15)
+
+                Deploy7(6, point.生息演算_重启锚点_作战关卡["RA15"][2], 13)
         else
-            sx_deploy7(point.生息演算_重启锚点_作战关卡[RA15], 2)
+            log("非满buff,7人")
+            --sx_deploy7(point.生息演算_重启锚点_作战关卡["RA15"], 2)
+            Deploy7(7, point.生息演算_重启锚点_作战关卡["RA15"][1], 7)
+            ssleep(1)
+
+            tap("两倍速")
+                ssleep(15)
+
+                Deploy7(1, point.生息演算_重启锚点_作战关卡["RA15"][2], 7)
         end
-        appearTap("两倍速", 3)
         appearTap("生息演算_重启锚点_战斗任务可领取", 3)
+        ssleep(2)
         appearTap("生息演算_重启锚点_战斗任务2绿", 3)
+        ssleep(2)
         appearTap("生息演算_重启锚点_战斗任务确认领取", 3)
         if not wait(function()
                 if findOne("生息演算_重启锚点_战斗任务2红") then return true end
-                Tap("生息演算_重启锚点_战斗任务可领取", 0.2)
-            end, 1) then
+                tap("生息演算_重启锚点_战斗任务可领取")
+                ssleep(2)
+            end, 60) then
         end
         if findOne("生息演算_重启锚点_战斗退出") then
             tap("生息演算_重启锚点_战斗退出")
@@ -1625,8 +1660,8 @@ Relaunch_anchor.ra_15 = function()
         appearTap("生息演算_重启锚点_确认终止", 3)
         if not wait(function()
                 if findOne("生息演算_重启锚点_完成建设") then return true end
-                Tap("生息演算_重启锚点_完成建设", 0.2)
-            end, 1) then
+                tap("生息演算_重启锚点_完成建设")
+            end, 10) then
         end
 
 
@@ -1801,18 +1836,19 @@ sx_deploy7 = function(deploy_table, number)
     local number = number or 2
     for i = 1, number do
         if not wait(function()
-                if findOne("干员费用够列表1") then return true end
-                if not findOne("生命值") then
-                    log("没找到生命值，继续等待")
+                if findOne("生息演算干员费用够列表") then return true end
+                if not findOne("生息演算_重启锚点_战斗退出") then
+                    log("没找到退出，继续等待")
                 end
             end, 30) then
             return false
         end
         if i > 3 then i = 3 end
         wait(function()
-            tap("干员费用够列表1")
-            disappear("干员费用够列表1", 0.5)
+            if i>1 then
 
+                appear("生息演算干员费用够列表", 10)
+            end
             if i == 1 then
                 Deploy7(7, deploy_table[i], 7)
             elseif i == 2 then
@@ -1835,22 +1871,23 @@ sx_deploy13 = function(deploy_table, number)
     local number = number or 2
     for i = 1, number do
         if not wait(function()
-                if findOne("干员费用够列表1") then return true end
-                if not findOne("生命值") then
-                    log("没找到生命值，继续等待")
+                if findOne("生息演算干员费用够列表") then return true end
+                if not findOne("生息演算_重启锚点_战斗退出") then
+                    log("没找到退出，继续等待")
                 end
             end, 30) then
             return false
         end
         if i > 3 then i = 3 end
         wait(function()
-            tap("干员费用够列表1")
-            disappear("干员费用够列表1", 0.5)
-
+            if i>1 then
+                
+                disappear("生息演算干员费用够列表", 10)
+            end
             if i == 1 then
-                Deploy7(13, deploy_table[i], 13)
+                Deploy7(1, deploy_table[i], 14)
             elseif i == 2 then
-                Deploy7(1, deploy_table[i], 13)
+                Deploy7(6, deploy_table[i], 13)
             end
 
 
@@ -1865,7 +1902,7 @@ sx_deploy13 = function(deploy_table, number)
     end
 end
 
--- src: 从右数第几个干员
+-- src: 紧则从左数第几个干员 松则从右数第几个干员
 -- dst: 目标位置，格式{x,y,direction} direction: 上1 右2 下3 左4
 -- total: 当前有几个干员，不同干员数影响干员位置
 Deploy7 = function(src, dst, total)
@@ -1881,5 +1918,5 @@ Deploy7 = function(src, dst, total)
         -- x1 = screen.width - (total - src) * max_op_width - max_op_width // 2
         x1 = screen.width - src * max_op_width + max_op_width // 2
     end
-    deploy(x1, dst[1], dst[2], dst[3])
+    deploy(x1, dst[1], dst[2], dst[3],true)
 end
