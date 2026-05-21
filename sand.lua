@@ -1578,8 +1578,10 @@ Relaunch_anchor.开始演算 = function(sand2_mode)
 end
 
 Relaunch_anchor.ra_15 = function()
+    while true do
     log("重复刷RA-15")
-            appear("生息演算_重启锚点_基地图标")
+    appear("生息演算_重启锚点_基地图标")
+    log("大地图")
     if findOne("生息演算_重启锚点_基地图标") then
         if Relaunch_anchor_firsttime then
             appearTap("生息演算_重启锚点_基地图标", 3)
@@ -1676,10 +1678,11 @@ Relaunch_anchor.ra_15 = function()
         if not wait(function()
                 if findOne("生息演算_重启锚点_基地图标") then return true end
                 tap("生息演算_重启锚点_完成建设")
-                ssleep(1.5)
+                ssleep(3)
             end, 60) then
         end
         Relaunch_anchor_firsttime = false
+    end
     end
 end
 
