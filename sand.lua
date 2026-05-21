@@ -1554,12 +1554,12 @@ Relaunch_anchor_firsttime = true
         log.warn("未找到主页，从头开始")
         Relaunch_anchor.生息跳转()
     end
-    Tales_within_the_sand.掉线状态判断()
+    --Tales_within_the_sand.掉线状态判断()
     if Tales_within_the_sand.检查代币数量() then
         return true
     end
 
-    Relaunch_anchor.开始演算(sand_mode)
+    Relaunch_anchor.开始演算(sand2_mode)
 end
 
 Relaunch_anchor.开始演算 = function(sand2_mode)
@@ -1625,10 +1625,9 @@ Relaunch_anchor.ra_15 = function()
                 Deploy7(1, point.生息演算_重启锚点_作战关卡["RA15"][1], 14)
             appear("生息演算干员费用够列表", 10)
 
-
-
+                ssleep(5)
             tap("两倍速")
-                ssleep(15)
+                ssleep(10)
 
                 Deploy7(6, point.生息演算_重启锚点_作战关卡["RA15"][2], 13)
         else
@@ -1637,8 +1636,9 @@ Relaunch_anchor.ra_15 = function()
             Deploy7(7, point.生息演算_重启锚点_作战关卡["RA15"][1], 7)
             appear("生息演算干员费用够列表", 10)
 
+                ssleep(5)
             tap("两倍速")
-                ssleep(15)
+                ssleep(10)
 
                 Deploy7(1, point.生息演算_重启锚点_作战关卡["RA15"][2], 7)
         end
@@ -1653,24 +1653,32 @@ Relaunch_anchor.ra_15 = function()
                 ssleep(2)
             end, 60) then
         end
-        if findOne("生息演算_重启锚点_战斗退出") then
-            tap("生息演算_重启锚点_战斗退出")
-        else
-            tap("生息演算_重启锚点_战斗任务可领取")
-            appearTap("生息演算_重启锚点_战斗退出", 3)
+        tap("生息演算_重启锚点_战斗退出")
+        if not wait(function()
+                if findOne("生息演算_重启锚点_确认终止") then return true end
+                tap("生息演算_重启锚点_战斗退出")
+                ssleep(1.5)
+            end, 10) then
         end
         appearTap("生息演算_重启锚点_确认终止", 3)
+        ssleep(5)
         if not wait(function()
                 if findOne("生息演算_重启锚点_完成建设") then return true end
                 tap("生息演算_重启锚点_完成建设")
-            end, 10) then
+                ssleep(1.5)
+            end, 60) then
         end
 
 
         --完成建设界面 ocr得分
 
 
-        appearTap("生息演算_重启锚点_完成建设", 3)
+        if not wait(function()
+                if findOne("生息演算_重启锚点_基地图标") then return true end
+                tap("生息演算_重启锚点_完成建设")
+                ssleep(1.5)
+            end, 60) then
+        end
         Relaunch_anchor_firsttime = false
     end
 end
