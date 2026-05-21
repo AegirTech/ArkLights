@@ -1623,7 +1623,9 @@ Relaunch_anchor.ra_15 = function()
             --sx_deploy13(point.生息演算_重启锚点_作战关卡["RA15"], 2)
             
                 Deploy7(1, point.生息演算_重启锚点_作战关卡["RA15"][1], 14)
-            ssleep(1)
+            appear("生息演算干员费用够列表", 10)
+
+
 
             tap("两倍速")
                 ssleep(15)
@@ -1633,7 +1635,7 @@ Relaunch_anchor.ra_15 = function()
             log("非满buff,7人")
             --sx_deploy7(point.生息演算_重启锚点_作战关卡["RA15"], 2)
             Deploy7(7, point.生息演算_重启锚点_作战关卡["RA15"][1], 7)
-            ssleep(1)
+            appear("生息演算干员费用够列表", 10)
 
             tap("两倍速")
                 ssleep(15)
