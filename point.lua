@@ -148,11 +148,11 @@ point = {
     活动任务导航通关前 = "1666|583|867F7A,1841|563|FEFEFE",
     活动任务导航通关后 = "1642|704|A9AAAA,1660|713|A5A6A5",
     活动导航EX = "1371|842|3FACB7",
-    活动导航0 = "1120|908|3DAAB8",
+    活动导航0 = "1121|907|44ADB7",
     活动导航S = "",
     活动导航1 = "",
     活动导航2 = "",
-    
+
     活动商店导航 = "1755|393|469BA7", -- 只需要更新进入商店导航坐标
     商店菜单钱币颜色 = "60A2C7", -- 主要用于寻找第四列是否存在
     商店主题色 = "ED5335", -- 购买按钮颜色
@@ -3493,6 +3493,20 @@ center = {
 }
 
 distance = {
+    ["HD-ST-1"] = { swip_right_max, -0 },
+    ["HD-ST-2"] = { swip_right_max, -772 },
+    ["HD-1"] = { swip_right_max, -0 },
+    ["HD-2"] = { swip_right_max, -93 },
+    ["HD-3"] = { swip_right_max, -364 },
+    ["HD-4"] = { swip_right_max, -623 },
+    ["HD-5"] = { swip_right_max, -883 },
+    ["HD-6"] = { swip_right_max, -1209 },
+    ["HD-7"] = { swip_right_max, -1516 },
+    ["HD-8"] = { swip_right_max, -1751 },
+    ["HD-9"] = { swip_right_max, -1975 },
+    ["HD-10"] = { swip_right_max, -2137 },
+    ["HD-ST-3"] = { swip_right_max, -2286 },
+    ["HD-ST-4"] = { swip_right_max, -2286 },
     -- ["HD-ST-1"] = { swip_right_max, 0 },
     -- ["HD-1"] = { swip_right_max, 0 },
     -- ["HD-TR-1"] = { swip_right_max, 0 },

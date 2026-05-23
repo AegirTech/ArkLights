@@ -5948,7 +5948,12 @@ path.活动 = function(x)
         end
         if not wait(function()
                 if findOne("活动导航0") then return true end
-                if findOne("跳过剧情") then path.跳过剧情() end
+                --众生行迹界面太白了，容易误判，暂时关闭检测，懒得修了（
+                --下个活动记得加回来
+                -- if findOne("跳过剧情") then
+                --     log(13247, '发现剧情')
+                --     path.跳过剧情()
+                -- end
             end, 10) then
             return
         end
@@ -6077,7 +6082,6 @@ path.活动 = function(x)
         tap("取消开始行动")
         ssleep(.5)
     end
-
     toast(x, screen.width * 0.05, screen.height * 0.8)
     swip(x)
     ssleep(.5)
