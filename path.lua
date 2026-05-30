@@ -6402,7 +6402,7 @@ path.商店搬空 = function()
     log.debug("进入活动")
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
-            if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
+            --  if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
             if findOne("教程关闭") then tap("教程关闭") end
         end, 15) then
         return
