@@ -5948,12 +5948,10 @@ path.活动 = function(x)
         end
         if not wait(function()
                 if findOne("活动导航0") then return true end
-                --众生行迹界面太白了，容易误判，暂时关闭检测，懒得修了（
-                --下个活动记得加回来
-                -- if findOne("跳过剧情") then
-                --     log(13247, '发现剧情')
-                --     path.跳过剧情()
-                -- end
+                if findOne("跳过剧情") then
+                    log(13247, '发现剧情')
+                    path.跳过剧情()
+                end
             end, 10) then
             return
         end
@@ -6397,12 +6395,19 @@ path.商店搬空 = function()
     if shop_period == 0 and not (interval < 0 and t > hd_open_time_end - 86400 * (shop_day + 1)) then
         return
     end
+
+    --怪猎联动 暂时关闭
+    local jump = true
+    if jump then
+        return
+    end
+
     path.跳转("首页")
     tap(hd_position)
     log.debug("进入活动")
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
-            --  if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
+            if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
             if findOne("教程关闭") then tap("教程关闭") end
         end, 15) then
         return
