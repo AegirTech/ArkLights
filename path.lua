@@ -969,6 +969,10 @@ path.fallback = {
         tap("争锋频道返回2")
         ssleep(0.6)
     end,
+    怪猎二期返回 = function()
+        tap("怪猎二期返回")
+        ssleep(0.6)
+    end,
     回归返回 = function()
         tap("回归返回")
         ssleep(1)
