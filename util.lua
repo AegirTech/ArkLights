@@ -1507,16 +1507,14 @@ swip = function(dis)
 
     -- 懒人单次手势不能添加过多定时点，理想是在插入finger时处理，偷懒直接手动切分下距离
     -- 只处理作战关卡导航中的情况
-    log.debug()
-    log(dis)
+    log.debug(dis)
     local max_dis_one_gesture = 5000
     if #dis == 2 and math.abs(dis[1]) == swip_right_max and dis[2] <
         -max_dis_one_gesture then
         table.insert(dis, dis[2] + max_dis_one_gesture)
         dis[2] = -max_dis_one_gesture
     end
-    log.debug()
-    log(dis)
+    log.debug(dis)
     for i, d in pairs(dis) do
         if i ~= 1 then ssleep(0.1) end
         if math.abs(d) == swip_right_max then

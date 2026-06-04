@@ -4612,7 +4612,7 @@ same_page_fight = function(pre, cur)
     -- if get_fight_type(cur) == '活动' then return end
 
     if removeTrailingDigits(pre) == removeTrailingDigits(cur) then
-        log("是同一页的作战", pre, cur)
+        log("是同一页的作战:", pre, ",", cur)
         return true
     end
 
@@ -4678,7 +4678,7 @@ path.轮次作战 = function()
         end
 
         -- 清光理智: 第一次理智不足时，转为1-7
-        log.debug(zero_san_after_fight, zero_san)
+        log.debug("作战后清光1-7理智", zero_san_after_fight, "1-7理智", zero_san)
         if zero_san_after_fight and zero_san then
             if zero_san_hit > 0 then break end
             zero_san_hit = zero_san_hit + 1
@@ -4821,9 +4821,12 @@ path.开始游戏 = function(x, disable_ptrs_check)
         save_token = true
     end
     local need_copy_homework = nil
-    log("开始游戏", fight_tick, x)
+    log("开始游戏,第", fight_tick, "次作战,关卡:", x)
     if copy_homework_only then pre_fight = x end
-    if not findOne("开始行动") then return end
+    if not findOne("开始行动") then
+        log.debug("未找到开始行动")
+        return
+    end
 
     -- TODO 活动时需要注意这个地方，活动关的代理指挥不长这样
     -- 目的是剿灭
@@ -4874,7 +4877,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         end
         tap("代理指挥开1")
         if not appear("代理指挥开", .5) then
-            log.debug()
+            log.debug("第一次尝试没有打开代理指挥")
             if copy_homework and homework[x] then
                 need_copy_homework = true
                 log("准备抄作业")
@@ -4914,7 +4917,8 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 return path.跳转("首页")
             end
         elseif copy_homework_only then
-            log("短路导航")
+            log.info("关卡", x, "已经三星且可以代理")
+            log.debug("短路导航")
             pre_fight = cur_fight
             return
         end
