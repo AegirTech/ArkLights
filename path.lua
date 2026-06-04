@@ -6401,10 +6401,6 @@ path.商店搬空 = function()
     end
 
     --怪猎联动 暂时关闭
-    local jump = true
-    if jump then
-        return
-    end
 
     path.跳转("首页")
     tap(hd_position)
@@ -6436,20 +6432,57 @@ path.商店搬空 = function()
                         tap("活动任务一键领取")
                         ssleep(0.2)
                         if findOne("活动任务页面") then return true end
-                    end, 7, .2) then
+                    end, 10, .2) then
                 end
             end
             ssleep(0.2)
-            wait(function()
-                back()
-                ssleep(0.2)
-                if appear("活动商店导航", 1) then
-                    return true
-                end
-            end, 2, .2)
+            if not wait(function()
+                    back()
+                    ssleep(0.2)
+                    if appear("活动商店导航", 1) then
+                        return true
+                    end
+                end, 2, .2) then
+                return path.商店搬空()
+            end
         end
         -- else
         --     snapShot("/sdcard/pictures/未找到活动任务导航.jpg")
+    end
+
+    if hd_nickname == "TD" then --怪猎活动
+        if not wait(function()
+                tap("活动商店导航")
+                ssleep(1)
+                if findOne("怪猎商店页面") then return true end
+            end, 10, .2) then
+        end
+        ssleep(0.5)
+        disappear("正在提交反馈至神经", network_timeout) -- 防止各种掉帧等导致卡在领取等页面
+        log.info("进入商店,开始炼金")
+        ssleep(0.5)
+        tap("怪猎商店快捷放入")
+        ssleep(2)
+        if not wait(function()
+                if findOne("怪猎商店开始炼金亮") then
+                    tap("怪猎商店开始炼金亮")
+                    return true
+                end
+            end, 8, .5) then
+            log.warn("素材不足,放弃炼金")
+            return
+        end
+        if not wait(function()
+                tap("怪猎商店开始炼金亮")
+                if findOne("怪猎商店开始炼金灰") then
+                    return true
+                end
+            end, 10, .5) then
+            return
+        end
+        log.info("炼金完成,退出")
+        path.跳转("首页")
+        return
     end
 
     if not wait(function()

@@ -1679,7 +1679,7 @@ auto = function(p, fallback, timeout, total_timeout, total_timeout_restart)
                 -- print(type(k))
                 if findOne(k) then
                     -- log(664, k)
-                    log(k, "=>", v)
+                    log.debug("找到", k, "启动", v)
                     -- effective_state = k
                     -- found = true
                     if tap(v) then finish = true end
