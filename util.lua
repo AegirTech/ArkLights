@@ -3217,7 +3217,7 @@ parse_fight_config = function(fight_ui)
         elseif table.includes({ "BQPZ", "BQPZ1", "BQPZ2" }, v) then
             table.insert(expand_fight, v)
         elseif table.includes({ 'HD' }, v) then
-            for i = hd_max_stage, hd_max_stage - 2, -1 do
+            for i = hd_max_stage, 1, -1 do
                 if not table.contains(hd_exclude, { i }) then
                     for _ = 1, 99 do table.insert(expand_fight, v .. '-' .. i) end
                 end
