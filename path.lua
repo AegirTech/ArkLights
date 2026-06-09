@@ -6475,6 +6475,7 @@ path.商店搬空 = function()
                     end
                 end, 8, .5) then
                 log.warn("素材不足,放弃炼金")
+                path.跳转("首页")
                 return
             end
             if not wait(function()
