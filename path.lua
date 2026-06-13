@@ -6446,7 +6446,8 @@ path.商店搬空 = function()
                     if appear("活动商店导航", 1) then
                         return true
                     end
-                end, 2, .2) then
+                end, 10, .2) then
+                back()
                 return path.商店搬空()
             end
         end
@@ -6464,7 +6465,7 @@ path.商店搬空 = function()
         ssleep(0.5)
         disappear("正在提交反馈至神经", network_timeout) -- 防止各种掉帧等导致卡在领取等页面
         log.info("进入商店,开始炼金")
-        while true do
+        wait(function()
             ssleep(0.5)
             tap("怪猎商店快捷放入")
             ssleep(2)
@@ -6475,8 +6476,11 @@ path.商店搬空 = function()
                     end
                 end, 8, .5) then
                 log.warn("素材不足,放弃炼金")
+                wait(function()
+                    back()
+                end, 3, .5)
                 path.跳转("首页")
-                return
+                return true
             end
             if not wait(function()
                     tap("怪猎商店开始炼金亮")
@@ -6485,7 +6489,10 @@ path.商店搬空 = function()
                     end
                 end, 10, .5) then
             end
-        end
+        end, 300)
+        log.info('炼金结束')
+        path.跳转("首页")
+        return
     end
 
     if not wait(function()
