@@ -973,6 +973,10 @@ path.fallback = {
         tap("怪猎二期返回")
         ssleep(0.6)
     end,
+    怪猎一期返回 = function()
+        tap("怪猎一期返回")
+        ssleep(0.6)
+    end,
     回归返回 = function()
         tap("回归返回")
         ssleep(1)
@@ -6404,8 +6408,6 @@ path.商店搬空 = function()
         return
     end
 
-    --怪猎联动 暂时关闭
-
     path.跳转("首页")
     tap(hd_position)
     log.debug("进入活动")
@@ -6455,7 +6457,7 @@ path.商店搬空 = function()
         --     snapShot("/sdcard/pictures/未找到活动任务导航.jpg")
     end
 
-    if hd_nickname == "TD" then --怪猎活动
+    if hd_nickname == "CF" then --怪猎活动
         if not wait(function()
                 tap("活动商店导航")
                 ssleep(1)
