@@ -3376,14 +3376,14 @@ update_state_from_ui = function()
     fight = parse_fight_config(fight_ui)
 
     -- 资源关全天开放时间段
-    all_open_time_start = parse_time("202504141600")
-    all_open_time_end = parse_time("202603170400")
+    all_open_time_start = parse_time("202606261600")
+    all_open_time_end = parse_time("202607100400")
     update_open_time()
 
     -- 危机合约时间段，只为加速平时的信用交易所
     during_crisis_contract = false
-    local crisis_contract_start = parse_time("202211151600")
-    local crisis_contract_end = parse_time("202211290400")
+    local crisis_contract_start = parse_time("202606261600")
+    local crisis_contract_end = parse_time("202607100400")
     local current = parse_time()
     if crisis_contract_start < current and current < crisis_contract_end then
         during_crisis_contract = true
