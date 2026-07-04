@@ -1243,6 +1243,7 @@ path.fallback = {
     小马宝莉签到领取界面 = function()
         wait(function()
             tap("小马宝莉签到领取")
+            tap('小马宝莉签到领取二')
         end, 2)
         return path.fallback.签到返回()
     end,
