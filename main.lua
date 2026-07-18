@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.19 01:03"
+release_date = "07.19 02:20"
 update_announcement = '最近更新: 小马宝莉签到领取'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -125,8 +125,60 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1)
-    ret = findOne("黑流树海_医疗招募卷")
-    log(ret)
+    log("开始")
+    local 地图序号 = appear({ "黑流树海地图列表1", "黑流树海地图列表2", "黑流树海地图列表3", "黑流树海地图列表4" }, 10, 0.1)
+    log("黑流树海地图", 地图序号)
+
+    if 地图序号 == "黑流树海地图列表1" or 地图序号 == "黑流树海地图列表2" then
+        地图序号 = "1"
+    elseif 地图序号 == "黑流树海地图列表3" or 地图序号 == "黑流树海地图列表4" then
+        地图序号 = "2"
+    else
+        log.error("未识别地图序号")
+        return
+    end
+
+    local 路线结果 = {}
+    local 最优路线
+    local 最优得分 = -100
+    for i = 1, 4 do
+        local 线路得分 = 0
+        local ocr范围 = "黑流树海地图" .. 地图序号 .. "线路" .. str(i) .. "OCR范围"
+        local 待ocr列表 = point[ocr范围]
+        if not 待ocr列表 then
+            goto continue
+        end
+        for j = 1, #待ocr列表 do
+            local ocr范围 = 待ocr列表[j]
+            local ocr结果 = ocrex_ret(ocr范围, true)
+            log.debug("ocr范围", ocr范围, "ocr结果", ocr结果)
+            if string.finds(ocr结果, { "作战" }) then
+                线路得分 = 线路得分 - 10
+            elseif string.finds(ocr结果, { "凶" }) then
+                线路得分 = 线路得分 - 10
+            elseif string.finds(ocr结果, { "诡" }) then
+                线路得分 = 线路得分 + 5
+            end
+        end
+        log.debug("线路", i, "得分", 线路得分)
+        路线结果[i] = 线路得分
+        if 线路得分 > 最优得分 then
+            最优得分 = 线路得分
+            最优路线 = i
+        end
+        ::continue::
+    end
+    log.debug("地图", 地图序号, "路线结果", 路线结果, "最优路线", 最优路线, "最优得分", 最优得分)
+
+    local 缩放函数 = function()
+        wait(function()
+            tap("黑流树海放大镜减号")
+            appear("黑流树海放大镜加号", 0.5)
+            if appear("黑流树海放大镜加号", 0.5) then return true end
+        end, 10)
+    end
+
+    exit()
     -- ret = findOne("黑流树海_医疗招募卷")
     -- log(ret)
     -- ret = findOne("黑流树海_右上角希望")

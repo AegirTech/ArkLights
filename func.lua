@@ -95,6 +95,7 @@ end
 -- 使用curl下载并安装
 install_game = function(url)
     local shpath = "/data/local/tmp/smart_curl.sh"
+    mkdir("/storage/emulated/0/pictures")
     extractAssets("main.rc", "/sdcard/pictures/", "smart_curl.sh")
     copy_file_su("/sdcard/Pictures/smart_curl.sh", shpath)
     setFilePremission(shpath, 777)

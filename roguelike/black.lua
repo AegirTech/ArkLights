@@ -160,17 +160,13 @@ hlsh.跳转 = function()
     log("跳转完毕")
 end
 
-
 hlsh.战斗后领取 = function()
 
 end
 
 hlsh.招募处理 = function()
     log.debug()
-    -- 第2人
-
     appear("黑流树海_右上角希望")
-
     wait(function()
         if findOne("黑流树海_沉沦树海进入") then return true end
         if findOne("黑流树海_战略帮助") then return true end
@@ -251,11 +247,8 @@ hlsh.招募处理 = function()
     end, 300)
 end
 
-hlsh.不招募 = function()
-    appear("黑流树海_右上角希望")
-end
-
 hlsh.不期而遇处理 = function(战略帮助)
+    -- 还没修
     local 战略帮助 = 战略帮助 or "界园_战略帮助"
     log("进入不期而遇")
     disappear("界园_战略帮助")
@@ -319,6 +312,8 @@ hlsh.不期而遇处理 = function(战略帮助)
 end
 
 hlsh.战斗开始 = function()
+    -- 还没修
+
     --检查作战关卡名字
     log.debug()
     if not zl.fight_name_ocr("界园") then return end
@@ -443,63 +438,6 @@ hlsh.战斗开始 = function()
         return restartapp(appid)
     end
     log.debug()
-end
-
-hlsh.放弃作战 = function()
-    --检查作战关卡名字
-    ssleep(1)
-    if not wait(function()
-            if findOne("快捷编队") then return true end
-            tap("界园_作战_进入")
-        end, 5) then
-        log.debug("无法进入")
-        zl_repos_path('界园_放弃探索')
-    end
-
-    -- 开始游戏
-    if not wait(function()
-            tap("确认招募")
-            if not findOne("快捷编队") then return true end
-            -- 出现过在这儿卡死的
-            if not disappear("正在提交反馈至神经", network_timeout) then
-                restartapp(appid)
-                return true
-            end
-        end, 10) then
-        return
-    end
-    log.debug()
-    -- 等待加载游戏界面
-    if not wait(function()
-            findTap("界园_无干员进入")
-            if findOne("单选确认框") then return true end
-            if findOne("生命值") then return true end
-        end, 60) then
-        return
-    end
-
-    if not findOne("生命值") then return end
-    log.debug()
-    -- 退出游戏，等待回到主线
-    if not wait(function()
-            tap("界园_左上角退出游戏")
-            ssleep(0.5)
-            if findOne("界园_放弃游戏") then
-                log.debug()
-                tap("界园_放弃游戏")
-                return true
-            end
-        end, 60) then
-        return
-    end
-
-    if not wait(function()
-            if findOne("黑流树海_右上角希望") then return true end
-            tap("右确认")
-            ssleep(1)
-        end, 60) then
-        return
-    end
 end
 
 path.黑流树海 = function()
@@ -639,56 +577,10 @@ path.黑流树海 = function()
 
     exit()
 
-    local 界园路线选择结果 = {}
-    local 第二列数量 = 0
-    local 节点判断 = function(x)
-        第二列数量 = x
-        log.debug(第二列数量)
-        local strx = str(x)
-        for i = 1, x do
-            if findOne("界园_第2列_不期而遇" .. strx .. "_列表" .. i) then
-                table.insert(界园路线选择结果, { i, "不期而遇" })
-            else
-                local ret = ocrex_ret("界园_第2列_关卡名ocr" .. strx .. "_列表" .. i)
-                if string.finds(ret, { "得", "所", "愿" }) then
-                    table.insert(界园路线选择结果, { i, "得偿所愿" })
-                end
-            end
-        end
-    end
-    if findOne("界园_第二列存在3节点") then
-        节点判断(3)
-    else
-        节点判断(2)
-    end
-    log(界园路线选择结果)
-    if #界园路线选择结果 == 0 then
-        if zl_fight_more then
-            界园路线选择结果 = {
-                { 1, "作战" },
-            }
-        else
-            toast("第二列没有不期而遇")
-            return
-        end
-    end
-    local 第一列关卡 = 1
-    if 第二列数量 == 3 then
-        if 界园路线选择结果[1][1] == 2 then
-            if not findOne("界园_第一列1第二列2是否连接") then
-                第一列关卡 = 2
-            end
-        elseif 界园路线选择结果[1][1] == 3 then
-            第一列关卡 = 2
-        end
-    else
-        第一列关卡 = 界园路线选择结果[1][1]
-    end
+    -- 判断地图
+    local 地图序号 = appear({ "黑流树海地图1", "黑流树海地图2" }, 10)
+    log("黑流树海地图", 地图序号)
 
-    if zl_big_map then
-        第一列关卡 = 1
-        界园路线选择结果[1][1] = 1
-    end
 
     log("准备进入第一关作战")
     local 右上角取样 = sample("投币提示")
