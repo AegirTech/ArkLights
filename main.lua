@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.18 02:55"
+release_date = "07.19 01:03"
 update_announcement = '最近更新: 小马宝莉签到领取'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -125,6 +125,14 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1)
+    ret = findOne("黑流树海_医疗招募卷")
+    log(ret)
+    -- ret = findOne("黑流树海_医疗招募卷")
+    -- log(ret)
+    -- ret = findOne("黑流树海_右上角希望")
+    -- log(ret)
+    -- ret = findAny({ "黑流树海_近卫招募卷", "黑流树海_医疗招募卷", "黑流树海_右上角希望", "黑流树海_辅助招募卷", "黑流树海_选择招募最后阶段" })
+    -- log.debug(ret)
 
     -- 开始坐标 = { 906, 537 }
     -- 宽度 = 260
@@ -152,9 +160,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     --     end
     -- end
     -- log("allret", allret)
-
-
-    -- exit()
+    --exit()
 end
 
 load(before_account_hook or '')()

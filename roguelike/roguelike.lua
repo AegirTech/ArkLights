@@ -1143,6 +1143,14 @@ zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型, retry)
             --{ "耀骑士临光", 99, 1 },
             { "煌", 99, 1 },
         }
+    elseif 肉鸽类型 == '黑流树海' then
+        order = {
+            { "百炼嘉维尔", 99, 2 },
+            { "圣约送葬人", 99, 2 },
+            { "煌", 99, 1 },
+            { "怒潮凛冬", 99, 3 },
+            { "丰川祥子", 0, 2 },
+        }
     else
         order = {
             { "百炼嘉维尔", 99, 2 },
@@ -1170,7 +1178,7 @@ zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型, retry)
     disappear("战略助战界面", 5)
     toast('再次判断助战干员')
     --再判断一次是否符号招募要求
-    local target_operator = { '羽毛', '送葬', '圣', '嘉维尔', '海沫', '煌', '骑士', '临光', '比安' }
+    local target_operator = { '羽毛', '送葬', '圣', '嘉维尔', '海沫', '煌', '骑士', '临光', '比安', "怒潮", "丰川", "祥子" }
     if not wait(function()
             local target_best = ocr('战略助战确认干员范围')
             if target_best[1] then
@@ -1207,6 +1215,7 @@ zl_help_fight = function(reflashNum, 初始招募界面, 肉鸽类型, retry)
         if findAny({ "萨卡兹_希望源石锭界面", '水月_希望源石锭钥匙界面', "肉鸽_右上角希望" }) then return true end
         if findOne("战略助战确认界面") then tap("战略助战确认") end
         if not findOne("战略助战确认界面") then tap("开包skip") end
+        if findOne("黑流树海_右上角希望") then return true end
     end, 10)
 end
 

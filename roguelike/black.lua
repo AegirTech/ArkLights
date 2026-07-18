@@ -168,113 +168,91 @@ end
 hlsh.招募处理 = function()
     log.debug()
     -- 第2人
-    for i = 1, 2 do
-        local tj = appear({ "黑流树海_辅助招募卷", "黑流树海_医疗招募卷" })
-        log.debug(tj, "不招募")
+
+    appear("黑流树海_右上角希望")
+
+    wait(function()
+        if findOne("黑流树海_沉沦树海进入") then return true end
+        if findOne("黑流树海_战略帮助") then return true end
+        local tj = appear({ "黑流树海_近卫招募卷", "黑流树海_辅助招募卷", "黑流树海_医疗招募卷" })
+        log.debug(tj, "招募")
         if not tj then
             log.debug("没有招募卷")
-            break
-        end
-        if not wait(function()
-                tap(tj)
-                tap("招募说明关闭")
-                if findOne("确认招募") then return true end
-            end, 10) then
             return
-        end
-        appear('战略助战')
-        if not wait(function()
-                tap("放弃招募")
-                if findOne("剿灭说明") then tap("剿灭说明") end
-                if not findOne("确认招募") then return true end
-            end, 10) then
-            return
-        end
+        else
+            if tj == "黑流树海_辅助招募卷" or tj == "黑流树海_医疗招募卷" then
+                if not wait(function()
+                        tap(tj)
+                        tap("招募说明关闭")
+                        if findOne("确认招募") then return true end
+                    end, 10) then
+                    return
+                end
+                appear('战略助战')
+                if not wait(function()
+                        tap("放弃招募")
+                        if findOne("剿灭说明") then tap("剿灭说明") end
+                        if not findOne("确认招募") then return true end
+                    end, 10) then
+                    return
+                end
 
-        if not wait(function()
-                tap("右右确认")
-                if findOne("剿灭说明") then tap("剿灭说明") end
-                if findOne("黑流树海_右上角希望") then return true end
-            end, 10) then
-            return
-        end
-    end
-    ssleep(.1)
-    log.debug()
-    log('招募近卫')
-    if not wait(function()
-            tap("黑流树海_近卫招募卷")
-            tap("招募说明关闭")
-            if not findOne("黑流树海_右上角希望") and not findOne("战略返回") then
-                return true
-            end
-            ssleep(0.2)
-        end, 10) then
-    end
-    disappear({ "黑流树海_右上角希望", "战略返回" })
-    if not wait(function()
-            if findAny({ "黑流树海_右上角希望" }) then
+                if not wait(function()
+                        tap("右右确认")
+                        if findOne("剿灭说明") then tap("剿灭说明") end
+                        if findOne("黑流树海_右上角希望") then return true end
+                    end, 10) then
+                    return
+                end
+            elseif tj == "黑流树海_近卫招募卷" then
+                ssleep(.1)
                 log.debug()
-                return true
-            end
-            if findOne("返回确认界面") then
-                log.debug()
-                tap("左取消")
-                disappear("返回确认界面")
-                ssleep(.5)
-            end
-            log.debug(zl_best_operator)
-            local idx = str2int(zl_best_operator, -1)
+                log('招募近卫')
+                if not wait(function()
+                        tap("黑流树海_近卫招募卷")
+                        tap("招募说明关闭")
+                        if not findOne("黑流树海_右上角希望") and not findOne("战略返回") then
+                            return true
+                        end
+                        ssleep(0.2)
+                    end, 10) then
+                end
+                disappear({ "黑流树海_右上角希望", "战略返回" })
+                if not wait(function()
+                        if findAny({ "黑流树海_右上角希望" }) then
+                            log.debug()
+                            return true
+                        end
+                        if findOne("返回确认界面") then
+                            log.debug()
+                            tap("左取消")
+                            disappear("返回确认界面")
+                            ssleep(.5)
+                        end
+                        log.debug(zl_best_operator)
+                        local idx = str2int(zl_best_operator, -1)
 
-            if idx >= 1 and idx <= 12 then
-                -- 指定
-                tap("近卫招募列表" .. (zl_best_operator or 1))
-                findTap("确认招募")
-                tap("开包skip")
-            elseif idx == -1 then
-                -- 助战自动
-                zl_help_fight(0, '黑流树海_右上角希望', "界园")
-            else
-                stop("请设置近卫干员序号(1~12)", '', true, false)
+                        if idx >= 1 and idx <= 12 then
+                            -- 指定
+                            tap("近卫招募列表" .. (zl_best_operator or 1))
+                            findTap("确认招募")
+                            tap("开包skip")
+                        elseif idx == -1 then
+                            -- 助战自动
+                            zl_help_fight(0, '黑流树海_右上角希望', "黑流树海")
+                        else
+                            stop("请设置近卫干员序号(1~12)", '', true, false)
+                        end
+                    end, 120) then
+                    return
+                end
             end
-        end, 120) then
-        return
-    end
+        end
+    end, 300)
 end
 
 hlsh.不招募 = function()
     appear("黑流树海_右上角希望")
-    for i = 1, 3 do
-        local tj = appear({ "黑流树海_近卫招募卷", "黑流树海_辅助招募卷", "黑流树海_医疗招募卷" })
-        log.debug(tj, "不招募")
-        if not tj then
-            log.debug("没有招募卷")
-            return
-        end
-        if not wait(function()
-                tap(tj)
-                tap("招募说明关闭")
-                if findOne("确认招募") then return true end
-            end, 10) then
-            return
-        end
-        appear('战略助战')
-        if not wait(function()
-                tap("放弃招募")
-                if findOne("剿灭说明") then tap("剿灭说明") end
-                if not findOne("确认招募") then return true end
-            end, 10) then
-            return
-        end
-
-        if not wait(function()
-                tap("右右确认")
-                if findOne("剿灭说明") then tap("剿灭说明") end
-                if findOne("黑流树海_右上角希望") then return true end
-            end, 10) then
-            return
-        end
-    end
 end
 
 hlsh.不期而遇处理 = function(战略帮助)
@@ -543,6 +521,7 @@ path.黑流树海 = function()
             -- if findOne("黑流树海_选择招募一阶段完成") then return true end
             if findOne("肉鸽第三近卫分队") then return true end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+            if findOne("黑流树海_选择支援页面") then return true end
             tap('萨卡兹_蓝图分队位置列表' .. t_position)
             ssleep(0.5) --太快了直接选错招募券组合
         end, 20) then
@@ -550,38 +529,36 @@ path.黑流树海 = function()
     end
 
     local page = nil
-    if not zl_only_coin then
-        -- 会出额外藏品
+    -- 会出额外藏品
+    log.debug()
+    if appear("黑流树海_选择支援页面", 0.5) then
         log.debug()
-        -- if appear("界园_额外藏品选择页面", 5) and not appear("界园_选择招募卷阶段", 0.5) then
-        --     log.debug()
-        --     ssleep(0.2)
-        --     appear("界园_藏品选择横线", 5)
-        --     ssleep(0.1)
-        --     page = sample("界园进度")
-        --     local best = 2
-        --     for i = 1, 3 do
-        --         local fret = find_color("界园_藏品范围" .. i, "C82A36", 0, 0.8)
-        --         log.debug(i, fret)
-        --         local fretb = find_color("界园_藏品范围" .. i, "28BFE5")
-        --         log.debug(fretb)s
-        --         if not fret and fretb then
-        --             best = i
-        --             log.debug(best)
-        --         end
-        --     end
-        --     if not wait(function(reset_wait_start_time)
-        --             if findOne("界园_选择招募卷阶段") then return true end
-        --             if not findOne(page) then return true end
-        --             tap('界园_藏品点击列表' .. best)
-        --             tap('界园_藏品点击列表' .. best)
-        --             ssleep(0.5)
-        --         end, 10) then
-        --     end
-        -- end
+        ssleep(0.2)
+        appear("界园_藏品选择横线", 5)
+        ssleep(0.1)
+        page = sample("界园进度")
+        local best = 2
+        for i = 1, 3 do
+            local fret = find_color("黑流树海_藏品范围" .. i, "D13464", 0, 0.8) -- 红色
+            log.debug(i, fret)
+            local fretb = find_color("黑流树海_藏品范围" .. i, "38D0D4")
+            log.debug(fretb)
+            if not fret and fretb then
+                best = i
+                log.debug(best)
+            end
+        end
+        if not wait(function(reset_wait_start_time)
+                if findOne("黑流树海_选择招募最后阶段") then return true end
+                if not findOne(page) then return true end
+                tap('黑流树海_藏品点击列表' .. best)
+                tap('黑流树海_藏品点击列表' .. best)
+                ssleep(0.5)
+            end, 10) then
+        end
     end
 
-    ssleep(0.5)
+    -- ssleep(0.5)
     if not wait(function(reset_wait_start_time)
             -- if findOne("界园_选择招募二阶段") then return true end
             if findOne("黑流树海_选择招募最后阶段") then return true end
@@ -600,44 +577,42 @@ path.黑流树海 = function()
     log.debug()
     if not wait(function(reset_wait_start_time)
             findTap("招募说明关闭")
+            if findAny({ "黑流树海_近卫招募卷", "黑流树海_医疗招募卷", "黑流树海_辅助招募卷", "黑流树海_右上角希望", "黑流树海_选择招募最后阶段" }) then
+                return true
+            end
             if findAny({
                     "战略助战", "放弃招募", "剿灭说明",
                 }) then
                 tap("放弃招募")
                 if findOne("剿灭说明") then tap("剿灭说明") end
-                if findAny({
-                        { "黑流树海_近卫招募卷", "黑流树海_医疗招募卷", "黑流树海_右上角希望" }
-                    }) then
+                if findAny({ "黑流树海_近卫招募卷", "黑流树海_右上角希望", "黑流树海_选择招募最后阶段" }) then
                     return true
                 end
-                disappear("放弃招募")
+                disappear("放弃招募", 0.1)
                 if not wait(function()
                         tap("右右确认")
+                        ssleep(.1)
                         if findOne("剿灭说明") then tap("剿灭说明") end
-                        if findAny({
-                                { "黑流树海_近卫招募卷", "黑流树海_医疗招募卷", "黑流树海_右上角希望" }
-                            }) then
+                        if findAny({ "黑流树海_近卫招募卷", "黑流树海_右上角希望", "黑流树海_选择招募最后阶段" }) then
                             return true
                         end
                     end, 10) then
-                    return
+                    return true
                 end
             end
             ssleep(.1)
         end, 10) then
         return
     end
-    if zl_skip_fight then
-        hlsh.不招募()
-    else
-        hlsh.招募处理()
-    end
+
+    hlsh.招募处理()
 
     log.debug()
-    if not appear({ "黑流树海_右上角希望", "黑流树海_沉沦树海进入" }, 20) then return end
+    if not appear({ "黑流树海_右上角希望", "黑流树海_沉沦树海进入", "黑流树海_战略帮助" }, 20) then return end
     -- 进入探索 必须分为两段，否则产生位移
     if not wait(function()
             if not findOne("黑流树海_右上角希望") then return true end
+            if findOne("黑流树海_战略帮助") then return true end
             tap("黑流树海_沉沦树海进入")
         end, 15) then
         return
@@ -661,6 +636,8 @@ path.黑流树海 = function()
         return
     end
     ssleep(0.5) -- 右边第三列有概率加载过慢
+
+    exit()
 
     local 界园路线选择结果 = {}
     local 第二列数量 = 0
