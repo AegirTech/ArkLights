@@ -8532,6 +8532,27 @@ path.肉鸽任务 = function()
             end
         end
     end
+
+    if zl_hlsh then
+        log("黑流树海")
+        黑流树海完成 = false
+        zl_level_enough = false
+        zl_skip_coin = zl_skip_coin_hlsh
+        zl_only_coin = zl_only_coin_hlsh
+        zl_need_goods = zl_need_goods_hlsh
+        zl_max_level = zl_max_level_hlsh
+        zl_max_coin = zl_max_coin_hlsh
+        while true do
+            if 黑流树海完成 then
+                break
+            end
+            local status, err = pcall(path.黑流树海)
+            if not status then
+                log("黑流树海肉鸽任务出错", err)
+            end
+        end
+    end
+
     stop("肉鸽结束", '', true, true) --打不完不关闭游戏，有时候需要再检测一下的
 end
 

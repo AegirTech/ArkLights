@@ -1397,7 +1397,7 @@ zl_navigation = function(常规行动, 需要点击的肉鸽)
         return zl_navigation(常规行动, 需要点击的肉鸽)
     end
 
-    if 需要点击的肉鸽 == '界园_进入主题' then
+    if 需要点击的肉鸽 == '界园_进入主题' or 需要点击的肉鸽 == '黑流树海_进入主题' then
         log('滑动2')
         zl_swip(false, 1101)
     end
@@ -1792,3 +1792,4 @@ require("mizuki")
 require("sarkaz")
 require("sami")
 require("sui")
+require("black")

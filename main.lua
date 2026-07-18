@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.02 10:32"
+release_date = "07.18 02:55"
 update_announcement = '最近更新: 小马宝莉签到领取'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -125,6 +125,36 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1)
+
+    -- 开始坐标 = { 906, 537 }
+    -- 宽度 = 260
+    -- -- 文字位置 = { 1347, 573, 1506, 625 }
+    -- allret = {}
+    -- for x = -4, 4, 1 do
+    --     for y = -4, 4, 1 do
+    --         local xx = 开始坐标[1] + 宽度 * x
+    --         local yy = 开始坐标[2] + 宽度 * y
+    --         if xx < scale(200) or yy < scale(100) or x > scale(1800) or yy > scale(900) then
+    --             -- log.debug("坐标越界", xx, yy)
+    --             goto continue
+    --         end
+    --         local 文字位置 = { xx - 60, yy + 40, xx + 60, yy + 75 }
+    --         -- log.debug("坐标", xx, yy, "文字位置", 文字位置)
+    --         --oc11 = ocr_ret(文字位置)
+    --         oc222 = ocrex_ret(文字位置, true)
+    --         if oc222 == "" then
+    --             -- log.debug("坐标", xx, yy, "ocr_ret", oc11)
+    --             -- log.debug("坐标", xx, yy, "ocrex_ret", oc222)
+    --             goto continue
+    --         end
+    --         allret[#allret + 1] = { xx, yy, oc222 }
+    --         ::continue::
+    --     end
+    -- end
+    -- log("allret", allret)
+
+
+    -- exit()
 end
 
 load(before_account_hook or '')()

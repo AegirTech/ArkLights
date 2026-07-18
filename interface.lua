@@ -1322,8 +1322,9 @@ show_extra_ui = function()
     newRow(layout)
     ui.addCheckBox(layout, "zl_skz", "【萨卡兹】", false)
     ui.addCheckBox(layout, "zl_jy", "【界园】", false)
+    ui.addCheckBox(layout, "zl_hlsh", "【黑流树海】", false)
     newRow(layout)
-    addTextView(layout, "界园肉鸽已完善(有问题请加群反馈 891819123)")
+    addTextView(layout, "【黑流树海】肉鸽已完善(有问题请加群反馈 891819123)")
     newRow(layout)
     addTextView(layout, "通用选项")
     addTextView(layout, [[选第]])
@@ -1438,7 +1439,7 @@ show_extra_ui = function()
     ui.addEditText(rouge_layout_萨卡兹, "zl_max_coin_skz", [[]])
 
     ------------------------------------------------------------
-    local rouge_layout_萨卡兹 = "extra_tab_zl5"
+    local rouge_layout_界园 = "extra_tab_zl5"
     ui.addTab("extra_tab", rouge_layout_界园, "界园")
 
     newRow(rouge_layout_界园)
@@ -1463,6 +1464,29 @@ show_extra_ui = function()
     ui.addEditText(rouge_layout_界园, "zl_team_position_sui", [[1]]) --分队位置
     newRow(rouge_layout_界园)
     ui.addCheckBox(rouge_layout_界园, "zl_big_map", "已点扩园篇天赋", false)
+
+
+    ------------------------------------------------------------
+    local rouge_layout_黑流树海 = "extra_tab_zl6"
+    ui.addTab("extra_tab", rouge_layout_黑流树海, "黑流树海")
+
+    newRow(rouge_layout_黑流树海)
+    ui.addCheckBox(rouge_layout_黑流树海, "zl_skip_coin_hlsh", "跳过投币", false)
+    ui.addCheckBox(rouge_layout_黑流树海, "zl_only_coin_hlsh", "投币完立刻退出", false)
+    ui.addCheckBox(rouge_layout_黑流树海, "zl_not_buy_hlsh", "不购买商店藏品", false)
+
+    newRow(rouge_layout_黑流树海)
+    addTextView(rouge_layout_黑流树海, [[需求商品]])
+    ui.addEditText(rouge_layout_黑流树海, "zl_need_goods_hlsh", [[]])
+    addTextView(rouge_layout_黑流树海, [[等级]])
+    ui.addEditText(rouge_layout_黑流树海, "zl_max_level_hlsh", [[max]])
+    addTextView(rouge_layout_黑流树海, [[源石锭]])
+    ui.addEditText(rouge_layout_黑流树海, "zl_max_coin_hlsh", [[]])
+
+    newRow(rouge_layout_黑流树海)
+    addTextView(rouge_layout_黑流树海, [[分队位置（暂时没用）]])
+    ui.addEditText(rouge_layout_黑流树海, "zl_team_position_hlsh", [[1]]) --分队位置
+
     -- newRow(layout)
     -- addTextView(layout, "===========肉鸽相关===========")
 
