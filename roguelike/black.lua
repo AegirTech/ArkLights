@@ -177,7 +177,7 @@ hlsh.战斗后领取 = function()
                 end
             end
             local x = appear({
-                "黑流树海_源石锭领取", "黑流树海_藏品领取", "黑流树海_零件领取"
+                "黑流树海_源石锭领取", "黑流树海_藏品领取", "黑流树海_零件领取", "黑流树海_护盾领取", "黑流树海_零件确认领取", "黑流树海_零件叉叉"
             })
             log.debug(x)
             tap(x)
@@ -185,6 +185,7 @@ hlsh.战斗后领取 = function()
             -- 误触到招募券处理
             if findOne("确认招募") then
                 -- 放弃招募
+                log("招募流程")
                 if zl_only_coin then
                     if not wait(function()
                             if not findOne("确认招募") then return true end
@@ -383,7 +384,7 @@ hlsh.不期而遇处理 = function(战略帮助)
                     if zl_event_solve(8, 战略帮助) then return true end
                 elseif string.finds(str, { "沉寂", "之屋", "临时", "中介所", "鸭托邦", "鸭", '湖中仙女', "湖中", "黑", "杠杆", "呼吸" }) then -- 三选第三个 如 沉寂之屋  临时中介所
                     if zl_event_solve(4, 战略帮助) then return true end
-                elseif string.finds(str, { "洞中宝", "洞", "泪之", "和平" }) then -- 二选第二个 或者1选1  洞中宝
+                elseif string.finds(str, { "洞中宝", "洞", "泪之", "和平", "桑尼", "多尼", "邀请" }) then -- 二选第二个 或者1选1  洞中宝
                     if zl_event_solve(2, 战略帮助) then return true end
                 elseif string.finds(str, { "思乡", "心切", "乡", "传奇团伙", "传奇" }) then -- 二选第二个 或者3选2  思乡心切
                     if zl_event_solve(5, 战略帮助) then return true end
@@ -795,11 +796,12 @@ path.黑流树海 = function()
             if appear("黑流树海放大镜加号", 0.5) then return true end
         end, 10)
     end
-    缩放函数()
     local 关卡坐标 = point["黑流树海地图" .. 地图序号 .. "关卡列表" .. str(最优路线)]
     for i = 1, #map do
         local node = map[i]
         log.debug("当前节点", i, node)
+        缩放函数()
+        ssleep(0.2)
         tap(关卡坐标[i])
         if node == "作战" then
             log("点击作战")
@@ -814,14 +816,10 @@ path.黑流树海 = function()
             log("黑流树海_非作战")
             if not zl.fight_name_ocr("黑流树海") then return end
             toast(now_fight_name)
-            if now_fight_name == "不期而遇" then
-                hlsh.不期而遇处理()
-            elseif now_fight_name == "得偿所愿" then
+            if string.finds(now_fight_name, { "不期而遇", "林间空地", "得偿所愿", "安全的角落" }) then
                 hlsh.不期而遇处理()
             elseif now_fight_name == "诡意行商" then
                 hlsh.诡意行商处理()
-            elseif now_fight_name == "安全的角落" then
-                hlsh.不期而遇处理()
             else
                 log.debug("未知非作战事件", now_fight_name)
                 --pass
@@ -830,7 +828,6 @@ path.黑流树海 = function()
             log("黑流树海_尽头")
             hlsh.不期而遇处理()
         end
-        ssleep(20)
     end
 
     if not wait(function()
