@@ -823,6 +823,16 @@ path.黑流树海 = function()
     local 关卡坐标 = point["黑流树海地图" .. 地图序号 .. "关卡列表" .. str(最优路线)]
     for i = 1, #map do
         local node = map[i]
+
+        -- 判断是否掉线 退出
+        if findAny({
+                "面板", "活动公告返回", "签到返回",
+                "签到返回黄", "开始唤醒", "常规行动",
+                "bilibili_framelayout_only", "framelayout_only", "黑流树海_放弃本次探索", "黑流树海_常规行动"
+            }) then
+            return false
+        end
+
         log.debug("当前节点", i, node)
         缩放函数()
         ssleep(0.2)
