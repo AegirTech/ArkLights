@@ -176,7 +176,7 @@ hlsh.战斗后领取 = function()
                 end
             end
             local x = appear({
-                "黑流树海_源石锭领取", "黑流树海_藏品领取"
+                "黑流树海_源石锭领取", "黑流树海_藏品领取", "黑流树海_零件领取"
             })
             log.debug(x)
             tap(x)
@@ -400,7 +400,7 @@ hlsh.不期而遇处理 = function(战略帮助)
     end
 end
 
-lsh.诡意行商处理 = function()
+hlsh.诡意行商处理 = function()
     if not wait(function()
             if findAny({ "诡意行商投资", "诡意行商离开" }) then return true end
             tap("黑流树海_空白出发前往")
@@ -507,7 +507,6 @@ hlsh.战斗开始 = function()
 
     if not appear("快捷编队") then return end
     log("开始作战前")
-    -- exit()
     -- 开始游戏
     if not wait(function()
             tap("确认招募")
@@ -812,7 +811,7 @@ path.黑流树海 = function()
             hlsh.战斗开始()
             log.debug()
             hlsh.战斗后领取()
-        elseif node == "非作战" then
+        elseif node == "非作战" or node == "空坐标" then
             log("黑流树海_非作战")
             if not zl.fight_name_ocr("黑流树海") then return end
             toast(now_fight_name)
@@ -824,10 +823,10 @@ path.黑流树海 = function()
                 hlsh.诡意行商处理()
             elseif now_fight_name == "安全的角落" then
                 hlsh.不期而遇处理()
+            else
+                log.debug("未知非作战事件", now_fight_name)
+                --pass
             end
-        elseif node == "空坐标" then
-            log("空坐标")
-            --pass
         elseif node == "尽头" then
             log("黑流树海_尽头")
             hlsh.不期而遇处理()
