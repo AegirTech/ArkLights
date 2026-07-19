@@ -161,7 +161,104 @@ hlsh.跳转 = function()
 end
 
 hlsh.战斗后领取 = function()
+    local drop_page = false
+    if not wait(function()
+            if not drop_page then tap("战略确认") end
+            if findOne("界园_战略帮助") then drop_page = true end
+            if zl_only_coin then
+                local x = findAny({ "界园_不要了列表1", "界园_不要了列表2" })
+                log.debug(x)
+                tap(x)
+                if not wait(function()
+                        tap(findAny({ "界园_不要了确认列表1", "界园_不要了确认列表2" }))
+                        if findAny({ "战略返回", "界园_战略帮助" }) then return true end
+                    end, 2) then
+                end
+            end
+            local x = appear({
+                "界园_源石锭收下", "界园_通宝收下",
+                "界园_招募卷收下", "界园_通宝收下2",
+            })
+            log.debug(x)
+            tap(x)
+            if x == "界园_通宝收下2" then
+                appearTap("界园_通宝交换左", 5)
+                disappear("界园_通宝交换左")
+            end
 
+            findTap("通宝替换确认")
+
+            -- 误触到招募券处理
+            if findOne("确认招募") then
+                -- 放弃招募
+                if zl_only_coin then
+                    if not wait(function()
+                            if not findOne("确认招募") then return true end
+                            tap("放弃招募")
+                        end, 5) then
+                        return
+                    end
+
+                    if not wait(function()
+                            if findOne("编队") then return true end
+                            tap("右右确认")
+                        end, 5) then
+                        return
+                    end
+                else
+                    -- 招募
+                    if findOne("确认招募") then
+                        local start_time = time()
+                        if not wait(function()
+                                if findOne("编队") then return true end
+                                if findOne("返回确认界面") then
+                                    if time() - start_time < 2000 then
+                                        tap("左取消")
+                                    else
+                                        tap("右确认")
+                                    end
+                                    disappear("返回确认界面")
+                                    ssleep(.5)
+                                end
+                                tap("近卫招募列表" .. 1)
+                                findTap("确认招募")
+                                tap("开包skip")
+                                findTap("通宝替换确认")
+                            end, 10) then
+                            return
+                        end
+                    end
+                end
+            end
+
+            if findOne("放弃招募") and not findOne("确认招募") then
+                if not wait(function()
+                        if not findOne("放弃招募") then return true end
+                        tap("放弃招募")
+                    end, 5) then
+                    return
+                end
+                if not wait(function()
+                        if findOne("编队") then return true end
+                        tap("右右确认")
+                    end, 5) then
+                    return
+                end
+            end
+
+            if not findOne("战略返回") then
+                if not appear({ "战略返回", "界园_战略帮助" }) then
+                    tap("战略确认")
+                end
+            end
+            -- if disappear("战略返回",0.5) then return true end
+            if findAny({ "界园_常规行动", "界园_战略帮助" }) and not findOne("确认招募") then
+                return true
+            end
+        end, 30) then
+        return false
+    end
+    return true
 end
 
 hlsh.招募处理 = function()
@@ -312,28 +409,27 @@ hlsh.不期而遇处理 = function(战略帮助)
 end
 
 hlsh.战斗开始 = function()
-    -- 还没修
-
     --检查作战关卡名字
-    log.debug()
-    if not zl.fight_name_ocr("界园") then return end
+    if not zl.fight_name_ocr("黑流树海") then return end
     toast(now_fight_name)
     ssleep(1)
     if not wait(function()
             if findOne("快捷编队") then return true end
-            tap("界园_作战_进入")
+            tap("黑流树海_作战出发前往")
         end, 5) then
         log.debug("无法进入")
-        zl_repos_path('界园_放弃探索')
+        zl_repos_path('黑流树海_放弃本次探索')
     end
+
     log.debug()
+
     if not wait(function()
             if findOne("确认招募") then return true end
             tap("快捷编队")
         end, 10) then
         return
     end
-    log.debug()
+
     if not wait(function()
             if findOne("攻击范围") and
                 (zl_skill_idx ~= 2 or zl_skill_idx == 2 and findOne("战略二技能")) then
@@ -366,6 +462,9 @@ hlsh.战斗开始 = function()
     if not wait(function()
             tap("确认招募")
             if not findOne("快捷编队") then return true end
+            if findTap("黑流树海_绿确认右") then
+                ssleep(0.5)
+            end
             -- 出现过在这儿卡死的
             if not disappear("正在提交反馈至神经", network_timeout) then
                 restartapp(appid)
@@ -379,6 +478,7 @@ hlsh.战斗开始 = function()
     if not wait(function()
             if findOne("单选确认框") then return true end
             if findOne("生命值") then return true end
+            findTap("黑流树海_绿确认右")
         end, 60) then
         return
     end
@@ -389,7 +489,8 @@ hlsh.战斗开始 = function()
     appearTap("两倍速", 3)
     log.debug()
     -- 部署干员到关卡位置 只部署一个人的
-    zl_deploy(point.界园_作战关卡[now_fight_name], 1)
+    log("部署干员到关卡位置", now_fight_name, point.黑流树海_作战关卡[now_fight_name])
+    zl_deploy(point.黑流树海_作战关卡[now_fight_name], 1)
 
     appear("生命值")
     log.debug()
@@ -575,8 +676,6 @@ path.黑流树海 = function()
     end
     ssleep(0.5) -- 右边第三列有概率加载过慢
 
-    exit()
-
     -- 判断地图
     log("开始判断地图")
     local 地图序号 = appear({ "黑流树海地图列表1", "黑流树海地图列表2", "黑流树海地图列表3", "黑流树海地图列表4", "黑流树海地图列表5" }, 10, 0.1)
@@ -593,13 +692,14 @@ path.黑流树海 = function()
         return
     end
 
-    local 路线结果 = {}
-    local 最优路线
+    local 最优路线 = 1
     local 最优得分 = -100
+    local map = {}
+
     for i = 1, 4 do
+        local xmap = {}
         local 线路得分 = 0
-        local ocr范围 = "黑流树海地图" .. 地图序号 .. "线路" .. str(i) .. "OCR范围"
-        local 待ocr列表 = point[ocr范围]
+        local 待ocr列表 = point["黑流树海地图" .. 地图序号 .. "线路" .. str(i) .. "OCR范围"]
         if not 待ocr列表 then
             goto continue
         end
@@ -609,21 +709,33 @@ path.黑流树海 = function()
             log.debug("ocr范围", ocr范围, "ocr结果", ocr结果)
             if string.finds(ocr结果, { "作战" }) then
                 线路得分 = 线路得分 - 10
+                table.insert(xmap, "作战")
             elseif string.finds(ocr结果, { "凶" }) then
                 线路得分 = 线路得分 - 10
+                table.insert(xmap, "作战")
             elseif string.finds(ocr结果, { "诡" }) then
                 线路得分 = 线路得分 + 5
+                table.insert(xmap, "非作战")
+            else
+                table.insert(xmap, "空坐标")
             end
         end
         log.debug("线路", i, "得分", 线路得分)
-        路线结果[i] = 线路得分
         if 线路得分 > 最优得分 then
             最优得分 = 线路得分
             最优路线 = i
+            map = shallowCopy(xmap)
         end
         ::continue::
     end
-    log.debug("地图", 地图序号, "路线结果", 路线结果, "最优路线", 最优路线, "最优得分", 最优得分)
+
+    table.insert(map, 1, "作战")
+    if 地图序号 == "3" then
+        table.insert(map, "非作战")
+    end
+
+    table.insert(map, "尽头")
+    log.debug("地图", 地图序号, map, "最优路线", 最优路线, "最优得分", 最优得分)
 
     local 缩放函数 = function()
         wait(function()
@@ -632,6 +744,28 @@ path.黑流树海 = function()
             appear("黑流树海放大镜加号", 0.5)
             if appear("黑流树海放大镜加号", 0.5) then return true end
         end, 10)
+    end
+    缩放函数()
+    local 关卡坐标 = point["黑流树海地图" .. 地图序号 .. "关卡列表" .. str(最优路线)]
+    for i = 1, #map do
+        local node = map[i]
+        log.debug("当前节点", i, node)
+        tap(关卡坐标[i])
+        if node == "作战" then
+            log("点击作战")
+            if not appear("黑流树海_作战页面出现", 5) then
+                log.debug("无法进入")
+                return
+            end
+            hlsh.战斗开始()
+            log.debug()
+            hlsh.战斗后领取()
+        elseif node == "非作战" then
+            log("黑流树海_非作战")
+        elseif node == "尽头" then
+            log("黑流树海_尽头")
+        end
+        ssleep(20)
     end
 
     log("准备进入第一关作战")
