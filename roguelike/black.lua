@@ -164,29 +164,22 @@ hlsh.战斗后领取 = function()
     local drop_page = false
     if not wait(function()
             if not drop_page then tap("战略确认") end
-            if findOne("界园_战略帮助") then drop_page = true end
+            if findOne("黑流树海_战略帮助") then drop_page = true end
             if zl_only_coin then
-                local x = findAny({ "界园_不要了列表1", "界园_不要了列表2" })
+                local x = findAny({ "黑流树海_领取完成" })
                 log.debug(x)
                 tap(x)
                 if not wait(function()
-                        tap(findAny({ "界园_不要了确认列表1", "界园_不要了确认列表2" }))
-                        if findAny({ "战略返回", "界园_战略帮助" }) then return true end
+                        tap(findAny({ "黑流树海_领取完成" }))
+                        if findAny({ "战略返回", "黑流树海_战略帮助" }) then return true end
                     end, 2) then
                 end
             end
             local x = appear({
-                "界园_源石锭收下", "界园_通宝收下",
-                "界园_招募卷收下", "界园_通宝收下2",
+                "黑流树海_源石锭领取", "黑流树海_藏品领取"
             })
             log.debug(x)
             tap(x)
-            if x == "界园_通宝收下2" then
-                appearTap("界园_通宝交换左", 5)
-                disappear("界园_通宝交换左")
-            end
-
-            findTap("通宝替换确认")
 
             -- 误触到招募券处理
             if findOne("确认招募") then
@@ -223,7 +216,6 @@ hlsh.战斗后领取 = function()
                                 tap("近卫招募列表" .. 1)
                                 findTap("确认招募")
                                 tap("开包skip")
-                                findTap("通宝替换确认")
                             end, 10) then
                             return
                         end
@@ -252,7 +244,7 @@ hlsh.战斗后领取 = function()
                 end
             end
             -- if disappear("战略返回",0.5) then return true end
-            if findAny({ "界园_常规行动", "界园_战略帮助" }) and not findOne("确认招募") then
+            if findAny({ "黑流树海_常规行动", "黑流树海_战略帮助" }) and not findOne("确认招募") then
                 return true
             end
         end, 30) then
@@ -345,14 +337,14 @@ hlsh.招募处理 = function()
 end
 
 hlsh.不期而遇处理 = function(战略帮助)
-    -- 还没修
-    local 战略帮助 = 战略帮助 or "界园_战略帮助"
+    local 战略帮助 = 战略帮助 or "黑流树海_战略帮助"
     log("进入不期而遇")
-    disappear("界园_战略帮助")
+    tap("黑流树海_空白出发前往")
+    disappear("黑流树海_战略帮助")
     if not wait(function()
-            if findOne("界园_不期而遇加载完成") then return true end
+            if findOne("黑流树海_右上角希望") then return true end
             tap("战略确认")
-        end, 15) then
+        end, 20) then
         return --减少重启次数
     end
 
@@ -365,9 +357,9 @@ hlsh.不期而遇处理 = function(战略帮助)
                 local t = time()
                 if not wait(function()
                         if ocr次数 % 2 == 0 then
-                            incident = ocrex("界园_不期而遇关卡ocr范围")
+                            incident = ocrex("黑流树海_不期而遇关卡ocr范围")
                         else
-                            incident = ocr("界园_不期而遇关卡ocr范围")
+                            incident = ocr("黑流树海_不期而遇关卡ocr范围")
                         end
                         ocr次数 = ocr次数 + 1
                         if time() - t > 1000 then --不期而遇事件，偶尔下面的 '√' 会一直存在，间隔点击一次
@@ -386,17 +378,17 @@ hlsh.不期而遇处理 = function(战略帮助)
                 local str = incident[1].text
                 log('事件名字：', str)
                 if findOne('萨卡兹_不期而遇确认') then tap("萨卡兹_不期而遇确认点击") end
-                if string.finds(str, { "地", "地镇" }) then -- 二选第一个 或者 三选第二个
+                if string.finds(str, { "擒与缚", "与缚", "线人" }) then -- 二选第一个 或者 三选第二个 擒与缚
                     if zl_event_solve(8, 战略帮助) then return true end
-                elseif string.finds(str, { "食", "餐", "廊", "来者", "不拒" }) then -- 三选第三个 如 饕餮廊
+                elseif string.finds(str, { "沉寂", "之屋", "临时", "中介所", "鸭托邦", "鸭", '湖中仙女', "湖中", "黑", "杠杆", "呼吸" }) then -- 三选第三个 如 沉寂之屋  临时中介所
                     if zl_event_solve(4, 战略帮助) then return true end
-                elseif string.finds(str, { "偏安", "安", "师", "女", "相会", "会", }) then -- 二选第二个 或者1选1
+                elseif string.finds(str, { "洞中宝", "洞", "泪之", "和平" }) then -- 二选第二个 或者1选1  洞中宝
                     if zl_event_solve(2, 战略帮助) then return true end
-                elseif string.finds(str, { "护鸭", "金刚", "金则" }) then -- 二选第二个 或者3选2
+                elseif string.finds(str, { "思乡", "心切", "乡", "传奇团伙", "传奇" }) then -- 二选第二个 或者3选2  思乡心切
                     if zl_event_solve(5, 战略帮助) then return true end
-                elseif string.finds(str, { "传讯", }) then -- 三选第一个
+                elseif string.finds(str, { "沉重", "契约", "无人", "商店", "金色", "险路", "尽头" }) then -- 三选第一个  沉重的契约
                     if zl_event_solve(7, 战略帮助) then return true end
-                elseif string.finds(str, { "路", "味" }) then -- 四选第一个
+                elseif string.finds(str, { "货从口出", "口出", "血" }) then -- 四选第一个
                     if zl_event_solve(10, 战略帮助) then return true end
                 end
                 ssleep(.5)
@@ -406,6 +398,43 @@ hlsh.不期而遇处理 = function(战略帮助)
         end, 30) then
         return false
     end
+end
+
+lsh.诡意行商处理 = function()
+    if not wait(function()
+            if findAny({ "诡意行商投资", "诡意行商离开" }) then return true end
+            tap("黑流树海_空白出发前往")
+            ssleep(0.2)
+            if findOne("肉鸽弹出窗口") then
+                tap("左取消")
+                ssleep(0.2)
+            end
+        end, 5) then
+    end
+
+    --投币
+    if not zl_skip_coin then zl_shop_coin() end
+    if zl_only_coin then
+        log('只是投币，准备退出')
+        findTap('战略退出')
+        appear('黑流树海_放弃本次探索', 3)
+        return true
+    end
+    --购买商品
+    if not zl_not_buy_jy then
+        if not wait(function()
+                if findOne("诡意行商离开") then return true end
+                tap("开包skip")
+            end, 5) then
+            return
+        end
+        for i = 1, 10 do if not zl_shop_buy() then break end end
+    end
+
+    wait(function()
+        if not findOne("战略返回") then return true end
+        tap("诡意行商离开")
+    end, 15)
 end
 
 hlsh.战斗开始 = function()
@@ -771,7 +800,9 @@ path.黑流树海 = function()
     for i = 1, #map do
         local node = map[i]
         log.debug("当前节点", i, node)
-        tap(关卡坐标[i])
+        if node ~= "空坐标" then
+            tap(关卡坐标[i])
+        end
         if node == "作战" then
             log("点击作战")
             if not appear("黑流树海_作战页面出现", 5) then
@@ -783,210 +814,31 @@ path.黑流树海 = function()
             hlsh.战斗后领取()
         elseif node == "非作战" then
             log("黑流树海_非作战")
+            if not zl.fight_name_ocr("黑流树海") then return end
+            toast(now_fight_name)
+            if now_fight_name == "不期而遇" then
+                hlsh.不期而遇处理()
+            elseif now_fight_name == "得偿所愿" then
+                hlsh.不期而遇处理()
+            elseif now_fight_name == "诡意行商" then
+                hlsh.诡意行商处理()
+            elseif now_fight_name == "安全的角落" then
+                hlsh.不期而遇处理()
+            end
+        elseif node == "空坐标" then
+            log("空坐标")
+            --pass
         elseif node == "尽头" then
             log("黑流树海_尽头")
+            hlsh.不期而遇处理()
         end
         ssleep(20)
     end
 
-    log("准备进入第一关作战")
-    local 右上角取样 = sample("投币提示")
-    ssleep(.5)
     if not wait(function()
-            tap("萨卡兹_第一列_作战列表" .. 第一列关卡)
-            if findOne('界园_作战页面加载') then return true end
-            if not findOne(右上角取样) then
-                log.debug()
-                ssleep(0.5)
-                return true
-            end
-        end, 10) then
-        log.debug("无法进入")
-        zl_repos_path('界园_放弃探索')
-    end
-    log.debug()
-    if zl_skip_fight and not zl_big_map then
-        sui.放弃作战()
-    else
-        sui.战斗开始()
-    end
-    log.debug()
-    local r = appear({ "战略返回", '界园_戛然而止', '界园_戛然而止2', "界园_作战失败结算" }, 30)
-    if r ~= "战略返回" then
-        -- back()
-        if not appear("界园_常规行动", 5) then
-            log.debug("无法返回常规行动")
-            restart()
-            return
-        end
-        return
-    end
-    if not findOne("战略返回") then return end
-
-    if not zl_skip_fight and not sui.战斗后领取() then
-        log.warn("未能完成战斗后拾取")
-        return false
-    end
-
-    if zl_big_map and zl_skip_fight and not sui.战斗后领取() then
-        log.warn("未能完成战斗后拾取")
-        return false
-    end
-
-    log("完成战斗")
-
-    if not wait(function()
-            if findAny({ "界园_不期而遇_进入", "界园_得偿所愿_进入", "界园_作战页面加载", "界园_紧急作战页面加载" }) then return true end
-            if 第二列数量 == 3 then
-                tap("萨卡兹_3节点_作战列表" .. str(界园路线选择结果[1][1]))
-            else
-                tap("萨卡兹_2节点_作战列表" .. str(界园路线选择结果[1][1]))
-            end
-        end, 10) then
-        return false
-    end
-
-    -- 第二列是不期而遇/得偿所愿
-    log("第二步", 界园路线选择结果)
-    log("第二步", 界园路线选择结果[1], 界园路线选择结果[1][2])
-    if 界园路线选择结果[1][2] == "不期而遇" or 界园路线选择结果[1][2] == "得偿所愿" then
-        --进入不期而遇
-        if not wait(function()
-                if not findOne("界园_不期而遇_进入") and not findOne("界园_得偿所愿_进入") then return true end
-                findTap("界园_不期而遇_进入")
-                findTap("界园_得偿所愿_进入")
-            end, 10) then
-            log.warn("未能进入作战列表")
-            return false
-        end
-    end
-
-    if 界园路线选择结果[1][2] == "作战" then
-        log("准备进入第2关作战")
-        ssleep(.5)
-        if zl_skip_fight and zl_big_map then
-            sui.放弃作战()
-        else
-            sui.战斗开始()
-        end
-        appear({ "战略返回", '界园_戛然而止', '界园_戛然而止2', "界园_作战失败结算" }, 30)
-        if findAny({ "界园_戛然而止", "界园_戛然而止2" }) then
-            log('戛然而止界面，准备返回')
-            return
-        end
-        if findOne("界园_作战失败结算") then
-            作战结算返回()
-            if not appear("界园_常规行动", 5) then
-                log.debug("无法返回常规行动")
-                return
-            end
-            return
-        end
-        if not findOne("战略返回") then return end
-        if not zl_skip_fight and not sui.战斗后领取() then
-            log.warn("未能完成战斗后拾取")
-            return false
-        end
-        if zl_big_map and zl_skip_fight and not sui.战斗后领取() then
-            log.warn("未能完成战斗后拾取")
-            return false
-        end
-        log("完成战斗")
-    else
-        sui.不期而遇处理()
-    end
-
-    appear("黑流树海_右上角希望")
-
-    -- 第三列商店
-    local 商店关卡寻找 = function()
-        log('商店关卡寻找')
-        local po = find_color("界园_商店关卡查找_列范围", "039D54", 2, 0.95)
-        log("商店关卡位置", po)
-        if po then
-            wait(function()
-                tap({ po[1], po[2] - scale(20) })
-                if findOne("界园_商店进入") then return true end
-            end, 20)
-            return true
-        end
-    end
-
-    -- 商店
-    商店关卡寻找()
-
-    if not wait(function()
-            if findAny({ "诡意行商投资", "诡意行商离开" }) then return true end
-            tap("界园_商店进入")
-            ssleep(0.2)
-            if findOne("肉鸽弹出窗口") then
-                tap("左取消")
-                ssleep(0.2)
-            end
-        end, 5) then
-    end
-
-    --投币
-    if not zl_skip_coin then zl_shop_coin() end
-    if zl_only_coin then
-        log('只是投币，准备退出')
-        findTap('战略退出')
-        appear('界园_放弃探索', 3)
-        return true
-    end
-    --购买商品
-    if not zl_not_buy_jy then
-        if not wait(function()
-                if findOne("诡意行商离开") then return true end
-                tap("开包skip")
-            end, 5) then
-            return
-        end
-        for i = 1, 10 do if not zl_shop_buy() then break end end
-    end
-
-    wait(function()
-        if not findOne("战略返回") then return true end
-        tap("诡意行商离开")
-    end, 15)
-
-    -- 第四列 误入奇境
-    appearTap("界园_第四列_关卡坐标")
-    if appear("界园_误入奇境_进入") then
-        tap("界园_误入奇境_进入")
-    else
-        log("没有入口")
-        return
-    end
-
-    sui.不期而遇处理("界园_每层通宝确认")
-
-    if not wait(function()
-            tap("界园_每层通宝确认")
-            tap("招募说明关闭")
-            if findOne("界园_烛火界面") then return true end
-            ssleep(0.5)
-        end, 10) then
-        return
-    end
-    if not wait(function()
-            tap("界园_剩余烛火")
-            if appear("界园_烛火离开", 1) then
-                tap("界园_烛火离开")
-                disappear("界园_烛火离开")
-                tap("右确认")
-                return true
-            end
-            ssleep(0.5)
-        end, 20) then
-        return
-    end
-
-    if not wait(function()
-            findTap("界园_每层通宝确认")
             ssleep(0.3)
             findTap('战略返回')
-            if findAny({ "界园_常规行动" }) then return true end
+            if findAny({ "黑流树海_常规行动" }) then return true end
             ssleep(0.5)
         end, 45) then
         log.warn("第二层退出返回失败")
@@ -994,263 +846,4 @@ path.黑流树海 = function()
         return
     end
     return
-end
-
-hlsh.招募并记录干员 = function(t)
-    if not t then return end
-    if t.name then
-        zl.招募翻页(1)
-        if page > 0 then
-            for i = 1, page do
-                zl.招募翻页()
-            end
-        end
-        if table.findk(肉鸽参数["operators"], name) then
-            肉鸽参数["operators"][name] = {
-                name = t.name,
-                level = t.level,
-                elite = t.elite,
-            }
-        end
-    end
-    zl.选择干员(t.index)
-end
-
-hlsh.招募指定干员 = function(干员, 肉鸽白名单)
-    local name, idx, elite, level = zl.查找指定干员(干员, 肉鸽白名单)
-    log(name, idx)
-    if name and name ~= 0 then
-        肉鸽参数["operators"][name] = {
-            name = name,
-            level = level,
-            elite = elite,
-        }
-    end
-    zl.选择干员(idx)
-end
-
-hlsh.普通作战1 = function()
-    log('界园肉鸽')
-    sui.recruit_info = zl.加载干员招募评分("sui")
-    -- 大地图数据
-    横向间隔 = scale(675)
-    纵向间隔 = scale(91)
-    第1列横坐标 = scale(524)
-    第1行纵坐标 = scale(191)
-    节点类型 = {
-        作战 = 1,
-        ["%作战"] = 1,
-        x作战 = 1,
-        X作战 = 1,
-        紧急作战 = 2,
-        ["%紧急作战"] = 2,
-        x紧急作战 = 2,
-        X紧急作战 = 2,
-        险路恶敌 = 3,
-        安全屋 = 4,
-        诡意行商 = 5,
-        不期而遇 = 6,
-        失与得 = 7,
-        误入奇境 = 8,
-        指点迷津 = 9,
-        先行一步 = 10,
-        狭路相逢 = 11,
-    }
-    --局内数据
-    节点评分 = {
-        [1] = 2, --作战
-        [2] = 3, -- 紧急作战
-        [3] = 2,
-        [4] = 1,
-        [5] = 5,
-        [6] = 1,
-        [7] = 0,
-        [8] = 15,
-        [9] = 10,
-        [10] = 2,
-        [11] = 1
-    }
-    初始分队 = 1
-    初始小队 = 2
-    初始队员 = { "维什戴尔", "谷米", "卡达" }
-    到达层数 = 0
-    肉鸽商品评分 = {}
-    大地图 = {}
-    当前通宝 = {
-        花 = {},
-        衡 = {},
-        厉 = {},
-    }
-    已存招募券 = {}
-    钱盒内通宝 = {
-        花 = {},
-        衡 = {},
-        厉 = {},
-    }
-    肉鸽参数 = {
-        hp = 0,
-        hope = 0,
-        floor = 0,
-        collection = {},
-        operators = {
-            维什戴尔 = {},
-            谷米 = {},
-            卡达 = {},
-        },
-        ticket = 2,
-    }
-    --第五层暂停 = ReadUIConfig("第五层暂停")
-    招募开局干员 = 0
-    肉鸽白名单 = { "维什戴尔", "古米", "卡达", "电弧", "酒神", "新约能天使" }
-    肉鸽队员 = {}
-    sui.跳转()
-
-    -- 开始探索 一路按到 招募干员
-    -- local first_time_see_first_card = 0
-    local 分队位置 = 初始分队
-    if 分队位置 > 4 then
-        log("需要翻", 分队位置 // 4, "页")
-        for i = 1, 分队位置 // 4 do
-            ssleep(0.5)
-            path.swip_hd_shop(false, scale(1704))
-            ssleep(0.5)
-        end
-    end
-
-    local tapx = scale(258) + scale(414) * (分队位置 % 4 - 1)
-    local tapy = scale(904)
-    if not wait(function(reset_wait_start_time)
-            if findOne("界园_选择招募组合") then return true end
-            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
-            tap({ tapx, tapy })
-            ssleep(.8)
-        end, 10) then
-        return
-    end
-
-    log("初始招募")
-    if not wait(function(reset_wait_start_time)
-            if findOne("界园_初始招募") then return true end
-            tap("界园_稳扎稳打分队")
-            ssleep(.8)
-        end, 10) then
-        return
-    end
-    log('招募狙击')
-    if not wait(function()
-            tap("界园_医疗招募券")
-            tap("招募说明关闭")
-            if findOne("确认招募") then return true end
-            ssleep(.2)
-        end, 10) then
-        return
-    end
-    log('招募维什戴尔')
-    sui.招募指定干员("维什戴尔", 肉鸽白名单)
-
-    -- 第2人
-    --[[ if not wait(function(reset_wait_start_time)
-            if findOne("界园_初始招募") then return true end
-            tap("界园_近卫招募券")
-        end, 10) then
-        return
-    end ]]
-
-    log('招募第二个人')
-    if not wait(function()
-            tap("界园_近卫招募券")
-            tap("招募说明关闭")
-            if findOne("确认招募") then return true end
-            ssleep(.2)
-        end, 10) then
-        return
-    end
-    log('招募古米')
-    sui.招募指定干员("古米", 肉鸽白名单)
-    --ssleep(1)
-    -- 第3人
-    log('招募第三个人')
-    if not wait(function()
-            tap("界园_近卫招募券")
-            tap("招募说明关闭")
-            if findOne("确认招募") then return true end
-            ssleep(.2)
-        end, 10) then
-        return
-    end
-    log('招募卡达')
-    sui.招募指定干员("卡达", 肉鸽白名单)
-    log(肉鸽参数["operators"])
-    --if not appear("界园_初始招募") then return end
-    log.debug()
-    -- 进入探索 必须分为两段，否则产生位移
-    if not wait(function()
-            if findOne("界园_投出通宝确认") then return true end
-            tap("界园_进入探索")
-            ssleep(.5)
-        end, 25) then
-        return
-    end
-    ssleep(1)
-    if findOne("界园_投出通宝确认") then
-        当前通宝 = sui.判断投出通宝()
-        tap("界园_投出通宝确认")
-    end
-    ssleep(0.5) -- 右边第三列有概率加载过慢
-    local best_path = sui.判断路径()
-    zl.重置大地图()
-    local 当前列 = 1
-    log(best_path[当前列][1])
-    tap({ 第1列横坐标, 第1行纵坐标 + 纵向间隔 * best_path[当前列][1] })
-    local 当前节点类型 = 大地图[best_path[当前列][1]][当前列]["NodeType"]
-    log(当前节点类型)
-    ssleep(1)
-    if 当前节点类型 == 1 then
-        local 作战名 = sui.作战名ocr校正(ocro("界园_作战检测范围"))
-        log(作战名)
-        if 作战名 then
-            if not wait(function()
-                    if findOne("快捷编队") then return true end
-                    tap("界园_作战_进入")
-                    ssleep(.5)
-                end, 5) then
-            end
-        end
-        zl.快捷编队()
-    end
-end
-
-hlsh.进入作战 = function()
-    local 作战名 = sui.作战名ocr校正(ocro("界园_作战检测范围"))
-    log(作战名)
-    if not wait(function()
-            if findOne("快捷编队") then return true end
-            tap("进入节点")
-            ssleep(.2)
-        end, 5) then
-        log.debug("无法进入")
-        --zl_repos_path('界园_放弃探索')
-    end
-end
-
-hlsh.作战名ocr校正 = function(t)
-    if t == nil then return end
-    local 替换 = {
-        ["狡三窟"] = "狡鼷三窟",
-    }
-
-    local 原文本 = t
-    --print(原文本)
-    if 替换[原文本] then
-        t = 替换[原文本]
-        -- elseif 原文本:match("^白面.*$") then
-        --     t = "白面鸮"
-        -- elseif 原文本:find("纯") and 原文本:find("艾雅法拉") then
-        --     t = "纯烬艾雅法拉"
-        -- elseif 原文本:find("默") and 原文本:find("德克萨斯") then
-        --     t = "缄默德克萨斯"
-        -- elseif 原文本:find("荒芜") and 原文本:find("拉普") then
-        --     t = "荒芜拉普兰德"
-    end
-    return t
 end
