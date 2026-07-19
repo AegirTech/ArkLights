@@ -32,8 +32,8 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.19 18:28"
-update_announcement = '最近更新: 小马宝莉签到领取'
+release_date = "07.19 18:31"
+update_announcement = '最近更新: 黑流树海肉鸽（1层）'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -125,6 +125,8 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1)
+    hlsh.战斗后领取()
+    exit()
     -- log("开始")
     -- local 地图序号 = appear({ "黑流树海地图列表1", "黑流树海地图列表2", "黑流树海地图列表3", "黑流树海地图列表4", "黑流树海地图列表5" }, 10, 0.1)
     -- log("黑流树海地图", 地图序号)

@@ -163,9 +163,9 @@ end
 hlsh.战斗后领取 = function()
     local drop_page = false
     if not wait(function()
+            if findOne("黑流树海_战略帮助") then return true end
             if not drop_page then tap("战略确认") end
             if findOne("黑流树海_战略帮助") then drop_page = true end
-            if findOne("黑流树海_战略帮助") then return true end
             if zl_only_coin then
                 local x = findAny({ "黑流树海_领取完成" })
                 log.debug(x)
