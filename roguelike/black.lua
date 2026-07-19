@@ -341,7 +341,15 @@ end
 hlsh.不期而遇处理 = function(战略帮助)
     local 战略帮助 = 战略帮助 or "黑流树海_战略帮助"
     log("进入不期而遇")
-    tap("黑流树海_空白出发前往")
+
+    appear({ "黑流树海_空白出发前往", "黑流树海_作战出发前往" }, 3)
+    ssleep(0.5)
+    wait(function()
+        if not findOne("黑流树海_空白出发前往") and not findOne("黑流树海_作战出发前往") then return true end
+        tap("黑流树海_空白出发前往")
+        tap("黑流树海_作战出发前往")
+    end, 20)
+
     disappear("黑流树海_战略帮助")
     if not wait(function()
             if findOne("黑流树海_右上角希望") then return true end
@@ -388,7 +396,7 @@ hlsh.不期而遇处理 = function(战略帮助)
                     if zl_event_solve(2, 战略帮助) then return true end
                 elseif string.finds(str, { "思乡", "心切", "乡", "传奇团伙", "传奇" }) then -- 二选第二个 或者3选2  思乡心切
                     if zl_event_solve(5, 战略帮助) then return true end
-                elseif string.finds(str, { "沉重", "契约", "无人", "商店", "金色", "险路", "尽头" }) then -- 三选第一个  沉重的契约
+                elseif string.finds(str, { "沉重", "契约", "无人", "商店", "金色", "险路", "尽头", "你曾在", "哥伦比亚" }) then -- 三选第一个  沉重的契约
                     if zl_event_solve(7, 战略帮助) then return true end
                 elseif string.finds(str, { "货从口出", "口出", "血" }) then -- 四选第一个
                     if zl_event_solve(10, 战略帮助) then return true end
@@ -826,8 +834,36 @@ path.黑流树海 = function()
             end
         elseif node == "尽头" then
             log("黑流树海_尽头")
-            hlsh.不期而遇处理()
+            -- hlsh.不期而遇处理()
+            -- 会出额外的
+            log("进入尽头")
+
+            appear({ "黑流树海_空白出发前往", "黑流树海_作战出发前往" }, 3)
+            ssleep(0.5)
+            wait(function()
+                if not findOne("黑流树海_空白出发前往") and not findOne("黑流树海_作战出发前往") then return true end
+                tap("黑流树海_空白出发前往")
+                tap("黑流树海_作战出发前往")
+            end, 20)
+
+            disappear("黑流树海_战略帮助")
+            if not wait(function()
+                    if findOne("黑流树海_右上角希望") then return true end
+                    tap("战略确认")
+                end, 20) then
+                return --减少重启次数
+            end
+            if not wait(function()
+                    tap("不期而遇选项点击列表7")
+                    ssleep(0.1)
+                    tap("黑流树海_零件叉叉2")
+                    ssleep(0.1)
+                    if findOne("黑流树海_战略帮助") then return true end
+                end, 30) then
+                return false
+            end
         end
+        ssleep(1)
     end
 
     if not wait(function()
