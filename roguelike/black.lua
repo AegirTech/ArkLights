@@ -162,8 +162,7 @@ end
 
 hlsh.战斗后领取 = function()
     local drop_page = false
-    if not appear("黑流树海_右上角希望") then return end
-
+    -- if not appear("黑流树海_右上角希望") then return end
     if not wait(function()
             if findOne("黑流树海_战略帮助") then return true end
             if not drop_page then tap("战略确认") end
@@ -183,6 +182,14 @@ hlsh.战斗后领取 = function()
             })
             log.debug(x)
             tap(x)
+
+            if findAny({
+                    "面板", "活动公告返回", "签到返回",
+                    "签到返回黄", "开始唤醒", "常规行动",
+                    "bilibili_framelayout_only", "framelayout_only", "黑流树海_放弃本次探索", "黑流树海_常规行动"
+                }) then
+                return true
+            end
 
             -- 误触到招募券处理
             if findOne("确认招募") then
@@ -398,7 +405,7 @@ hlsh.不期而遇处理 = function(战略帮助)
                     if zl_event_solve(2, 战略帮助) then return true end
                 elseif string.finds(str, { "思乡", "心切", "乡", "传奇团伙", "传奇" }) then -- 二选第二个 或者3选2  思乡心切
                     if zl_event_solve(5, 战略帮助) then return true end
-                elseif string.finds(str, { "沉重", "契约", "无人", "商店", "金色", "险路", "尽头", "你曾在", "哥伦比亚" }) then -- 三选第一个  沉重的契约
+                elseif string.finds(str, { "沉重", "契约", "无人", "商店", "金色", "险路", "尽头", "你曾在", "哥伦比亚", "色味不", "同源" }) then -- 三选第一个  沉重的契约
                     if zl_event_solve(7, 战略帮助) then return true end
                 elseif string.finds(str, { "货从口出", "口出", "血" }) then -- 四选第一个
                     if zl_event_solve(10, 战略帮助) then return true end
@@ -792,7 +799,7 @@ path.黑流树海 = function()
             local ocr范围 = 待ocr列表[j]
             local ocr结果 = ocrex_ret(ocr范围, true)
             log.debug("ocr范围", ocr范围, "ocr结果", ocr结果)
-            if string.finds(ocr结果, { "作战" }) then
+            if string.finds(ocr结果, { "作战", "紧急" }) then
                 线路得分 = 线路得分 - 10
                 table.insert(xmap, "作战")
             elseif string.finds(ocr结果, { "凶" }) then
