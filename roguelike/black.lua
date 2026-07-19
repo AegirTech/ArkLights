@@ -597,6 +597,22 @@ hlsh.战斗开始 = function()
         log.debug()
         return restartapp(appid)
     end
+
+    wait(function()
+        if findOne("黑流树海_右上角希望") then return true end
+        if findAny({ "黑流树海_源石锭领取", "黑流树海_藏品领取", "黑流树海_零件领取", "黑流树海_护盾领取" }) then return true end
+        if findOne("黑流树海_信息丢失全屏红") then
+            wait(function()
+                tap("新战略确认")
+                tap("黑流树海_作战失败下一步")
+                tap("黑流树海_游戏结束确认")
+                if appear("黑流树海_常规行动", 0.5) then
+                    ssleep(1)
+                    if appear("黑流树海_常规行动", 1) then return true end
+                end
+            end, 20)
+        end
+    end, 40)
     log.debug()
 end
 
