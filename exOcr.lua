@@ -2,6 +2,7 @@ import("com.nx.assist.lua.LuaEngine")
 local PaddLeOCR = {}
 local PluGinObject
 local work = "mnt/sdcard/Pictures"
+mkdir(work)
 function PaddLeOCR.IniTiaLModeL(Object)
     if type(Object) ~= "userdata" or Object == nil then
         return "变量类型错误"
