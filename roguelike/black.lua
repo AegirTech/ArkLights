@@ -165,6 +165,7 @@ hlsh.战斗后领取 = function()
     if not wait(function()
             if not drop_page then tap("战略确认") end
             if findOne("黑流树海_战略帮助") then drop_page = true end
+            if findOne("黑流树海_战略帮助") then return true end
             if zl_only_coin then
                 local x = findAny({ "黑流树海_领取完成" })
                 log.debug(x)
@@ -799,9 +800,7 @@ path.黑流树海 = function()
     for i = 1, #map do
         local node = map[i]
         log.debug("当前节点", i, node)
-        if node ~= "空坐标" then
-            tap(关卡坐标[i])
-        end
+        tap(关卡坐标[i])
         if node == "作战" then
             log("点击作战")
             if not appear("黑流树海_作战页面出现", 5) then
