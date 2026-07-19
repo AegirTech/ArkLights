@@ -422,42 +422,63 @@ hlsh.战斗开始 = function()
     end
 
     log.debug()
+    -- 只带一个干员 点了天赋会带一个机械师
+    if findOne("肉鸽编队开始游戏第二存在干员") then
+        wait(function()
+            tap("肉鸽编队开始游戏第一干员")
+            if findOne("肉鸽编队左侧等级") then return true end
+        end, 5)
 
-    if not wait(function()
-            if findOne("确认招募") then return true end
-            tap("快捷编队")
-        end, 10) then
-        return
-    end
+        wait(function()
+            tap("肉鸽编队页面第一干员")
+            ssleep(0.5)
+            if not findOne("肉鸽编队左侧等级") then return true end
+        end, 5)
 
-    if not wait(function()
-            if findOne("攻击范围") and
-                (zl_skill_idx ~= 2 or zl_skill_idx == 2 and findOne("战略二技能")) then
-                --tap("近卫招募列表2") --第2个干员
-                --ssleep(.2)
-                --tap("近卫招募列表3") --第3个干员
-                --会把二战新招募的干员带上，如果招募了高费的导致下错人
-                return true
-            end
-            tap("近卫招募列表1")
-            if not appear("攻击范围", 1) then return end
-            if zl_skill_idx == 2 then
-                tap("战略二技能")
-                if not appear("战略二技能", 1) then return end
-            end
-        end, 10) then
-        return
-    end
-    log.debug()
-    if not wait(function()
+        wait(function()
             if not findOne("确认招募") then return true end
+            if findOne("快捷编队") then return true end
             tap("确认招募")
-        end, 10) then
-        return
+            ssleep(0.5)
+        end, 5)
     end
+    --if not wait(function()
+    -- if findOne("攻击范围") and
+    --     (zl_skill_idx ~= 2 or zl_skill_idx == 2 and findOne("战略二技能")) then
+    --     --tap("近卫招募列表2") --第2个干员
+    --     --ssleep(.2)
+    --     --tap("近卫招募列表3") --第3个干员
+    --     --会把二战新招募的干员带上，如果招募了高费的导致下错人
+    --     return true
+    --
+
+    -- tap("近卫招募列表1")
+    -- if not appear("攻击范围", 1) then return end
+    -- if zl_skill_idx == 2 then
+    --     tap("战略二技能")
+    --     if not appear("战略二技能", 1) then return end
+    -- end
+    --    end, 10) then
+    --    return
+    --end
+    if zl_skill_idx == 2 and not findOne("肉鸽编队开始游戏第一干员切换二技能被选中") then
+        wait(function()
+            tap("肉鸽编队开始游戏第一干员切换二技能")
+            if appear("肉鸽编队开始游戏第一干员切换二技能被选中", 0.5) then return true end
+        end, 5)
+    end
+
+    log.debug()
+    -- if not wait(function()
+    --         if not findOne("确认招募") then return true end
+    --         tap("确认招募")
+    --     end, 10) then
+    --     return
+    -- end
 
     if not appear("快捷编队") then return end
-    log.debug()
+    log("开始作战前")
+    -- exit()
     -- 开始游戏
     if not wait(function()
             tap("确认招募")
