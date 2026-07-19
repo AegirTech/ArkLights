@@ -162,6 +162,8 @@ end
 
 hlsh.战斗后领取 = function()
     local drop_page = false
+    if not appear("黑流树海_右上角希望") then return end
+
     if not wait(function()
             if findOne("黑流树海_战略帮助") then return true end
             if not drop_page then tap("战略确认") end
@@ -600,6 +602,7 @@ hlsh.战斗开始 = function()
 
     wait(function()
         if findOne("黑流树海_右上角希望") then return true end
+        if findOne("黑流树海_作战通过") then return true end
         if findAny({ "黑流树海_源石锭领取", "黑流树海_藏品领取", "黑流树海_零件领取", "黑流树海_护盾领取" }) then return true end
         if findOne("黑流树海_信息丢失全屏红") then
             wait(function()
@@ -611,6 +614,13 @@ hlsh.战斗开始 = function()
                     if appear("黑流树海_常规行动", 1) then return true end
                 end
             end, 20)
+        end
+        if findAny({
+                "面板", "活动公告返回", "签到返回",
+                "签到返回黄", "开始唤醒", "常规行动",
+                "bilibili_framelayout_only", "framelayout_only", "黑流树海_放弃本次探索", "黑流树海_常规行动"
+            }) then
+            return true
         end
     end, 40)
     log.debug()
