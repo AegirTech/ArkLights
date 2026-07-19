@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.19 02:59"
+release_date = "07.19 10:44"
 update_announcement = '最近更新: 小马宝莉签到领取'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -143,11 +143,11 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     local 最优路线 = 1
     local 最优得分 = -100
     local map = {}
+
     for i = 1, 4 do
         local xmap = {}
         local 线路得分 = 0
-        local ocr范围 = "黑流树海地图" .. 地图序号 .. "线路" .. str(i) .. "OCR范围"
-        local 待ocr列表 = point[ocr范围]
+        local 待ocr列表 = point["黑流树海地图" .. 地图序号 .. "线路" .. str(i) .. "OCR范围"]
         if not 待ocr列表 then
             goto continue
         end
@@ -178,8 +178,12 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     end
 
     table.insert(map, 1, "作战")
+    if 地图序号 == "3" then
+        table.insert(map, "非作战")
+    end
+
     table.insert(map, "尽头")
-    log.debug("地图", 地图序号, "最优路线", 最优路线, "最优得分", 最优得分)
+    log.debug("地图", 地图序号, map, "最优路线", 最优路线, "最优得分", 最优得分)
 
     local 缩放函数 = function()
         wait(function()
@@ -190,6 +194,20 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
         end, 10)
     end
     缩放函数()
+    local 关卡坐标 = point["黑流树海地图" .. 地图序号 .. "关卡列表" .. str(最优路线)]
+    for i = 1, #map do
+        local node = map[i]
+        log.debug("当前节点", i, node)
+        tap(关卡坐标[i])
+        if node == "作战" then
+            log("点击作战")
+        elseif node == "非作战" then
+            log("黑流树海_非作战")
+        elseif node == "尽头" then
+            log("黑流树海_尽头")
+        end
+        ssleep(20)
+    end
 
     exit()
     -- ret = findOne("黑流树海_医疗招募卷")
