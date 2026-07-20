@@ -635,6 +635,11 @@ end
 
 path.黑流树海 = function()
     log('start 黑流树海')
+    if paddleocr_loadfailed then
+        log.error('请检查ocr模型加载是否成功，可向开发者反馈。')
+        exit()
+    end
+
     -- 肉鸽每8小时做日常
     hlsh.跳转()
 

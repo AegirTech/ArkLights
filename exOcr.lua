@@ -88,17 +88,25 @@ end
 
 -- 优先使用新ocr (yolocr.apk)
 if not fileExist(work .. "/yolocr.apk") then
-    if not fileExist(work .. "/ppocr.zip") then
+    zip_name = "ppocr.zip"
+    if not fileExist(work .. "/" .. zip_name) then
         toast("未找到飞浆ocr模型文件，正在尝试下载。")
-        if not download_from_alist("ppocr.zip", work) then
-            toast("飞浆ocr模型下载失败,已禁用")
+        if not download_from_alist(zip_name, work) then
+            toast("飞浆ocr模型下载失败,再试一次 ")
+            if not download_from_alist("ppocr2.zip", work) then
+                toast("飞浆ocr模型下载失败,已禁用")
+                paddleocr_loadfailed = true
+                return
+            else
+                zip_name = "ppocr2.zip"
+            end
             paddleocr_loadfailed = true
             return
         end
     end
     if not fileExist(work .. "/PaddLeOCR.apk") then
-        extractAssets("main.rc", work, "ppocr.zip")
-        unZip(work .. "/ppocr.zip", work)
+        extractAssets("main.rc", work, zip_name)
+        unZip(work .. "/" .. zip_name, work)
     end
 
     -- 加载插件 有时会加载不上插件 加载不上时请把APK删除重新释放即可
