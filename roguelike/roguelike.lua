@@ -1344,7 +1344,7 @@ zl_swip = function(left, swip_dis, nodelay)
         --修改x2坐标，x+滑动距离,两个物品1031,三个物品1550
         local x2 = scale(swip_dis + x) --不可超出1920 目标x点
         local x3 = scale(1760)         --不会点到物品 X3Y3为点击的点，用于防止滑动
-        local y3 = scale(790)
+        local y3 = scale(550)
         local slids = 50
         local slidd = 200
         local taps = slids + slidd + 150
@@ -1412,7 +1412,6 @@ zl_navigation = function(常规行动, 需要点击的肉鸽)
             --     },
             -- })
             zl_swip(true) --滑动到最左边
-            ssleep(.5)
             if appear('傀影与猩红孤钻', 2) then return true end
             --作为定位，是否滑到了最左边
         end, 10) then
@@ -1422,6 +1421,7 @@ zl_navigation = function(常规行动, 需要点击的肉鸽)
     if 需要点击的肉鸽 == '界园_进入主题' or 需要点击的肉鸽 == '黑流树海_进入主题' then
         log('滑动2')
         zl_swip(false, 1101)
+        ssleep(2)
     end
 
     if not wait(function()

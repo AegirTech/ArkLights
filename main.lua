@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "07.20 21:31"
+release_date = "07.21 23:57"
 update_announcement = '最近更新: 黑流树海肉鸽（1层）、红丝绒复刻活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -125,6 +125,19 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1)
+    -- 地图序号 = 2
+    -- 最优路线 = 1
+    -- log(point["黑流树海地图2线路2OCR范围列表1"])
+    -- log(point["黑流树海地图2线路2OCR范围列表2"])
+    -- log(point["黑流树海地图2线路2OCR范围列表3"])
+
+    -- local 关卡坐标 = point["黑流树海地图" .. 地图序号 .. "关卡列表" .. str(最优路线)]
+
+    -- tap(关卡坐标[3])
+    --exit()
+    -- log(findOne("黑流树海放大镜加号", 0.9))
+    -- log(findOne("黑流树海放大镜减号", 0.9))
+    -- exit()
     -- hlsh.战斗后领取()
     -- if not zl.fight_name_ocr("黑流树海") then return end
     -- toast(now_fight_name)

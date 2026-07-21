@@ -652,14 +652,27 @@ path.黑流树海 = function()
     end
     local t_position = zl_team_position_hlsh == str(x_position) and zl_team_position_hlsh or str(x_position)
 
+    -- for i = 1, 5 do
+    --     for i = 1, 4 do
+    --         local 分队ocr位置 = point["肉鸽分队页面ocr列表" .. str(i)]
+    --         local 结果 = ocrex_ret(分队ocr位置)
+    --         if 结果 == zl_team_position_hlsh
+    --     end
+    -- end
+
     if not wait(function(reset_wait_start_time)
             findTap("黑流树海_开局藏品确认")
             -- if findOne("黑流树海_选择招募一阶段完成") then return true end
             if findOne("肉鸽第三近卫分队") then return true end
+            if findAny({ "黑流树海_近卫招募卷", "黑流树海_医疗招募卷", "黑流树海_辅助招募卷", "黑流树海_右上角希望", "黑流树海_选择招募最后阶段" }) then
+                return true
+            end
             if findOne("正在提交反馈至神经") then reset_wait_start_time() end
             if findOne("黑流树海_选择支援页面") then return true end
             tap('萨卡兹_蓝图分队位置列表' .. t_position)
-            ssleep(0.5) --太快了直接选错招募券组合
+            ssleep(0.1) --太快了直接选错招募券组合
+            tap('萨卡兹_蓝图分队位置列表' .. t_position)
+            ssleep(2)   --太快了直接选错招募券组合
         end, 20) then
         return
     end
@@ -774,6 +787,7 @@ path.黑流树海 = function()
     ssleep(0.5) -- 右边第三列有概率加载过慢
 
     -- 判断地图
+    ssleep(2) -- 地图顶部会挡住一会
     log("开始判断地图")
     local 地图序号 = appear({ "黑流树海地图列表1", "黑流树海地图列表2", "黑流树海地图列表3", "黑流树海地图列表4", "黑流树海地图列表5" }, 10, 0.1)
     log("黑流树海地图", 地图序号)
@@ -796,7 +810,7 @@ path.黑流树海 = function()
     for i = 1, 4 do
         local xmap = {}
         local 线路得分 = 0
-        local 待ocr列表 = point["黑流树海地图" .. 地图序号 .. "线路" .. str(i) .. "OCR范围"]
+        local 待ocr列表 = point["黑流树海地图" .. 地图序号 .. "线路" .. str(i) .. "OCR范围列表"]
         if not 待ocr列表 then
             goto continue
         end
@@ -834,12 +848,18 @@ path.黑流树海 = function()
     table.insert(map, "尽头")
     log.debug("地图", 地图序号, map, "最优路线", 最优路线, "最优得分", 最优得分)
 
+    if #(table.filter(map, function(v) if v == "作战" then return true end end)) > 1 then
+        toast("所有线路作战数量均大于1 退出重开")
+        back()
+        return false
+    end
+
     local 缩放函数 = function()
         wait(function()
-            if findOne("黑流树海放大镜加号") then return true end
+            if findOne("黑流树海放大镜加号", 0.9) then return true end
             tap("黑流树海放大镜减号")
             appear("黑流树海放大镜加号", 0.5)
-            if appear("黑流树海放大镜加号", 0.5) then return true end
+            if findOne("黑流树海放大镜加号", 0.9) then return true end
         end, 10)
     end
     local 关卡坐标 = point["黑流树海地图" .. 地图序号 .. "关卡列表" .. str(最优路线)]
@@ -857,7 +877,7 @@ path.黑流树海 = function()
 
         log.debug("当前节点", i, node)
         缩放函数()
-        ssleep(0.2)
+        ssleep(1)
         tap(关卡坐标[i])
         if node == "作战" then
             log("点击作战")
