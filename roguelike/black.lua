@@ -423,7 +423,7 @@ hlsh.诡意行商处理 = function()
     if not wait(function()
             if findAny({ "诡意行商投资", "诡意行商离开" }) then return true end
             tap("黑流树海_空白出发前往")
-            ssleep(0.2)
+            ssleep(0.3)
             if findOne("肉鸽弹出窗口") then
                 tap("左取消")
                 ssleep(0.2)
@@ -824,8 +824,11 @@ path.黑流树海 = function()
             elseif string.finds(ocr结果, { "凶" }) then
                 线路得分 = 线路得分 - 10
                 table.insert(xmap, "作战")
-            elseif string.finds(ocr结果, { "诡" }) then
+            elseif string.finds(ocr结果, { "未知" }) then
                 线路得分 = 线路得分 + 5
+                table.insert(xmap, "非作战")
+            elseif string.finds(ocr结果, { "行商" }) then
+                线路得分 = 线路得分 + 10
                 table.insert(xmap, "非作战")
             else
                 table.insert(xmap, "空坐标")
