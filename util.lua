@@ -3122,15 +3122,14 @@ end
 parse_fight_config = function(fight_ui)
     local fight = string.filterSplit(fight_ui)
     fight = map(string.upper, fight)
-
     -- expand LS-5x999
     local expanded_fight = {}
     homework = {}
     for _, v in pairs(fight) do
         local cur_fight, times = v:match('(.+)[xX*](%d+)')
         if not cur_fight then
-            local cur_fight, secret_code = v:match('(.+)&MAA://(%d+)')
-            if secret_code then
+            local cur_fight, prts_code = v:match('(.+)&PRTS://(%d+)')
+            if prts_code then
                 copy_homework = true
 
                 if table.find({ '活动', hd_nickname, }, startsWithX(cur_fight)) then
@@ -3140,7 +3139,7 @@ parse_fight_config = function(fight_ui)
                     log.debug(cur_fight, idx)
                 end
 
-                homework[cur_fight] = secret_code
+                homework[cur_fight] = prts_code
                 table.insert(expanded_fight, cur_fight)
             else
                 table.insert(expanded_fight, v)

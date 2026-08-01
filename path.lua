@@ -4877,7 +4877,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             if findOne("突袭未三星") or not copy_homework_only then
                 tap("开始突袭")
                 appear("开始行动突袭", 3)
-                goto wait_for_maa
+                goto wait_for_prts
             else
                 return true
             end
@@ -4899,7 +4899,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 tap("沙盘推演选择按钮")
                 appear("沙盘推演选择面板", 2)
                 ssleep(.5)
-                goto wait_for_maa
+                goto wait_for_prts
             else
                 log.warn("未找到")
                 return true
@@ -5061,7 +5061,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         if not findOne("代理指挥开") then return true end
         tap("开始行动蓝")
     end, 1)
-    ::wait_for_maa::
+    ::wait_for_prts::
     local state = nil
     local start_time = time()
     if not wait(function(reset_wait_start_time)
@@ -10508,7 +10508,7 @@ path.保全 = function()
         elseif findOne("保全2可扫荡") then
             tap("保全2进入")
         elseif sss_try_complete then
-            cur_fight = "BQPZ1&maa://44971"
+            cur_fight = "BQPZ1&prts://44971"
             log("抄作业", cur_fight, homework[cur_fight])
             tap("保全1进入")
             if not appear("保全作战开始按钮", 3) then return end

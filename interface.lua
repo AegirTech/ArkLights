@@ -1841,7 +1841,7 @@ show_auto_fight_ui = function()
     addTitle(layout, "使用方法")
     newRow(layout)
     addTextView(layout, [[主页作战关卡内填写:速通导航+&+maa神秘代码
-如：HD-EX-2&maa://114514 1-7&maa://36056...
+如：HD-EX-2&prts://114514 1-7&prts://36056...
 
 如果开始作战界面来回乱点，则为缺少干员请尝试更换作业
 
@@ -1850,8 +1850,8 @@ show_auto_fight_ui = function()
 ]])
 
     newRow(layout)
-    addButton(layout, nil, "打开maa作业站",
-        make_jump_ui_command(layout, nil, "jump_maa_copliot()"))
+    addButton(layout, nil, "打开PRTS作业站",
+        make_jump_ui_command(layout, nil, "jump_prts_copliot()"))
 
     ui.loadProfile(getUIConfigPath(layout))
     ui.show(layout, false)
@@ -1902,7 +1902,7 @@ jump_arkntools = function()
     peaceExit()
 end
 
-jump_maa_copliot = function()
+jump_prts_copliot = function()
     local intent = {
         action = "android.intent.action.VIEW",
         uri = "https://prts.plus/",

@@ -706,7 +706,7 @@ end
 ib.抄作业 = function(作业, maptype)
     -- local 慢放 = 需要慢放干员
 
-    --maa普通作战兼容模式
+    --prts普通作战兼容模式
     部署 = 作业["actions"]
     波数依赖命令数 = 0
     波数依赖 = { "无命令" }

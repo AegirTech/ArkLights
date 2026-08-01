@@ -564,10 +564,10 @@ loadHomework = function(levelName, isLocal, 不点赞)
     if isLocal then --自带的作业,比如肉鸽的
         return JsonDecode(readFile(levelName .. ".json"))
     else
-        local maaCode = levelName or ''
-        log("读取MAA作业站作业", maaCode, "并自动点赞")
+        local prtsCode = levelName or ''
+        log("读取PRTS作业站作业", prtsCode, "并自动点赞")
 
-        local url = 'https://prts.maa.plus/copilot/get/' .. maaCode
+        local url = 'https://prts.maa.plus/copilot/get/' .. prtsCode
         ::重试::
         local ret, code = httpGet(url)
         -- log(ret)
@@ -581,9 +581,9 @@ loadHomework = function(levelName, isLocal, 不点赞)
         local levelInfo = JsonDecode(x)
         if not 不点赞 then
             local ret, code = httpPost('https://prts.maa.plus/copilot/rating',
-                JsonEncode({ rating = "Like", id = tonumber(maaCode), }), 30,
+                JsonEncode({ rating = "Like", id = tonumber(prtsCode), }), 30,
                 "Content-Type: application/json")
-            log(maaCode, ret)
+            log(prtsCode, ret)
         end
         return levelInfo
     end
@@ -1264,7 +1264,7 @@ end
 
         波数依赖命令数 = #波数依赖
     else
-        --maa普通作战兼容模式
+        --prts普通作战兼容模式
         部署 = 作业["actions"]
         波数依赖命令数 = 0
         波数依赖 = { "无命令" }
@@ -1451,7 +1451,7 @@ end
 保全抄作业 = function(作业, maptype)
     -- local 慢放 = 需要慢放干员
 
-    --maa普通作战兼容模式
+    --prts普通作战兼容模式
     部署 = 作业["actions"]
     波数依赖命令数 = 0
     波数依赖 = { "无命令" }
