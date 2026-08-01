@@ -1130,6 +1130,23 @@ path.fallback = {
         disappear("七周年限时幸运签", 10)
         return path.fallback.签到返回()
     end,
+    限时幸运签20260801 = function()
+        tapAll(point.限时幸运签列表)
+        ssleep(.25)
+        tap("限时幸运签抽取")
+        disappear("限时幸运签20260801", 10)
+        return path.fallback.签到返回()
+    end,
+    夏日嘉年华赠送活动一20260801 = function()
+        ssleep(1)
+        tap('夏日嘉年华赠送活动一20260801')
+        return path.fallback.签到返回()
+    end,
+    夏日嘉年华赠送活动二20260801 = function()
+        ssleep(1)
+        tap('夏日嘉年华赠送活动二20260801')
+        return path.fallback.签到返回()
+    end,
     鸣羽颂新领取 = function()
         wait(function()
             tap("鸣羽颂新领取")
@@ -1343,8 +1360,10 @@ path.限时活动 = function(retry)
             "限时幸运签", "月饼", '产业合作洽谈会',
             '红包', "祈愿牌返回", '五周年专享月卡返回',
             "生日设置返回", '国庆签到返回', '感谢庆典返回',
-            "春节签到2026", "七周年限时幸运签",
-            '回望泰拉限时登录签到', '小马宝莉签到领取'
+            "春节签到2026",
+            "七周年限时幸运签", "限时幸运签20260801",
+            '回望泰拉限时登录签到', '小马宝莉签到领取',
+            '夏日嘉年华赠送活动一20260801', '夏日嘉年华赠送活动二20260801',
         })
         if findOne('红包') then
             wait(function()
@@ -4960,68 +4979,76 @@ path.开始游戏 = function(x, disable_ptrs_check)
         end
         if findOne("多倍代理按钮") and get_fight_type(x) ~= "剿灭" then
             log("多倍处理开始")
-            wait(function()
-                tap("多倍代理按钮")
-                if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 1) then return true end
-            end, 10)
-            log.debug()
-            -- 出现面板后给一点时间等待展开
-            ssleep(0.5)
             battle_times = 1
-            log.debug()
-            appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 3)
-            if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
-                if findOne("多倍代理处于选择状态") then -- 首先清空到1倍状态再判断
-                    tap("多倍代理次数列表1")
+            if findOne("多倍代理处于选择状态") and not multiple_proxy_commander then
+                --多倍代理已经存在，并且用户不想多倍代理，那么就恢复1倍
+                wait(function()
+                    tap("多倍代理按钮")
+                    if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 1) then return true end
+                end, 10)
+                appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 3)
+                if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
                     wait(function()
-                        if (not findOne("多倍代理次数面板")) and (not findOne("多倍代理次数面板2")) then return true end
-                    end, 4)
+                        tap('多倍代理下一页') --一直下滑到一倍
+                        if findOne('多倍代理当前是一倍') then return true end
+                    end, 4, .3)
+                    ssleep(.5)
+                    if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
+                        tap('多倍代理面板关闭') --把面板点掉
+                    end
+                end
+                log.debug('1000001')
+                -- 出现面板后给一点时间等待展开
+                ssleep(0.5)
+            end
+            if multiple_proxy_commander then
+                log('需要多倍代理，准备切换')
+
+                --打开面板，回到一倍代理
+                wait(function()
+                    tap("多倍代理按钮")
+                    if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 1) then return true end
+                end, 10)
+                appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 3)
+                if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
                     wait(function()
-                        if not multiple_proxy_commander then return true end
-                        if appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 2) then return true end
-                        tap("多倍代理按钮")
-                    end, 10)
+                        tap('多倍代理下一页') --一直下滑到一倍
+                        if findOne('多倍代理当前是一倍') then return true end
+                    end, 4, .3)
                     ssleep(.5)
                 end
-                log.debug()
-                ssleep(0.2)
-                if multiple_proxy_commander then
-                    ssleep(1)
-                    battle_times = 6
-                    for i = 2, 6 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
-                        if findOne("多倍代理次数列表" .. i, .9) then
+
+                for i = 2, 9 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
+                    tap('多倍代理上一页')
+                    if appear('多倍代理当前倍率有加号蓝', .5) then
+                        --当前倍率 超过当前理智，回到下滑一个倍率
+                        log('当前倍率理智不够:', i, ' 准备回到倍率:', i - 1)
+                        tap('多倍代理下一页')
+                        ssleep(1)
+                        if not appear('多倍代理当前倍率有加号蓝', .5) then --点击了下一页之后，确保没有蓝色存在
                             log("find 多倍代理次数列表" .. i)
                             battle_times = i - 1
                             break
+                        else
+                            log('有抖动，可能出现误选难度')
                         end
+                        ssleep(1)
                     end
-                    local pp = find_color("多倍代理蓝色加号查找范围", "17A7C5", 2)
-                    if pp then
-                        local battle_times2 = 5 - math.floor((pp[2] - scale(320)) / scale(90))
-                        log("多倍代理检测2", pp, battle_times2)
-                        if battle_times ~= battle_times2 then
-                            log(battle_times, battle_times2)
-                            -- if battle_times > battle_times2 then
-                            --     battle_times = battle_times2
-                            -- end
-                        end
-                    else
-                        log("多倍代理检测2没有找到")
-                        -- 没有理智药的情况
-                    end
-                    log("最大可重复次数", battle_times)
-                    local l_time = get_fight_left_times(x)
-                    l_time = l_time or 1
-                    if l_time < battle_times then
-                        battle_times = l_time
-                    end
-                    log("最大可重复次数 计算后", battle_times, multiple_proxy_commander)
-                    --将找白色数字的范围上界设置为刚才找到的蓝色加号下面一些，92是每层高度
-                    rfg["多倍代理次数白"][2] = (876 - 92 * battle_times) * hscale
-                    tap(findOne("多倍代理次数白") or "多倍代理次数列表1")
-                    ssleep(.5)
+                end
+                ssleep(1)
+                if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
+                    tap('多倍代理面板关闭') --把面板点掉
                 end
             end
+            log.debug('1000003')
+            log("最大可重复次数", battle_times)
+            local l_time = get_fight_left_times(x)
+            l_time = l_time or 1
+            if l_time < battle_times then
+                battle_times = l_time
+            end
+            log("最大可重复次数 计算后", battle_times, multiple_proxy_commander)
+            ssleep(.5)
         end
     end
     log.debug()
@@ -5068,7 +5095,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 disappear(p, min(5, (time() - start_time) / 1000 * 5 / 5))
                 log((time() - start_time) / 1000 * 5 / 5)
             end
-        end, 10) then
+        end, 10, .1) then
         back()
         appear("主页")
         path.跳转("首页")
