@@ -6,11 +6,11 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 泰迪解包库
-# url = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/character_table.json"
-# url2 = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/uniequip_table.json"
+url = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/character_table.json"
+url2 = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/uniequip_table.json"
 # k佬解包库
-url = "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json"
-url2 = "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/uniequip_table.json"
+# url = "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json"
+# url2 = "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/uniequip_table.json"
 
 
 def filter_fields(json_obj, fields):
@@ -62,6 +62,7 @@ def save_to_json(file_name, data):
         print(f"JSON数据保存成功: {file_path}")
     except IOError as e:
         print(f"无法写入文件: {file_path}. 错误: {e}")
+
 
 def convert_to_lua_table(data, indent=0):
     lua_table = "{\n"
