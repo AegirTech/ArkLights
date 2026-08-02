@@ -4980,6 +4980,9 @@ path.开始游戏 = function(x, disable_ptrs_check)
         if findOne("多倍代理按钮") and get_fight_type(x) ~= "剿灭" then
             log("多倍处理开始")
             battle_times = 1
+            -- 当前关卡在作战列表中配置了几次，多倍代理不能超过这个次数
+            local l_time = get_fight_left_times(x)
+            l_time = l_time or 1
             if findOne("多倍代理处于选择状态") and not multiple_proxy_commander then
                 --多倍代理已经存在，并且用户不想多倍代理，那么就恢复1倍
                 wait(function()
@@ -5018,19 +5021,35 @@ path.开始游戏 = function(x, disable_ptrs_check)
                     ssleep(.5)
                 end
 
-                for i = 2, 9 do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
+                -- 游戏最高是10倍；同时不能超过fight中当前关卡的配置次数
+                local max_battle_times = min(10, l_time)
+                -- 默认按最高可用倍率，检测到蓝色加号时再回退到 i - 1 倍
+                battle_times = max_battle_times
+                for i = 2, max_battle_times do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
                     tap('多倍代理上一页')
-                    if appear('多倍代理当前倍率有加号蓝', .5) then
-                        --当前倍率 超过当前理智，回到下滑一个倍率
-                        log('当前倍率理智不够:', i, ' 准备回到倍率:', i - 1)
+                    -- 有药时，不够理智的倍率会出现蓝色加号；没药时会显示灰色而不是白色
+                    -- 一次等待同时检查两个点位，避免连续两个 appear 各等待0.5秒
+                    -- 蓝色加号放前面：有药时白色和蓝色可能同时存在，必须优先判断蓝色
+                    local current = appear({
+                        '多倍代理当前倍率有加号蓝', '多倍代理次数白列表' .. i,
+                    }, .7)
+                    -- current是白色：当前倍率可用；是蓝色或nil：当前倍率不可用，需要回退
+                    if current ~= '多倍代理次数白列表' .. i then
+                        log('当前倍率不可用:', i, ' 准备回到倍率:', i - 1)
+                        ssleep(.5)
                         tap('多倍代理下一页')
                         ssleep(1)
-                        if not appear('多倍代理当前倍率有加号蓝', .5) then --点击了下一页之后，确保没有蓝色存在
+                        -- 回退后只接受白色且没有蓝色加号的倍率；i=2时回退到1倍，默认有效
+                        local lower = i == 2 and '多倍代理次数白列表1' or appear({
+                            '多倍代理当前倍率有加号蓝',
+                            '多倍代理次数白列表' .. (i - 1),
+                        }, .5)
+                        if lower == '多倍代理次数白列表' .. (i - 1) then
                             log("find 多倍代理次数列表" .. i)
                             battle_times = i - 1
                             break
                         else
-                            log('有抖动，可能出现误选难度')
+                            log('回退后的倍率仍不可用，可能出现抖动')
                         end
                         ssleep(1)
                     end
@@ -5042,8 +5061,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
             end
             log.debug('1000003')
             log("最大可重复次数", battle_times)
-            local l_time = get_fight_left_times(x)
-            l_time = l_time or 1
             if l_time < battle_times then
                 battle_times = l_time
             end
