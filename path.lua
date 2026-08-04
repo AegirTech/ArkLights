@@ -1559,13 +1559,14 @@ path.基建收获 = function()
     end, 10)
     log.debug()
 
+    --20260804 基建问题 循环执行太快 可能基建误点到干员修整
     wait(function()
         log.debug()
         if findAny({ "小蓝圈", "基建收获干员休整", "进驻总览", "训练室完成小蓝圈", "会客室线索小蓝圈" }) then return true end
         log.debug()
         tap("点击全部收取2")
         ssleep(.2)
-    end, 10)
+    end, 10, .5)
     log(findAny({ "小蓝圈", "基建收获干员休整", "进驻总览" }))
     log.debug()
 
