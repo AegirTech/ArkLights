@@ -4991,6 +4991,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 end, 10)
                 appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 3)
                 if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
+                    ssleep(1.2)
                     wait(function()
                         tap('多倍代理下一页') --一直下滑到一倍
                         if findOne('多倍代理当前是一倍') then return true end
@@ -5014,6 +5015,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 end, 10)
                 appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 3)
                 if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
+                    ssleep(1.2)
                     wait(function()
                         tap('多倍代理下一页') --一直下滑到一倍
                         if findOne('多倍代理当前是一倍') then return true end
