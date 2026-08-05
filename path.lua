@@ -5032,6 +5032,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 battle_times = max_battle_times
                 for i = 2, max_battle_times do -- 从下往上找蓝色的加号，找到说明i-1是不用吃药的最大值
                     tap('多倍代理上一页')
+                    ssleep(.5)                 --有些设备卡顿，额外加上的延迟
                     -- 有药时，不够理智的倍率会出现蓝色加号；没药时会显示灰色而不是白色
                     -- 一次等待同时检查两个点位，避免连续两个 appear 各等待0.5秒
                     -- 蓝色加号放前面：有药时白色和蓝色可能同时存在，必须优先判断蓝色
