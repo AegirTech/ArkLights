@@ -6016,6 +6016,7 @@ path.活动 = function(x)
             point["活动导航0"] = point["活动导航S"]
         end
         if not wait(function()
+        		ssleep(2)--at活动有过场动画
                 if findOne("活动导航0") then return true end
                 if findOne("跳过剧情") then
                     log(13247, '发现剧情')
