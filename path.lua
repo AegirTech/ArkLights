@@ -6016,7 +6016,7 @@ path.活动 = function(x)
             point["活动导航0"] = point["活动导航S"]
         end
         if not wait(function()
-        		ssleep(2)--at活动有过场动画
+                ssleep(2) --at活动有过场动画
                 if findOne("活动导航0") then return true end
                 if findOne("跳过剧情") then
                     log(13247, '发现剧情')
@@ -6071,32 +6071,34 @@ path.活动 = function(x)
 
     --car_check() --有些大型活动会自带一些任务
     -- 25年夏活 相谈室
-    -- if not car_checked and not copy_homework then
-    --     相谈室活动()
-    --     car_checked = true
-    --     if findOne("相谈室新手教程回合暗") then
-    --         if not wait(function()
-    --                 tap("相谈室选项1")
-    --                 ssleep(0.1)
-    --                 tap("相谈室使用")
-    --                 ssleep(0.1)
-    --                 findTap("相谈室下一轮")
-    --                 ssleep(0.1)
-    --                 tap("相谈室结束确认选择")
-    --                 if findAny({ "相谈室开始交谈", "相谈室开始营业" }) then return true end
-    --             end, 40) then
-    --             return
-    --         end
-    --     end
-    --     if not wait(function()
-    --             if findOne("活动导航0") then return true end
-    --             back()
-    --         end, 10) then
-    --         log.warn("活动导航0未找到")
-    --         return
-    --     end
-    --     path.跳转("首页")
-    -- end
+    if not car_checked and not copy_homework then
+        相谈室活动()
+        car_checked = true
+        if findOne("相谈室新手教程回合暗") then
+            if not wait(function()
+                    tap("相谈室选项1")
+                    ssleep(0.1)
+                    tap("相谈室使用")
+                    ssleep(0.1)
+                    findTap("相谈室下一轮")
+                    ssleep(0.1)
+                    tap("相谈室结束确认选择")
+                    ssleep(0.1)
+                    tap('招募说明关闭')
+                    if findAny({ "相谈室开始交谈", "相谈室开始营业" }) then return true end
+                end, 40) then
+                return
+            end
+        end
+        if not wait(function()
+                if findOne("活动导航0") then return true end
+                back()
+            end, 10) then
+            log.warn("活动导航0未找到")
+            return
+        end
+        path.跳转("首页")
+    end
 
     if not skip_guide and not appear({ "活动导航0", "活动商店导航" }, 5) then
         log.warn("未找到活动导航")
@@ -10728,6 +10730,7 @@ end
                     return true
                 end
                 if findOne("相谈室开始交谈") then return true end
+                if findAny({ "相谈室当前回合页面教程" }) then return true end
             end, 10) then
             return
         end
@@ -10744,8 +10747,7 @@ end
     if not wait(function()
             tap("相谈室开始交谈")
             ssleep(0.8)
-            if findOne("相谈室当前回合页面") then return true end
-            if findOne("相谈室结束对话") then return true end
+            if findAny({ "相谈室当前回合页面", "相谈室结束对话", "相谈室当前回合页面教程" }) then return true end
         end, 35) then
         return
     end
