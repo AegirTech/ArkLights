@@ -6076,6 +6076,12 @@ path.活动 = function(x)
         car_checked = true
         if findOne("相谈室新手教程回合暗") then
             if not wait(function()
+                    if findOne('相谈室回应风格教程') then
+                        tap('相谈室回应风格教程')
+                        tap('相谈室使用望气教程点击')
+                        tap('相谈室使用望气教程点击2')
+                    end
+
                     tap("相谈室选项1")
                     ssleep(0.1)
                     tap("相谈室使用")
@@ -10698,6 +10704,7 @@ end
 
 相谈室活动 = function(是否继续)
     if not 是否继续 then
+        log('是 继续')
         if not findAny({ "相谈室进入", "相谈室交谈进行中" }) then
             log.debug()
             return
@@ -10745,6 +10752,9 @@ end
     end
 
     if not wait(function()
+            if findOne('相谈室开始营业页面教程') then
+                tap('相谈室开始营业页面教程')
+            end
             tap("相谈室开始交谈")
             ssleep(0.8)
             if findAny({ "相谈室当前回合页面", "相谈室结束对话", "相谈室当前回合页面教程" }) then return true end
@@ -10850,6 +10860,11 @@ end
         back()
         log.debug()
         if not wait(function()
+                if findOne('相谈室回应风格教程') then
+                    tap('相谈室回应风格教程')
+                    tap('相谈室使用望气教程点击')
+                    tap('相谈室使用望气教程点击2')
+                end
                 findTap("相谈室开始营业", 5)
                 tap("相谈室下一轮")
                 ssleep(0.8)
