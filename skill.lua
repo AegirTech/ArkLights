@@ -262,6 +262,11 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
             elseif icon == 'bskill_tra_spd&limit7' then
                 base = base + 0.3
                 storage = storage + 1
+            elseif icon == 'bskill_tra_orchd2' then --焰狐龙梓兰2
+                base = base + 0.2
+                storage = storage + 2
+            elseif icon == 'bskill_tra_spd3&catap2' then --雷狼龙S空爆2
+                base = base + 0.35
             elseif icon == 'bskill_tra_spd&limit6' then
                 base = base + 0.25
                 storage = storage + 1
@@ -843,7 +848,9 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
                 storage[operatoridx] = (storage[operatoridx] or 0) + 17
             elseif icon == "bskill_man_fuze" then
                 base = base + 0.2
-            elseif icon == "bskill_man_gold4" then --阿罗玛
+            elseif icon == "bskill_man_spd_mechanist" then -- 机械师2
+                base = base + 0.05
+            elseif icon == "bskill_man_gold4" then         --阿罗玛
                 if goodType == '贵金属' then base = base + 0.25 end
             elseif icon == 'bskill_man_exp&limit2' then
                 if goodType == '作战记录' then
