@@ -6246,6 +6246,7 @@ path.商店搬空 = function()
     path.跳转("首页")
     tap(hd_position)
     log.debug("进入活动")
+    ssleep(4)
     if not wait(function()
             if findOne("活动导航0") or findOne("活动商店导航") then return true end
             if findOne("跳过剧情") and not findAny({ "活动导航0", "活动商店导航" }) then path.跳过剧情() end
@@ -6260,7 +6261,7 @@ path.商店搬空 = function()
         return
     end
     log.debug("查找是否有未领任务")
-    if appear("活动任务导航", .6) then
+    if appear("活动任务导航", 1) then
         log.debug("领取任务")
         if not wait(function()
                 tap("活动任务导航")
