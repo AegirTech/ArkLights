@@ -961,6 +961,10 @@ path.fallback = {
         end
         if x then return tap(path.fallback[x]) end
     end,
+    获得塔罗牌页面 = function()
+        tap("塔罗牌关闭")
+        ssleep(0.5)
+    end,
     争锋频道首页 = function()
         tap("争锋频道回到游戏首页")
         ssleep(0.6)
@@ -4856,6 +4860,13 @@ path.开始游戏 = function(x, disable_ptrs_check)
     local need_copy_homework = nil
     log("开始游戏,第", fight_tick, "次作战,关卡:", x)
     if copy_homework_only then pre_fight = x end
+
+    if findOne("获得塔罗牌页面") then
+        tap("塔罗牌关闭")
+        disappear("塔罗牌关闭", 3)
+        ssleep(.5)
+    end
+
     if not findOne("开始行动") then
         log.debug("未找到开始行动")
         return
@@ -6071,40 +6082,40 @@ path.活动 = function(x)
 
     --car_check() --有些大型活动会自带一些任务
     -- 25年夏活 相谈室
-    if not car_checked and not copy_homework then
-        相谈室活动()
-        car_checked = true
-        if findOne("相谈室新手教程回合暗") then
-            if not wait(function()
-                    if findOne('相谈室回应风格教程') then
-                        tap('相谈室回应风格教程')
-                        tap('相谈室使用望气教程点击')
-                        tap('相谈室使用望气教程点击2')
-                    end
+    -- if not car_checked and not copy_homework then
+    --     相谈室活动()
+    --     car_checked = true
+    --     if findOne("相谈室新手教程回合暗") then
+    --         if not wait(function()
+    --                 if findOne('相谈室回应风格教程') then
+    --                     tap('相谈室回应风格教程')
+    --                     tap('相谈室使用望气教程点击')
+    --                     tap('相谈室使用望气教程点击2')
+    --                 end
 
-                    tap("相谈室选项1")
-                    ssleep(0.1)
-                    tap("相谈室使用")
-                    ssleep(0.1)
-                    findTap("相谈室下一轮")
-                    ssleep(0.1)
-                    tap("相谈室结束确认选择")
-                    ssleep(0.1)
-                    tap('招募说明关闭')
-                    if findAny({ "相谈室开始交谈", "相谈室开始营业" }) then return true end
-                end, 40) then
-                return
-            end
-        end
-        if not wait(function()
-                if findOne("活动导航0") then return true end
-                back()
-            end, 10) then
-            log.warn("活动导航0未找到")
-            return
-        end
-        path.跳转("首页")
-    end
+    --                 tap("相谈室选项1")
+    --                 ssleep(0.1)
+    --                 tap("相谈室使用")
+    --                 ssleep(0.1)
+    --                 findTap("相谈室下一轮")
+    --                 ssleep(0.1)
+    --                 tap("相谈室结束确认选择")
+    --                 ssleep(0.1)
+    --                 tap('招募说明关闭')
+    --                 if findAny({ "相谈室开始交谈", "相谈室开始营业" }) then return true end
+    --             end, 40) then
+    --             return
+    --         end
+    --     end
+    --     if not wait(function()
+    --             if findOne("活动导航0") then return true end
+    --             back()
+    --         end, 10) then
+    --         log.warn("活动导航0未找到")
+    --         return
+    --     end
+    --     path.跳转("首页")
+    -- end
 
     if not skip_guide and not appear({ "活动导航0", "活动商店导航" }, 5) then
         log.warn("未找到活动导航")
