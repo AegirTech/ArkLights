@@ -962,7 +962,10 @@ path.fallback = {
         if x then return tap(path.fallback[x]) end
     end,
     获得塔罗牌页面 = function()
-        tap("塔罗牌关闭")
+        wait(function()
+            if not findOne("获得塔罗牌页面") then return true end
+            tap("塔罗牌关闭")
+        end, 3)
         ssleep(0.5)
     end,
     争锋频道首页 = function()
@@ -1661,6 +1664,15 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
             if not findOne("相谈室活动左上角返回") then return true end
             tap("相谈室活动左上角返回")
         end, 3)
+    end
+
+    if findOne("获得塔罗牌页面") then
+        wait(function()
+            if not findOne("获得塔罗牌页面") then return true end
+            tap("塔罗牌关闭")
+        end, 3)
+        disappear("塔罗牌关闭", 3)
+        ssleep(.5)
     end
 
     -- if findOne("争锋频道首页") then
@@ -4862,7 +4874,10 @@ path.开始游戏 = function(x, disable_ptrs_check)
     if copy_homework_only then pre_fight = x end
 
     if findOne("获得塔罗牌页面") then
-        tap("塔罗牌关闭")
+        wait(function()
+            if not findOne("获得塔罗牌页面") then return true end
+            tap("塔罗牌关闭")
+        end, 3)
         disappear("塔罗牌关闭", 3)
         ssleep(.5)
     end

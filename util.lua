@@ -1095,6 +1095,10 @@ local logCommon = function(level, ...)
 
     local a = os.date('%Y.%m.%d %H:%M:%S')
 
+    if #l > 100 then
+        l = l:sub(1, 100) .. '...'
+    end
+
     print(l)
     console.println(consoleLevel[level], '[' .. a .. '] ' .. l)
     if write_log_local then
