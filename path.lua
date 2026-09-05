@@ -4873,10 +4873,10 @@ path.开始游戏 = function(x, disable_ptrs_check)
     log("开始游戏,第", fight_tick, "次作战,关卡:", x)
     if copy_homework_only then pre_fight = x end
 
-    if findOne("获得塔罗牌页面") then
+    if findOne("获得塔罗牌页面") or findOne("塔罗牌关闭") then
         wait(function()
-            if not findOne("获得塔罗牌页面") then return true end
             tap("塔罗牌关闭")
+            if not findOne("塔罗牌关闭") then return true end
         end, 3)
         disappear("塔罗牌关闭", 3)
         ssleep(.5)
