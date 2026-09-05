@@ -4884,6 +4884,16 @@ path.开始游戏 = function(x, disable_ptrs_check)
 
     if not findOne("开始行动") then
         log.debug("未找到开始行动")
+        if hd_nickname == "SR" then
+            appear('塔罗牌x')
+            if findOne('塔罗牌x') then
+                wait(function()
+                    tap('塔罗牌x')
+                end, 3, .2)
+            else
+                log('未找到 塔罗牌x')
+            end
+        end
         return
     end
 

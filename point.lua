@@ -4172,7 +4172,9 @@ convert_coords = function(point)
     local origin_center, new_center
     local hs, ws
     for k, v in pairs(point) do
-        if center[k] and center[k]:find("maxscalex") then
+        if is_720p and point720 and point720[k] ~= nil then
+            -- 720p 原生坐标,已是实际屏幕坐标,跳过换算
+        elseif center[k] and center[k]:find("maxscalex") then
             hs = hscale
             ws = maxscale
         elseif center[k] and center[k]:find("maxscale") then
@@ -4225,6 +4227,26 @@ convert_coords = function(point)
         end
     end
 end
+-- 720p 双坐标体系:直接写 720p 原始坐标,零换算
+-- 仅在 1280x720 设备上生效,同名点覆盖 point 表中的 1080p 坐标
+-- 注意:覆盖值按 left_top 锚点语义编写(绝大多数点的默认锚点)
+point720 = {
+    -- 字符串多点找色格式:
+    -- 示例点 = "663|756|618AFD,750|759|5F89FD",
+    -- 坐标 table 格式:
+    -- 示例点2 = { 500, 300 },
+    塔罗牌x =
+    "1047|224|ffffff-202020,1050|231|fcfeff-202020,1053|237|fdffff-202020,1041|218|ffffff-202020,1059|269|160b85-202020,1042|270|160a87-202020",
+}
+
+is_720p = (screen.width == 1280 and screen.height == 720)
+if is_720p then
+    local count = 0
+    for _ in pairs(point720) do count = count + 1 end
+    update(point, point720, true)
+    console.println(3, "使用720p原生坐标覆盖 " .. count .. " 个点")
+end
+
 convert_coords(point)
 
 update_assistant_position = function()
