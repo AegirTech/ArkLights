@@ -1674,7 +1674,17 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
         disappear("塔罗牌关闭", 3)
         ssleep(.5)
     end
-
+    if hd_nickname == "SR" then
+        if findOne('塔罗牌x') then
+            wait(function()
+                tap('塔罗牌x')
+            end, 3, .2)
+        else
+            log('未找到 塔罗牌x')
+        end
+    else
+        log('不是活动 SR')
+    end
     -- if findOne("争锋频道首页") then
     --     back()
     --     ssleep(0.5)
@@ -4725,7 +4735,6 @@ path.轮次作战 = function()
                 table.insert(qqmessage, " " .. cur_fight .. "导航超时")
             end
         end
-
         -- 清光理智: 第一次理智不足时，转为1-7
         log.debug("作战后清光1-7理智", zero_san_after_fight, "1-7理智", zero_san)
         if zero_san_after_fight and zero_san then
@@ -4884,16 +4893,6 @@ path.开始游戏 = function(x, disable_ptrs_check)
 
     if not findOne("开始行动") then
         log.debug("未找到开始行动")
-        if hd_nickname == "SR" then
-            appear('塔罗牌x')
-            if findOne('塔罗牌x') then
-                wait(function()
-                    tap('塔罗牌x')
-                end, 3, .2)
-            else
-                log('未找到 塔罗牌x')
-            end
-        end
         return
     end
 
