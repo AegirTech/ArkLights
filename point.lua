@@ -4172,66 +4172,63 @@ convert_coords = function(point)
     local origin_center, new_center
     local hs, ws
     for k, v in pairs(point) do
-        if is_720p and point720 and point720[k] ~= nil then
-            -- 720p 原生坐标,已是实际屏幕坐标,跳过换算
+        if center[k] and center[k]:find("maxscalex") then
+            hs = hscale
+            ws = maxscale
+        elseif center[k] and center[k]:find("maxscale") then
+            hs = maxscale
+            ws = maxscale
+        elseif center[k] and center[k]:find("anisotropy") then
+            hs = hscale
+            ws = wscale
         else
-            if center[k] and center[k]:find("maxscalex") then
-                hs = hscale
-                ws = maxscale
-            elseif center[k] and center[k]:find("maxscale") then
-                hs = maxscale
-                ws = maxscale
-            elseif center[k] and center[k]:find("anisotropy") then
-                hs = hscale
-                ws = wscale
-            else
-                hs = minscale
-                ws = minscale
+            hs = minscale
+            ws = minscale
+        end
+        if type(v) == "table" and #v == 0 then
+            convert_coords(v)
+        elseif type(v) == "table" and
+            table.all(v, function(x) return type(x) == 'number' end) then
+            assert(#v % 2 == 0)
+            origin_center, new_center = point2center(k)
+            for i = 1, #v, 2 do
+                v[i] = math.round((v[i] - origin_center[1]) * ws + new_center[1])
+                v[i + 1] =
+                    math.round((v[i + 1] - origin_center[2]) * hs + new_center[2])
             end
-            if type(v) == "table" and #v == 0 then
-                convert_coords(v)
-            elseif type(v) == "table" and
-                table.all(v, function(x) return type(x) == 'number' end) then
-                assert(#v % 2 == 0)
-                origin_center, new_center = point2center(k)
-                for i = 1, #v, 2 do
-                    v[i] = math.round((v[i] - origin_center[1]) * ws + new_center[1])
-                    v[i + 1] =
-                        math.round((v[i + 1] - origin_center[2]) * hs + new_center[2])
-                end
-            elseif type(v) == "string" and v:find(coord_delimeter) then
-                origin_center, new_center = point2center(k)
-                -- if k == '今日参与交流已达上限' then
-                --   log(origin_center, new_center)
-                --   safeexit()
-                -- end
-                local dst = ''
-                for x, y, c in v:gmatch("(%d+)" .. coord_delimeter .. "(%d+)" ..
-                    coord_delimeter .. "(......)") do
-                    x, y = map(tonumber, x, y)
-                    x = math.round((x - origin_center[1]) * ws + new_center[1])
-                    y = math.round((y - origin_center[2]) * hs + new_center[2])
-                    dst = dst .. x .. coord_delimeter .. y .. coord_delimeter .. c ..
-                        point_delimeter
-                end
-                dst = dst:sub(0, #dst - 1)
-                point[k] = dst
-            elseif type(v) == "table" and #v ~= 0 then
-                for kk, vv in pairs(v) do
-                    if type(vv) == "table" then
-                        local new = { { vv[1], vv[2] } }
-                        convert_coords(new)
-                        vv[1] = new[1][1]
-                        vv[2] = new[1][2]
-                    end
+        elseif type(v) == "string" and v:find(coord_delimeter) then
+            origin_center, new_center = point2center(k)
+            -- if k == '今日参与交流已达上限' then
+            --   log(origin_center, new_center)
+            --   safeexit()
+            -- end
+            local dst = ''
+            for x, y, c in v:gmatch("(%d+)" .. coord_delimeter .. "(%d+)" ..
+                coord_delimeter .. "(......)") do
+                x, y = map(tonumber, x, y)
+                x = math.round((x - origin_center[1]) * ws + new_center[1])
+                y = math.round((y - origin_center[2]) * hs + new_center[2])
+                dst = dst .. x .. coord_delimeter .. y .. coord_delimeter .. c ..
+                    point_delimeter
+            end
+            dst = dst:sub(0, #dst - 1)
+            point[k] = dst
+        elseif type(v) == "table" and #v ~= 0 then
+            for kk, vv in pairs(v) do
+                if type(vv) == "table" then
+                    local new = { { vv[1], vv[2] } }
+                    convert_coords(new)
+                    vv[1] = new[1][1]
+                    vv[2] = new[1][2]
                 end
             end
         end
     end
 end
+convert_coords(point)
+
 -- 720p 双坐标体系:直接写 720p 原始坐标,零换算
--- 仅在 1280x720 设备上生效,同名点覆盖 point 表中的 1080p 坐标
--- 注意:覆盖值按 left_top 锚点语义编写(绝大多数点的默认锚点)
+-- 仅在 1280x720 设备上生效,在 convert_coords 全表换算完成后覆盖同名点
 point720 = {
     -- 字符串多点找色格式:
     -- 示例点 = "663|756|618AFD,750|759|5F89FD",
@@ -4247,8 +4244,6 @@ if is_720p then
     update(point, point720, true)
     console.println(3, "使用720p原生坐标覆盖 " .. count .. " 个点")
 end
-
-convert_coords(point)
 
 update_assistant_position = function()
     local t = {}
