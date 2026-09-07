@@ -4227,6 +4227,24 @@ convert_coords = function(point)
 end
 convert_coords(point)
 
+-- 720p 双坐标体系:直接写 720p 原始坐标,零换算
+-- 仅在 1280x720 设备上生效,在 convert_coords 全表换算完成后覆盖同名点
+point720 = {
+    -- 字符串多点找色格式:
+    -- 示例点 = "663|756|618AFD,750|759|5F89FD",
+    -- 坐标 table 格式:
+    -- 示例点2 = { 500, 300 },
+    塔罗牌x = "1045|225|FFFFFF,1049|230|FFFFFF,1041|217|FFFFFF,1046|273|160B87,1026|273|150B86",
+}
+
+is_720p = (screen.width == 1280 and screen.height == 720)
+if is_720p then
+    local count = 0
+    for _ in pairs(point720) do count = count + 1 end
+    update(point, point720, true)
+    console.println(3, "使用720p原生坐标覆盖 " .. count .. " 个点")
+end
+
 update_assistant_position = function()
     local t = {}
     for i = 1, 1 do
