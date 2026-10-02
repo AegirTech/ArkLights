@@ -5512,6 +5512,7 @@ path.主线 = function(x)
         local wa_x, wa_y = point["主线第零章点击位置"][1] + tap_chat_index % 5 * scale(315),
             point["主线第零章点击位置"][2] + math.floor(tap_chat_index / 5) * scale(310)
         log("wa_x", wa_x, "wa_y", wa_y)
+        tap({ wa_x, wa_y })
         log.debug(chapter, chapter_index, tap_chat_index % 5, math.floor(tap_chat_index / 5))
         if not wait(function()
                 -- if not findOne(samp) then return true end
@@ -5519,7 +5520,7 @@ path.主线 = function(x)
                     if findOne("当前进度列表" .. i) then
                         return true
                     end
-                    findTap("前往章节")
+                    tap("前往章节")
                 end
                 tap({ wa_x, wa_y })
                 ssleep(.5)
