@@ -1159,6 +1159,7 @@ initPngdata = function()
         肥鸭 = dormitoryPngdata,
         训练室 = trainingPngdata,
         加工站 = workshopPngdata,
+        回收站 = recyclePngdata,
     }
     local s = ''
     for v, _ in pairs(skillpng2operator) do
@@ -1187,6 +1188,8 @@ initPngdata = function()
             pngdata = trainingPngdata
         elseif v:startsWith("bskill_ws_") then
             pngdata = workshopPngdata
+        elseif v:startsWith("bskill_recycle_") then
+            pngdata = recyclePngdata
         else
             pngdata = {}
         end
@@ -1454,6 +1457,8 @@ chooseOperator = function(stationType, goodType, stationLevel,
         elseif table.findv(best[1], "bskill_hire_spd_bd_n2") then
             isCharExsit["桑葚"] = true
         end
+    elseif stationType == "回收站" then
+        best, best_score = recycleOperatorBest(operator)
     elseif stationType == "控制中枢" then
         best, best_score = controlStationOperatorBest(operator)
         log("控制中枢选", best)
@@ -1546,6 +1551,8 @@ meetingStationOperatorBest = function(operator)
             "bskill_meet_spdnotowned2" then
             -- 晓歌
             table.insert(best, o)
+        elseif o[2] == "bskill_meet_spd&cost_char" then -- 克莱门莎
+            table.insert(best, 1, o)
         elseif o[1] == "bskill_meet_exchange" or o[2] == "bskill_meet_exchange" then -- 跃跃
             table.insert(best, 1, o)
         elseif table.includes({ o[1], o[2] }, 'bskill_meet_spd_confes1') and isCharExsit["肥鸭"] then --信仰搅拌机2
@@ -1597,6 +1604,8 @@ officeStationOperatorBest = function(operator)
                 s = s + 0.35 + 0.01
             elseif icon == "bskill_hire_spd2" then
                 s = s + 0.3
+            elseif icon == "bskill_hire_spd&cost6" then
+                s = s + 0.3
             elseif icon == "bskill_ws_p_kalts2" then --凯尔希·思衡托2
                 s = s + 0.3
             elseif icon == "bskill_hire_spd&ursus2" then
@@ -1626,6 +1635,32 @@ officeStationOperatorBest = function(operator)
     table.sort(best, function(a, b) return a[1] > b[1] end)
     best = best[1][2]
     return { best }, best_score
+end
+
+-- 回收站干员选择：
+-- 返回效率最高的index
+recycleOperatorBest = function(operator)
+    -- 过滤心情小于阈值的干员
+    local minAllowedMood = shift_min_mood
+    if disable_shift_mood then minAllowedMood = -1 end
+    operator = table.filter(operator,
+        function(x) return x[3] >= minAllowedMood end)
+    local best = {}
+    local best_score = -1
+    local remain = {}
+    for _, o in pairs(operator) do
+        if o[1] == "bskill_recycle_spd&cost2" then
+            table.insert(best, 1, o)
+        elseif o[1] == "bskill_recycle_spd&cost" then
+            table.insert(best, o)
+        else
+            table.insert(remain, o)
+        end
+    end
+    log(best)
+    best = table.slice(table.extend(best, remain), 1, 2)
+    -- exit()
+    return best, best_score
 end
 
 -- 控制中枢干员选择：同类技能不一起上
@@ -2136,7 +2171,7 @@ powerStationOperatorBest = function(operator)
             elseif icon == "bskill_power_rec_rhine" then --缪尔赛思
                 s = s + 0.11
             elseif icon == "bskill_pow_drone" then       --承曦格雷伊1，无人机上限/10
-                s = s + 0.22
+                s = s + 0.25
             elseif icon == "bskill_pow_spd3" then
                 s = s + 0.2
                 if table.findv({ "Lancet-2", "Castle-3", "THRM-EX", "正义骑士号", "Friston-3", "PhonoR-0", "CONFESS-47", "GALLUS²" }, o[6]) then

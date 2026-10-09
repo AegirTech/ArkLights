@@ -2510,7 +2510,7 @@ path.基建信息获取 = function(retry)
         tradingStationLevel,
     }))
     totalStationLevel = totalStationLevel +
-        math.round((5 + 12) * totalStationLevel / (47))
+        math.round((5 + 15) * totalStationLevel / (47))
 
     log("totalStationLevel", totalStationLevel)
     -- exit()
@@ -3155,6 +3155,7 @@ path.基建换班 = function()
     path.制造换班()
     path.贸易换班()
     path.总览换班()
+    path.回收站换班()
 end
 
 path.控制中枢换班 = function(force_change)
@@ -3285,37 +3286,7 @@ path.办公室换班 = function(stationType)
     --if 1 then return end
     stationType = stationType or "办公室"
     local p = stationType
-    -- if findOne("基建总览发电站") then
-    --     log.debug("在总览换办公室")
-    -- else
-    --     log.debug("不在总览") -- 不在总览有概率直接点到活动室
-    --     path.跳转("基建")
-
-    --     if not wait(function()
-    --             if findOne("基建总览工作区") then return true end
-    --             tap("进驻总览")
-    --             ssleep(.2)
-    --         end, 10) then
-    --         return
-    --     end
-    -- end
-    log.debug("不在总览")
     path.跳转("基建")
-    -- if not wait(function()
-    --         if findOne("基建总览工作区") then return true end
-    --         tap("进驻总览")
-    --         ssleep(.2)
-    --     end, 10) then
-    --     log.debug()
-    --     return
-    -- end
-    -- for i = 1, 7 do -- 可能设备会卡 多滑动几次
-    --     path.基建总览翻页()
-    --     ssleep(.5)
-    --     if findOne("基建总览翻到最后一页") then
-    --         break
-    --     end
-    -- end
     ssleep(0.5)
     -- 进办公室
     if not wait(function()
@@ -3499,6 +3470,66 @@ path.会客厅换班 = function(stationType, force_change)
     chooseOperator(stationType, type, stationLevel, tradingStationNum,
         virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
         goldStationNum, totalStationLevel)
+
+    if not wait(function(reset_wait_start_time)
+            tap("确认蓝")
+            ssleep(.5)
+            if findAny({ "撤下干员", "基建总览工作区" }) then return true end
+            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+        end, 3) then
+        return
+    end
+end
+
+path.回收站换班 = function(stationType)
+    stationType = stationType or "回收站"
+    p = stationType
+    path.跳转("基建")
+    ssleep(0.5)
+    -- 进回收站
+    if not wait(function()
+            if not findOne("进驻总览") or not findOne("缩放结束") then
+                return true
+            end
+            tap(p)
+        end) then
+        log.debug()
+        return
+    end
+
+    path.基建确认进入设施()
+    -- 进干员列表
+    if not wait(function()
+            if findOne("确认蓝") then return true end
+            tap("制造站进度")
+        end, 10) then
+        return
+    end
+
+    -- 清空选择
+    local start_time = time()
+    if not wait(function()
+            if findOne("干员未选中") and findOne("第一干员未选中") then
+                return true
+            end
+            if time() - start_time > 1000 then
+                tap("干员选择列表1")
+                start_time = time()
+            end
+            tap("清空选择")
+        end, 5) then
+        log.debug()
+        return
+    end
+
+    -- 图标不够，会出现空集，暂时不做判断直接选前两个
+    -- chooseOperator(stationType, type, stationLevel, tradingStationNum,
+    --     virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
+    --     goldStationNum, totalStationLevel)
+
+    tap("干员选择列表1")
+    tap("干员选择列表2")
+
 
     if not wait(function(reset_wait_start_time)
             tap("确认蓝")
