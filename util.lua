@@ -3369,10 +3369,10 @@ update_state_from_ui = function()
 
     -- 活动开放时间段
     hd_position = "面板活动" --快捷入口位置:"面板活动"是上方,"面板活动2"是下方
-    hd_nickname = "SR" --注意要大写
+    hd_nickname = "YW" --注意要大写
     hd_max_stage = 8
-    hd_exclude = { 4 } --排除哪些关卡不刷，例如{9}
-    hd_open_time_end = parse_time("202609180400")
+    hd_exclude = {} --排除哪些关卡不刷，例如{9}
+    hd_open_time_end = parse_time("202610230400")
     hd2_open_time_end = parse_time("202603170400") -- 故事集开放时间段
     hd_mod = "SS"
     log("fight_ui", fight_ui)
