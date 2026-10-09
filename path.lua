@@ -5512,7 +5512,9 @@ path.主线 = function(x)
         local wa_x, wa_y = point["主线第零章点击位置"][1] + tap_chat_index % 5 * scale(315),
             point["主线第零章点击位置"][2] + math.floor(tap_chat_index / 5) * scale(310)
         log("wa_x", wa_x, "wa_y", wa_y)
+        ssleep(1)
         tap({ wa_x, wa_y })
+        ssleep(1)
         log.debug(chapter, chapter_index, tap_chat_index % 5, math.floor(tap_chat_index / 5))
         if not wait(function()
                 -- if not findOne(samp) then return true end
@@ -5522,7 +5524,7 @@ path.主线 = function(x)
                     end
                     tap("前往章节")
                 end
-                tap({ wa_x, wa_y })
+                -- tap({ wa_x, wa_y })
                 ssleep(.5)
             end, 5) then --默认的2s可能太短了  在【章节选择列表】进入到关卡列表的时候，可能超时了
             log.warn("跳转失败4")
