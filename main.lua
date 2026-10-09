@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "10.10 02:14"
+release_date = "10.10 03:02"
 update_announcement = '最近更新: YW活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -125,9 +125,6 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1)
-    path.基建信息获取()
-    path.回收站换班()
-    exit()
     -- 地图序号 = 2
     -- 最优路线 = 1
     -- log(point["黑流树海地图2线路2OCR范围列表1"])

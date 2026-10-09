@@ -1148,6 +1148,7 @@ initPngdata = function()
     dormitoryPngdata = {}
     trainingPngdata = {}
     workshopPngdata = {}
+    recyclePngdata = {}
     stationType2pngData = {
         制造站 = manufacturingPngdata,
         贸易站 = tradingPngdata,
