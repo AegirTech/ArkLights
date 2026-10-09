@@ -8,6 +8,8 @@ path = {}
 -- wait_game_up 有必要做B服界面跳转吗：没有。做了之后，退出账号难实现
 
 path.base = {
+    -- 匹配图色后，点击首点所在的“重试登录”按钮。
+    B服登录被取消弹窗 = "B服登录被取消弹窗",
     面板 = function()
         login_error_times = 0
         return true
@@ -437,6 +439,7 @@ path.base = {
 }
 
 path.bilibili_login = {
+    B服登录被取消弹窗 = "B服登录被取消弹窗",
     b服年度报告 = function()
         tap("b服年度报告")
         ssleep(0.5)
