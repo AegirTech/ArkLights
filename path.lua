@@ -6970,7 +6970,7 @@ path.退出账号 = function()
             if not appear("返回3") then return end
             -- the old way
             wait(function()
-                tap("退出登录" .. (appid == oppid and '' or '2'))
+                tap("账号登出" .. (appid == oppid and '' or '2'))
                 ssleep(.1)
                 tap("右右确认")
             end, 1)

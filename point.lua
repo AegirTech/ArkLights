@@ -1741,7 +1741,7 @@ point = {
     password_login = { text = "密码登录" },
     username_inputbox = { class = "android.widget.EditText" },
     login_checkbox = { class = "android.widget.CheckBox" },
-    用户中心 = "112|745|F5F5F5",
+    用户中心 = "108|826|FFFFFF",
     login_out = { text = "退出登录" },
     yes = { text = "是" },
     login_switch = { text = "登录其他账号" },
@@ -2147,10 +2147,10 @@ point = {
     面板仓库 = { 1789, 938 },
     面板邮件 = { 288, 57 },
     面板设置 = { 74, 57 },
-    退出登录 = { 1190, 894 },
-    退出登录2 = { 1190, 563 },
+    账号登出 = { 118, 966 },
+    账号登出2 = { 118, 966 },
     -- 账户设置 = function()
-    --   return findOne("退出登录") and findAny({"返回3", "返回4"})
+    --   return findOne("账号登出") and findAny({"返回3", "返回4"})
     -- end,
     访问下位 = "1791|873|D35A0A",
     访问下位橘 = "1791|1013|D15806",
@@ -3323,8 +3323,8 @@ center = {
     基建收获线索提示 = "right_top",
     剿灭说明 = 'center_center',
     账号管理 = "right_bottom",
-    退出登录 = "center_center",
-    退出登录2 = "center_center",
+    账号登出 = "center_center",
+    账号登出2 = "center_center",
     线索传递有好友 = "center_center",
     赤金站 = "right_center",
     经验站 = "right_center",
