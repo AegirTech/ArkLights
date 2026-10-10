@@ -124,11 +124,13 @@ python3 ./0.py rm     # 地图包发版（maps.zip）
 ./0.sh release
 ```
 
-地图数据更新通过 GitHub Action `map_update.yml` 每日自动同步，也可本地运行：
+地图数据更新通过 GitHub Action `map_update.yml` 每日自动同步并发布，也可本地运行：
 
 ```sh
-python res/maps/maps.py
+python res/maps/maps.py           # 生成并发布（CI 使用；--no-upload 仅生成）
 ```
+
+脚本从 [Arknights-Bot-Resource](https://github.com/yuanyan3060/Arknights-Bot-Resource) 在线拉取关卡数据，计算格子屏幕坐标后在内存中打包输出到 `res/maps.zip`，不在本地生成中间地图 json；发布使用 `python3 ./0.py rm`。
 
 ### 数据提取
 

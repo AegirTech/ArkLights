@@ -21,8 +21,8 @@ python3 ./0.py rs         # Windows：基建技能图标包skill.zip 发布
 python3 ./0.py rm         # Windows：地图包maps.zip 发布
 ./0.sh release            # Linux
 
-# 地图数据更新
-python res/maps/maps.py
+# 地图数据更新：在线拉取关卡数据，内存打包输出 res/maps.zip（不生成中间 json）
+python res/maps/maps.py            # 生成并调用 0.py rm 发布（GitHub Action 每日调用；--no-upload 仅生成）
 
 # 干员数据更新
 python res\char_type\parse_character_table.py

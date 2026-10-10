@@ -1,5 +1,17 @@
-# https://raw.githubusercontent.com/yuanyan3060/Arknights-Bot-Resource/main/levels.json
-import glob
+# -*- coding: utf-8 -*-
+"""明日方舟地图包生成与发布脚本（GitHub Action 每日调用）
+
+从 Arknights-Bot-Resource 在线拉取 levels.json，计算 1920x1080 分辨率下
+各关卡格子屏幕坐标，在内存中打包输出到 res/maps.zip（附加 version.json 作为
+地图包版本号），随后调用 0.py rm 发布地图包（热更新 CDN + 新加坡服务器）。
+
+运行方法：
+    python res/maps/maps.py                # 生成并发布
+    python res/maps/maps.py --no-upload    # 仅生成，不发布
+
+依赖：numpy、requests（见 requirements.txt）
+"""
+import io
 import json
 import math
 import os
@@ -8,10 +20,19 @@ import subprocess
 import sys
 import zipfile
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Tuple
 
 import numpy as np
 import requests
+
+# Windows 文件名非法字符替换（用于压缩包内文件名）
+def sanitize_filename(name: str) -> str:
+    invalid_chars = '<>:"/\\|?*'
+    for ch in invalid_chars:
+        name = name.replace(ch, '_')
+    return name
+
 
 # 定义全局变量
 height_type_map = {
@@ -25,19 +46,6 @@ buildable_type_map = {
     "RANGED": 2,
     "ALL": 3,
 }
-
-
-@dataclass
-class Tile:
-    heightType: int
-    buildableType: int
-
-    @classmethod
-    def from_json(cls, json_data: dict) -> "Tile":
-        # 使用全局变量
-        height_type = height_type_map.get(json_data["heightType"], 0)
-        buildable_type = buildable_type_map.get(json_data["buildableType"], 0)
-        return cls(heightType=height_type, buildableType=buildable_type)
 
 
 @dataclass
@@ -132,14 +140,14 @@ class Calc:
 
     def run(
         self, code: str = "", name: str = "", side: bool = False
-    ) -> List[List[Tuple[Tile, Tuple[int, int]]]]:
+    ) -> List[List[Tuple[int, int]]]:
         """
         :param code: 关卡代号 例如:0-1 1-7
         :param name: 关卡名称 例如:与虫为伴 code和name中选填一个，一般情况code更方便，但是肉鸽关卡不能用code确定
         :param side: 是否是放置干员时的视角
-        :return: Tile和坐标构成的列表
+        :return: 格子坐标构成的列表
         """
-        result: List[List[Tuple[Tile, Tuple[int, int]]]] = []
+        result: List[List[Tuple[int, int]]] = []
         level = None
         for item in levels:
             if code == item.code or name == item.name:
@@ -187,7 +195,7 @@ class Calc:
         h = level.get_height()
         w = level.get_width()
         for y in range(h):
-            tmp: List[Tuple[Tile, Tuple[int, int]]] = []
+            tmp: List[Tuple[int, int]] = []
             for x in range(w):
                 tile = level.get_tile(y, x)
                 if tile is None:
@@ -209,30 +217,29 @@ class Calc:
                 p_y = (1 + p_y / p_w) / 2
                 center = int(p_x * self.width), int((1 - p_y) * self.height)
                 tmp.append((center))
-                # print(x,y,center)
             result.append(tmp)
         return result
 
 
-levels_path = pathlib.Path(__file__).parent.parent / "levels.json"
-map_path = pathlib.Path(__file__).parent / "maps"
-map_path.mkdir(parents=True, exist_ok=True)
-
 url = "https://raw.githubusercontent.com/yuanyan3060/Arknights-Bot-Resource/main/levels.json"
-levels: List[Level] = []
-calc = Calc(1920, 1080)
+# 输出到 res/maps.zip
+zip_path = pathlib.Path(__file__).resolve().parent.parent / "maps.zip"
+execpath = pathlib.Path(__file__).resolve().parent.parent.parent
 
-response = requests.get(url)
-if response.status_code == 200:
-    level_table = json.loads(response.text)
+levels: List[Level] = []
+
+
+def fill_maps_zip(zf: zipfile.ZipFile, level_table: list, calc: Calc) -> int:
+    """向已打开的压缩包写入全部关卡坐标，返回处理的地图数量，不落盘中间 json"""
+    levels.clear()
+    count = 0
     for data in level_table:
-        # print(data["name"], data["code"], data["stageId"])
         levels.append(Level.from_json(data))
-        if data["name"] == None:
+        name = data["name"]
+        if name is None:
             continue
-        elif data["name"].startswith("\t"):
-            data["name"] = data["name"].lstrip("\t")
-            # print(data["name"], data["code"])
+        if name.startswith("\t"):
+            name = name.lstrip("\t")
         maptype = 1
         if data["stageId"].startswith("camp"):
             maptype = 2  # 剿灭
@@ -244,116 +251,53 @@ if response.status_code == 200:
             maptype = 5  # 悖论模拟
         elif "multi" in data["stageId"]:
             maptype = 6  # 促融共竞
-        trainmap = 0
-        if "TR-" in data["code"]:
-            trainmap = 1
+        trainmap = 1 if "TR-" in data["code"] else 0
         coordinate = [
-            calc.run(code=data["code"], name=data["name"], side=False),
-            calc.run(code=data["code"], name=data["name"], side=True),
+            calc.run(code=data["code"], name=name, side=False),
+            calc.run(code=data["code"], name=name, side=True),
             maptype,
             trainmap,
         ]
-        # print (coordinate)
-
-        fw = open(
-            map_path / (data["name"] + ".json"), "w", encoding="UTF-8"
-        )  # 按地图名+保存坐标到txt
-        fw.write(
-            json.dumps(coordinate, sort_keys=True, indent=4, separators=(",", ": "))
-        )  # 将字符串写入文件中
-
-        fw = open(
-            map_path / (data["code"] + ".json"), "w", encoding="UTF-8"
-        )  # 按地图代号+保存坐标到txt
-        fw.write(
-            json.dumps(coordinate, sort_keys=True, indent=4, separators=(",", ": "))
-        )  # 将字符串写入文件中
-
-        fw = open(
-            map_path / (data["stageId"] + ".json"), "w", encoding="UTF-8"
-        )  # 按地图代号+保存坐标到txt
-        fw.write(
-            json.dumps(coordinate, sort_keys=True, indent=4, separators=(",", ": "))
-        )  # 将字符串写入文件中
-else:
-    print("无法获取数据。错误代码:", response.status_code)
-
-"""
-with open(levels_path, encoding="UTF-8") as fp:
-    level_table = json.load(fp)    
-    for data in level_table:
-        print(data["name"], data["code"], data["stageId"])
-        levels.append(Level.from_json(data))
-        if data["name"] == None:
-            continue
-        elif data["name"].startswith('\t'):
-            data["name"] = data["name"].lstrip('\t')
-            # print(data["name"], data["code"])
-        maptype = 1
-        if data["stageId"].startswith('camp'):
-            maptype = 2  # 剿灭
-        elif data["stageId"].startswith('lt'):
-            maptype = 3  # 保全            
-        elif "roguelike" in data["levelId"]:
-            maptype = 4  # 肉鸽
-        elif data["stageId"].startswith('mem'):
-            maptype = 5  # 悖论模拟
-        trainmap = 0
-        if "TR-" in data["code"]:
-            trainmap = 1
-        coordinate = [calc.run(code=data["code"], name=data["name"], side=False),
-                      calc.run(code=data["code"], name=data["name"], side=True), maptype, trainmap]
-        # print (coordinate)
-
-        fw = open(map_path / (data["name"] + ".json"), 'w', encoding="UTF-8")  # 按地图名+保存坐标到txt
-        fw.write(json.dumps(coordinate, sort_keys=True, indent=4, separators=(',', ': ')))  # 将字符串写入文件中
-
-        fw = open(map_path / (data["code"] + ".json"), 'w', encoding="UTF-8")  # 按地图代号+保存坐标到txt
-        fw.write(json.dumps(coordinate, sort_keys=True, indent=4, separators=(',', ': ')))  # 将字符串写入文件中
-
-        fw = open(map_path / (data["stageId"] + ".json"), 'w', encoding="UTF-8")  # 按地图代号+保存坐标到txt
-        fw.write(json.dumps(coordinate, sort_keys=True, indent=4, separators=(',', ': ')))  # 将字符串写入文件中
-"""
+        # 同一份坐标按 地图名/地图代号/stageId 三种文件名写入压缩包
+        content = json.dumps(
+            coordinate, sort_keys=True, indent=4, separators=(",", ": ")
+        )
+        zf.writestr(sanitize_filename(name) + ".json", content)
+        zf.writestr(sanitize_filename(data["code"]) + ".json", content)
+        zf.writestr(data["stageId"] + ".json", content)
+        count += 1
+        if count % 100 == 0:
+            print(f"已处理 {count} 张地图")
+    return count
 
 
-# 将json文件压缩到maps.zip用于添加到速通资源
-def zip_files(file_folder, output_path):
-    zipf = zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED)
-    files = glob.glob(str(file_folder / "*.json"))
-    for file in files:
-        zipf.write(file, arcname=pathlib.Path(file).name)
-    zipf.close()
+def generate() -> None:
+    response = requests.get(url, timeout=60)
+    if response.status_code != 200:
+        print("无法获取数据。错误代码:", response.status_code)
+        return
+    level_table = json.loads(response.text)
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        count = fill_maps_zip(zf, level_table, Calc(1920, 1080))
+        # 写入当前时间(东八区)作为地图包版本号，Lua 侧解压后读取展示
+        now = datetime.now(timezone(timedelta(hours=8)))
+        zf.writestr("version.json", now.strftime("%Y-%m-%d %H:%M:%S"))
+
+    zip_path.write_bytes(buf.getvalue())
+    print(f"地图坐标生成完毕，共 {count} 张地图，压缩包路径：{zip_path}")
 
 
-# 写入当前时间 到 version文件中
-with open(map_path / "version.json", "w", encoding="UTF-8") as vf:
-    from datetime import datetime, timezone, timedelta
-
-    now = datetime.now(timezone(timedelta(hours=8)))
-    vf.write(now.strftime("%Y-%m-%d %H:%M:%S"))
+def upload() -> None:
+    # cwd 固定到仓库根目录，保证 0.py 能找到 main.lua 与 res/maps.zip
+    subprocess.run([sys.executable, os.path.join(execpath, "0.py"), "rm"], cwd=execpath)
+    print("文件上传完成")
 
 
-zip_path = map_path.parent.parent / "maps.zip"
-zip_files(map_path, zip_path)
-print("地图坐标生成完毕，压缩包路径：" + str(zip_path))
-
-execpath = pathlib.Path(__file__).parent.parent.parent
-main_py = os.path.join(execpath, "0.py")
-
-subprocess.run(
-    [
-        sys.executable,
-        main_py,
-        "rm",
-    ]
-)
-
-print("文件上传完成")
-
-"""
 if __name__ == "__main__":
-    calc = Calc(1920, 1080)#屏幕分辨率
-    code = "CE-6"    
-    print( json.dumps(calc.run(code, side=False)))    
-    print( json.dumps(calc.run(code, side=True))) 
-"""
+    generate()
+    if "--no-upload" in sys.argv:
+        print("已跳过发布")
+    else:
+        upload()

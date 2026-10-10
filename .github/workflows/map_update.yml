@@ -1,31 +1,33 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
+# 每日更新地图数据：拉取最新关卡数据生成 res/maps.zip 并发布到热更新服务器
 name: Map update
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 10 * * *' 
+    - cron: '0 10 * * *'
 
 permissions:
   contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: "3.10"
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Run map.py
+    - name: Generate and publish maps.zip
       run: python res/maps/maps.py
+    - name: Upload maps.zip artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: maps
+        path: res/maps.zip
