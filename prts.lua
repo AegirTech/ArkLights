@@ -394,6 +394,88 @@ local function afterDeployOperator(部署指令, 干员排位, 下排干员数�
     return 下排干员数量 - 1
 end
 
+-- MAA协议Swipe的extra_swipe方向偏移,1/2/3/4=上/下/左/右
+local EXTRA_SWIPE_OFFSET = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } }
+
+-- 在MAA协议720p基准矩形[x,y,w,h]内随机取点并转设备坐标,w、h过小视为精确点
+local 随机矩形取点 = function(rect)
+    local x = scale(rect[1] * 1.5)
+    local y = scale(rect[2] * 1.5)
+    local w = scale((rect[3] or 0) * 1.5)
+    local h = scale((rect[4] or 0) * 1.5)
+    if w <= 1 and h <= 1 then return x, y end
+    -- 三角分布取点,集中在矩形中心附近,近似MAA的正态分布采样
+    return math.floor(x + (math.random() + math.random()) / 2 * w),
+        math.floor(y + (math.random() + math.random()) / 2 * h)
+end
+
+-- MAA协议Click(点击)指令:rect像素区域或location格子二选一,rect优先,不做识别直接点击
+执行点击指令 = function(指令)
+    点战斗()
+    local x, y
+    if 指令["rect"] then
+        x, y = 随机矩形取点(指令["rect"])
+    elseif 指令["location"] then
+        local 行 = 地图数据0[指令["location"][2] + 1]
+        if not 行 or not 行[指令["location"][1] + 1] then
+            log("点击格子超出地图数据", 指令["location"][1], 指令["location"][2])
+            return
+        end
+        local 地图坐标 = 行[指令["location"][1] + 1]
+        x, y = scale(地图坐标[1]), scale(地图坐标[2])
+    else
+        log("点击指令缺少rect和location,跳过")
+        return
+    end
+    log("执行点击", x, y)
+    tap({ x, y })
+end
+
+-- MAA协议Swipe(滑动)指令:从begin矩形滑动到end矩形
+-- gesture按距离匀速分发,无法复现slope_in/slope_out的非默认变速轨迹(MAA默认斜率1.0即匀速直线),故忽略
+执行滑动指令 = function(指令)
+    if not 指令["begin"] or not 指令["end"] then
+        log("滑动指令缺少begin或end,跳过")
+        return
+    end
+    点战斗()
+    local x1, y1 = 随机矩形取点(指令["begin"])
+    local x2, y2 = 随机矩形取点(指令["end"])
+    local duration = math.floor(tonumber(指令["duration"]) or 0)
+    if duration <= 0 then duration = 200 end
+    local extra = tonumber(指令["extra_swipe"]) or 0
+    -- extra_swipe:主滑结束后停150ms,再用第二根手指接力补偿滑动100px·200ms(同deploy finger2的错峰写法)
+    local fingers = {
+        { point = { { x1, y1 }, { x2, y2 } }, duration = duration },
+    }
+    local 总时长 = duration
+    if extra >= 1 and extra <= 4 then
+        local dist = scale(150)
+        local offset = EXTRA_SWIPE_OFFSET[extra]
+        总时长 = duration + 150 + 200
+        table.insert(fingers, {
+            point = { { x2, y2 }, { x2 + offset[1] * dist, y2 + offset[2] * dist } },
+            duration = 200,
+            start = duration + 150,
+        })
+    end
+    log("执行滑动", x1, y1, x2, y2, duration, "extra", extra)
+    gesture(fingers)
+    local waited = 0
+    -- with_pause:滑动距离超过阈值(MAA 20px@720p)后按一次返回键暂停
+    if 指令["with_pause"] then
+        local 暂停距离 = scale(30)
+        local 滑动距离 = math.sqrt((x2 - x1) ^ 2 + (y2 - y1) ^ 2)
+        if 滑动距离 > 暂停距离 then
+            local t = math.floor(duration * 暂停距离 / 滑动距离)
+            sleep(t)
+            waited = waited + t
+            keyPress(4)
+        end
+    end
+    sleep(max(0, 总时长 - waited))
+end
+
 -- 处理指令类型（公共逻辑）
 local function processInstructionType(部署指令, 已部署干员, 波数依赖, 波数依赖顺序, 部署顺序, 训练地图)
     if 部署指令["type"] == "Retreat" or 部署指令["type"] == "retreat" or 部署指令["type"] == "撤退" then
@@ -423,6 +505,12 @@ local function processInstructionType(部署指令, 已部署干员, 波数依�
         部署顺序 = 部署顺序 + 1
     elseif 部署指令["type"] == "MoveCamera" then
         移动相机(部署指令["distance"])
+        部署顺序 = 部署顺序 + 1
+    elseif 部署指令["type"] == "Click" or 部署指令["type"] == "click" or 部署指令["type"] == "CLICK" or 部署指令["type"] == "点击" then
+        执行点击指令(部署指令)
+        部署顺序 = 部署顺序 + 1
+    elseif 部署指令["type"] == "Swipe" or 部署指令["type"] == "swipe" or 部署指令["type"] == "SWIPE" or 部署指令["type"] == "滑动" then
+        执行滑动指令(部署指令)
         部署顺序 = 部署顺序 + 1
     elseif 训练地图 == 0 then
         log("跳过指令")
@@ -1392,6 +1480,14 @@ end
                         end
                         撤退干员(wave依赖指令["location"])
                         点战斗()
+                        波数依赖顺序 = 波数依赖顺序 + 1
+                        wave依赖指令 = 波数依赖[波数依赖顺序]
+                    elseif wave依赖指令["type"] == "Click" or wave依赖指令["type"] == "click" or wave依赖指令["type"] == "CLICK" or wave依赖指令["type"] == "点击" then
+                        执行点击指令(wave依赖指令)
+                        波数依赖顺序 = 波数依赖顺序 + 1
+                        wave依赖指令 = 波数依赖[波数依赖顺序]
+                    elseif wave依赖指令["type"] == "Swipe" or wave依赖指令["type"] == "swipe" or wave依赖指令["type"] == "SWIPE" or wave依赖指令["type"] == "滑动" then
+                        执行滑动指令(wave依赖指令)
                         波数依赖顺序 = 波数依赖顺序 + 1
                         wave依赖指令 = 波数依赖[波数依赖顺序]
                     end

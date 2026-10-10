@@ -830,6 +830,12 @@ ib.抄作业 = function(作业, maptype)
                 elseif 部署指令["type"] == "MoveCamera" then
                     移动相机(部署指令["distance"])
                     部署顺序 = 部署顺序 + 1
+                elseif 部署指令["type"] == "Click" or 部署指令["type"] == "click" or 部署指令["type"] == "CLICK" or 部署指令["type"] == "点击" then
+                    执行点击指令(部署指令)
+                    部署顺序 = 部署顺序 + 1
+                elseif 部署指令["type"] == "Swipe" or 部署指令["type"] == "swipe" or 部署指令["type"] == "SWIPE" or 部署指令["type"] == "滑动" then
+                    执行滑动指令(部署指令)
+                    部署顺序 = 部署顺序 + 1
                 else
                     print("跳过指令")
                     部署顺序 = 部署顺序 + 1
@@ -903,6 +909,14 @@ ib.抄作业 = function(作业, maptype)
                         end
                         ib.撤退干员(wave依赖指令["location"])
 
+                        波数依赖顺序 = 波数依赖顺序 + 1
+                        wave依赖指令 = 波数依赖[波数依赖顺序]
+                    elseif wave依赖指令["type"] == "Click" or wave依赖指令["type"] == "click" or wave依赖指令["type"] == "CLICK" or wave依赖指令["type"] == "点击" then
+                        执行点击指令(wave依赖指令)
+                        波数依赖顺序 = 波数依赖顺序 + 1
+                        wave依赖指令 = 波数依赖[波数依赖顺序]
+                    elseif wave依赖指令["type"] == "Swipe" or wave依赖指令["type"] == "swipe" or wave依赖指令["type"] == "SWIPE" or wave依赖指令["type"] == "滑动" then
+                        执行滑动指令(wave依赖指令)
                         波数依赖顺序 = 波数依赖顺序 + 1
                         wave依赖指令 = 波数依赖[波数依赖顺序]
                     end
