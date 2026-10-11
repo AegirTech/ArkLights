@@ -1664,8 +1664,9 @@ recycleOperatorBest = function(operator)
     return best, best_score
 end
 
--- 控制中枢干员选择：同类技能不一起上
--- 返回效率最高的index
+-- 控制中枢干员选择（迁移自 MAA 常规模式 InfrastScore::select_control）
+-- 选择顺序：办公室加速, 特殊组合, 制造加速(153), 贸易加速, 制造加速, 其他设施心情减免
+-- 制造加速、贸易加速、心情减免、办公室加速均存在"同种效果取最高"词条，每种效果最多入驻一名干员
 controlStationOperatorBest = function(operator)
     -- 过滤心情小于阈值的干员
     local minAllowedMood = shift_min_mood
@@ -1675,179 +1676,89 @@ controlStationOperatorBest = function(operator)
     local best = {}
     local best_score = -1
 
-    local manu_acc = false    -- 制造加速
+    -- 未启用深海猎人组合时，移除歌蕾蒂娅
+    if not use_abyssal_hunter then
+        operator = table.filter(operator,
+            function(x) return x[1] ~= 'bskill_ctrl_aegir2' and x[2] ~= 'bskill_ctrl_aegir2' end)
+    end
+
+    -- 对应 MAA ScoreContext 的跨设施条件
+    local perception_information = isCharExsit["絮雨"] -- 感知信息：絮雨在办公室
+    local worldly_plight = isCharExsit["桑葚"] -- 人间烟火：桑葚在办公室
+    local workbench_num = isCharExsit["作业平台"] or 0 -- 已进驻的作业平台数量
+
+    local manu_acc = false -- 制造加速
     local trading_acc = false -- 贸易加速
     local mood_reduce = false -- 其他设施心情减免
-    local office_acc = false  -- 办公室加速
+    local office_acc = false -- 办公室加速
 
-    if #best < 2 and not not_use_ocr then
+    -- --- 办公室加速 ---
+    -- 感知信息或人间烟火组合需要琴柳补办公室加速
+    if (perception_information or worldly_plight) and #best < 1 then
         for _, o in pairs(operator) do
-            if table.findv({ "诗怀雅" }, o[6]) then
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_h_spd') then -- 感染力：琴柳
                 table.insert(best, o)
-                trading_acc = true
-            elseif table.includes({ o[1], o[2] }, "bskill_token_prod_spd3_lungmenguard") then
-                table.insert(best, o)
-                manu_acc = true
-            end
-        end
-        if not trading_acc or not manu_acc then
-            --重置
-            best = {}
-            manu_acc = false
-            trading_acc = false
-        end
-    end
-
-    if #best <= 2 and not manu_acc and not trading_acc then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, "bskill_ctrl_token_p_spd2") and
-                table.includes({ o[1], o[2] }, "bskill_ctrl_cost_felyne") then --麒麟r夜刀
-                table.insert(best, o)
-                isCharExsit["麒麟R夜刀"] = true
-            elseif table.includes({ o[1], o[2] }, "bskill_ctrl_token_t_spd") then --火龙s黑角2
-                table.insert(best, o)
-                isCharExsit["火龙S黑角2"] = true
-                isCharExsit["火龙S黑角"] = true
-            elseif table.includes({ o[1], o[2] }, "bskill_ctrl_felyne") and
-                not table.includes({ o[1], o[2] }, "bskill_ctrl_token_t_spd") then --火龙s黑角0
-                table.insert(best, o)
-                isCharExsit["火龙S黑角"] = true
-            end
-        end
-        if isCharExsit["麒麟R夜刀"] and isCharExsit["火龙S黑角2"] then
-            trading_acc = true
-            manu_acc = true
-        elseif isCharExsit["麒麟R夜刀"] and isCharExsit["火龙S黑角"] then
-            manu_acc = true
-        else
-            isCharExsit["麒麟R夜刀"] = false
-            isCharExsit["火龙S黑角"] = false
-            isCharExsit["火龙S黑角2"] = false
-            best = {}
-        end
-    end
-
-    if #best <= 3 and not trading_acc then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_spd') then
-                -- 阿米娅/诗怀雅/阿斯卡纶..
-                trading_acc = true
-                table.insert(best, o)
-                break
-            elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_tra&prod') then
-                -- 望，大部分情况下是7%贸易加成
-                trading_acc = true
-                table.insert(best, o)
-                break
-            end
-        end
-    end
-
-    --不使用ocr时无法区分松鼠团和标准化
-    if #best <= 4 and not not_use_ocr then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_psk') then -- 焰尾
-                table.insert(best, o)
-                isCharExsit["焰尾"] = true
-            elseif table.includes({ o[1], o[2] }, 'bskill_ctrl_fraction_knight') then -- 薇薇安娜
-                table.insert(best, o)
-                isCharExsit["薇薇安娜"] = true
-            end
-        end
-    end
-
-    -- 夕
-    if #best < 5 and isCharExsit["絮雨"] then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') and
-                table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd2') and
-                o[3] > 22 then
-                table.insert(best, o)
-            end
-        end
-    end
-
-    -- 令
-    if #best < 5 and isCharExsit["桑葚"] then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1&bd2') and o[3] > 22 then
-                table.insert(best, o)
-                isCharExsit["令"] = true
-                break
-            end
-        end
-    end
-
-    -- 不使用ocr时无法选择深海
-    if #best < 5 and not not_use_ocr and use_abyssal_hunter and
-        -- 这几个全齐的时候位置不够
-        not (isCharExsit["承曦格雷伊"] and isCharExsit["焰尾"] and isCharExsit["薇薇安娜"]) then
-        for _, o in pairs(operator) do
-            -- 精二歌蕾蒂娅,高心情才使用
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') and o[3] > 22 then
-                table.insert(best, o)
-                isCharExsit["歌蕾蒂娅"] = true
-                break
-            end
-        end
-    end
-
-    -- 人间烟火和感知信息都要补琴柳
-    if #best < 5 and (isCharExsit["絮雨"] or isCharExsit["桑葚"]) then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_h_spd') and (isCharExsit["絮雨"] or isCharExsit["桑葚"]) then
-                if not office_acc then
-                    office_acc = true
-                    table.insert(best, o)
-                    break
-                end
-            end
-        end
-    end
-
-    if #best < 5 and not office_acc then
-        for _, o in pairs(operator) do
-            --八幡海铃0
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_hire_tmoris') then
                 office_acc = true
+                break
+            end
+        end
+    end
+    -- 可靠伙伴：八幡海铃；同时影响后续叙拉古干员的效率计算
+    if not office_acc and #best < 1 then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_hire_tmoris') then -- 八幡海铃
                 table.insert(best, o)
-                --八幡海铃2,影响叙拉古干员效率计算
                 if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_limit&spd_tmoris') then
                     isCharExsit["八幡海铃"] = true
                 end
+                office_acc = true
                 break
             end
         end
     end
-
-    --凯尔希
-    if #best < 5 and not manu_acc then
+    -- 办公室年度人物：焰狐龙梓兰
+    if not office_acc and #best < 1 then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') then
-                manu_acc = true
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_orchd2') then -- 焰狐龙梓兰
                 table.insert(best, o)
+                office_acc = true
                 break
             end
         end
     end
 
-    --重岳
-    if #best < 5 and isCharExsit["桑葚"] then
-        log("寻找重岳")
+
+    -- --- 特殊组合 ---
+    -- 红松骑士团组合：入驻焰尾与薇薇安娜
+    if #best <= 3 then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, "bskill_ctrl_cost_bd3") then
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_psk') then -- 红松的骑士：焰尾
                 table.insert(best, o)
-                mood_reduce = true
-                isCharExsit["重岳"] = true
+                isCharExsit["焰尾"] = true
+                break
+            end
+        end
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_fraction_knight') then -- 烛骑士微光：薇薇安娜
+                table.insert(best, o)
+                isCharExsit["薇薇安娜"] = true
                 break
             end
         end
     end
 
-    --人间烟火组有重岳再考虑夕
-    if #best < 5 and isCharExsit["重岳"] then
+    -- 絮雨在办公室时，选择高心情的夕提供感知信息
+    if perception_information and #best < 5 then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') and -- “不以物喜”：夕
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd2') and -- “不以己悲”：夕
+                o[3] > 22 then                                             -- 心情需大于22
                 table.insert(best, o)
                 isCharExsit["夕"] = true
                 break
@@ -1855,59 +1766,212 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    --丰川祥子1,2技能一样,可以和制造加速类技能叠加
-    if #best < 5 then
+    -- 诗怀雅与斩业星熊的龙门近卫局制造加速必须同时存在，否则整组放弃
+    if #best <= 3 then
+        local swire, guard
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_p_oblvns') then
-                table.insert(best, o)
-                isCharExsit["丰川祥子"] = true
-                break
+            if not table.includes(best, o) then
+                if not swire and o[6] == "诗怀雅" then
+                    swire = o
+                elseif not guard and
+                    table.includes({ o[1], o[2] }, 'bskill_token_prod_spd3_lungmenguard') then -- 共事情谊：斩业星熊
+                    guard = o
+                end
             end
         end
-    end
-    -- 若叶睦
-    if #best < 5 and isCharExsit["丰川祥子"] then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_trade_mortis') then
-                table.insert(best, o)
-                break
-            end
+        if swire and guard then
+            table.insert(best, swire)
+            table.insert(best, guard)
+            trading_acc = true
+            manu_acc = true
         end
     end
-    -- 三角初华
-    if #best < 5 and isCharExsit["丰川祥子"] then
+
+    -- 桑葚在办公室时，选择高心情的令提供人间烟火
+    if worldly_plight and #best < 5 then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_dorm_uika1') then
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1&bd2') and -- “山河远阔”：令
+                o[3] > 22 then                                                 -- 心情需大于22
                 table.insert(best, o)
-                break
-            end
-        end
-    end
-    -- 祐天寺若麦
-    if #best < 5 and isCharExsit["丰川祥子"] then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_meet_amoris1') then
-                table.insert(best, o)
+                isCharExsit["令"] = true
                 break
             end
         end
     end
 
-    -- 布丁
-    if #best < 5 and not manu_acc and (isCharExsit["作业平台"] and isCharExsit["作业平台"] > 1) then
+    -- 桑葚在办公室时，重岳提供人间烟火并承担全局心情减免
+    if worldly_plight and #best < 5 then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_token_p_spd') then
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd3') then -- 知我为我：重岳
+                table.insert(best, o)
+                mood_reduce = true
+                isCharExsit["重岳"] = true
+                break
+            end
+        end
+    end
+
+    -- 深海队只有在选项开启且不会挤掉完整发电/骑士联动时使用，高心情是必要条件
+    if use_abyssal_hunter and #best < 5 and
+        not (isCharExsit["承曦格雷伊"] and isCharExsit["焰尾"] and isCharExsit["薇薇安娜"]) then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_aegir2') and -- 集群狩猎·β：歌蕾蒂娅
+                o[3] > 22 then                                           -- 心情需大于22
+                table.insert(best, o)
+                isCharExsit["歌蕾蒂娅"] = true
+                break
+            end
+        end
+    end
+
+    -- 麒麟R夜刀与火龙S黑角组合：前者固定制造加速，后者按技能阶段提供贸易加速
+    if not manu_acc and not trading_acc and #best <= 3 then
+        local yato, noir
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) then
+                if not yato and
+                    table.includes({ o[1], o[2] }, 'bskill_ctrl_token_p_spd2') and -- 以身作则：麒麟R夜刀
+                    table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_felyne') then -- 耐力回复：麒麟R夜刀
+                    yato = o
+                elseif not noir and
+                    (table.includes({ o[1], o[2] }, 'bskill_ctrl_token_t_spd') or
+                        table.includes({ o[1], o[2] }, 'bskill_ctrl_felyne')) then -- 火龙S黑角
+                    noir = o
+                end
+            end
+        end
+        if yato and noir then
+            table.insert(best, yato)
+            table.insert(best, noir)
+            manu_acc = true
+            isCharExsit["麒麟R夜刀"] = true
+            isCharExsit["火龙S黑角"] = true
+            if table.includes({ noir[1], noir[2] }, 'bskill_ctrl_token_t_spd') then -- 秘传交涉术：火龙S黑角2
+                trading_acc = true
+                isCharExsit["火龙S黑角2"] = true
+            end
+        end
+    end
+
+    -- --- 制造加速(153) ---
+    -- 在153布局中，制造加速干员优先于贸易加速干员
+    if tradingStationNum == 1 then
+        -- 制造加速优先选择有笑脸技能的M3
+        if not manu_acc and #best < 5 then
+            for _, o in pairs(operator) do
+                if not table.includes(best, o) and
+                    table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') and -- 最高权限：Mon3tr
+                    table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') then -- 博识生手：Mon3tr
+                    table.insert(best, o)
+                    manu_acc = true
+                    break
+                end
+            end
+        end
+        if not manu_acc and #best < 5 then
+            for _, o in pairs(operator) do
+                if not table.includes(best, o) and
+                    table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') then -- 最高权限：凯尔希
+                    table.insert(best, o)
+                    manu_acc = true
+                    break
+                end
+            end
+        end
+        if not manu_acc and workbench_num > 1 and #best < 5 then
+            for _, o in pairs(operator) do
+                if not table.includes(best, o) and
+                    table.includes({ o[1], o[2] }, 'bskill_ctrl_token_p_spd') then -- 超频：布丁
+                    table.insert(best, o)
+                    manu_acc = true
+                    break
+                end
+            end
+        end
+    end
+
+    -- --- 贸易加速 ---
+    -- 望的控制中枢技能暂时禁用，以防与训练室冲突
+
+    -- 阿斯卡纶额外拥有训练室加速技能，因此贸易加速优先选择阿斯卡纶
+    if not trading_acc and #best < 5 then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_t_spd') and       -- 情报主脑：阿斯卡纶
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_train_spd1') then -- S.W.E.E.P.主管：阿斯卡纶
+                table.insert(best, o)
+                trading_acc = true
+                break
+            end
+        end
+    end
+    -- 诗怀雅与其他干员共用技能图标，优先保留非诗怀雅干员，联动时保住诗怀雅心情
+    if not trading_acc and #best < 5 then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_t_spd') and -- 合作协议：阿米娅、明椒等
+                o[6] ~= "诗怀雅" then
+                table.insert(best, o)
+                trading_acc = true
+                break
+            end
+        end
+    end
+    -- 若无其他贸易加速干员可选，则选择诗怀雅提供贸易加速
+    if not trading_acc and #best < 5 then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_t_spd') and -- 大小姐：诗怀雅
+                o[6] == "诗怀雅" then
+                table.insert(best, o)
+                trading_acc = true
+                break
+            end
+        end
+    end
+
+    -- --- 制造加速 ---
+    -- 制造加速优先选择有笑脸技能的M3
+    if not manu_acc and #best < 5 then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') and -- 最高权限：Mon3tr
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') then -- 博识生手：Mon3tr
+                table.insert(best, o)
                 manu_acc = true
+                break
+            end
+        end
+    end
+    if not manu_acc and #best < 5 then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') then -- 最高权限：凯尔希
                 table.insert(best, o)
+                manu_acc = true
+                break
+            end
+        end
+    end
+    if not manu_acc and workbench_num > 1 and #best < 5 then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_token_p_spd') then -- 超频：布丁
+                table.insert(best, o)
+                manu_acc = true
                 break
             end
         end
     end
 
-    --灵知
-    if #best < 5 and not (isCharExsit["絮雨"] or isCharExsit["桑葚"]) then
+    -- 感知信息与人间烟火均未启用时，才启用灵知
+    if not perception_information and not worldly_plight and #best < 5 then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_t_limit&spd') then
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_t_limit&spd') then -- 精密计算：灵知
                 table.insert(best, o)
                 isCharExsit["灵知"] = true
                 break
@@ -1915,96 +1979,175 @@ controlStationOperatorBest = function(operator)
         end
     end
 
-    if #best < 5 and not mood_reduce then
+    -- 丰川祥子技能可与制造加速叠加，后续同团成员按固定顺序补入
+    local oblivionis = false
+    if #best < 5 then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, "bskill_ctrl_cost_bd4") and (not isCharExsit["重岳"]) then --重岳2
-                isCharExsit["重岳"] = true
-                mood_reduce = true
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_p_oblvns') then -- 丰富工作经验：丰川祥子
                 table.insert(best, o)
+                isCharExsit["丰川祥子"] = true
+                oblivionis = true
                 break
-            elseif table.includes({ o[1], o[2] }, "bskill_ctrl_lonely") then --玛恩纳
-                mood_reduce = true
-                isCharExsit["玛恩纳"] = true
+            end
+        end
+    end
+    if oblivionis or isCharExsit["丰川祥子"] then
+        if #best < 5 then
+            for _, o in pairs(operator) do
+                if not table.includes(best, o) and
+                    table.includes({ o[1], o[2] }, 'bskill_ctrl_trade_mortis') then -- 演技的怪物：若叶睦
+                    table.insert(best, o)
+                    break
+                end
+            end
+        end
+        if #best < 5 then
+            for _, o in pairs(operator) do
+                if not table.includes(best, o) and
+                    table.includes({ o[1], o[2] }, 'bskill_ctrl_dorm_uika1') then -- 偶像光环：三角初华
+                    table.insert(best, o)
+                    break
+                end
+            end
+        end
+        if #best < 5 then
+            for _, o in pairs(operator) do
+                if not table.includes(best, o) and
+                    table.includes({ o[1], o[2] }, 'bskill_ctrl_meet_amoris1') then -- 勤学苦练：祐天寺若麦
+                    table.insert(best, o)
+                    break
+                end
+            end
+        end
+    end
+
+    -- 人间烟火组合已有重岳后，才继续补夕
+    if isCharExsit["重岳"] and #best < 5 then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd1') then -- “不以物喜”：夕
                 table.insert(best, o)
-                break
-            elseif table.includes({ o[1], o[2] }, "bskill_ctrl_cost_expand") then --维什戴尔
-                mood_reduce = true
-                isCharExsit["维什戴尔"] = true
-                table.insert(best, o)
+                isCharExsit["夕"] = true
                 break
             end
         end
     end
 
-    if #best < 5 and not not_use_ocr and (not (isCharExsit["絮雨"] or isCharExsit["桑葚"])) and isCharExsit["Lancet-2"] then
+    -- --- 其他设施心情减免 ---
+    -- 三者都承担全局心情减免，因此只选第一个可用者
+    if not mood_reduce and #best < 5 then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_p_bot') then --森蚺
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_bd4') then -- 孤光共照：重岳
+                table.insert(best, o)
+                isCharExsit["重岳"] = true
+                mood_reduce = true
+                break
+            end
+        end
+    end
+    if not mood_reduce and #best < 5 then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_lonely') then -- 公事公办：玛恩纳
+                table.insert(best, o)
+                isCharExsit["玛恩纳"] = true
+                mood_reduce = true
+                break
+            end
+        end
+    end
+    if not mood_reduce and #best < 5 then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_cost_expand') then -- 巴别塔之帜：维什戴尔
+                table.insert(best, o)
+                isCharExsit["维什戴尔"] = true
+                mood_reduce = true
+                break
+            end
+        end
+    end
+
+    -- 森蚺只在 Lancet-2 已入驻发电站时加入候选，启用作业平台联动
+    if not perception_information and not worldly_plight and
+        isCharExsit["Lancet-2"] and #best < 5 then
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_p_bot') then -- 我寻思能行：森蚺
                 table.insert(best, o)
                 virtralPowerStationNum = virtralPowerStationNum + 2
                 break
             end
         end
     end
-    --涤火杰西卡2
-    if #best < 5 and not not_use_ocr then
+
+    if #best < 5 then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_bd_spd') then
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_bd_spd') then -- 老友相聚：涤火杰西卡
                 table.insert(best, o)
                 isCharExsit["涤火杰西卡"] = true
                 break
             end
         end
     end
-    -- 魔王
-    if #best < 5 and isCharExsit["维什戴尔"] then
+
+    -- 维什戴尔已在贸易站联动链中时，魔王的期冀之汇才加入候选
+    if isCharExsit["维什戴尔"] and #best < 5 then
         for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_c_spd1') then
-                table.insert(best, o)
-                break
-            end
-        end
-    end
-    --艾拉
-    if #best < 5 and not isCharExsit["歌蕾蒂娅"] then
-        for _, o in pairs(operator) do
-            if table.includes({ o[1], o[2] }, 'bskill_ctrl_ela') then
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_c_spd1') then -- 期冀之汇：魔王
                 table.insert(best, o)
                 break
             end
         end
     end
 
-    if #best < 5 then
+    -- 艾拉与歌蕾蒂娅不同时占用控制中枢位置，避免挤掉完整的深海组合
+    if not isCharExsit["歌蕾蒂娅"] and #best < 5 then
         for _, o in pairs(operator) do
-            if not table.includes(best, o) and isCharExsit["玛恩纳"]
-                -- 笑脸
-                and table.includes({ o[1], o[2] }, 'bskill_ctrl_cost')
-                --排除m3,不要跟凯尔希一起上班
-                and not table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd')
-            then
+            if not table.includes(best, o) and
+                table.includes({ o[1], o[2] }, 'bskill_ctrl_ela') then -- 反抗者：艾拉
                 table.insert(best, o)
-            end
-            if #best >= 5 then
                 break
             end
         end
     end
 
-    if #best < 5 then
-        for _, o in pairs(operator) do
-            if not table.includes(best, o) then                             -- 不要重复添加
-                if table.includes({ o[1], o[2] }, 'bskill_ctrl_sp') or      -- 异格者
-                    table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') then -- 笑脸
+    -- 玛恩纳在场时尽量补满“笑脸”类技能，但排除M3，避免重复制造加速
+    if isCharExsit["玛恩纳"] then
+        while #best < 5 do
+            local added = false
+            for _, o in pairs(operator) do
+                if not table.includes(best, o) and
+                    table.includes({ o[1], o[2] }, 'bskill_ctrl_cost') and
+                    not table.includes({ o[1], o[2] }, 'bskill_ctrl_p_spd') then -- 排除M3
                     table.insert(best, o)
+                    added = true
+                    break
                 end
             end
-            if #best >= 5 then
+            if not added then break end
+        end
+    end
+    -- 剩余位置按异格者与普通“笑脸”技能补齐
+    while #best < 5 do
+        local added = false
+        for _, o in pairs(operator) do
+            if not table.includes(best, o) and
+                (table.includes({ o[1], o[2] }, 'bskill_ctrl_sp') or
+                    table.includes({ o[1], o[2] }, 'bskill_ctrl_cost')) then
+                table.insert(best, o)
+                added = true
                 break
             end
         end
+        if not added then break end
     end
 
-    --best = table.slice(table.extend(best, remain), 1, 5)
+    best_score = #best
     return best, best_score
 end
 
