@@ -67,8 +67,8 @@ function processGroupsAndOperatorsNormal(作业, 群组, 队员技能, 无限放
     end
 end
 
--- 处理群组和干员数据（保全模式）
-local function processGroupsAndOperatorsSSS()
+-- 处理群组和干员数据（保全模式，全局：sss.lua 复用）
+function processGroupsAndOperatorsSSS()
     local groups = 作业["groups"]
     if groups and #groups > 0 then
         for _, group in ipairs(groups) do
@@ -567,7 +567,7 @@ local function processWaveDeployInstruction(wave依赖指令, 干员列表, 群�
 end
 
 -- 处理保全换牌逻辑
-local function handleCardChange(alreadyTapped)
+handleCardChange = function(alreadyTapped)
     if findOne("开始行动保全") then
         if not alreadyTapped then
             tap("开始行动保全")
@@ -947,6 +947,10 @@ auto_sss = function(作业名, 需要编队, 是否自带, 是否续打)
     local 干员名单 = ""
 
     initHomeworkData(作业名, 是否自带, true)
+    if 作业 and 作业["type"] == "SSS" then
+        log("检测到MAA保全派驻协议作业,转交sss模块")
+        return sss.自动保全(需要编队, 是否续打)
+    end
     processGroupsAndOperatorsSSS()
     log("读取群组成功")
     log(groups)
