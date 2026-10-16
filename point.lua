@@ -1758,7 +1758,7 @@ point = {
         id = "com.hypergryph.arknights.bilibili:id/iv_gsc_account_login",
     },
     bilibili_change = {
-        id = "com.hypergryph.arknights.bilibili:id/tv_gsc_record_login_change",
+        text = "切换其他账号",
     },
     bilibili_change2 = {
         id = "com.hypergryph.arknights.bilibili:id/tv_gsc_wel_change",
@@ -2149,8 +2149,8 @@ point = {
     面板仓库 = { 1789, 938 },
     面板邮件 = { 288, 57 },
     面板设置 = { 74, 57 },
-    账号登出 = { 118, 966 },
-    账号登出2 = { 118, 966 },
+    账号登出 = { 105, 839 }, -- 官
+    账号登出2 = { 1219, 563 },
     -- 账户设置 = function()
     --   return findOne("账号登出") and findAny({"返回3", "返回4"})
     -- end,

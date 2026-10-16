@@ -675,6 +675,7 @@ path.bilibili_login_change = update(path.bilibili_login, {
         end
     end,
     bilibili_change = function()
+        log.info("start login bili")
         tap("bilibili_change")
         -- appear("bilibili_account_login")
         appear("bilibili_phone_inputbox")
@@ -714,7 +715,12 @@ path.login = {
             if findOne("password_login") then path.login.password_login() end
             if findOne("login") then return true end
             tap("返回")
-        end, 2)
+        end, 3)
+
+        if findOne("password_login") then
+            --再次检查
+            path.login.password_login()
+        end
 
         -- 存在两个输入框时，输入帐密
         if findOne("username_inputbox") then
@@ -7029,7 +7035,7 @@ path.退出账号 = function()
             ssleep(.5)
             clickNodeFalse(findOne("login_out"))
             appear("yes")
-            ssleep(.5)
+            --ssleep(.5)
             clickNodeFalse(findOne("yes"))
             ssleep(.5)
         end,
