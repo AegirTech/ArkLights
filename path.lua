@@ -1022,6 +1022,11 @@ path.fallback = {
             end
             return path.fallback.签到返回()
         end
+        if findOne("国家图书馆领取") then
+            tap("国家图书馆领取")
+            return path.fallback.签到返回()
+        end
+
         ssleep(0.5) -- 等待签到界面加载
         for u = screen.width // 2 + scale(730 - 1920 // 2), screen.width // 2 + scale(1730 - 1920 // 2), scale(100) do
             tap({ u, scale(560) })
@@ -1161,6 +1166,10 @@ path.fallback = {
         wait(function()
             tap("鸣羽颂新领取")
         end, 2, .2)
+        return path.fallback.签到返回()
+    end,
+    国家图书馆领取 = function()
+        tap("国家图书馆领取")
         return path.fallback.签到返回()
     end,
     -- 新春限时签到2025 = function()
