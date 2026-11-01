@@ -1049,6 +1049,7 @@ path.fallback = {
         ssleep(.3)
     end,
     国庆签到返回 = function() return path.fallback.活动签到返回() end,
+    活动签到返回20261101 = function() return path.fallback.活动签到返回() end,
     返回确认 = function()
         log.debug()
         leaving_jump = false
@@ -1151,11 +1152,11 @@ path.fallback = {
         disappear("七周年限时幸运签", 10)
         return path.fallback.签到返回()
     end,
-    限时幸运签20260801 = function()
+    限时幸运签20261101 = function()
         tapAll(point.限时幸运签列表)
         ssleep(.25)
         tap("限时幸运签抽取")
-        disappear("限时幸运签20260801", 10)
+        disappear("限时幸运签20261101", 10)
         return path.fallback.签到返回()
     end,
     夏日嘉年华赠送活动一20260801 = function()
