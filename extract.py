@@ -436,6 +436,11 @@ def is_hex_stage(name):
     return any(s in name for s in ("-ST-", "TR-", "-P-", "-MO-"))
 
 
+def is_single_page_stage(name):
+    """EX/S/MO 关通常单独成页，默认不滑动，直接使用当前页坐标且不输出 distance"""
+    return any(s in name for s in ("-EX-", "-S-", "-MO-"))
+
+
 def stage_key(name, prefix="HD"):
     """把关卡代号的活动前缀换成 prefix，如 TL-ST-1 -> HD-ST-1"""
     if not prefix:
@@ -591,22 +596,23 @@ def screencap_distance2(path="screencap", point_x=1080, hex_offset=5,
         name = all_list[m - 1]
         key = stage_key(name, prefix)
         real_x = point[m][0] * 1080 // 720
-        stuck = point_image[m] == first_image and real_x < point_x
+        # 首页可见且位于点位左侧的关卡滑不过去；EX/S/MO 单独成页，默认不滑动
+        no_swipe_stage = (point_image[m] == first_image and real_x < point_x) or \
+            is_single_page_stage(name)
+        if no_swipe_stage:
+            no_swipe.add(m)
         if is_hex_stage(name):
             hex_point = find_hex_point(point_image[m], point_bbox[m], hex_offset)
             if hex_point:
                 hex_x, hy, color, rel_x = hex_point
-                if stuck:
-                    no_swipe.add(m)
+                if no_swipe_stage:
                     print(f'["{key}"] = "{hex_x}|{hy}|{color}",')
                 else:
                     print(f'["{key}"] = "{point_x + rel_x}|{hy}|{color}",')
                 continue
             print(f"warning: 未找到 {name} 的蓝色六边形", file=sys.stderr)
         p = [v * 1080 // 720 for v in point[m]]
-        if stuck:
-            no_swipe.add(m)
-        else:
+        if not no_swipe_stage:
             # 点位统一放在屏幕右半侧，不再强制到屏幕中心
             p[0] = point_x
         print(f'["{key}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
@@ -617,6 +623,9 @@ def screencap_distance2(path="screencap", point_x=1080, hex_offset=5,
 
     for x in sorted(distance):
         key = stage_key(all_list[x - 1], prefix)
+        # EX/S/MO 关单独成页，不输出 distance
+        if is_single_page_stage(all_list[x - 1]):
+            continue
         # 首页可直接点击的关卡不需要滑动
         if x in no_swipe:
             print(f'["{key}"] = ' + "{ swip_right_max, -0 },")

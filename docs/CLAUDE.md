@@ -36,7 +36,7 @@ python res\char_type\parse_character_table.py
 ./extract.py skillicon2operator              # 基建 JSON → skill.zip
 ```
 
-活动关卡坐标约定：`screencap_distance2` 读取 `screencap/*.png`（720p，第一张必须是满右滑后的首页，相邻页需有重叠关卡），输出 `point.作战列表` 与 `distance` 两张表。`-ST-`、`TR-`、`-P-`、`-MO-` 关输出蓝色六边形比色点，其余输出点击坐标；首页已可见且横坐标小于 `point_x` 的关卡 `distance` 输出 0 并使用真实坐标。滑动距离 = `(720p实测距离 + shift_right) × distance_coefficient`，默认系数 1.11，落点不符时按实测微调。
+活动关卡坐标约定：`screencap_distance2` 读取 `screencap/*.png`（720p，第一张必须是满右滑后的首页，相邻页需有重叠关卡），输出 `point.作战列表` 与 `distance` 两张表。`-ST-`、`TR-`、`-P-`、`-MO-` 关输出蓝色六边形比色点，其余输出点击坐标；首页已可见且横坐标小于 `point_x` 的关卡 `distance` 输出 0 并使用真实坐标；`-EX-`、`-S-`、`-MO-` 关单独成页，默认不滑动、直接输出当前页真实坐标且不输出 `distance`。滑动距离 = `(720p实测距离 + shift_right) × distance_coefficient`，默认系数 1.11，落点不符时按实测微调。
 
 ## 架构概览
 

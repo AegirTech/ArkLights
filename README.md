@@ -156,7 +156,7 @@ python res/maps/maps.py           # 生成并发布（CI 使用；--no-upload �
 ./extract.py skillicon2operator           # 基建 JSON → skill.zip
 ```
 
-活动关卡坐标默认输出为 `HD-*` 前缀（`--prefix` 可改）：`-ST-`、`TR-`、`-P-`、`-MO-` 关输出蓝色六边形比色点 `"x|y|RRGGBB"`，其余输出点击坐标；首页（满右滑）已可见且位于点位左侧的关卡 `distance` 为 0、直接使用真实坐标。滑动距离默认按 `--distance_coefficient` 1.11 换算，实测落点不符时微调该系数。
+活动关卡坐标默认输出为 `HD-*` 前缀（`--prefix` 可改）：`-ST-`、`TR-`、`-P-`、`-MO-` 关输出蓝色六边形比色点 `"x|y|RRGGBB"`，其余输出点击坐标；首页（满右滑）已可见且位于点位左侧的关卡 `distance` 为 0、直接使用真实坐标；`-EX-`、`-S-`、`-MO-` 关单独成页，默认不滑动、直接输出当前页真实坐标且不输出 `distance`。滑动距离默认按 `--distance_coefficient` 1.11 换算，实测落点不符时微调该系数。
 
 更多说明请参考 [开发指南](docs/CLAUDE.md)。
 
