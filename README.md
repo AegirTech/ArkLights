@@ -145,13 +145,18 @@ python res/maps/maps.py           # 生成并发布（CI 使用；--no-upload �
 ./0.sh recruit
 
 # 提取活动关卡坐标
-./extract.py screencap 1,2,3
-./extract.py screencap_distance
+# 1) 满右滑到地图起点截第 1 页，再逐页左滑截图（相邻页需有重叠关卡），自动存为 720p png
+./extract.py screencap 1
+./extract.py screencap 2
+# 2) 计算点位与滑动距离，输出 point.作战列表 与 distance 两张表
+./extract.py screencap_distance2
 
 # 提取基建数据
 ./extract.py process_transparent_pixels   # 基建图标
 ./extract.py skillicon2operator           # 基建 JSON → skill.zip
 ```
+
+活动关卡坐标默认输出为 `HD-*` 前缀（`--prefix` 可改）：`-ST-`、`TR-`、`-P-`、`-MO-` 关输出蓝色六边形比色点 `"x|y|RRGGBB"`，其余输出点击坐标；首页（满右滑）已可见且位于点位左侧的关卡 `distance` 为 0、直接使用真实坐标。滑动距离默认按 `--distance_coefficient` 1.11 换算，实测落点不符时微调该系数。
 
 更多说明请参考 [开发指南](docs/CLAUDE.md)。
 

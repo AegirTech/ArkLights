@@ -4,6 +4,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 from collections import defaultdict
 from pathlib import Path
 
@@ -380,16 +381,23 @@ def py2rust(x):
         return '"' + x + '"'
 
 
-def screencap(stem):
+def screencap(stem, serial="127.0.0.1:5555"):
+    """抓取设备截图并缩放到720p（screencap_distance2 基于720p图像计算）"""
     stem = str(stem)
     screencap = Path("screencap")
     screencap.mkdir(exist_ok=True, parents=True)
-    serial = "127.0.0.1:5555"
-    subprocess.run(["adb", "connect", serial])
-    subprocess.Popen(
-        f"adb -s {serial} exec-out screencap -p > {screencap / stem}.jpg",
-        shell=True,
-    )
+    if ":" in serial:
+        subprocess.run(["adb", "connect", serial], capture_output=True)
+    raw = screencap / f"{stem}.raw.png"
+    with open(raw, "wb") as f:
+        subprocess.run(["adb", "-s", serial, "exec-out", "screencap", "-p"], stdout=f)
+    from PIL import Image
+
+    im = Image.open(raw).convert("RGB")
+    if im.height != 720:
+        im = im.resize((1280, 720))
+    im.save(screencap / f"{stem}.png")
+    raw.unlink()
 
 
 def get_level_info() -> list:
@@ -423,7 +431,64 @@ def get_level_info() -> list:
     return ret_list
 
 
-def screencap_distance2(path="screencap"):
+def is_hex_stage(name):
+    """剧情关/教学关/特殊关用蓝色六边形比色点代替点击坐标"""
+    return any(s in name for s in ("-ST-", "TR-", "-P-", "-MO-"))
+
+
+def stage_key(name, prefix="HD"):
+    """把关卡代号的活动前缀换成 prefix，如 TL-ST-1 -> HD-ST-1"""
+    if not prefix:
+        return name
+    _, sep, rest = name.partition("-")
+    return prefix + sep + rest if sep else name
+
+
+def find_hex_point(image_path, bbox, offset=5):
+    """取蓝色六边形中心偏左上一点的坐标和颜色。
+
+    返回 (real_x, y, "RRGGBB", rel_x)：real_x/y 为截图中的真实坐标(1080p)，
+    rel_x 为取点相对关卡名左边缘的水平偏移(1080p)，用于换算滑动到位后的位置。
+    颜色取自720p截图，offset为720p下的像素偏移。
+    """
+    import numpy as np
+    from PIL import Image
+
+    img = np.asarray(Image.open(image_path).convert("RGB"))
+    xs = [p[0] for p in bbox]
+    ys = [p[1] for p in bbox]
+    x0, x1 = min(xs), max(xs)
+    y0, y1 = min(ys), max(ys)
+    # 六边形在关卡名左侧
+    left, top = max(0, x0 - 120), max(0, y0 - 40)
+    right, bottom = min(img.shape[1], x0 + 10), min(img.shape[0], y1 + 40)
+    crop = img[top:bottom, left:right]
+    # 未通关关卡的六边形为 00B1FF
+    r, g, b = crop[..., 0], crop[..., 1], crop[..., 2]
+    mask = (r < 80) & (g > 130) & (g < 220) & (b > 200)
+    if not mask.any():
+        return None
+    yy, xx = np.nonzero(mask)
+    # 取中位数定位，避免把附近的其它蓝色元素算进来
+    cx, cy = int(np.median(xx)) + left, int(np.median(yy)) + top
+    px, py = max(0, cx - offset), max(0, cy - offset)
+    color = "".join(f"{int(v):02X}" for v in img[py, px])
+    # 六边形相对关卡名左边缘的水平偏移不随滑动变化，据此换算到滑动到位后的横坐标
+    rel_x = (cx - x0 - offset) * 1080 // 720
+    return px * 1080 // 720, py * 1080 // 720, color, rel_x
+
+
+def screencap_distance2(path="screencap", point_x=1080, hex_offset=5,
+                        distance_coefficient=1.11, shift_right=None, st_offset=0,
+                        prefix="HD"):
+    """prefix: 输出关卡代号的前缀，默认HD（如 TL-ST-1 -> HD-ST-1），传空串保留原代号；
+    point_x: 普通关卡点位固定的x坐标(1080p)；hex_offset: 六边形取点相对中心的左上偏移(720p)；
+    distance_coefficient: 距离膨胀系数，补偿手势滚动与手指位移的差异，部分活动需要微调；
+    shift_right: 首页第一关满右滑时的真实横坐标与点位的偏差(720p)，默认按截图自动计算；
+    st_offset: 教程/剧情关额外滑动量，部分活动需要
+
+    距离在720p截图上量取，与 shift_right 同在720p单位下计算后直接输出（手势滚动比已含在系数里）。
+    """
     screencap = Path(path)
     import torch
 
@@ -432,6 +497,8 @@ def screencap_distance2(path="screencap"):
 
     reader = easyocr.Reader(["en", "ch_sim"])
     point = defaultdict(int)
+    point_image = {}
+    point_bbox = {}
     distance = defaultdict(int)
     online = True
     if online:
@@ -456,14 +523,19 @@ def screencap_distance2(path="screencap"):
         # all_list = ["DH-S-1", "DH-S-2", "DH-S-3", "DH-S-4", "DH-MO-1"]
     print(all_list)
 
-    # 滑动到最右边时 hd-1的x坐标相距屏幕中心的距离
-    shift_right = -0
     distance[1] = 0
+    images = sorted(screencap.glob("*.png"))
     # EX和S关大部分在同一页上 少数不在
-    same_page = len(list(screencap.glob("*.png"))) == 1
+    same_page = len(images) == 1
+    # 第一张截图是满右滑后的首页
+    first_image = str(images[0]) if images else ""
+    # 距离按截图分辨率换算到1080p（截图约定为720p，即×1.5）
+    from PIL import Image
 
-    for x in sorted(screencap.glob("*.png")):
-        x = reader.readtext(str(x))
+    image_scale = 1080 / Image.open(images[0]).height if images else 1
+
+    for image_path in images:
+        x = reader.readtext(str(image_path))
         print("x", x)
         visible_point = defaultdict(int)
         for loc, text, confidence in x:
@@ -502,6 +574,8 @@ def screencap_distance2(path="screencap"):
             if point[m]:
                 continue
             point[m] = loc[0]
+            point_image[m] = str(image_path)
+            point_bbox[m] = loc
         for m in sorted(visible_point):
             if m in distance:
                 continue
@@ -511,31 +585,54 @@ def screencap_distance2(path="screencap"):
     # print("point", point)
     # print("distance", distance)
 
-    for x in sorted(point):
-        p = point[x]
-        p = [x * 1080 // 720 for x in p]
-        if not same_page:
-            p[0] = 960 + shift_right * 1080 // 720
-        # print(f'["HD-{x}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
-        print(
-            f'["HD{all_list[x - 1][2:]}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},"
-        )
+    # 首页（满右滑）就可见、且真实横坐标在目标点左侧的关卡滑不过去，不滑动并用真实坐标
+    no_swipe = set()
+    for m in sorted(point):
+        name = all_list[m - 1]
+        key = stage_key(name, prefix)
+        real_x = point[m][0] * 1080 // 720
+        stuck = point_image[m] == first_image and real_x < point_x
+        if is_hex_stage(name):
+            hex_point = find_hex_point(point_image[m], point_bbox[m], hex_offset)
+            if hex_point:
+                hex_x, hy, color, rel_x = hex_point
+                if stuck:
+                    no_swipe.add(m)
+                    print(f'["{key}"] = "{hex_x}|{hy}|{color}",')
+                else:
+                    print(f'["{key}"] = "{point_x + rel_x}|{hy}|{color}",')
+                continue
+            print(f"warning: 未找到 {name} 的蓝色六边形", file=sys.stderr)
+        p = [v * 1080 // 720 for v in point[m]]
+        if stuck:
+            no_swipe.add(m)
+        else:
+            # 点位统一放在屏幕右半侧，不再强制到屏幕中心
+            p[0] = point_x
+        print(f'["{key}"] = ' + "{" + str(p[0]) + "," + str(p[1]) + "},")
 
-    # 距离膨胀系数，部分活动需要微调
-    distanceExpansionCoefficient = 1.12
+    if shift_right is None:
+        # 首页第一关满右滑时的真实横坐标与目标点位的偏差，用于把每关的滑动落点对齐到 point_x
+        shift_right = (point[1][0] * 1080 // 720 - point_x) / image_scale if point[1] else 0
+
     for x in sorted(distance):
-        p = distance[x] + shift_right
-        p = int(p * distanceExpansionCoefficient)
-        # 教程剧情关坐标修正
+        key = stage_key(all_list[x - 1], prefix)
+        # 首页可直接点击的关卡不需要滑动
+        if x in no_swipe:
+            print(f'["{key}"] = ' + "{ swip_right_max, -0 },")
+            continue
+        p = (distance[x] + shift_right) * distance_coefficient
+        p = int(p)
+        # 教程剧情关坐标修正，部分活动需要
         if "TR" in all_list[x - 1] or "ST" in all_list[x - 1]:
-            p = p + 15
+            p = p + st_offset
         if p < 0:
             p = 0
         if same_page:
-            print(f'["HD{all_list[x - 1][2:]}"] = ' + "{ swip_right_max, -0 },")
+            print(f'["{key}"] = ' + "{ swip_right_max, -0 },")
         else:
             print(
-                f'["HD{all_list[x - 1][2:]}"] = '
+                f'["{key}"] = '
                 + "{ swip_right_max, -"
                 + str(p)
                 + "},"
