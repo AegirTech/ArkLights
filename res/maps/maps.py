@@ -34,6 +34,25 @@ def sanitize_filename(name: str) -> str:
     return name
 
 
+def map_name(data: dict) -> Optional[str]:
+    """返回去掉前缀制表符的地图名，没有地图名时返回 None"""
+    name = data["name"]
+    if name is not None and name.startswith("\t"):
+        name = name.lstrip("\t")
+    return name
+
+
+def map_filenames(data: dict, name: Optional[str]) -> List[str]:
+    """关卡写入压缩包的文件名：地图名/地图代号/stageId，并去重"""
+    filenames = []
+    if name is not None:
+        filenames.append(sanitize_filename(name) + ".json")
+    if data["code"]:
+        filenames.append(sanitize_filename(data["code"]) + ".json")
+    filenames.append(data["stageId"] + ".json")
+    return list(dict.fromkeys(filenames))
+
+
 # 定义全局变量
 height_type_map = {
     "LOWLAND": 0,
@@ -232,14 +251,17 @@ levels: List[Level] = []
 def fill_maps_zip(zf: zipfile.ZipFile, level_table: list, calc: Calc) -> int:
     """向已打开的压缩包写入全部关卡坐标，返回处理的地图数量，不落盘中间 json"""
     levels.clear()
+    # 地图名/地图代号会大量重名（例如肉鸽同布局的普通/紧急关卡），解压时后写覆盖先写。
+    # 先算出每个文件名由最后一条关卡拥有，保证压缩包内没有重复条目。
+    owners = {}
+    for idx, data in enumerate(level_table):
+        for filename in map_filenames(data, map_name(data)):
+            owners[filename] = idx
+
     count = 0
-    for data in level_table:
+    for idx, data in enumerate(level_table):
         levels.append(Level.from_json(data))
-        name = data["name"]
-        if name is None:
-            continue
-        if name.startswith("\t"):
-            name = name.lstrip("\t")
+        name = map_name(data)
         maptype = 1
         if data["stageId"].startswith("camp"):
             maptype = 2  # 剿灭
@@ -251,20 +273,21 @@ def fill_maps_zip(zf: zipfile.ZipFile, level_table: list, calc: Calc) -> int:
             maptype = 5  # 悖论模拟
         elif "multi" in data["stageId"]:
             maptype = 6  # 促融共竞
-        trainmap = 1 if "TR-" in data["code"] else 0
+        trainmap = 1 if data["code"] and "TR-" in data["code"] else 0
         coordinate = [
             calc.run(code=data["code"], name=name, side=False),
             calc.run(code=data["code"], name=name, side=True),
             maptype,
             trainmap,
         ]
-        # 同一份坐标按 地图名/地图代号/stageId 三种文件名写入压缩包
+        # 同一份坐标按 地图名/地图代号/stageId 三种文件名写入压缩包；
+        # 少数关卡（新手引导、自走棋）没有地图名或代号，退化为只按 stageId 写入
         content = json.dumps(
             coordinate, sort_keys=True, indent=4, separators=(",", ": ")
         )
-        zf.writestr(sanitize_filename(name) + ".json", content)
-        zf.writestr(sanitize_filename(data["code"]) + ".json", content)
-        zf.writestr(data["stageId"] + ".json", content)
+        for filename in map_filenames(data, name):
+            if owners[filename] == idx:
+                zf.writestr(filename, content)
         count += 1
         if count % 100 == 0:
             print(f"已处理 {count} 张地图")
