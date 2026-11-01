@@ -4447,7 +4447,7 @@ path.采购中心商店 = function()
     end
     disappear("正在提交反馈至神经", network_timeout)
     appear("绿票商店选中", 3)
-    ssleep(0.5)
+    ssleep(1.5)
     if findOne("绿票第1层确认") then
         if green_ticket_shop_1 == true then
             for i = 1, 7 do
