@@ -92,7 +92,7 @@ ArkLightsPlus/
 ### 环境准备
 
 1. 安装 [懒人精灵 IDE](http://bbs.lrappsoft.com/)，新建项目 `main`
-2. 配置 `localConfig.py`（首次运行 `0.py` 会自动生成模板）
+2. 将 `.env.example` 复制为 `.env` 并填写（首次运行 `0.py` 会自动生成）
 
 ### 调试
 

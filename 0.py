@@ -3,6 +3,7 @@ import hashlib
 import os
 import random
 import re
+import shutil
 import string
 import sys
 from pathlib import Path
@@ -13,35 +14,55 @@ import requests
 # win环境下的快速开发脚本
 API = "http://ark.aegirtech.com:8080"
 
-# 检查localConfig.py是否存在
-if not os.path.exists("localConfig.py"):
-    print("localConfig.py不存在，已自动创建，请配置路径")
-    with open("localConfig.py", "w", encoding="utf-8") as f:
-        f.write(
-            "# main工程路径: \n"
-            + "# 例: mainProjectPath = r"
-            + r'"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\script\main"'
-            + "\n"
-            + 'mainProjectPath = r""\n'
-            + "# 打包的main.lr路径: \n"
-            + "# 例: lrPath = r"
-            + r'"C:\Users\DazeCake\Documents\Tools\懒人精灵3.8.3\out\main.lr"'
-            + "\n"
-            + 'lrPath = r""\n\n'
-            + "# 热更新token: \n"
-            + 'token = ""\n'
-        )
-        exit()
+CONFIG_FILE = ".env"
+CONFIG_EXAMPLE_FILE = ".env.example"
 
-# 检查localConfig.py是否配置
-import localConfig as lc
 
-if lc.mainProjectPath == "" or lc.lrPath == "":
-    print("localConfig.py未配置，请配置路径")
+def load_config():
+    """读取 .env，返回配置字典"""
+    config = {}
+    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            key, sep, value = line.partition("=")
+            if not sep:
+                continue
+            value = value.strip()
+            if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+                value = value[1:-1]
+            config[key.strip()] = value
+    return config
+
+
+# 检查.env是否存在
+if not os.path.exists(CONFIG_FILE):
+    print(f"{CONFIG_FILE}不存在，已自动创建，请配置路径")
+    if os.path.exists(CONFIG_EXAMPLE_FILE):
+        shutil.copyfile(CONFIG_EXAMPLE_FILE, CONFIG_FILE)
+    else:
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            f.write(
+                "# main工程路径: \n"
+                + "# 例: MAIN_PROJECT_PATH=D:\\Tools\\懒人精灵3.8.3\\script\\main\n"
+                + "MAIN_PROJECT_PATH=\n"
+                + "# 打包的main.lr路径: \n"
+                + "# 例: LR_PATH=D:\\Tools\\懒人精灵3.8.3\\out\\main.lr\n"
+                + "LR_PATH=\n\n"
+                + "# 热更新token: \n"
+                + "TOKEN=\n"
+            )
+    exit()
+
+# 检查.env是否配置
+cfg = load_config()
+
+path = cfg.get("MAIN_PROJECT_PATH", "")
+pkgPath = cfg.get("LR_PATH", "")
+if path == "" or pkgPath == "":
+    print(f"{CONFIG_FILE}未配置，请配置路径")
     # exit()
-else:
-    path = lc.mainProjectPath
-    pkgPath = lc.lrPath
 
 
 class WindowMgr:
@@ -362,7 +383,7 @@ def release(file_type):
 
 
 def upload(md5_text, file_type, force):
-    token = lc.token
+    token = cfg.get("TOKEN", "")
     if token == "":
         print("token未配置，请配置token")
         exit()
@@ -440,7 +461,7 @@ def upload_to_backup_server(file_type):
 
 
 def statistician():
-    token = lc.token
+    token = cfg.get("TOKEN", "")
     if token == "":
         print("token未配置，请配置token")
         exit()
@@ -459,7 +480,7 @@ def statistician():
 
 
 def update_version():
-    token = lc.token
+    token = cfg.get("TOKEN", "")
     if token == "":
         print("token未配置，请配置token")
         exit()

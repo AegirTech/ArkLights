@@ -20,7 +20,7 @@ node_modules/
 dist/
 .temp/
 .cache/
-localConfig.py
+.env
 oper.ps1
 oper.bat
 .vscode/

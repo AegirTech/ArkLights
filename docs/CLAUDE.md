@@ -53,7 +53,7 @@ python res\char_type\parse_character_table.py
 - **`skland.lua`** — 森空岛平台集成。
 - **`0.py` / `0.sh`** — 构建/发布/调试工具脚本。
 - **`extract.py`** — 资源解包与数据提取（依赖 UnityPy、pycryptodome）。
-- **`localConfig.py`** — 本地配置（路径、日志、打包，已 gitignore）。
+- **`.env`** — 本地配置（路径、打包、token，已 gitignore）；模板见 `.env.example`。
 
 ### 关键目录
 
