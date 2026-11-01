@@ -21,6 +21,7 @@ dist/
 .temp/
 .cache/
 .env
+localConfig.py
 oper.ps1
 oper.bat
 .vscode/
