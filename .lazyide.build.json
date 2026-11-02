@@ -1,0 +1,48 @@
+{
+  "script": [
+    "main.lua",
+    "util.lua",
+    "interface.lua",
+    "point.lua",
+    "path.lua",
+    "tag.lua",
+    "skill.lua",
+    "cloud.lua",
+    "func.lua",
+    "roguelike/roguelike.lua",
+    "sand.lua",
+    "icebreaker.lua",
+    "sha2.lua",
+    "skland.lua",
+    "prts.lua",
+    "exOcr.lua",
+    "raise.lua",
+    "turing.lua",
+    "roguelike/mizuki.lua",
+    "roguelike/sarkaz.lua",
+    "roguelike/sami.lua",
+    "roguelike/sui.lua",
+    "roguelike/black.lua",
+    "sss.lua"
+  ],
+  "ui": [
+    "main.ui"
+  ],
+  "lr_resource": [
+    "res/char_type/char_table.json",
+    "res/char_type/character_type_list.json",
+    "res/char_type/equip_table.json",
+    "res/ui/info.png",
+    "res/ui/setting.png",
+    "res/ui/title.png"
+  ],
+  "apk_resource": [
+    "res/skill.zip",
+    "res/maps.zip",
+    "res/水月.txt",
+    "res/水月_不期而遇.txt"
+  ],
+  "plugin": [
+    "res/maps/TURING.luae"
+  ]
+}
