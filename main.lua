@@ -120,7 +120,7 @@ cloud.startHeartBeat()
 
 if use_local_dictionary then
     --自动战斗本地字库ocr
-    require("turing")
+    TURING = require("turing")
 end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")

@@ -2037,7 +2037,7 @@ end
 获得敌人数 = function(a)
     local ret
     if use_local_dictionary then
-        ret = TURING.图灵识别({ { 屏幕范围 = point["敌人数范围" .. a] }, { { 二值化 = { "41-166" } } }, { 范围投影 = { 1, 1 } }, { 六十四进制字库数组 = { 杀敌数字库(screen.height) } }, { 0 } }) or
+        ret = TURING.OCR_TURING({ { 屏幕范围 = point["敌人数范围" .. a] }, { { 二值化 = { "41-166" } } }, { 范围投影 = { 1, 1 } }, { 六十四进制字库数组 = { 杀敌数字库(screen.height) } }, { 0 } }) or
             0
     else
         ret = ocro("敌人数范围" .. a)
@@ -2048,7 +2048,7 @@ end
 获得cost = function(cost)
     local ret = cost
     if use_local_dictionary then
-        ret = TURING.图灵识别({ { 屏幕范围 = point["cost范围"] }, { { 二值化 = { "0-100" } } }, { 范围投影 = { 2, 1 } }, { 六十四进制字库数组 = { cost字库(screen.height) } }, { 0 } })
+        ret = TURING.OCR_TURING({ { 屏幕范围 = point["cost范围"] }, { { 二值化 = { "0-100" } } }, { 范围投影 = { 2, 1 } }, { 六十四进制字库数组 = { cost字库(screen.height) } }, { 0 } })
     else
         ret = ocro("cost范围")
     end
