@@ -1033,7 +1033,7 @@ path.fallback = {
             return path.fallback.签到返回()
         end
 
-        ssleep(0.5) -- 等待签到界面加载
+        ssleep(1.5) -- 等待签到界面加载
         for u = screen.width // 2 + scale(730 - 1920 // 2), screen.width // 2 + scale(1730 - 1920 // 2), scale(100) do
             tap({ u, scale(560) })
             ssleep(0.1) --部分设备点太快没有响应
@@ -1346,6 +1346,7 @@ path.fallback = {
     返回 = function()
         -- 基建内返回太快会卡
         local x = appear({
+            "活动签到返回20261101", "限时幸运签20261101",
             "返回确认", "返回确认2", "返回确认3", "活动公告返回",
             "签到返回", "签到返回黄", "活动签到返回",
             "抽签返回", "战略返回", '限时开放许可', "限时幸运签",
@@ -1383,7 +1384,7 @@ path.限时活动 = function(retry)
     if p then
         tap(p, true)
         appear({
-            '活动签到返回', '抽签返回', '限时开放许可',
+            '活动签到返回20261101', '活动签到返回', '抽签返回', '限时开放许可',
             "限时幸运签", "月饼", '产业合作洽谈会',
             '红包', "祈愿牌返回", '五周年专享月卡返回',
             "生日设置返回", '国庆签到返回', '感谢庆典返回',
@@ -1469,7 +1470,7 @@ path.限时活动 = function(retry)
                 }) then
                 return true
             end
-        end, 1) then
+        end, 3) then
         return
     end
     return path.限时活动(retry + 1)
