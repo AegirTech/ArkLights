@@ -1419,7 +1419,7 @@ path.限时活动 = function(retry)
             back()
         end
         if findOne('感谢庆典特别招募') then
-            return path.fallback.感谢庆典特别招募()
+            path.fallback.感谢庆典特别招募()
         end
         if findOne('特别公开招募前往') then
             back()
