@@ -1159,6 +1159,19 @@ path.fallback = {
         disappear("限时幸运签20261101", 10)
         return path.fallback.签到返回()
     end,
+    感谢庆典特别招募 = function()
+        ssleep(1)
+        tap({ 1118, 327 })
+        wait(function()
+            tap({ 1046, 666 })
+        end, 3)
+        wait(function()
+            if not appear("面板") then tap("开包skip") end
+            findTap("右上角关闭白色")
+            if appear("面板") then return true end
+        end, 5)
+        return path.fallback.签到返回()
+    end,
     夏日嘉年华赠送活动一20260801 = function()
         ssleep(1)
         tap('夏日嘉年华赠送活动一20260801')
@@ -1346,6 +1359,7 @@ path.fallback = {
     返回 = function()
         -- 基建内返回太快会卡
         local x = appear({
+            "感谢庆典特别招募",
             "活动签到返回20261101", "限时幸运签20261101",
             "返回确认", "返回确认2", "返回确认3", "活动公告返回",
             "签到返回", "签到返回黄", "活动签到返回",
@@ -1384,6 +1398,7 @@ path.限时活动 = function(retry)
     if p then
         tap(p, true)
         appear({
+            '感谢庆典特别招募',
             '活动签到返回20261101', '活动签到返回', '抽签返回', '限时开放许可',
             "限时幸运签", "月饼", '产业合作洽谈会',
             '红包', "祈愿牌返回", '五周年专享月卡返回',
@@ -1402,6 +1417,9 @@ path.限时活动 = function(retry)
             ssleep(1)
             tap("红包")
             back()
+        end
+        if findOne('感谢庆典特别招募') then
+            return path.fallback.感谢庆典特别招募()
         end
         if findOne('特别公开招募前往') then
             back()
