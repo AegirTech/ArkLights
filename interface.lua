@@ -850,7 +850,7 @@ show_debug_ui = function()
     for i = 1, 7 do
         newRow(debug_layout_账户)
         local timenote = i == 1 and "“X小时”" or "“" .. (i - 1) .. "天”"
-        local default = i < 4 and '99' or '1'
+        local default = i < 2 and '99' or '0'
         addTextView(debug_layout_账户, timenote .. "理智药最多吃")
         ui.addEditText(debug_layout_账户, "max_drug_times_" .. i .. "day", default)
         addTextView(debug_layout_账户, "次")
