@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lazyide",
+      "request": "launch",
+      "name": "Lazy-IDE: 调试运行",
+      "project": "${workspaceFolder}",
+      "agent": "console"
+    }
+  ]
+}
