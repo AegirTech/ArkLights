@@ -10447,16 +10447,120 @@ path.活动奖励 = function(活动)
 end
 
 path.卫戍协议 = function()
-    if not findAny({ "卫戍协议首页", "卫戍协议放弃模拟" }) then
-        path.跳转("首页")
-        tap("面板活动")
-        ssleep(2.5)
+    path.跳转("首页")
+    tap("面板作战")
+    if not appear("主页") then return false end
+    if not wait(function()
+            if findOne("终端卫戍协议选中") then return true end
+            tap("终端卫戍协议入口")
+        end, 5) then
+        return false
     end
-    if appear("教程关闭", 3) then tap("教程关闭") end
-    while not path.卫戍协议循环() do
+    if not wait(function()
+            if findOne("卫戍协议首页") then return true end
+            tap("终端卫戍协议进入")
+            ssleep(.2)
+        end, 25) then
+        return false
+    end
+    ssleep(1)
+    if appear("阿米娅", 3) then path.卫戍协议教程() end
+    -- while not path.卫戍协议循环() do
 
+    -- end
+    -- path.活动奖励("卫戍协议")
+end
+
+path.卫戍协议教程 = function()
+    log("卫戍协议教程")
+    if not wait(function()
+            if findOne("卫戍协议选配助战") or findOne("卫戍协议借助战") then return true end
+            if findOne("卫戍协议准备就绪") then
+                tap("卫戍协议战斗准备就绪")
+                ssleep(.3)
+                if findOne("卫戍协议金币清零确定") then
+                    tap("卫戍协议金币清零勾")
+                    ssleep(.1)
+                    tap("卫戍协议金币清零确定")
+                end
+            end
+            if findOne("卫戍协议教程放人黄点") then
+                log("发现教程放人黄点")
+                gesture({
+                    {
+                        point = { { scale(1384), scale(696) }, { scale(828), scale(556) } },
+                        start = 0,
+                        duration = 300,
+                    },
+                })
+                ssleep(.3)
+                ssleep(.1)
+                gesture({
+                    {
+                        point = { { scale(828), scale(556) }, { scale(828), scale(200) } },
+                        start = 0,
+                        duration = 300,
+                    },
+                })
+                ssleep(.3)
+                ssleep(.1)
+                gesture({
+                    {
+                        point = { { scale(1384), scale(696) }, { scale(701), scale(545) } },
+                        start = 0,
+                        duration = 300,
+                    },
+                })
+                ssleep(.3)
+                ssleep(.1)
+                gesture({
+                    {
+                        point = { { scale(701), scale(545) }, { scale(1000), scale(545) } },
+                        start = 0,
+                        duration = 300,
+                    },
+                })
+                ssleep(.3)
+                ssleep(.1)
+            end
+            if findOne("卫戍协议教程放装备黄点") then
+                log("发现教程放装备黄点")
+                gesture({
+                    {
+                        point = { { scale(1258), scale(605) }, { scale(828), scale(556) } },
+                        start = 0,
+                        duration = 300,
+                    },
+                })
+                ssleep(.3)
+                ssleep(.1)
+            end
+            tap("卫戍协议右下角")
+            ssleep(.1)
+            tap("卫戍协议物资调配处")
+            ssleep(.1)
+            tap("卫戍协议准备就绪")
+            ssleep(.1)
+            tap("卫戍协议物资调配处第一个干员")
+            ssleep(.1)
+            tap("卫戍协议物资调配处道具")
+            ssleep(.1)
+            for i = 1, #point.卫戍协议教程列表 do
+                tap("卫戍协议教程列表" .. i)
+                ssleep(.1)
+            end
+            tap("卫戍协议战斗准备就绪")
+            ssleep(.1)
+            tap("卫戍协议战斗准备就绪")
+            ssleep(.1)
+            tap("卫戍协议战斗准备就绪")
+            ssleep(.1)
+            tap("卫戍协议战斗准备就绪")
+            ssleep(.1)
+        end, 60 * 18, 1) then --教程大概10分钟
+        log("尝试过教程失败")
+        return false
     end
-    path.活动奖励("卫戍协议")
 end
 
 path.卫戍协议循环 = function()
