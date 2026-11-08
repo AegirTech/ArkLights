@@ -17,7 +17,7 @@ mizuki_navigation = function()
         -- end, 5) then return false end
 
         if not wait(function()
-                if findOne("集成战略_查看全部主题") then return true end
+                if findOne("长期探索选中") then return true end
                 tap("长期探索")
             end, 5) then
             return false

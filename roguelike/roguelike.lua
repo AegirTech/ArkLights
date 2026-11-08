@@ -16,7 +16,7 @@ zl.放弃未结束的肉鸽探索 = function()
     end
 
     if not wait(function()
-            if findOne("在长期探索") then return true end
+            if findOne("长期探索选中") then return true end
             tap("长期探索")
         end, 5) then
         return false
@@ -34,7 +34,7 @@ zl.放弃未结束的肉鸽探索 = function()
         end, 3, .1) then
         return false
     end
-    disappear('在长期探索')
+    disappear('长期探索选中')
     ssleep(2)
     local rougelike_list = { "傀影_放弃本次探索", "水月_放弃本次探索", "萨米_放弃本次探索", "萨卡兹_放弃本次探索" }
     local p = findAny(rougelike_list) or 'nil'
@@ -1380,14 +1380,14 @@ zl_navigation = function(常规行动, 需要点击的肉鸽)
     if not appear("主页") then return false end
 
     if not wait(function()
-            if findOne("在长期探索") then return true end
+            if findOne("长期探索选中") then return true end
             tap("长期探索")
         end, 5) then
         return false
     end
 
     if not wait(function()
-            if findOne("在长期探索") then
+            if findOne("长期探索选中") then
                 tap("查看全部主题")
                 disappear('查看全部主题')
             end
