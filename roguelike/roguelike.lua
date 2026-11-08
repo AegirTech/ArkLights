@@ -17,7 +17,7 @@ zl.放弃未结束的肉鸽探索 = function()
 
     if not wait(function()
             if findOne("在长期探索") then return true end
-            tap("集成战略")
+            tap("长期探索")
         end, 5) then
         return false
     end
@@ -1381,7 +1381,7 @@ zl_navigation = function(常规行动, 需要点击的肉鸽)
 
     if not wait(function()
             if findOne("在长期探索") then return true end
-            tap("集成战略")
+            tap("长期探索")
         end, 5) then
         return false
     end
