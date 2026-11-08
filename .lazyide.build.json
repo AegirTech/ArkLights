@@ -39,8 +39,7 @@
   "apk_resource": [
     "res/skill.zip",
     "res/maps.zip",
-    "res/水月.txt",
-    "res/水月_不期而遇.txt"
+    "res/ppocr.zip"
   ],
   "plugin": []
 }
