@@ -24,7 +24,7 @@ mizuki_navigation = function()
         end
 
         if not wait(function()
-                if checkPointColor(mizuki_point.等待开始页面标题) then
+                if checkPointColor(point.水月_等待开始页面标题) then
                     return true
                 end
                 tap("进入主题")
@@ -74,7 +74,7 @@ mizuki_help_fight = function(reflashNum)
     local best = table.findv(order, function(x) return name2point[x[1]] end)
     if not best then
         log.warn("助战也找不到所需干员")
-        tapUntilCheckedPointColor(mizuki_point.刷新助战, mizuki_point.刷新助战中, 5)
+        tapUntilCheckedPointColor(point.水月_刷新助战, point.水月_刷新助战中, 5)
         reflashNum = reflashNum + 1
         ssleep(3)
         return mizuki_help_fight(reflashNum)
@@ -92,7 +92,7 @@ mizuki_help_fight = function(reflashNum)
     tap(p)
     disappear("战略助战界面", 5)
     return wait(function()
-        if checkPointColor(mizuki_point.初始招募进度条) then
+        if checkPointColor(point.水月_初始招募进度条) then
             log("助战选择完成")
             return true
         end
@@ -119,13 +119,11 @@ end
 mizuki_cognition = function()
     mizuki_fight_time = 0
     local f = function()
-        local pos_cognition = mizuki_point.认知塑造界面[1] .. "|" ..
-            mizuki_point.认知塑造界面[2] .. "|" ..
-            mizuki_point.认知塑造界面[3]
+        local pos_cognition = point.水月_认知塑造界面
         -- 进入认知塑造
         log("进入认知塑造")
         if not wait(function()
-                tap({ mizuki_point.认知塑造[1], mizuki_point.认知塑造[2] })
+                tap("水月_认知塑造")
                 sleep(100)
                 if findOneStr(pos_cognition) then return true end
             end, 5) then
@@ -152,19 +150,13 @@ mizuki_cognition = function()
         sleep(300)
 
         -- 创建坐标
-        local pos_up = mizuki_point.认知塑造节点升级[1] .. "|" ..
-            mizuki_point.认知塑造节点升级[2] .. "|" ..
-            mizuki_point.认知塑造节点升级[3]
-        local pos_uped = mizuki_point.认知塑造节点已升级[1] .. "|" ..
-            mizuki_point.认知塑造节点已升级[2] .. "|" ..
-            mizuki_point.认知塑造节点已升级[3]
-        local pos_lock = mizuki_point.认知塑造节点未解锁[1] .. "|" ..
-            mizuki_point.认知塑造节点未解锁[2] .. "|" ..
-            mizuki_point.认知塑造节点未解锁[3]
+        local pos_up = point.水月_认知塑造节点升级
+        local pos_uped = point.水月_认知塑造节点已升级
+        local pos_lock = point.水月_认知塑造节点未解锁
 
         -- 确认是否已满
         log("确认是否已满")
-        tap(mizuki_point.认知塑造节点列表[#mizuki_point.认知塑造节点列表])
+        tap("水月_认知塑造节点列表" .. #point.水月_认知塑造节点列表)
         ssleep(1)
         if findOneStr(pos_uped) then
             log("认知塑造已满")
@@ -174,10 +166,10 @@ mizuki_cognition = function()
 
         -- 升级
         log("升级")
-        for i = 1, #mizuki_point.认知塑造节点列表 do
+        for i = 1, #point.水月_认知塑造节点列表 do
             local flag = false
             if not wait(function()
-                    tap(mizuki_point.认知塑造节点列表[i])
+                    tap("水月_认知塑造节点列表" .. i)
                     sleep(100)
 
                     if findOneStr(pos_lock) then
@@ -186,10 +178,7 @@ mizuki_cognition = function()
                     end
 
                     if findOneStr(pos_up) then
-                        tap({
-                            mizuki_point.认知塑造节点升级[1],
-                            mizuki_point.认知塑造节点升级[2],
-                        })
+                        tap("水月_认知塑造节点升级")
                     end
 
                     if findOneStr(pos_uped) then return true end
@@ -211,31 +200,19 @@ mizuki_fight_select = function()
             useDict(0)
             if not wait(function()
                     -- 战斗
-                    select_fight = ocr(mizuki_point.水月关卡标题坐标1[1],
-                        mizuki_point.水月关卡标题坐标1[2],
-                        mizuki_point.水月关卡标题坐标1[3],
-                        mizuki_point.水月关卡标题坐标1[4],
-                        "FFFFFF", 0.90)
+                    select_fight = ocr("水月_关卡标题坐标1")
                     if select_fight ~= nil then
                         log(select_fight)
                         return true
                     end
                     -- 不期而遇/地区委托/诡异行商
-                    select_fight = ocr(mizuki_point.水月关卡标题坐标2[1],
-                        mizuki_point.水月关卡标题坐标2[2],
-                        mizuki_point.水月关卡标题坐标2[3],
-                        mizuki_point.水月关卡标题坐标2[4],
-                        "FFFFFF", 0.90)
+                    select_fight = ocr("水月_关卡标题坐标2")
                     if select_fight ~= nil then
                         log(select_fight)
                         return true
                     end
                     -- 紧急战斗识别区域
-                    select_fight = ocr(mizuki_point.水月关卡标题坐标3[1],
-                        mizuki_point.水月关卡标题坐标3[2],
-                        mizuki_point.水月关卡标题坐标3[3],
-                        mizuki_point.水月关卡标题坐标3[4],
-                        "FFFFFF", 0.90)
+                    select_fight = ocr("水月_关卡标题坐标3")
                     if select_fight ~= nil then
                         log(select_fight)
                         return true
@@ -327,12 +304,10 @@ end
 -- 水月肉鸽重新校准路径
 mizuki_repos_path = function()
     findTap("战略返回")
-    local tgha_pos = mizuki_point.天光海岸[1] .. "|" ..
-        mizuki_point.天光海岸[2] .. "|" ..
-        mizuki_point.天光海岸[3]
+    local tgha_pos = point.水月_天光海岸
     log("tgha_pos: ", tgha_pos)
     if not wait(function()
-            if checkPointColor(mizuki_point.等待开始页面标题) then
+            if checkPointColor(point.水月_等待开始页面标题) then
                 log("找到等待开始页面标题")
                 return true
             end
@@ -340,7 +315,7 @@ mizuki_repos_path = function()
         mizuki_restart("超时未找到等待开始页面标题")
     end
     wait(function()
-        tap(mizuki_point.继续探索)
+        tap("水月_继续探索")
         if findOneStr(tgha_pos) then
             log("重置成功")
             return true
@@ -361,8 +336,8 @@ mizuki_path_selecter = function()
         end
         -- 检查此次分支关卡数量
         for i = 1, 5 do
-            local path_pos = mizuki_point.水月关卡坐标[i][1] .. "|" ..
-                mizuki_point.水月关卡坐标[i][2]
+            local path_pos = point.水月_关卡坐标[i][1] .. "|" ..
+                point.水月_关卡坐标[i][2]
             -- log("正在检测第" .. i .. "个路径")
             -- log("path_pos: ", path_pos)
             -- 关卡等级判断
@@ -403,15 +378,15 @@ mizuki_level_type = function(count)
     -- 关卡坐标
     if count == 3 then
         level = {
-            mizuki_point.水月关卡坐标[1], mizuki_point.水月关卡坐标[3],
-            mizuki_point.水月关卡坐标[5],
+            point.水月_关卡坐标[1], point.水月_关卡坐标[3],
+            point.水月_关卡坐标[5],
         }
     elseif count == 2 then
         level = {
-            mizuki_point.水月关卡坐标[2], mizuki_point.水月关卡坐标[4],
+            point.水月_关卡坐标[2], point.水月_关卡坐标[4],
         }
     elseif count == 1 then
-        level = { mizuki_point.水月关卡坐标[3] }
+        level = { point.水月_关卡坐标[3] }
     end
 
     -- 关卡类型
@@ -420,18 +395,18 @@ mizuki_level_type = function(count)
         -- log("第".. i .."个关卡类型判断")
         wait(function()
             for t, v in ipairs({
-                "关卡等级_不期而遇", "关卡等级_普通",
-                "关卡等级_行商", "关卡等级_紧急", "关卡等级_未选择",
+                "水月_关卡等级_不期而遇", "水月_关卡等级_普通",
+                "水月_关卡等级_行商", "水月_关卡等级_紧急", "水月_关卡等级_未选择",
             }) do
-                currentDetectionTypeColor = mizuki_point[v]
+                currentDetectionTypeColor = point[v]
                 local pos = level[i][1] .. "|" .. level[i][2] .. "|" ..
                     currentDetectionTypeColor
                 local ans = cmpColorEx(pos, 0.95)
                 if ans == 1 then
                     res[i] = { level = t, pos = level[i] }
                     --  x偏移77 y偏移-114
-                    local pos_key = level[i][1] + mizuki_point.偏移[1] .. "|" ..
-                        level[i][2] - mizuki_point.偏移[2] .. "|FFFFFFF"
+                    local pos_key = level[i][1] + point.水月_偏移[1] .. "|" ..
+                        level[i][2] - point.水月_偏移[2] .. "|FFFFFFF"
                     local ans_key = cmpColorEx(pos_key, 0.8)
                     if ans_key == 1 then
                         res[i]["key"] = true
@@ -493,7 +468,7 @@ mizuki_level_selecter = function(input_info)
         if not info[k].key then
             if wait(function()
                     tap(info[k].pos)
-                    if waitUntilFindColor(mizuki_point.选中关卡, 1) then return true end
+                    if waitUntilFindColor(point.水月_选中关卡, 1) then return true end
                 end, 3) then
                 log("进入关卡准备界面")
                 flag = true
@@ -519,14 +494,12 @@ end
 -- 水月肉鸽骰子处理器(只处理必定出现的情况)
 mizuki_dice_solve = function()
     ssleep(1)
-    local pos = mizuki_point.投骰子确认[1] .. "|" ..
-        mizuki_point.投骰子确认[2] .. "|" ..
-        mizuki_point.投骰子确认[3]
+    local pos = point.水月_投骰子确认
 
     if not wait(function()
             if findOneStr(pos) then
                 log("点击骰子确认")
-                tap({ mizuki_point.投骰子确认[1], mizuki_point.投骰子确认[2] })
+                tap("水月_投骰子确认")
                 return true
             end
         end, 10) then
@@ -537,7 +510,7 @@ mizuki_dice_solve = function()
     if not wait(function()
             if not findOne("战略帮助") then
                 log("点击骰子确认 2次确认")
-                tap({ mizuki_point.投骰子确认[1], mizuki_point.投骰子确认[2] })
+                tap("水月_投骰子确认")
             else
                 return true
             end
@@ -552,15 +525,12 @@ end
 -- 水月肉鸽不期而遇处理器
 mizuki_unexpect_solve = function()
     local select_unexpect = nil
-    local unexpect_tag = mizuki_point.左侧标记[1] .. "|" ..
-        mizuki_point.左侧标记[2] .. "|" ..
-        mizuki_point.左侧标记[3]
-    local unexpect_area = mizuki_point.不期而遇范围
+    local unexpect_tag = point.水月_左侧标记
 
     if not wait(function()
             -- 进入不期而遇
             log("尝试进入不期而遇")
-            tap(mizuki_point.进入)
+            tap("水月_进入")
             if findOneStr(unexpect_tag, 0.9) then
                 log.warn("已进入不期而遇")
                 return true
@@ -572,9 +542,7 @@ mizuki_unexpect_solve = function()
     if not wait(function()
             setDict(0, "水月_不期而遇.txt") -- 字库需要放到资源文件中
             useDict(0)
-            select_unexpect = ocr(unexpect_area[1], unexpect_area[2],
-                unexpect_area[3], unexpect_area[4],
-                "008AFF-215682", 0.90)
+            select_unexpect = ocr("水月_不期而遇范围")
             if select_unexpect ~= nil then
                 log(select_unexpect)
                 return true
@@ -630,13 +598,9 @@ mizuki_unexpect_solve = function()
         return false
     end
 
-    -- local pos = mizuki_point[select_unexpect][1] .."|" .. mizuki_point[select_unexpect][2] .. "|" .. mizuki_point[select_unexpect][3]
-    local pos_2 = {
-        mizuki_point[select_unexpect][1], mizuki_point[select_unexpect][2],
-    }
-    local dicePos = mizuki_point.投骰子确认[1] .. "|" ..
-        mizuki_point.投骰子确认[2] .. "|" ..
-        mizuki_point.投骰子确认[3]
+    -- 事件选项点位在 point 中以 水月_<事件名> 命名
+    local pos_2 = "水月_" .. select_unexpect
+    local dicePos = point.水月_投骰子确认
 
     if not wait(function()
             if not findOne("战略帮助") then
@@ -663,14 +627,12 @@ end
 
 -- 水月地区委托处理器
 mizuki_entrust_solve = function()
-    local pos = mizuki_point.左侧清单[1] .. "|" ..
-        mizuki_point.左侧清单[2] .. "|" ..
-        mizuki_point.左侧清单[3]
+    local pos = point.水月_左侧清单
     log("尝试进入地区委托")
 
     if not wait(function()
             if not findOneStr(pos) then
-                tap(mizuki_point.进入)
+                tap("水月_进入")
             else
                 return true
             end
@@ -681,7 +643,7 @@ mizuki_entrust_solve = function()
 
     if not wait(function()
             if not findOne("战略帮助") then
-                tap({ mizuki_point.关闭终端[1], mizuki_point.关闭终端[2] })
+                tap("水月_关闭终端")
                 ssleep(0.1)
             else
                 return true
@@ -695,14 +657,12 @@ end
 
 -- 水月得偿所愿处理器
 mizuki_wish_solve = function()
-    local pos = mizuki_point.左侧标记[1] .. "|" ..
-        mizuki_point.左侧标记[2] .. "|" ..
-        mizuki_point.左侧标记[3]
+    local pos = point.水月_左侧标记
     log("尝试进入得偿所愿")
 
     if not wait(function()
             if not findOneStr(pos) then
-                tap(mizuki_point.进入)
+                tap("水月_进入")
             else
                 return true
             end
@@ -713,7 +673,7 @@ mizuki_wish_solve = function()
 
     if not wait(function()
             if not findOne("战略帮助") then
-                tap({ mizuki_point.消失的习俗[1], mizuki_point.消失的习俗[2] })
+                tap("水月_消失的习俗")
                 ssleep(0.1)
                 mizuki_dice_solve()
             else
@@ -728,14 +688,12 @@ end
 
 -- 水月兴致盎然处理器
 mizuki_interesting_solve = function()
-    local pos = mizuki_point.左侧标记[1] .. "|" ..
-        mizuki_point.左侧标记[2] .. "|" ..
-        mizuki_point.左侧标记[3]
+    local pos = point.水月_左侧标记
     log("尝试进入兴致盎然")
 
     if not wait(function()
             if not findOneStr(pos) then
-                tap(mizuki_point.进入)
+                tap("水月_进入")
             else
                 return true
             end
@@ -746,7 +704,7 @@ mizuki_interesting_solve = function()
 
     if not wait(function()
             if not findOne("战略帮助") then
-                tap({ mizuki_point.现买现印[1], mizuki_point.现买现印[2] })
+                tap("水月_现买现印")
                 ssleep(0.1)
             else
                 return true
@@ -863,7 +821,7 @@ mizuki_fight = function(firstFight)
     appearTap("两倍速", 3)
 
     -- 部署干员到关卡位置
-    mizuki_deploy(mizuki_point.deploy[now_fight])
+    mizuki_deploy(point.水月_作战部署[now_fight])
 
     appear("生命值")
 
@@ -899,7 +857,7 @@ mizuki_fight = function(firstFight)
     end
 
     appear({ "战略返回", "浪离灯熄" }, 30)
-    if checkPointColor(mizuki_point.浪离灯熄) then
+    if checkPointColor(point.水月_浪离灯熄2) then
         mizuki_restart("战斗死亡")
         return false
     end
@@ -916,17 +874,17 @@ end
 -- 水月肉鸽战斗后拾取
 mizuki_after_fight = function()
     local getTheBooty = function(x)
-        if checkPointColor(x) then tap({ x[1], x[2] }) end
+        if checkPointColor(x) then tap(x) end
     end
     if not wait(function()
             tap("战略确认")
-            getTheBooty(mizuki_point["已领取所有奖励"])
-            getTheBooty(mizuki_point["源石锭"])
-            getTheBooty(mizuki_point["招募券"])
-            getTheBooty(mizuki_point["收藏品"])
-            getTheBooty(mizuki_point["目标生命"])
-            getTheBooty(mizuki_point["投掷次数"])
-            getTheBooty(mizuki_point["漂流秘匣"])
+            getTheBooty(point["水月_已领取所有奖励"])
+            getTheBooty(point["水月_源石锭拾取"])
+            getTheBooty(point["水月_招募券拾取"])
+            getTheBooty(point["水月_收藏品拾取"])
+            getTheBooty(point["水月_目标生命拾取"])
+            getTheBooty(point["水月_投掷次数拾取"])
+            getTheBooty(point["水月_漂流秘匣拾取"])
 
             -- 误触到招募券处理
             if findOne("确认招募") then
@@ -981,14 +939,14 @@ mizuki_after_fight = function()
                 return true
             end
 
-            if findOne("战略返回") and checkPointColor(mizuki_point.战略帮助) and not findOne("确认招募") then return true end
+            if findOne("战略返回") and checkPointColor(point.水月_战略帮助2) and not findOne("确认招募") then return true end
         end, 30) then
         return false
     end
 
     -- if not appear("战略返回", 5) then return end
 
-    if not checkPointColor(mizuki_point.战略帮助) then
+    if not checkPointColor(point.水月_战略帮助2) then
         log.debug()
         return false
     end
@@ -998,9 +956,7 @@ end
 
 -- 水月肉鸽前往下一层
 mizuki_goto_next_level = function()
-    local pos = mizuki_point.投骰子确认[1] .. "|" ..
-        mizuki_point.投骰子确认[2] .. "|" ..
-        mizuki_point.投骰子确认[3]
+    local pos = point.水月_投骰子确认
     -- 去第二层
     log("诡意行商准备离开")
     if not wait(function()
@@ -1185,13 +1141,13 @@ path.水月与深蓝之树前瞻投资_旧 = function()
     mizuki_fight_time = mizuki_fight_time or 10
     log("开始水月肉鸽")
     log("检查浪离灯熄")
-    if checkPointColor(mizuki_point.浪离灯熄) then
+    if checkPointColor(point.水月_浪离灯熄2) then
         wait(function()
             if findAny({ "水月_常规行动", "面板" }) then return true end
-            if checkPointColor(mizuki_point.等待开始页面标题) then
+            if checkPointColor(point.水月_等待开始页面标题) then
                 return true
             end
-            tap({ 630, 597 })
+            tap("水月_浪离灯熄退出")
         end, 30)
         -- return
     end
@@ -1277,7 +1233,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
     -- 检测等级
     local zl_level_check = function()
         if not (str2int(zl_max_level, 0) > 0) then return false end
-        if not checkPointColor(mizuki_point.等待开始页面标题) then
+        if not checkPointColor(point.水月_等待开始页面标题) then
             log.warn("未找到水月常规行动")
             return false
         end
@@ -1293,10 +1249,10 @@ path.水月与深蓝之树前瞻投资_旧 = function()
 
         local handle = createOcr()
         if handle ~= nil then
-            local text = ocrTextEx(handle, mizuki_point.战略等级[1],
-                mizuki_point.战略等级[2],
-                mizuki_point.战略等级[3],
-                mizuki_point.战略等级[4])
+            local text = ocrTextEx(handle, point.水月_战略等级[1],
+                point.水月_战略等级[2],
+                point.水月_战略等级[3],
+                point.水月_战略等级[4])
             if text ~= nil then
                 text = text:gsub(" ", "")
                 text = text:gsub("O", "0")
@@ -1335,14 +1291,14 @@ path.水月与深蓝之树前瞻投资_旧 = function()
         if not (str2int(zl_max_coin, 0) > 0) then return end
         if str2int(zl_max_coin, 0) >= 1000 then return end
 
-        if not checkPointColor(mizuki_point.等待开始页面标题) then
+        if not checkPointColor(point.水月_等待开始页面标题) then
             log.warn("未找到水月常规行动")
             return false
         end
 
         if not wait(function()
-                if not checkPointColor(mizuki_point.等待开始页面标题) then return true end
-                tap(mizuki_point.战略源石锭入口)
+                if not checkPointColor(point.水月_等待开始页面标题) then return true end
+                tap("水月_战略源石锭入口")
             end) then
             return
         end
@@ -1363,7 +1319,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
         end, 5)
         wait(function()
             tap("返回")
-            if waitUntilFindColor(mizuki_point.等待开始页面标题) then return true end
+            if waitUntilFindColor(point.水月_等待开始页面标题) then return true end
         end, 5)
         if ans ~= nil and type(ans) == "number" then
             ans = ans % 1000
@@ -1398,7 +1354,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
 
     -- 放弃探索
     log("检测放弃探索")
-    if checkPointColor(mizuki_point.放弃探索) then
+    if checkPointColor(point.水月_放弃探索) then
         if not wait(function()
                 if findOne("返回确认界面") then return true end
                 tap("放弃本次探索")
@@ -1406,7 +1362,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
             log.debug()
             -- 无法直接放弃的情况 不处理
             if not wait(function()
-                    if not checkPointColor(mizuki_point.等待开始页面标题) then return true end
+                    if not checkPointColor(point.水月_等待开始页面标题) then return true end
                     tap("继续探索")
                     ssleep(.5)
                     log.debug()
@@ -1415,7 +1371,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
             end
 
             if not wait(function()
-                    if checkPointColor(mizuki_point.等待开始页面标题) then return true end
+                    if checkPointColor(point.水月_等待开始页面标题) then return true end
                     -- 第一次数据更新处理
                     if findAny({
                             "面板", "活动公告返回", "签到返回", "签到返回黄",
@@ -1441,7 +1397,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
                     return
                 end
                 tap("战略确认")
-                if not checkPointColor(mizuki_point.放弃探索) then
+                if not checkPointColor(point.水月_放弃探索) then
                     return true
                 end
                 -- 第一次数据更新处理
@@ -1472,7 +1428,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
             table.join(qqmessage, ' ') .. " 放弃行动后")
 
         wait(function(reset_wait_start_time)
-            if checkPointColor(mizuki_point.等待开始页面标题) then return true end
+            if checkPointColor(point.水月_等待开始页面标题) then return true end
             if findOne("正在提交反馈至神经") then
                 reset_wait_start_time()
             end
@@ -1523,13 +1479,13 @@ path.水月与深蓝之树前瞻投资_旧 = function()
 
     -- 选择分队
     log("选择分队")
-    tapUntilCheckedPointColor(mizuki_point.指挥分队,
-        mizuki_point.招募组合进度条,
+    tapUntilCheckedPointColor(point.水月_指挥分队点击,
+        point.水月_招募组合进度条,
         "点击近卫分队", 0.5)
 
     log("选择招募")
-    tapUntilCheckedPointColor(mizuki_point.取长补短,
-        mizuki_point.初始招募进度条,
+    tapUntilCheckedPointColor(point.水月_取长补短,
+        point.水月_初始招募进度条,
         "点击取长补短")
 
     log("开始选人")
@@ -1555,7 +1511,7 @@ path.水月与深蓝之树前瞻投资_旧 = function()
             tap("右右确认")
             if findOne("剿灭说明") then tap("剿灭说明") end
             -- if findOne("水月_初始招募") then return true end
-            if checkPointColor(mizuki_point.初始招募进度条) then return true end
+            if checkPointColor(point.水月_初始招募进度条) then return true end
         end, 10) then
         return false
     end
@@ -1567,14 +1523,14 @@ path.水月与深蓝之树前瞻投资_旧 = function()
             -- if not findOne("水月_初始招募") and findOne("确认招募") then
             --     return true
             -- end
-            if not checkPointColor(mizuki_point.初始招募进度条, 0.98) and findOne("确认招募") then
+            if not checkPointColor(point.水月_初始招募进度条, 0.98) and findOne("确认招募") then
                 return true
             end
         end, 10) then
         return false
     end
 
-    if not waitUntilFindColor(mizuki_point.选择助战按钮) then return false end
+    if not waitUntilFindColor(point.水月_选择助战按钮) then return false end
 
     if not wait(function()
             if findAny({ "水月_初始招募", "战略返回" }) then
@@ -1612,17 +1568,17 @@ path.水月与深蓝之树前瞻投资_旧 = function()
         if not wait(function()
                 tap("医疗招募券")
                 tap("招募说明关闭")
-                if not checkPointColor(mizuki_point.初始招募进度条, 0.98) and findOne("确认招募") then
+                if not checkPointColor(point.水月_初始招募进度条, 0.98) and findOne("确认招募") then
                     return true
                 end
             end, 10) then
             return false
         end
 
-        if not waitUntilFindColor(mizuki_point.选择助战按钮) then return false end
+        if not waitUntilFindColor(point.水月_选择助战按钮) then return false end
 
         if not wait(function()
-                if checkPointColor(mizuki_point.偏左战略返回) then
+                if checkPointColor(point.水月_偏左战略返回) then
                     log("医疗干员选完")
                     return true
                 end
@@ -1647,17 +1603,17 @@ path.水月与深蓝之树前瞻投资_旧 = function()
         if not wait(function()
                 tap("医疗招募券")
                 tap("招募说明关闭")
-                if not checkPointColor(mizuki_point.初始招募进度条, 0.98) and findOne("确认招募") then
+                if not checkPointColor(point.水月_初始招募进度条, 0.98) and findOne("确认招募") then
                     return true
                 end
             end, 10) then
             return false
         end
 
-        if not waitUntilFindColor(mizuki_point.选择助战按钮) then return false end
+        if not waitUntilFindColor(point.水月_选择助战按钮) then return false end
 
         if not wait(function()
-                if checkPointColor(mizuki_point.偏左战略返回) then
+                if checkPointColor(point.水月_偏左战略返回) then
                     log("医疗干员选完")
                     return true
                 end
@@ -1681,14 +1637,14 @@ path.水月与深蓝之树前瞻投资_旧 = function()
     -- todo 处理没有进地图的情况 手动再点一下
 
     -- 检查是否进入水月正式作战
-    if not waitUntilFindColor(mizuki_point.天光海岸) then return false end
+    if not waitUntilFindColor(point.水月_天光海岸) then return false end
 
     log("进入第一关作战")
     if not wait(function()
-            tap(mizuki_point.第一关)
-            tap(mizuki_point.第一关)
-            tap(mizuki_point.第一关)
-            if waitUntilFindColor(mizuki_point.选中关卡) then return true end
+            tap("水月_第一关")
+            tap("水月_第一关")
+            tap("水月_第一关")
+            if waitUntilFindColor(point.水月_选中关卡) then return true end
         end) then
         in_fight_return = "无法进入作战"
         return mizuki_restart("无法进入作战")
@@ -2116,7 +2072,7 @@ path.水月与深蓝之树前瞻投资 = function()
     log('idxs:', idxs, ' maxIndex:', maxIndex)
     if idxs > 0 then
         log(idxs, maxIndex)
-        tap(point['水月_关卡节点坐标列表' .. idxs])
+        tap('水月_关卡节点坐标列表' .. idxs)
         ssleep(.5)
     end
 
