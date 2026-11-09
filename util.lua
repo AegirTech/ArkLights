@@ -1448,7 +1448,8 @@ swipe_slow = function(pos1, pos2, time)
             duration = time,
         },
     })
-    ssleep(time + .1)
+    ssleep(time)
+    ssleep(.1)
 end
 
 -- 安卓8以下的滑动用双指
