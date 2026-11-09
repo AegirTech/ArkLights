@@ -1435,6 +1435,22 @@ swipe = function(x)
     end
 end
 
+--- 滑动
+--- @param pos1 table   1080p下起点坐标数组,内部换算
+--- @param pos2 table   1080p下中点坐标数组,内部换算
+--- @param time integer 省略默认0.3s,单位秒
+swipe_slow = function(pos1, pos2, time)
+    local time = time or 300
+    gesture({
+        {
+            point = { { scale(pos1[1]), scale(pos1[2]) }, { scale(pos2[1]), scale(pos2[2]) } },
+            start = 0,
+            duration = time,
+        },
+    })
+    ssleep(time + .1)
+end
+
 -- 安卓8以下的滑动用双指
 android_verison_code = tonumber(getSdkVersion())
 if android_verison_code < 24 then

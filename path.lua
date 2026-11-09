@@ -10486,42 +10486,12 @@ path.卫戍协议教程 = function()
             end
             if findOne("卫戍协议教程放人黄点") then
                 log("发现教程放人黄点")
-                gesture({
-                    {
-                        point = { { scale(1384), scale(696) }, { scale(828), scale(556) } },
-                        start = 0,
-                        duration = 300,
-                    },
-                })
-                ssleep(.3)
-                ssleep(.1)
-                gesture({
-                    {
-                        point = { { scale(828), scale(556) }, { scale(828), scale(200) } },
-                        start = 0,
-                        duration = 300,
-                    },
-                })
-                ssleep(.3)
-                ssleep(.1)
-                gesture({
-                    {
-                        point = { { scale(1384), scale(696) }, { scale(701), scale(545) } },
-                        start = 0,
-                        duration = 300,
-                    },
-                })
-                ssleep(.3)
-                ssleep(.1)
-                gesture({
-                    {
-                        point = { { scale(701), scale(545) }, { scale(1000), scale(545) } },
-                        start = 0,
-                        duration = 300,
-                    },
-                })
-                ssleep(.3)
-                ssleep(.1)
+                -- 放第一个人
+                swipe_slow({ 1384, 696 }, { 828, 556 })
+                swipe_slow({ 828, 556 }, { 828, 200 })
+                -- 放第二个人
+                swipe_slow({ 1384, 696 }, { 701, 545 })
+                swipe_slow({ 701, 545 }, { 1000, 545 })
             end
             if findOne("卫戍协议教程放装备黄点") then
                 log("发现教程放装备黄点")
