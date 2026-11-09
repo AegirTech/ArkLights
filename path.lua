@@ -6013,7 +6013,7 @@ path.剿灭 = function(x)
     end
 
     wait(function()
-        tap("每周部署")
+        tap("常态事务")
         if not findOne("主题曲界面") then return true end
     end)
 
@@ -10671,7 +10671,7 @@ path.保全 = function()
     end
 
     wait(function()
-        tap("每周部署")
+        tap("常态事务")
         if not findOne("主题曲界面") then return true end
     end)
 
