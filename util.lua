@@ -1440,7 +1440,7 @@ end
 --- @param pos2 table   1080p下中点坐标数组,内部换算
 --- @param time integer 省略默认0.3s,单位秒
 swipe_slow = function(pos1, pos2, time)
-    local time = time or 300
+    local time = time or 0.3
     gesture({
         {
             point = { { scale(pos1[1]), scale(pos1[2]) }, { scale(pos2[1]), scale(pos2[2]) } },
@@ -1448,8 +1448,7 @@ swipe_slow = function(pos1, pos2, time)
             duration = time,
         },
     })
-    ssleep(time)
-    ssleep(.1)
+    ssleep(time + .1)
 end
 
 -- 安卓8以下的滑动用双指
