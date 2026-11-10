@@ -10447,7 +10447,9 @@ path.活动奖励 = function(活动)
 end
 
 path.卫戍协议 = function()
+    log("卫戍协议开始")
     path.跳转("首页")
+    ssleep(.2)
     tap("面板作战")
     if not appear("主页") then return false end
     if not wait(function()
@@ -10464,7 +10466,11 @@ path.卫戍协议 = function()
         return false
     end
     ssleep(1)
-    if appear("阿米娅", 3) then path.卫戍协议教程() end
+    if appear("阿米娅", 3) then
+        if not path.卫戍协议教程() then
+            return false
+        end
+    end
     -- while not path.卫戍协议循环() do
 
     -- end
@@ -10488,22 +10494,14 @@ path.卫戍协议教程 = function()
                 log("发现教程放人黄点")
                 -- 放第一个人
                 swipe_slow({ 1384, 696 }, { 828, 556 })
-                swipe_slow({ 828, 556 }, { 828, 200 })
+                swipe_slow({ 828, 556 }, { 828, 100 })
                 -- 放第二个人
                 swipe_slow({ 1384, 696 }, { 701, 545 })
                 swipe_slow({ 701, 545 }, { 1000, 545 })
             end
             if findOne("卫戍协议教程放装备黄点") then
                 log("发现教程放装备黄点")
-                gesture({
-                    {
-                        point = { { scale(1258), scale(605) }, { scale(828), scale(556) } },
-                        start = 0,
-                        duration = 300,
-                    },
-                })
-                ssleep(.3)
-                ssleep(.1)
+                swipe_slow({ 1258, 605 }, { 828, 556 })
             end
             tap("卫戍协议右下角")
             ssleep(.1)
@@ -10528,9 +10526,11 @@ path.卫戍协议教程 = function()
             tap("卫戍协议战斗准备就绪")
             ssleep(.1)
         end, 60 * 18, 1) then --教程大概10分钟
-        log("尝试过教程失败")
+        log("尝试过教程失败，卡住超过了10s，准备重启游戏")
+        exec('su root am force-stop  ' .. appid)
         return false
     end
+    return true
 end
 
 path.卫戍协议循环 = function()
