@@ -10,9 +10,11 @@ from pathlib import Path
 from time import sleep
 
 import requests
+from dotenv import dotenv_values
 
 # win环境下的快速开发脚本
 API = "http://ark.aegirtech.com:8080"
+ark_ark_baseurl = "https://arkapi.enlysure.com"
 
 CONFIG_FILE = ".env"
 CONFIG_EXAMPLE_FILE = ".env.example"
@@ -20,20 +22,7 @@ CONFIG_EXAMPLE_FILE = ".env.example"
 
 def load_config():
     """读取 .env，返回配置字典"""
-    config = {}
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-            key, sep, value = line.partition("=")
-            if not sep:
-                continue
-            value = value.strip()
-            if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
-                value = value[1:-1]
-            config[key.strip()] = value
-    return config
+    return dotenv_values(CONFIG_FILE, encoding="utf-8")
 
 
 # 检查.env是否存在
@@ -104,96 +93,15 @@ class WindowMgr:
         return self._handle
 
 
-def upload_to_image_hosting(file_path: Path, host="gitcode"):
+def upload_to_image_hosting(file_path: Path, host="keep"):
     """上传图片到图床 返回链接"""
 
     def generate_random_string(length=16):
         return "".join(random.choices(string.ascii_letters, k=length))
 
-    image_host = {
-        "gitcode": {
-            "cors": False,
-            "params": {"filename": "ciallo", "mimeType": "image/jpeg"},
-            "max": 104857600,
-        },
-        "udesk": {"cors": False, "params": {}, "max": 104857600},
-        "kgqq": {"cors": True, "params": {}},
-        "yuanbao": {"cors": True, "params": {}},
-        "xinkaoyun": {
-            "cors": False,
-            "params": {"filename": "ciallo"},
-            "max": 1047527424,
-        },
-        "xingye": {
-            "cors": False,
-            "params": {"filename": "ciallo", "mimeType": "image/jpeg"},
-        },
-        "skland": {"cors": False, "params": {}, "max": 20971520},
-        "hupu": {
-            "cors": True,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-        "keep": {
-            "cors": False,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-            "max": 1047527424,
-        },
-        "weights": {"cors": True, "params": {}},
-        "qiyukf": {
-            "cors": False,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-            "max": 104857600,
-        },
-        "nuanpaper": {
-            "cors": True,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-        "qqsonglist": {
-            "cors": True,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-        "ukaka": {
-            "cors": False,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-            "max": 1047527424,
-        },
-        "snssdk": {
-            "cors": False,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-        "58tc": {
-            "cors": False,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-        "yyimgs": {
-            "cors": False,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-        "aippt": {
-            "cors": False,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-        "tyqw": {
-            "cors": False,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-        "168play": {
-            "cors": True,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-        "logosc": {
-            "cors": False,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-        "logosc1": {
-            "cors": False,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-        "beisu": {
-            "cors": False,
-            "params": {"mimeType": "image/jpeg", "filename": "ciallo"},
-        },
-    }
+    import json
+
+    image_host = json.loads(cfg.get("image_host", "{}"))
 
     max_size = image_host[host].get("max", 104857600)
     if os.path.getsize(file_path) > max_size:
@@ -204,7 +112,7 @@ def upload_to_image_hosting(file_path: Path, host="gitcode"):
     if file_type == "":
         file_type = ".jpeg"
     mime = "image/jpeg"
-    url = f"https://bed-sign.vercel.0013107.xyz/sign?module={host}&filename={filename}{file_type}&mimeType={mime}"
+    url = f"{cfg.get('bed_upload_url','')}?module={host}&filename={filename}{file_type}&mimeType={mime}"
     content_type = image_host[host]["params"].get("mimeType", mime)
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0",
@@ -212,7 +120,6 @@ def upload_to_image_hosting(file_path: Path, host="gitcode"):
         "Content-Type": content_type,
         "Accept": "*/*",
         "Connection": "keep-alive",
-        "origin": "https://bed.vercel.0013107.xyz",
         "sec-fetch-mode": "cors",
     }
     print("正在上传至文件托管服务器")
@@ -417,8 +324,7 @@ def upload(md5_text, file_type, force):
 
 
 def upload_to_backup_server(file_type):
-    bearer_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlbmx5c3VyZSJ9.AoDoOVosfVJUl-mAE1G-KneyrZcnkcFeWfRwyTtaX74"
-    # url = "https://arkapi.enlysure.com/ark/upload_file?cache=True"
+    bearer_token = cfg.get("ark_api_token", "")
     up_file = ""
     if file_type == "RELEASE":
         up_file = pkgPath
@@ -445,7 +351,7 @@ def upload_to_backup_server(file_type):
     if cdn_url is None:
         print("上传至文件服务器失败。")
         return
-    url = "https://arkapi.enlysure.com/ark/set_file_url"
+    url = ark_ark_baseurl + "/ark/set_file_url"
     params = {
         "file_name": {"RELEASE": "script", "SKILL": "skill", "MAPS": "maps.zip"}.get(
             file_type

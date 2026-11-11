@@ -24,3 +24,4 @@ dist/
 localConfig.py
 oper.ps1
 oper.bat
+.vscode/*
