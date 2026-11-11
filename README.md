@@ -174,3 +174,15 @@ python res/maps/maps.py           # 生成并发布（CI 使用；--no-upload �
 ## 其他相关项目
 
 - [伊比利亚审判庭](https://ark.aegirtech.com/) — 在线全日制云端托管，解放你的双手，使用本服务亦是对开发的支持
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
+
+SPDX-License-Identifier: AGPL-3.0-only
+
+本项目允许商业使用、修改和分发。
+
+基于本项目开发的衍生作品，在分发或通过网络提供修改后的服务时，必须遵守AGPL-3.0 的对应源代码提供及授权要求。
+
+闭源商业授权请联系项目主要维护成员。
