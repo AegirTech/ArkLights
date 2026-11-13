@@ -449,6 +449,198 @@ def stage_key(name, prefix="HD"):
     return prefix + sep + rest if sep else name
 
 
+def lua_strip_comment(line):
+    """去掉Lua行内注释，字符串里的--保留"""
+    out = []
+    quote = None
+    for i, c in enumerate(line):
+        if quote:
+            out.append(c)
+            if c == quote:
+                quote = None
+        elif c in "\"'":
+            quote = c
+            out.append(c)
+        elif line[i:i + 2] == "--":
+            break
+        else:
+            out.append(c)
+    return "".join(out)
+
+
+def lua_num(field):
+    """字段转数字，支持 1920 - 1 这类纯算术表达式，非数字返回 None"""
+    field = field.strip()
+    if re.fullmatch(r"[\d\s+\-*/().]+", field) and re.search(r"\d", field):
+        try:
+            return float(eval(field))  # 字符已白名单为纯算术
+        except Exception:
+            return None
+    return None
+
+
+def numpad_cell(x, y):
+    """1920x1080基线坐标 -> 所在九宫格区域（行*3+列），按三等分"""
+    col = 0 if x < 1920 / 3 else (1 if x < 1920 * 2 / 3 else 2)
+    row = 0 if y < 1080 / 3 else (1 if y < 1080 * 2 / 3 else 2)
+    return row * 3 + col
+
+
+def numpad(points):
+    """点组的小键盘1-9区域（1=左下 9=右上）。
+
+    按点组主要分布在哪个区域投票决定，第一个点计算两次，平票取第一个点所在区域。
+    """
+    cells = [numpad_cell(x, y) for x, y in points]
+    votes = defaultdict(int)
+    for c in cells:
+        votes[c] += 1
+    votes[cells[0]] += 1  # 第一个点计算两次
+    first = cells[0]
+    return "789456123"[max(votes, key=lambda c: (votes[c], c == first))]
+
+
+def parse_point_values(value):
+    """从Lua条目值里取出代表坐标组 -> [(x, y), ...]。
+
+    点位（多点找色字符串/嵌套坐标对）取全部点；范围（纯数字table）取中心位置。
+    """
+    pairs = re.findall(r"(\d+)\|(\d+)\|", value)
+    if pairs:
+        return [(float(a), float(b)) for a, b in pairs]
+    v = value.strip()
+    if not (v.startswith("{") and v.endswith("}")):
+        return None
+    if v.count("{") > 1:  # 嵌套table（如 { {x,y}, ... }）取全部点
+        pairs = re.findall(r"\{\s*(-?\d+)\s*,\s*(-?\d+)\s*\}", v)
+        return [(float(a), float(b)) for a, b in pairs] if pairs else None
+    nums = [lua_num(f) for f in v[1:-1].split(",") if f.strip()]
+    if not nums or any(n is None for n in nums):
+        return None
+    if len(nums) == 2:  # 坐标对
+        return [(nums[0], nums[1])]
+    if len(nums) % 2 == 0:  # 范围 { x1,y1,x2,y2 } 取中心
+        xs, ys = nums[0::2], nums[1::2]
+        return [((min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2)]
+    return None
+
+
+def auto_center(path="point.lua", write=True, refresh=False, modes=None):
+    """根据 point 中点位/范围的分布自动补齐 center 表的小键盘1-9定位。
+
+    点位（多点找色字符串/坐标对）按点组主要分布区域投票，第一个点计算两次；
+    范围（纯数字table）看中心位置；坐标落在1920x1080基线九宫格的哪一格，
+    center 就补哪个数（1=左下 2=下 3=右下 4=左 5=中 6=右 7=左上 8=上 9=右上）。
+    缩放模式（"maxscale"/"maxscalex"/"anisotropy"）反映目标屏幕如何渲染该界面，
+    无法从点位几何推断，需通过 modes={键名: 模式} 传入，对应条目生成
+    { 数字, "模式" }，其余生成裸数字。
+    只补没有显式 center 的可换算条目，每行附带"自动补齐"注释；
+    refresh=True 先删除旧的自动补齐行再按当前规则重算；
+    write=False 仅打印不写回。可重复运行（幂等）。
+    """
+    # newline="" 读写保留原换行符（point.lua 是 CRLF）
+    lines = open(path, encoding="utf8", newline="").read().splitlines(keepends=True)
+    eol = "\r\n" if lines[0].endswith("\r\n") else "\n"
+
+    def block_bounds(start_pat):
+        """顶级table块的行区间 [start, end)，end 为收尾 } 所在行"""
+        start = next(i for i, l in enumerate(lines) if start_pat.match(l))
+        depth = 0
+        for i in range(start, len(lines)):
+            code = lua_strip_comment(lines[i])
+            depth += code.count("{") - code.count("}")
+            if depth <= 0 and i > start:
+                return start, i
+        return start, len(lines) - 1
+
+    if refresh:  # 删除旧的自动补齐行，后续按当前规则重算
+        s, e = block_bounds(re.compile(r"^center = \{"))
+        lines = [l for i, l in enumerate(lines)
+                 if not (s < i < e and "自动补齐" in l)]
+
+    entry_pat = re.compile(r'\s*(?:\["([^"]+)"\]|([^\s={}()]+))\s*=\s*(.*)$')
+    key_pat = re.compile(r'\s*(?:\["([^"]+)"\]|([^\s={}()]+))\s*=')
+
+    # center 块与已有键
+    center_start, center_end = block_bounds(re.compile(r"^center = \{"))
+    center_keys = set()
+    for line in lines[center_start + 1:center_end]:
+        m = key_pat.match(lua_strip_comment(line))
+        if m:
+            center_keys.add(m.group(1) or m.group(2))
+
+    # 收集 point 块内的条目（含命名子表条目）与 point["x"] = ... 形式的赋值
+    point_start, point_end = block_bounds(re.compile(r"^point = \{"))
+    p720_start, p720_end = block_bounds(re.compile(r"^point720 = \{"))
+    entries = []
+    pending = None  # 多行值累积 [key, parts]
+    for i in range(point_start + 1, point_end):
+        line = lines[i]
+        if pending is not None:
+            pending[1].append(lua_strip_comment(line))
+            joined = "".join(pending[1]).rstrip()
+            if (joined.count("{") <= joined.count("}")
+                    and joined.count('"') % 2 == 0 and joined.count("'") % 2 == 0
+                    and joined[-1:] in ",\"'}]"):
+                entries.append((pending[0], joined.rstrip(", ").strip()))
+                pending = None
+            continue
+        stripped = line.strip()
+        if not stripped or stripped.startswith("--"):
+            continue
+        m = entry_pat.match(lua_strip_comment(line))
+        if not m:
+            continue  # 列表数组元素等无名内容
+        key, rest = (m.group(1) or m.group(2)), m.group(3).rstrip()
+        rest = rest.rstrip(",").strip()
+        if (not rest or rest.count("{") > rest.count("}")
+                or rest.count('"') % 2 or rest.count("'") % 2):
+            # 多行值：看下一个有效行是否为条目（含=）来区分命名子表
+            j = i + 1
+            while (j < point_end and (not lines[j].strip()
+                                      or lines[j].strip().startswith("--"))):
+                j += 1
+            nxt = lua_strip_comment(lines[j]) if j < point_end else ""
+            if key_pat.match(nxt):
+                continue  # 命名子表，子条目由后续行逐条解析
+            pending = [key, [rest]]
+            continue
+        entries.append((key, rest))
+    for i in range(len(lines)):
+        if p720_start <= i <= p720_end or point_start <= i <= point_end:
+            continue  # point720 是720p原生坐标，不参与基线换算
+        m = re.match(r'point\[(["\'])([^"\']+)\1\]\s*=\s*(.*)$', lua_strip_comment(lines[i]))
+        if m:
+            entries.append((m.group(2), m.group(3).rstrip().rstrip(",").strip()))
+
+    # 计算缺失 center 的条目
+    modes = modes or {}
+    generated = []
+    seen = set()
+    for key, value in entries:
+        points = parse_point_values(value)
+        if not points or key in center_keys or key in seen:
+            continue
+        seen.add(key)
+        digit = numpad(points)
+        mode = modes.get(key)
+        if mode:
+            value_out = f'{{ {digit}, "{mode}" }}'
+        else:
+            value_out = digit
+        token = key if re.fullmatch(r"[^\W\d][\w]*", key, re.UNICODE) else f'["{key}"]'
+        generated.append(f"    {token} = {value_out}, -- 自动补齐")
+
+    print("\n".join(generated) or "没有需要补齐的条目")
+    print(f"自动补齐 {len(generated)} 条 center（{path} 第 {center_end + 1} 行前）")
+
+    if write and generated:
+        lines[center_end:center_end] = [l + eol for l in generated]
+        open(path, "w", encoding="utf8", newline="").write("".join(lines))
+        print(f"已写入 {path}")
+    return generated
+
+
 def find_hex_point(image_path, bbox, offset=5):
     """取蓝色六边形中心偏左上一点的坐标和颜色。
 

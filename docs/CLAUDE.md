@@ -32,11 +32,14 @@ python res\char_type\parse_character_table.py
 ./0.sh recruit                               # 提取公招组合
 ./extract.py screencap 1                     # 活动关卡截图（满右滑首页起，逐页左滑，自动存720p）
 ./extract.py screencap_distance2             # 计算活动关卡点位与滑动距离
+./extract.py auto_center                     # 按 point 分布自动补齐 center 表九宫格锚点（write=False 仅预览）
 ./extract.py process_transparent_pixels      # 提取基建图标
 ./extract.py skillicon2operator              # 基建 JSON → skill.zip
 ```
 
 活动关卡坐标约定：`screencap_distance2` 读取 `screencap/*.png`（720p，第一张必须是满右滑后的首页，相邻页需有重叠关卡），输出 `point.作战列表` 与 `distance` 两张表。`-ST-`、`TR-`、`-P-`、`-MO-` 关输出蓝色六边形比色点，其余输出点击坐标；首页已可见且横坐标小于 `point_x` 的关卡 `distance` 输出 0 并使用真实坐标；`-EX-`、`-S-`、`-MO-` 关单独成页，默认不滑动、直接输出当前页真实坐标且不输出 `distance`。滑动距离 = `(720p实测距离 + shift_right) × distance_coefficient`，默认系数 1.11，落点不符时按实测微调。
+
+center 锚点约定（非16:9 适配）：center 表为 point 条目指定小键盘 1-9 九宫格定位（1=左下 2=下 3=右下 4=左 5=中 6=右 7=左上 8=上 9=右上），值为裸数字，或 `{ 数字, "缩放模式" }`（模式 `"maxscale"`/`"maxscalex"`/`"anisotropy"`，缺省按 minscale 等比）。模式反映目标屏幕如何渲染该界面（如系统设置页、基建设施页会拉伸），无法从点位几何推断，须人工指定；无 center 的条目默认锚点 7（左上）。`point2center` 纯数字驱动：列 `(锚点-1)%3`、行 `(锚点-1)//3`，参考点=序号×端点（origin 用 1920x1080 基线端点，new 用实际屏幕端点）；`convert_coords` 据此把基线坐标换算到实际分辨率。旧词组（`left_top` 等）与显式坐标对写法已废弃。
 
 ## 架构概览
 
@@ -89,6 +92,7 @@ findAny({ "点1", "点2", "点3" })
 - 在 1920 \* 1080 分辨率环境下开发，为了稳定性和多分辨率适应，取色应该保证像素点与周围8个像素颜色一致
 - 优先使用 `findOne` / `findAny` 做检测，使用 `tap` 执行点击。
 - point表中已经声明的键值对可以直接调用键值字符串，比如 `findOne(key)`,`tap(key)`,等价于`findOne(point.key)`,`tap(point.key)`
+- 新增点位后 center 通常不用手写：运行 `python extract.py auto_center` 自动补齐（点位按点组主要分布区域投票、第一个点计两票；范围取中心位置），生成行尾带"自动补齐"注释的条目；`--refresh` 删旧自动补齐行按当前规则重算，`--modes='{"键":"模式"}'` 注入已知缩放模式
 - 状态机优先兼容 `auto(update(path.base, ...))` 这套速通风格。
 - 新增注释优先使用中文，说明"为什么这样接"，而不是只描述表面动作。
 - 地图与代理作战数据使用 JSON 格式；地图更新可通过 GitHub Action `map_update.yml` 同步。
