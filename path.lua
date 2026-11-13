@@ -10508,15 +10508,15 @@ path.卫戍协议教程 = function()
             if findOne("卫戍协议教程放人黄点") then
                 log("发现教程放人黄点")
                 -- 放第一个人
-                swipe_slow(point["卫戍协议待部署区列表1"], { 828, 556 })
-                swipe_slow({ 828, 556 }, { 828, 100 })
+                swipe_slow(point["卫戍协议待部署区列表1"], point["卫戍协议格子列表6"])
+                deploy0(point["卫戍协议格子列表6"], "上")
                 -- 放第二个人
-                swipe_slow(point["卫戍协议待部署区列表1"], { 701, 545 })
-                swipe_slow({ 701, 545 }, { 1000, 545 })
+                swipe_slow(point["卫戍协议待部署区列表1"], point["卫戍协议格子列表2"])
+                deploy0(point["卫戍协议格子列表2"], "右确认")
             end
             if findOne("卫戍协议教程放装备黄点") then
                 log("发现教程放装备黄点")
-                swipe_slow(point["卫戍协议装备区列表1"], { 828, 556 })
+                swipe_slow(point["卫戍协议装备区列表1"], point["卫戍协议格子列表6"])
             end
             tap("卫戍协议右下角")
             ssleep(.1)
@@ -10551,18 +10551,6 @@ end
 path.卫戍协议循环 = function()
     log("卫戍协议循环")
     local lose = false
-    local deploy = function(t, d) --table,direction
-        log("部署朝向" .. d)
-        if d == "上" then
-            swipe_slow(t, { t[1], t[2] - 300 })
-        elseif d == "下" then
-            swipe_slow(t, { t[1], t[2] + 300 })
-        elseif d == "左" then
-            swipe_slow(t, { t[1] - 300, t[2] })
-        elseif d == "右" then
-            swipe_slow(t, { t[1] + 300, t[2] })
-        end
-    end
 
     if not findOne("卫戍协议首页") then
         path.卫戍协议进入()
@@ -10617,7 +10605,7 @@ path.卫戍协议循环 = function()
                     tap("卫戍协议购买列表" .. j)
                     ssleep(.8)
                     swipe_slow(point["卫戍协议待部署区列表1"], point["卫戍协议格子列表" .. (j + i * 3 - 3)])
-                    deploy(point["卫戍协议格子列表" .. (j + i * 3 - 3)], 方向[j + i * 3 - 3])
+                    deploy0(point["卫戍协议格子列表" .. (j + i * 3 - 3)], 方向[j + i * 3 - 3])
                     ssleep(.2)
                 end
             end

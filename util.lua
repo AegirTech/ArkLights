@@ -1436,15 +1436,15 @@ swipe = function(x)
 end
 
 --- 滑动
---- @param pos1 table 1080p下起点坐标数组,内部换算
---- @param pos2 table 1080p下中点坐标数组,内部换算
+--- @param pos1 table 屏幕坐标数组,与point/tap体系一致,内部不换算
+--- @param pos2 table 屏幕坐标数组,内部不换算
 --- @param time float 省略默认0.3s,单位秒
 swipe_slow = function(pos1, pos2, time)
     local time = time or 0.3
     time = time * 1000
     gesture({
         {
-            point = { { scale(pos1[1]), scale(pos1[2]) }, { scale(pos2[1]), scale(pos2[2]) } },
+            point = { { pos1[1], pos1[2] }, { pos2[1], pos2[2] } },
             start = 0,
             duration = time,
         },
@@ -1866,6 +1866,21 @@ deploy2 = function(idx, total, x2, y2, d)
     x2 = math.round((x2 - (1920 / 2)) * minscale) + (screen.width // 2)
     y2 = math.round((y2 - (1080 / 2)) * minscale) + (screen.height // 2)
     deploy(x1, x2, y2, d)
+end
+
+--- @param t table 部署点位
+--- @param d string  部署方向:"上"/"下"/"左"/"右"
+deploy0 = function(t, d)
+    log("部署朝向" .. d)
+    if d == "上" then
+        swipe_slow(t, { t[1], t[2] - scale(300) })
+    elseif d == "下" then
+        swipe_slow(t, { t[1], t[2] + scale(300) })
+    elseif d == "左" then
+        swipe_slow(t, { t[1] - scale(300), t[2] })
+    elseif d == "右" then
+        swipe_slow(t, { t[1] + scale(300), t[2] })
+    end
 end
 
 deploy = function(x1, x2, y2, d, nopause)
