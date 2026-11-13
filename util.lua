@@ -3394,8 +3394,11 @@ update_state_from_ui = function()
     fight = parse_fight_config(fight_ui)
 
     -- 赛季活动开放时间段
-    season_SPA_open_time_end = parse_time("202612310400") -- 卫戍协议
-    season_mod = { "卫戍协议" } --卫戍协议/促融共竞/赌博
+    season_strongholdprotocol_open_time_end = parse_time("202612310400") -- 卫戍协议
+    season_mode = {
+        卫戍协议 = true,
+        争锋频道 = false,
+    }
 
     -- 资源关全天开放时间段
     all_open_time_start = parse_time("202606261600")

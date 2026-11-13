@@ -1721,7 +1721,7 @@ path.跳转 = function(x, disable_quick_jump, disable_postprocess)
             log('未找到 塔罗牌x')
         end
     else
-        log('不是活动 SR')
+        log('不是P3R联动活动')
     end
     -- if findOne("争锋频道首页") then
     --     back()
@@ -6539,7 +6539,7 @@ path.商店搬空 = function()
     end
 end
 
-path.故事解锁 = function()
+path.故事解锁 = function() --后面并入搬空商店
     local t = os.time()
     if not shop_period then shop_period = 0 end
     if not shop_day then shop_day = 0 end
@@ -6649,8 +6649,16 @@ path.故事解锁 = function()
     end
 end
 
-path.故事解锁 = function()
-    return
+path.赛季任务 = function()
+    if not enable_seasonal_tasks then
+        log("赛季任务未启用,请到高级 设置-其他 中开启")
+        return
+    end
+    log("检测赛季开放时间")
+    local t = parse_time()
+    if season_mode["卫戍协议"] and t < hd_open_time_end then
+        path.卫戍协议循环()
+    end
 end
 
 path.会客厅跳转好友 = function()
@@ -9332,7 +9340,10 @@ path.森空岛签到 = function()
 end
 
 path.自动培养 = function()
-    if not enable_raise_func then return end
+    if not enable_raise_func then
+        log("自动培养未启用,请到高级 设置-其他 中开启")
+        return
+    end
     local status, data = pcall(raise.auto_raise)
     log(data)
 end
@@ -10446,8 +10457,7 @@ path.活动奖励 = function(活动)
     appear(活动 .. "首页", 2)
 end
 
-path.卫戍协议 = function()
-    log("卫戍协议开始")
+path.卫戍协议进入 = function()
     path.跳转("首页")
     ssleep(.2)
     tap("面板作战")
@@ -10471,10 +10481,15 @@ path.卫戍协议 = function()
             return false
         end
     end
-    -- while not path.卫戍协议循环() do
+end
 
-    -- end
-    -- path.活动奖励("卫戍协议")
+path.卫戍协议 = function()
+    log("卫戍协议开始")
+    path.卫戍协议进入()
+
+    while not path.卫戍协议循环() do
+
+    end
 end
 
 path.卫戍协议教程 = function()
@@ -10493,15 +10508,15 @@ path.卫戍协议教程 = function()
             if findOne("卫戍协议教程放人黄点") then
                 log("发现教程放人黄点")
                 -- 放第一个人
-                swipe_slow({ 1384, 696 }, { 828, 556 })
+                swipe_slow(point["卫戍协议待部署区列表1"], { 828, 556 })
                 swipe_slow({ 828, 556 }, { 828, 100 })
                 -- 放第二个人
-                swipe_slow({ 1384, 696 }, { 701, 545 })
+                swipe_slow(point["卫戍协议待部署区列表1"], { 701, 545 })
                 swipe_slow({ 701, 545 }, { 1000, 545 })
             end
             if findOne("卫戍协议教程放装备黄点") then
                 log("发现教程放装备黄点")
-                swipe_slow({ 1258, 605 }, { 828, 556 })
+                swipe_slow(point["卫戍协议装备区列表1"], { 828, 556 })
             end
             tap("卫戍协议右下角")
             ssleep(.1)
@@ -10535,14 +10550,25 @@ end
 
 path.卫戍协议循环 = function()
     log("卫戍协议循环")
-    local p = findAny({ "卫戍协议首页", "卫戍协议放弃模拟" })
-    if not p then
-        path.跳转("首页")
-        tap("面板活动")
-        ssleep(2.5)
+    local lose = false
+    local deploy = function(t, d) --table,direction
+        log("部署朝向" .. d)
+        if d == "上" then
+            swipe_slow(t, { t[1], t[2] - 300 })
+        elseif d == "下" then
+            swipe_slow(t, { t[1], t[2] + 300 })
+        elseif d == "左" then
+            swipe_slow(t, { t[1] - 300, t[2] })
+        elseif d == "右" then
+            swipe_slow(t, { t[1] + 300, t[2] })
+        end
     end
-    if not appear(p, 5) then return end
-    if p == "卫戍协议放弃模拟" then
+
+    if not findOne("卫戍协议首页") then
+        path.卫戍协议进入()
+    end
+    if not appear("卫戍协议首页", 5) then return end
+    if findOne("卫戍协议放弃模拟") then
         goto relink
     end
     if findOne("卫戍协议等级max") then
@@ -10550,37 +10576,20 @@ path.卫戍协议循环 = function()
         captureqqimagedeliver("INFO", "卫戍协议等级已满", "卫戍协议等级已满")
         return true
     end
-    if shp_only_daily_task and findOne("卫戍协议每日已完成") then
-        log("卫戍协议每日已完成")
-        captureqqimagedeliver("INFO", "卫戍协议每日已完成", "卫戍协议每日已完成")
-        return true
+    if not wait(function()
+            if findOne("卫戍协议个人模拟") then return true end
+            tap("卫戍协议个人模拟")
+            ssleep(.1)
+        end, 2) then
+        return false
     end
-    tap("卫戍协议首页")
+
+    tap("卫戍协议极速模拟")
     disappear("卫戍协议首页", 3)
-    appear("卫戍协议开始模拟", 2)
+    appear("卫戍协议开始模拟", 3)
     ssleep(.2)
-    -- 打过高难度之后需要滑动重置难度
-    gesture({
-        {
-            point = {
-                { scale(1481), scale(232) },
-                { scale(1481), scale(2000) },
-            },
-            start = 0,
-            duration = 300,
-        },
-    })
-    sleep(300)
-    log("滑动完毕")
-    ssleep(.3)
-    for i = 1, 2 do --只打前两个难度
-        tap("卫戍协议难度列表" .. i)
-        ssleep(.9)
-    end
-    -- if findOne("卫戍协议入门难度") then
-    --     log("跳过教程")
-    --     --进图后强退app,到主页放弃上一把
-    -- end
+    tap("卫戍协议开始模拟")
+
     if not wait(function()
             if findOne("卫戍协议选择分队") then return true end
             tap("卫戍协议准备就绪")
@@ -10594,9 +10603,25 @@ path.卫戍协议循环 = function()
     end, 5, 1)
     ssleep(10)
     appear("卫戍协议战斗准备就绪", 40)
-    for i = 1, 4 do
-        if appearTap("卫戍协议战斗准备就绪", 45) then
-            i = i + 1
+    log("卫戍协议进入第一回合战斗")
+
+    for i = 1, 8 do
+        if appear("卫戍协议战斗准备就绪", 65) then
+            ssleep(.1)
+            log("第" .. i .. "回合")
+            if i == 1 or i == 2 or i == 3 then
+                local 方向 = { "上", "右", "右", "上", "右", "上", "右", "右", "上" }
+                for j = 1, 3 do
+                    tap("卫戍协议购买列表" .. j)
+                    ssleep(.2)
+                    tap("卫戍协议购买列表" .. j)
+                    ssleep(.8)
+                    swipe_slow(point["卫戍协议待部署区列表1"], point["卫戍协议格子列表" .. (j + i * 3 - 3)])
+                    deploy(point["卫戍协议格子列表" .. (j + i * 3 - 3)], 方向[j + i * 3 - 3])
+                    ssleep(.2)
+                end
+            end
+            tap("卫戍协议战斗准备就绪")
             ssleep(.5)
             if appear("卫戍协议金币清零确定") then
                 tap("卫戍协议金币清零勾")
@@ -10605,6 +10630,14 @@ path.卫戍协议循环 = function()
             end
             ssleep(15)
         end
+        if findOne("卫戍协议返回主页") then
+            log("卫戍协议战斗失败")
+            lose = true
+            break
+        end
+    end
+    if lose == true then
+        goto return_to_home_page
     end
     appear("卫戍协议战斗准备就绪", 60)
     tap("卫戍协议战斗返回")
@@ -10617,11 +10650,15 @@ path.卫戍协议循环 = function()
     tap("卫戍协议放弃模拟")
     ssleep(.5)
     tap("卫戍协议金币清零确定")
+    ::return_to_home_page::
     if not wait(function()
             tap("卫戍协议准备就绪")
             ssleep(2)
             disappear("正在提交反馈至神经", network_timeout)
-            if findOne("卫戍协议首页") then return true end
+            if findOne("卫戍协议首页") then
+                log("卫戍协议一轮循环结束")
+                return true
+            end
         end, 30, 1) then
         log("可能是卡住了,点一下返回首页")
         tap("卫戍协议准备就绪")
