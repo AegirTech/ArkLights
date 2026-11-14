@@ -135,12 +135,12 @@ def main():
             continue
         items[name] = item
 
-    sph_data = {
+    autochess_data = {
         "season": f"{act_id} {version}",
         "operators": operators,
         "items": items,
     }
-    save_to_json("sph_data.json", sph_data)
+    save_to_json("autochess_data.json", autochess_data)
     print(f"干员 {len(operators)} 装备 {len(items)}")
 
 

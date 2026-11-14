@@ -12,6 +12,7 @@
     "roguelike/roguelike.lua",
     "sand.lua",
     "icebreaker.lua",
+    "autochess.lua",
     "sha2.lua",
     "skland.lua",
     "prts.lua",
@@ -32,6 +33,7 @@
     "res/char_type/char_table.json",
     "res/char_type/character_type_list.json",
     "res/char_type/equip_table.json",
+    "res/char_type/autochess_data.json",
     "res/ui/info.png",
     "res/ui/setting.png",
     "res/ui/title.png"
