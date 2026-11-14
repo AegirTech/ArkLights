@@ -182,6 +182,7 @@
     # 稀疏模式经 --stdin 传入，避免 Git Bash 把前导 / 转换成 Windows 路径
     printf '%s\n' \
       '/building_skill/' \
+      '/gamedata/excel/activity_table.json' \
       '/gamedata/excel/character_table.json' \
       '/gamedata/excel/building_data.json' \
       '/gamedata/excel/gacha_table.json' \

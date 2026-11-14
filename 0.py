@@ -406,6 +406,7 @@ def update_version():
 AGR_SUBMODULE = os.path.join("res", "ArknightsGameResource")
 AGR_SPARSE_PATTERNS = [
     "/building_skill/",
+    "/gamedata/excel/activity_table.json",
     "/gamedata/excel/character_table.json",
     "/gamedata/excel/building_data.json",
     "/gamedata/excel/gacha_table.json",
