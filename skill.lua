@@ -257,6 +257,10 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 end
             elseif icon == 'bskill_tra_share3' then --吉星2
                 base = base + 0.2 * (level - 1)
+            elseif icon == 'bskill_tra_share4' then --冻河0
+                base = base + 0.15 * (level - 1)
+            elseif icon == 'bskill_tra_share5' then --冻河2
+                base = base + 0.2 * (level - 1)
             elseif icon == 'bskill_tra_spd&cost' then
                 base = base + 0.3
             elseif icon == 'bskill_tra_spd&limit7' then
