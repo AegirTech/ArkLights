@@ -15,6 +15,7 @@ tmp*
 !/docs/
 !/res/
 /res/maps/
+!/res/ppocr.zip
 !/res/ui/*
 node_modules/
 dist/
