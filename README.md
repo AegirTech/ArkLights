@@ -151,8 +151,8 @@ python 0.py agrinit    # Windows
 # 解包工具
 # https://github.com/jxr2006/ArkAssetsTool
 
-# 提取基建技能图标
-./0.sh buildingskill
+# 提取基建数据（一步生成 res/skill.zip，图标默认取子模块 building_skill，中间产物仅保留 res/skillicon2operator.json）
+./extract.py buildingskill
 
 # 提取公招保底组合
 ./0.sh recruit

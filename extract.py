@@ -158,9 +158,8 @@ def avator2operator(src="ArknightsGameData/zh_CN/gamedata/excel/character_table.
 
 
 # https://github.com/yuanyan3060/ArknightsGameResource 使用此解包仓库
-def skillicon2operator():
-    import zipfile
-
+def skill_icon_map():
+    """building_data 的基建 buff → 干员名+精英化阶段映射，数据优先读子模块，失败返回 None"""
     char = load_game_data(
         "gamedata/excel/character_table.json",
         "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json",
@@ -170,7 +169,7 @@ def skillicon2operator():
         "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/building_data.json",
     )
     if not char or not build:
-        return "get data failed"
+        return None
     char2name = {k: char[k]["name"] for k in char}
     buffid2name = {}
     for c, b in build["buffs"].items():
@@ -184,8 +183,17 @@ def skillicon2operator():
                 buffname = buffid2name[buffid]
                 buffname = buffname.lower()
                 operator = char2name[c]
-                phase = (b2["cond"]["phase"])[-1]
+                phase = str(b2["cond"]["phase"])[-1]  # 子模块版 phase 可能是 int，统一转 str 取末位
                 ans[buffname].append(operator + str(phase))
+    return ans
+
+
+def skillicon2operator():
+    import zipfile
+
+    ans = skill_icon_map()
+    if ans is None:
+        return "get data failed"
 
     # 定义输出目录：当前工作目录下的 ArknightsGameResource/new
     output_folder = os.path.join(os.getcwd(), "ArknightsGameResource/new")
@@ -212,6 +220,49 @@ def skillicon2operator():
 
     return "skillicon2operator done && skill.zip created success"
     # return json.dumps(ans, ensure_ascii=False)
+
+
+def buildingskill(input_folder=None):
+    """一步生成 res/skill.zip：基建图标去透明化 + 基建技能映射 json。
+    图标默认取子模块 building_skill，缺失时回退 ArknightsGameResource/skill；
+    中间产物仅保留 res/skillicon2operator.json，最终产物 res/skill.zip"""
+    import tempfile
+    import zipfile
+
+    root = os.path.dirname(os.path.abspath(__file__))
+    res_dir = os.path.join(root, "res")
+    os.makedirs(res_dir, exist_ok=True)
+
+    submodule_icons = os.path.join(AGR_DIR, "building_skill")
+    if input_folder is None:
+        if os.path.isdir(submodule_icons):
+            input_folder = submodule_icons
+            print(f"使用子模块图标: {input_folder}")
+        else:
+            input_folder = os.path.join(os.getcwd(), "ArknightsGameResource/skill")
+            print(f"子模块图标缺失，回退: {input_folder}")
+    if not os.path.isdir(input_folder):
+        return f"icon folder not found: {input_folder}"
+
+    ans = skill_icon_map()
+    if ans is None:
+        return "get data failed"
+
+    with tempfile.TemporaryDirectory() as tmp:
+        process_transparent_pixels(input_folder=input_folder, output_folder=tmp)
+        icons = [f for f in os.listdir(tmp) if not f.startswith(".")]
+        json_name = "skillicon2operator.json"
+        json_path = os.path.join(res_dir, json_name)
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(ans, f, ensure_ascii=False)
+
+        zip_file_path = os.path.join(res_dir, "skill.zip")
+        with zipfile.ZipFile(zip_file_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+            zipf.write(json_path, json_name)
+            for file in icons:
+                zipf.write(os.path.join(tmp, file), file)
+
+    return f"buildingskill done: {len(icons)} icons && {zip_file_path} created"
 
 
 def recruit(

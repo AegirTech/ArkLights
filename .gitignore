@@ -15,6 +15,7 @@ tmp*
 !/docs/
 !/res/
 /res/maps/
+/res/skillicon2operator.json
 !/res/ppocr.zip
 !/res/ui/*
 node_modules/
