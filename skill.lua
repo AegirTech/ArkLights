@@ -255,6 +255,10 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                 if isCharExsit["八幡海铃"] then
                     base = base + 0.05
                 end
+            elseif icon == 'bskill_tra_share1' then --火哨2
+                base = base + 0.15 * (level - 1)
+            elseif icon == 'bskill_tra_share2' then --吉星0
+                base = base + 0.1 * (level - 1)
             elseif icon == 'bskill_tra_share3' then --吉星2
                 base = base + 0.2 * (level - 1)
             elseif icon == 'bskill_tra_share4' then --冻河0
@@ -281,8 +285,6 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
                     base = base - 0.15
                     storage = storage + 6
                 end
-            elseif icon == 'bskill_tra_share2' then     --吉星0
-                base = base + 0.1 * (level - 1)
             elseif icon == 'bskill_tra_spd&limit5' then --蕾缪安2
                 base = base + 0.20
             elseif icon == 'bskill_tra_spd_bd2' then    --黑键2
@@ -405,9 +407,6 @@ tradingStationOperatorBest = function(operator, dormitoryCapacity,
         end
 
         -- 应用全局性技能
-        -- 火哨
-        if all["bskill_tra_share1"] then base = base + (level - 1) * 0.15 end
-
         -- 拉狗徳狗
         local texas = all['bskill_tra_texas1'] or all['bskill_tra_texas2']
         if all['bskill_tra_lappland1'] then
