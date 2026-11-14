@@ -5,6 +5,7 @@ import random
 import re
 import shutil
 import string
+import subprocess
 import sys
 from pathlib import Path
 from time import sleep
@@ -401,6 +402,37 @@ def update_version():
     print(response.json().get("msg"))
 
 
+# ArknightsGameResource 子模块稀疏检出内容（levels.json 与 Arknights-Bot-Resource 同源）
+AGR_SUBMODULE = os.path.join("res", "ArknightsGameResource")
+AGR_SPARSE_PATTERNS = [
+    "/building_skill/",
+    "/gamedata/excel/character_table.json",
+    "/gamedata/excel/building_data.json",
+    "/gamedata/excel/gacha_table.json",
+    "/gamedata/excel/story_review_table.json",
+    "/gamedata/excel/stage_table.json",
+    "/gamedata/excel/uniequip_table.json",
+    "/levels.json",
+]
+
+
+def agrinit():
+    """初始化 ArknightsGameResource 子模块并配置稀疏检出，只拉取需要的文件"""
+    subprocess.run(
+        ["git", "submodule", "update", "--init", "--depth", "1", AGR_SUBMODULE],
+        check=True,
+    )
+    subprocess.run(
+        ["git", "-C", AGR_SUBMODULE, "sparse-checkout", "set", "--no-cone"]
+        + AGR_SPARSE_PATTERNS,
+        check=True,
+    )
+    print("==> 子模块稀疏检出内容：")
+    for name in sorted(os.listdir(AGR_SUBMODULE)):
+        if name != ".git":
+            print(" ", name)
+
+
 if __name__ == "__main__":
     try:
         arg = sys.argv[1]
@@ -425,3 +457,5 @@ if __name__ == "__main__":
         statistician()
     elif arg == "ver":
         update_version()
+    elif arg == "agrinit":
+        agrinit()

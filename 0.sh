@@ -177,6 +177,24 @@
     done
   }
 
+  agrinit() { # 初始化 ArknightsGameResource 子模块并配置稀疏检出，只拉取需要的文件
+    git submodule update --init --depth 1 res/ArknightsGameResource || return 1
+    # 稀疏模式经 --stdin 传入，避免 Git Bash 把前导 / 转换成 Windows 路径
+    printf '%s\n' \
+      '/building_skill/' \
+      '/gamedata/excel/character_table.json' \
+      '/gamedata/excel/building_data.json' \
+      '/gamedata/excel/gacha_table.json' \
+      '/gamedata/excel/story_review_table.json' \
+      '/gamedata/excel/stage_table.json' \
+      '/gamedata/excel/uniequip_table.json' \
+      '/levels.json' \
+      | git -C res/ArknightsGameResource sparse-checkout set --no-cone --stdin
+    echo "==> 子模块稀疏检出内容："
+    ls res/ArknightsGameResource
+    du -sh res/ArknightsGameResource
+  }
+
   fetchbuildingskill() {
     echo "deprecated, use buildingskill instead"
     exit

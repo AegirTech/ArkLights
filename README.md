@@ -140,6 +140,13 @@ git submodule update --remote res/ArknightsGameResource
 
 `extract.py` 与 `res/char_type/parse_character_table.py` 所需的游戏数据表（character_table 等）同样优先读 `res/ArknightsGameResource` 子模块、缺失时回退在线拉取。
 
+首次检出仓库后运行一次以下命令初始化子模块并配置稀疏检出，只拉取 building_skill、6 个 excel 表与 levels.json（约 123 MB，全量检出约需数 GB）：
+
+```sh
+python 0.py agrinit    # Windows
+./0.sh agrinit         # Linux
+```
+
 ```sh
 # 解包工具
 # https://github.com/jxr2006/ArkAssetsTool

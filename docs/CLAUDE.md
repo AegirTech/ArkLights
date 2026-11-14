@@ -56,7 +56,7 @@ center 锚点约定（非16:9 适配）：center 表为 point 条目指定小键
 - **`skland.lua`** — 森空岛平台集成。
 - **`0.py` / `0.sh`** — 构建/发布/调试工具脚本。
 - **`extract.py`** — 资源解包与数据提取（依赖 UnityPy、pycryptodome）。
-- **`res/ArknightsGameResource`** — 游戏数据子模块（稀疏检出，仅 building_skill、6 个 excel 表与 levels.json）。`extract.py`、`res/char_type/parse_character_table.py`、地图脚本优先读它，子模块缺失时回退在线拉取；同步最新数据用 `git submodule update --remote res/ArknightsGameResource`。重建稀疏检出（Git Bash 需 `MSYS_NO_PATHCONV=1` 防路径转换）：`git -C res/ArknightsGameResource sparse-checkout set --no-cone '/building_skill/' '/gamedata/excel/character_table.json' '/gamedata/excel/building_data.json' '/gamedata/excel/gacha_table.json' '/gamedata/excel/story_review_table.json' '/gamedata/excel/stage_table.json' '/gamedata/excel/uniequip_table.json' '/levels.json'`。
+- **`res/ArknightsGameResource`** — 游戏数据子模块（稀疏检出，仅 building_skill、6 个 excel 表与 levels.json）。`extract.py`、`res/char_type/parse_character_table.py`、地图脚本优先读它，子模块缺失时回退在线拉取。稀疏模式不随仓库分发：其他开发者首次检出后运行 `python 0.py agrinit`（或 `./0.sh agrinit`）完成初始化+稀疏检出；0.py 与 0.sh 各持一份模式列表，**需与本地 `.git/modules/.../info/sparse-checkout` 三处同步**，改数据需求时缺一不可。同步最新数据用 `git submodule update --remote res/ArknightsGameResource`（重生成 maps.zip 前必须先同步，否则用的是固定快照）。
 - **`.env`** — 本地配置（路径、打包、token，已 gitignore）；模板见 `.env.example`。
 
 ### 关键目录
