@@ -5,12 +5,29 @@ import os
 # 获取当前脚本所在目录
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# 游戏数据表优先从 res/ArknightsGameResource 子模块(稀疏检出)读取，子模块缺失时回退在线拉取
+SUBMODULE_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, "..", "ArknightsGameResource"))
+
 # 泰迪解包库
 url = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/character_table.json"
 url2 = "https://raw.githubusercontent.com/yuanyan3060/ArknightsGameResource/main/gamedata/excel/uniequip_table.json"
 # k佬解包库
 # url = "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json"
 # url2 = "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/uniequip_table.json"
+
+
+def load_game_data(rel_path, fallback_url):
+    """优先读取子模块中的游戏数据表，缺失时回退 fallback_url 在线获取，失败返回 None"""
+    local = os.path.join(SUBMODULE_DIR, *rel_path.split("/"))
+    if os.path.isfile(local):
+        print(f"使用子模块数据: {rel_path}")
+        with open(local, "r", encoding="utf-8") as f:
+            return json.load(f)
+    print(f"子模块缺失，回退在线获取: {fallback_url}")
+    resp = requests.get(fallback_url)
+    if resp.status_code == 200:
+        return json.loads(resp.text)
+    return None
 
 
 def filter_fields(json_obj, fields):
@@ -99,18 +116,13 @@ def convert_to_lua_table(data, indent=0):
     return lua_table
 
 
-response = requests.get(url)
 character_type_list = {}
 char_table = {}
 character_equip_list = {}
 
-if response.status_code == 200:
-    character_table_dict = json.loads(response.text)
-    """# 本地
-with open('character_table.json', 'r', encoding='utf-8') as f:
-    character_table_dict = json.load(f)
-    """
+character_table_dict = load_game_data("gamedata/excel/character_table.json", url)
 
+if character_table_dict is not None:
     # 干员职业类别,自动战斗用
     for character_name in character_table_dict.keys():
         character_data = character_table_dict[character_name]
@@ -142,14 +154,9 @@ with open('character_table.json', 'r', encoding='utf-8') as f:
 else:
     print("无法获取JSON数据")
 
-response2 = requests.get(url2)
-if response2.status_code == 200:
-    character_equipment_dict = json.loads(response2.text)
-    """# 本地
-with open("uniequip_table.json", "r", encoding="utf-8") as f:
-    character_equipment_dict = json.load(f)
-    """
+character_equipment_dict = load_game_data("gamedata/excel/uniequip_table.json", url2)
 
+if character_equipment_dict is not None:
     for character_id in character_equipment_dict["charEquip"].keys():
         # 该干员持有的所有模组
         char_equip_group = character_equipment_dict["charEquip"][character_id]

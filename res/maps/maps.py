@@ -244,6 +244,23 @@ url = "https://raw.githubusercontent.com/yuanyan3060/Arknights-Bot-Resource/main
 # 输出到 res/maps.zip
 zip_path = pathlib.Path(__file__).resolve().parent.parent / "maps.zip"
 execpath = pathlib.Path(__file__).resolve().parent.parent.parent
+# levels.json 与 ArknightsGameResource 子模块根目录同源(同一 blob)，优先读子模块，缺失时回退在线拉取
+submodule_levels = (
+    pathlib.Path(__file__).resolve().parent.parent / "ArknightsGameResource" / "levels.json"
+)
+
+
+def load_levels():
+    """优先读取子模块中的 levels.json，缺失时回退在线拉取，失败返回 None"""
+    if submodule_levels.is_file():
+        print(f"使用子模块 levels.json: {submodule_levels}")
+        return json.loads(submodule_levels.read_text(encoding="utf-8"))
+    print(f"子模块缺失，回退在线获取: {url}")
+    response = requests.get(url, timeout=60)
+    if response.status_code != 200:
+        print("无法获取数据。错误代码:", response.status_code)
+        return None
+    return json.loads(response.text)
 
 levels: List[Level] = []
 
@@ -295,11 +312,9 @@ def fill_maps_zip(zf: zipfile.ZipFile, level_table: list, calc: Calc) -> int:
 
 
 def generate() -> None:
-    response = requests.get(url, timeout=60)
-    if response.status_code != 200:
-        print("无法获取数据。错误代码:", response.status_code)
+    level_table = load_levels()
+    if level_table is None:
         return
-    level_table = json.loads(response.text)
 
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:

@@ -21,7 +21,7 @@ python3 ./0.py rs         # Windows：基建技能图标包skill.zip 发布
 python3 ./0.py rm         # Windows：地图包maps.zip 发布
 ./0.sh release            # Linux
 
-# 地图数据更新：在线拉取关卡数据，内存打包输出 res/maps.zip（不生成中间 json）
+# 地图数据更新：优先读 res/ArknightsGameResource 子模块的 levels.json（缺失时回退在线拉取），内存打包输出 res/maps.zip（不生成中间 json）
 python res/maps/maps.py            # 生成并调用 0.py rm 发布（GitHub Action 每日调用；--no-upload 仅生成）
 
 # 干员数据更新
@@ -56,6 +56,7 @@ center 锚点约定（非16:9 适配）：center 表为 point 条目指定小键
 - **`skland.lua`** — 森空岛平台集成。
 - **`0.py` / `0.sh`** — 构建/发布/调试工具脚本。
 - **`extract.py`** — 资源解包与数据提取（依赖 UnityPy、pycryptodome）。
+- **`res/ArknightsGameResource`** — 游戏数据子模块（稀疏检出，仅 building_skill、6 个 excel 表与 levels.json）。`extract.py`、`res/char_type/parse_character_table.py`、地图脚本优先读它，子模块缺失时回退在线拉取；同步最新数据用 `git submodule update --remote res/ArknightsGameResource`。重建稀疏检出（Git Bash 需 `MSYS_NO_PATHCONV=1` 防路径转换）：`git -C res/ArknightsGameResource sparse-checkout set --no-cone '/building_skill/' '/gamedata/excel/character_table.json' '/gamedata/excel/building_data.json' '/gamedata/excel/gacha_table.json' '/gamedata/excel/story_review_table.json' '/gamedata/excel/stage_table.json' '/gamedata/excel/uniequip_table.json' '/levels.json'`。
 - **`.env`** — 本地配置（路径、打包、token，已 gitignore）；模板见 `.env.example`。
 
 ### 关键目录

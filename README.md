@@ -130,9 +130,15 @@ python3 ./0.py rm     # 地图包发版（maps.zip）
 python res/maps/maps.py           # 生成并发布（CI 使用；--no-upload 仅生成）
 ```
 
-脚本从 [Arknights-Bot-Resource](https://github.com/yuanyan3060/Arknights-Bot-Resource) 在线拉取关卡数据，计算格子屏幕坐标后在内存中打包输出到 `res/maps.zip`，不在本地生成中间地图 json；发布使用 `python3 ./0.py rm`。
+脚本优先从 `res/ArknightsGameResource` 子模块读取 `levels.json`（与 [Arknights-Bot-Resource](https://github.com/yuanyan3060/Arknights-Bot-Resource) 在线数据同源），子模块未检出时回退在线拉取；计算格子屏幕坐标后在内存中打包输出到 `res/maps.zip`，不在本地生成中间地图 json；发布使用 `python3 ./0.py rm`。重新生成地图包前先同步子模块拿到最新关卡数据：
+
+```sh
+git submodule update --remote res/ArknightsGameResource
+```
 
 ### 数据提取
+
+`extract.py` 与 `res/char_type/parse_character_table.py` 所需的游戏数据表（character_table 等）同样优先读 `res/ArknightsGameResource` 子模块、缺失时回退在线拉取。
 
 ```sh
 # 解包工具

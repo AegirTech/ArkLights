@@ -14,6 +14,23 @@ import requests
 
 # 请使用720p图像计算
 
+# 游戏数据表优先从 res/ArknightsGameResource 子模块(稀疏检出)读取，子模块缺失时回退在线拉取
+AGR_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "res", "ArknightsGameResource")
+
+
+def load_game_data(rel_path, fallback_url):
+    """优先读取子模块中的游戏数据表，缺失时回退 fallback_url 在线获取，失败返回 None"""
+    local = os.path.join(AGR_DIR, *rel_path.split("/"))
+    if os.path.isfile(local):
+        print(f"使用子模块数据: {rel_path}")
+        with open(local, "r", encoding="utf-8") as f:
+            return json.load(f)
+    print(f"子模块缺失，回退在线获取: {fallback_url}")
+    resp = requests.get(fallback_url, timeout=60)
+    if resp.status_code != 200:
+        return None
+    return json.loads(resp.text)
+
 
 def unpack(source_folder="arknights", destination_folder="arknights_extract"):
     import UnityPy
@@ -144,18 +161,14 @@ def avator2operator(src="ArknightsGameData/zh_CN/gamedata/excel/character_table.
 def skillicon2operator():
     import zipfile
 
-    char = None
-    build = None
-    resp = requests.get(
-        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json"
+    char = load_game_data(
+        "gamedata/excel/character_table.json",
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json",
     )
-    if resp.status_code == 200:
-        char = json.loads(resp.text)
-    resp = requests.get(
-        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/building_data.json"
+    build = load_game_data(
+        "gamedata/excel/building_data.json",
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/building_data.json",
     )
-    if resp.status_code == 200:
-        build = json.loads(resp.text)
     if not char or not build:
         return "get data failed"
     char2name = {k: char[k]["name"] for k in char}
@@ -204,18 +217,14 @@ def skillicon2operator():
 def recruit(
     to="lua",
 ):
-    char = None
-    gacha = None
-    resp = requests.get(
-        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json"
+    char = load_game_data(
+        "gamedata/excel/character_table.json",
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json",
     )
-    if resp.status_code == 200:
-        char = json.loads(resp.text)
-    resp = requests.get(
-        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/gacha_table.json"
+    gacha = load_game_data(
+        "gamedata/excel/gacha_table.json",
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/gacha_table.json",
     )
-    if resp.status_code == 200:
-        gacha = json.loads(resp.text)
     if not char or not gacha:
         return "get data failed"
     tag = [x["tagName"] for x in gacha["gachaTags"] if x["tagId"] < 100]
@@ -401,24 +410,25 @@ def screencap(stem, serial="127.0.0.1:5555"):
 
 
 def get_level_info() -> list:
-    response = requests.get(
-        url="https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
-        "/excel/story_review_table.json"
+    data = load_game_data(
+        "gamedata/excel/story_review_table.json",
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
+        "/excel/story_review_table.json",
     )
-    if response.status_code != 200:
+    if not data:
         return []
-    data = response.json()
     latest_act = max(data, key=lambda k: int(data[k]["startTime"]))
     latest_remakeact = max(data, key=lambda k: int(data[k]["remakeStartTime"]))
     if data[latest_remakeact]["remakeStartTime"] > data[latest_act]["startTime"]:
         latest_act = latest_remakeact
-    response = requests.get(
-        url="https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
-        "/excel/stage_table.json"
+    data = load_game_data(
+        "gamedata/excel/stage_table.json",
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata"
+        "/excel/stage_table.json",
     )
-    if response.status_code != 200:
+    if not data:
         return []
-    data = response.json()["stages"]
+    data = data["stages"]
     ret_list = []
     for k, v in data.items():
         if (
@@ -957,12 +967,12 @@ def process_transparent_pixels(
 
 
 def char2vue():
-    char = None
-    resp = requests.get(
-        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json"
+    char = load_game_data(
+        "gamedata/excel/character_table.json",
+        "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json",
     )
-    if resp.status_code == 200:
-        char = json.loads(resp.text)
+    if not char:
+        return "get data failed"
     for k, v in char.items():
         if k.startswith("char_") and ("预备干员" not in v["name"]):
             print("{ value: '" + v["name"] + "', label: '" + v["name"] + "' },")
