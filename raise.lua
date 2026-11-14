@@ -183,20 +183,6 @@ raise.get_player_info = function(isLocal)
             data = get_game_info(username, password)
             log("data:", data)
             return data
-        elseif auto_raise_api_select == 1 then
-            if (not a60_token_offcial) or (not a60_token_bili) then return end
-            if server == 0 then
-                local url = "http://pyark.a60.one:88/login/offcial?username=%s&password=%s&token=%s"
-                url = string.format(url, username, password, a60_token_offcial)
-            else
-                local url = "http://pyark.a60.one:88/login/bilibili?username=%s&password=%s&token=%s"
-                url = string.format(url, username, password, a60_token_bili)
-            end
-            local ret, code = httpGet(url)
-            if code ~= 200 then return end
-            local status, player_data = pcall(JsonDecode, ret)
-            if not status then return end
-            return player_data
         elseif auto_raise_api_select == 2 then
 
         end
@@ -225,15 +211,6 @@ player_info_init = function(player_data)
             local itemId = v["id"]
             local count = tonumber(v["count"])
             player_inventory_info[itemId] = count
-        end
-    elseif auto_raise_api_select == 1 then
-        -- 仓库数据,{材料id:数量}
-        player_inventory_info = player_data["user"]["inventory"]
-
-        local ori_player_character_info = player_data["user"]["troop"]["chars"]
-        for _, v in pairs(ori_player_character_info) do
-            local name = v["charId"]
-            player_character_info[name] = v
         end
     end
     return true
