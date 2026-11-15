@@ -90,9 +90,10 @@ autochess.卫戍协议进入 = function()
         end, 25) then
         return false
     end
-    ssleep(1)
-    if appear("阿米娅", 3) then
-        if not path.卫戍协议教程() then
+    log("卫戍协议进入成功")
+    --ssleep(1)
+    if appear("阿米娅", 1) then
+        if not autochess.卫戍协议教程() then
             return false
         end
     end
@@ -247,6 +248,128 @@ autochess.卫戍协议循环 = function()
     ssleep(.5)
     tap("卫戍协议金币清零确定")
     ::return_to_home_page::
+    if not wait(function()
+            tap("卫戍协议准备就绪")
+            ssleep(2)
+            disappear("正在提交反馈至神经", network_timeout)
+            if findOne("卫戍协议首页") then
+                log("卫戍协议一轮循环结束")
+                return true
+            end
+        end, 30, 1) then
+        log("可能是卡住了,点一下返回首页")
+        tap("卫戍协议准备就绪")
+    end
+end
+
+autochess.卫戍协议刷角标 = function()
+    log("卫戍协议刷角标开始")
+    local lose = false
+
+    if not findOne("卫戍协议首页") then
+        autochess.卫戍协议进入()
+    end
+    if not appear("卫戍协议首页", 5) then return end
+    if findOne("卫戍协议放弃模拟") then
+        return
+    end
+
+    if not wait(function()
+            if findOne("卫戍协议个人模拟") then return true end
+            tap("卫戍协议个人模拟")
+            ssleep(.1)
+        end, 2) then
+        return false
+    end
+    tap("卫戍协议独立模拟按钮")
+    disappear("卫戍协议首页", 3)
+    appear("卫戍协议开始模拟", 3)
+
+    -- 难度选择
+
+    for i = 1, 100 do
+        tap("卫戍协议最下面")
+        if findOne("卫戍协议规程登记1") then
+            break
+        end
+        ssleep(0.05)
+    end
+    if not findOne("卫戍协议规程登记1") then
+        log("未找到规程登记1")
+        return
+    end
+
+    appear("卫戍协议开始模拟", 3)
+    ssleep(.2)
+    tap("卫戍协议开始模拟")
+
+    if not wait(function()
+            if findOne("卫戍协议选择分队") then return true end
+            tap("卫戍协议准备就绪")
+        end, 10, 1) then
+    end
+    ssleep(.5)
+
+    -- 寻找没有角标的分队
+    local find_first_team = function()
+        local mubiao = "FF9C1B"
+        local x = 1114
+        local y = 127
+        local px = 210
+        local py = 210
+        for sx = 0, 3 do
+            for sy = 0, 3 do
+                local l = scale(x + sx * px)
+                local t = scale(y + sy * py)
+                local b = scale(y + sy * py + 55)
+                local r = scale(x + sx * px + 55)
+                if not find_color({ l, t, r, b }, mubiao, 1, 90 / 100) then
+                    -- log.debug("color not found", sx, sy)
+                    log("第", sy + 1, "行第", sx + 1, "列没有角标")
+                    return math.abs((l + r) / 2), math.abs((t + b) / 2)
+                else
+                    log("第", sy + 1, "行第", sx + 1, "列有角标")
+                    log(l, t, r, b)
+                end
+                -- log.debug("color", sx, sy, color)
+            end
+        end
+    end
+
+    local team_x, team_y = find_first_team()
+    if not find_first_team then
+        log("没有找到没有角标的分队1")
+        tap("卫戍协议分队中间")
+        ssleep(.1)
+        team_x, team_y = find_first_team()
+        if not find_first_team then
+            log("没有找到没有角标的分队2")
+            return
+        end
+    end
+
+    tap(team_x, team_y)
+
+    ssleep(2)
+    wait(function()
+        tap("卫戍协议准备就绪")
+    end, 5, 1)
+    ssleep(10)
+    appear("卫戍协议战斗准备就绪", 40)
+    log("卫戍协议进入第一回合战斗")
+    exit()
+
+    if lose == true then
+        return
+    end
+
+    -- 结束模拟
+    if appear("卫戍协议放弃模拟", 2) then
+        ssleep(.5)
+        tap("卫戍协议放弃模拟")
+        ssleep(.5)
+    end
+    tap("卫戍协议金币清零确定")
     if not wait(function()
             tap("卫戍协议准备就绪")
             ssleep(2)
