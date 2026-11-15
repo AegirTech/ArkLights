@@ -1,7 +1,7 @@
 ---@meta
 
---懒人3.8.7.1命令
---在sumneko.lua-设置-中搜索library添加
+--懒人3.8.7.1命令api文档
+--在vscode的sumneko.lua-设置-中搜索library添加
 
 -- 设备方法
 
