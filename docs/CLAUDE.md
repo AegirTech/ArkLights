@@ -92,12 +92,15 @@ findAny({ "点1", "点2", "点3" })
 
 - 在 1920 \* 1080 分辨率环境下开发，为了稳定性和多分辨率适应，取色应该保证像素点与周围8个像素颜色一致；尽量取纯色区域中间的点，避免边缘干扰，添加取色点后要同时将图像缩放到 720p 验证能否通过
 - 项目暂时不支持断点调试，需要多用 `log` 写日志定位问题
-- 运行中需要截图确认状态时可以使用 `snapShot` 函数，截图保存在模拟器的 `sdcard/pictures`；PC 端可通过 `.env` 中的 `SHARED_FOLDER_PATH` 直接读取这些截图
-- 优先使用 `findOne` / `findAny` 做检测，使用 `tap` 执行点击。
+- 运行中需要截图确认状态时可以使用 `snapShot` 函数，截图保存在模拟器的 `.env` 中的 `SIMULATOR_SHARED_FOLDER_PATH`；PC 端可通过 `.env` 中的 `PC_SHARED_FOLDER_PATH` 直接读取这些截图
+- 优先使用 `findOne` / `findAny` 做检测，使用 `tap` 执行点击,这些函数可以直接使用经过`convert_coords`拍平的`point`的键名,比如`findOne("xx列表n")`,`tap("xx")`。
+- OCR 尽量使用 `ocrex`（飞桨 OCR）；只识别一个元素时用 `ocro`。
+- 干员名 OCR 结果需要经校正才能使用，参考 `prts.lua`（`干员名ocr校正`，编队/战斗界面）与 `skill.lua`（720p 基建干员名校正）的写法。
 - point表中已经声明的键值对可以直接调用键值字符串，比如 `findOne(key)`,`tap(key)`,等价于`findOne(point.key)`,`tap(point.key)`
 - 新增点位后 center 通常不用手写：运行 `python extract.py auto_center` 自动补齐（点位按点组主要分布区域投票、第一个点计两票；范围取中心位置），生成行尾带"自动补齐"注释的条目；`--refresh` 删旧自动补齐行按当前规则重算，`--modes='{"键":"模式"}'` 注入已知缩放模式
 - 状态机优先兼容 `auto(update(path.base, ...))` 这套速通风格。
 - 新增注释优先使用中文，说明"为什么这样接"，而不是只描述表面动作。
+- 命名约定：point 点位名与专有变量名（业务/领域相关）使用中文；通用、过渡性变量名使用英文；UI 内部控件名使用英文。
 - 地图与代理作战数据使用 JSON 格式；地图更新可通过 GitHub Action `map_update.yml` 同步。
 
 ### 模块测试方法
