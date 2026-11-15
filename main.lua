@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.14 22:58"
+release_date = "11.15 11:05"
 update_announcement = '最近更新: TL活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -127,7 +127,18 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1) --防止启动过快下方信息影响截图
-    --exit()
+
+    -- swip_up_20px = function()
+    --     local x1 = scale(1110)
+    --     local y1 = scale(276)
+    --     local y2 = scale(145)
+    --     duration = 400
+    --     finger = { { point = { { x1, y1 }, { x1, y2 } }, duration = duration } }
+    --     delay = 750
+    -- end
+    -- swip_up_20px()
+    -- ssleep(100)
+    -- exit()
 end
 
 load(before_account_hook or '')()
