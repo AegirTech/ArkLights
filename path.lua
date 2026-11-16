@@ -5114,6 +5114,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
             end
             if multiple_proxy_commander then
                 log('需要多倍代理，准备切换')
+                log('代理识别分辨率', screen.width, screen.height)
 
                 --打开面板，回到一倍代理
                 wait(function()
@@ -5123,10 +5124,13 @@ path.开始游戏 = function(x, disable_ptrs_check)
                 appear({ "多倍代理次数面板", "多倍代理次数面板2" }, 3)
                 if findAny({ "多倍代理次数面板", "多倍代理次数面板2" }) then
                     ssleep(1.2)
-                    wait(function()
+                    local reset_to_one = wait(function()
                         tap('多倍代理下一页') --一直下滑到一倍
                         if findOne('多倍代理当前是一倍') then return true end
                     end, 4, .3)
+                    if not reset_to_one then
+                        log.warn('代理1次识别超时，请核对云机点位')
+                    end
                     ssleep(.5)
                 end
 
@@ -5145,6 +5149,13 @@ path.开始游戏 = function(x, disable_ptrs_check)
                     }, .7)
                     -- current是白色：当前倍率可用；是蓝色或nil：当前倍率不可用，需要回退
                     if current ~= '多倍代理次数白列表' .. i then
+                        log('代理倍率校验失败', i, current and '蓝色加号' or '数字未识别')
+                        -- 记录换算后的坐标和实际颜色，区分缩放偏移与颜色失配。
+                        local digit_point = point['多倍代理次数白列表' .. i]
+                        for px, py, expected in digit_point:gmatch('(%d+)|(%d+)|([^,]+)') do
+                            log('代理数字采样', i, px, py, expected,
+                                getPixelColor(tonumber(px), tonumber(py)))
+                        end
                         log('当前倍率不可用:', i, ' 准备回到倍率:', i - 1)
                         ssleep(.5)
                         tap('多倍代理下一页')
