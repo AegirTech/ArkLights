@@ -318,7 +318,7 @@ local readLevel = function(beginLevel)
     return beginLevel
 end
 
---槽位(左起1-6)边框比色:亮=可购买,灰=已购/买不起,都不是=空槽
+--槽位(右起1-6)边框比色:亮=可购买,灰=已购/买不起,都不是=空槽
 local slotColor = function(slotIndex, borderColor)
     local slotPoint = point["卫戍协议商店槽位列表" .. slotIndex]
     if not slotPoint then return false end
@@ -368,7 +368,7 @@ local 卫戍协议干员ocr校正 = function(name)
     return name
 end
 
---名字匹配干员 key(商店池+职业表池外真干员):先全等,再包含匹配(OCR 常掉字)
+--名字匹配干员 key:先全等,再包含匹配(OCR 常掉字)
 local matchOperator = function(data, name)
     if name and data.operators[name] then return name end
     if name and #name >= 3 then --1个汉字=3字节
@@ -392,13 +392,13 @@ end
 
 --读卡:亮/金光边框才细读;名称必须读到(金光/动画可能让单次 OCR 为空,等一会重试);
 --名字对上 JSON 直接拿盟约/职业(池外干员补OCR盟约),否则靠盟约OCR/装备表分类;failedSlots 里的槽位跳过
-local readCard = function(data, slotIndex, failedSlots)
-    local card = { slot = slotIndex, buyable = not failedSlots[slotIndex] and slotBuyable(slotIndex) }
-    if not card.buyable then return card end
+local readCard = function(data, slotIndex)
+    local card = {}
     local name = ""
     for _ = 1, 4 do
         name = 卫戍协议干员ocr校正(ocro("卫戍协议商店名称列表" .. slotIndex))
         if name ~= "" then break end
+        log()
         ssleep(.5)
     end
     if name == "" then log.debug("识别:槽位" .. slotIndex .. "名称多次OCR为空") end
@@ -406,24 +406,12 @@ local readCard = function(data, slotIndex, failedSlots)
     local opName = matchOperator(data, name)
     if opName then
         local info = data.operators[opName]
-        card.kind = "op"
-        card.opName = opName
+        card.name = opName
         card.level = info.level
         card.prof = info.prof
         card.bonds = info.bonds or ocrBonds(data, slotIndex)
     else
         card.bonds = ocrBonds(data, slotIndex)
-        if next(card.bonds) then
-            card.kind = "op"
-        elseif data.items[name] then
-            card.kind = "item"
-        else
-            card.kind = "unknown"
-        end
-    end
-    if card.kind == "op" then
-        card.core = card.bonds[coreBond] == true
-        if card.prof then card.melee = 近战职业[card.prof] == true end
     end
     return card
 end
@@ -720,7 +708,7 @@ autochess.商店购买 = function(state, data, round)
         ssleep(.3)
         local cards = {}
         for slotIndex = 1, cardCount - 1 do --暂时不处理装备
-            cards[#cards + 1] = readCard(data, slotIndex, failedSlots)
+            cards[slotIndex] = readCard(data, slotIndex)
         end
         log(cards)
         local result = "none"
