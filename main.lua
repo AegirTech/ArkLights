@@ -127,6 +127,13 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1) --防止启动过快下方信息影响截图
+    local upgradeShop = function(currentLevel)
+        tap("卫戍协议商店等级列表" .. currentLevel)
+        ssleep(.5)
+        tap("卫戍协议商店等级列表" .. currentLevel)
+        ssleep(.1)
+        return currentLevel + 1
+    end
 
     autochess.卫戍协议循环1()
     -- swip_up_20px = function()

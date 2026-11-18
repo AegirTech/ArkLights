@@ -75,9 +75,9 @@ end
 local 格子序号 = { { 4, 4 }, { 3, 3 }, { 3, 2 }, { 4, 2 }, { 3, 1 }, { 4, 3 }, { 3, 4 }, { 4, 1 }, { 4, 2 } }
 
 local 近战格子 = { { 8, 1 }, { 8, 2 } }
-local 远程格子 = { { 7, 2 }, { 8, 3 }, { 6, 2 }, { 7, 1 }, { 6, 1 } }
---补位格子:老版盲拿策略用过的中路格(去掉重复的4,2),近战/远程格都满后用来把部署位填满到8个
-local 补位格子 = { { 4, 4 }, { 3, 3 }, { 3, 2 }, { 4, 2 }, { 3, 1 }, { 4, 3 }, { 3, 4 }, { 4, 1 } }
+local 远程格子 = { { 7, 2 }, { 8, 3 }, { 7, 1 }, { 6, 1 } }
+local 医疗格子 = { { 6, 2 } }
+
 local coreBond = "精准"
 
 autochess.卫戍协议进入 = function()
@@ -280,6 +280,8 @@ end
 -- 刷新费1,回合结束金币清零,所以每回合尽量把金币花光。
 
 local 近战职业 = { PIONEER = true, WARRIOR = true }
+local 远程职业 = { SNIPER = true, CASTER = true, SUPPORT = true }
+local 医疗职业 = { MEDIC = true }
 local borderOn = "3F8E7F"         --卡边框亮色=可购买
 local borderOff = "50706A"        --卡边框灰色=买不起
 local borderGold = "CE9644"       --已拥有干员的金色发光边框(实测约206,150,68),同样可购买(买它推进合成)
@@ -306,12 +308,14 @@ local ocrNumber = function(pointKey)
 end
 
 -- 获取商店等级
-local readLevel = function()
-    for levelIndex = 1, 6 do
-        if findOne("卫戍协议商店等级列表" .. levelIndex) then
+local readLevel = function(beginLevel)
+    beginLevel = beginLevel or 1
+    for levelIndex = beginLevel, 6 do
+        if appear("卫戍协议商店等级列表" .. levelIndex, 0.5) then
             return levelIndex
         end
     end
+    return beginLevel
 end
 
 --槽位(左起1-6)边框比色:亮=可购买,灰=已购/买不起,都不是=空槽
@@ -384,6 +388,7 @@ local readCard = function(data, slotIndex, failedSlots)
     local name = ""
     for _ = 1, 4 do
         name = 卫戍协议干员ocr校正(ocro("卫戍协议商店名称列表" .. slotIndex))
+        log(name)
         if name ~= "" then break end
         ssleep(.5)
     end
@@ -407,7 +412,7 @@ local readCard = function(data, slotIndex, failedSlots)
             card.kind = "op"
             card.prof = data.prof[name]
         elseif next(card.bonds) then
-            card.kind = "op" --有盟约字样但职业未知:只敢上架攒层数,不敢部署
+            card.kind = "op"
         elseif data.items[name] then
             card.kind = "item"
         else
@@ -421,21 +426,18 @@ local readCard = function(data, slotIndex, failedSlots)
     return card
 end
 
---state.格子:按格子下标记录 {name=干员名, star=1/2, prof=职业} 或 false=空
---state.格子Kinds:每格类别('近'/'远'/'补'),近战/远程干员优先同类格,满了用补位格凑满8个部署位
+--state.已部署格子:按格子下标记录 {name=干员名, star=1/2, prof=职业} 或 false=空
+--state.已部署格子Kinds:每格类别('近战格子'/'远程格子'/'医疗格子'),近战/远程干员优先同类格,满了用补位格凑满8个部署位
 local findFree格子 = function(state, wantMelee)
-    local wantKind = wantMelee and '近' or '远'
-    for 格子Index = 1, #state.格子 do
-        if not state.格子[格子Index] and state.格子Kinds[格子Index] == wantKind then return 格子Index end
-    end
-    for 格子Index = 1, #state.格子 do
-        if not state.格子[格子Index] and state.格子Kinds[格子Index] == '补' then return 格子Index end
+    local wantKind = wantMelee and '近战格子' or '远程格子'
+    for 格子Index = 1, #state.已部署格子 do
+        if not state.已部署格子[格子Index] and state.已部署格子Kinds[格子Index] == wantKind then return 格子Index end
     end
 end
 
 local fieldTanks = function(state)
     local tankCount = 0
-    for _, unit in ipairs(state.格子) do
+    for _, unit in ipairs(state.已部署格子) do
         if unit and unit.prof == "TANK" then tankCount = tankCount + 1 end
     end
     return tankCount
@@ -444,7 +446,7 @@ end
 --场上同名1星数量(合成计数用,2星不参与1星三合一)
 local fieldSameCount = function(state, name)
     local sameCount = 0
-    for _, unit in ipairs(state.格子) do
+    for _, unit in ipairs(state.已部署格子) do
         if unit and unit.star == 1 and unit.name == name then sameCount = sameCount + 1 end
     end
     return sameCount
@@ -484,8 +486,8 @@ end
 --贪心规划:在占位快照上反复挑当前最优(priority 小者优先,同级取高档),直到没有可买
 local buildPlan = function(cards, state)
     local sim格子 = {}
-    for 格子Index = 1, #state.格子 do sim格子[格子Index] = state.格子[格子Index] end
-    local sim = { 格子 = sim格子, 格子Kinds = state.格子Kinds }
+    for 格子Index = 1, #state.已部署格子 do sim格子[格子Index] = state.已部署格子[格子Index] end
+    local sim = { 格子 = sim格子, 格子Kinds = state.已部署格子Kinds }
     local benchCount = benchTotal(state)
     local candidates = {}
     for _, card in ipairs(cards) do
@@ -549,7 +551,7 @@ local dragDeploy = function(tile, beforeCount)
             swipe_slow(待部署区[shelf], tile)
             deploy0(tile, "右")
             ssleep(.4)
-            local afterCount = readRemaining()
+            local afterCount = ocro("卫戍协议剩余可放置角色识别范围")
             if not beforeCount or not afterCount then
                 return true --校验不可用只能信任
             end
@@ -570,8 +572,8 @@ local addAndMerge = function(state, name)
     state.bench1[name] = (state.bench1[name] or 0) + 1
     local fieldSame = fieldSameCount(state, name)
     if state.bench1[name] + fieldSame < 3 then return false end
-    for 格子Index, unit in ipairs(state.格子) do
-        if unit and unit.star == 1 and unit.name == name then state.格子[格子Index] = false end
+    for 格子Index, unit in ipairs(state.已部署格子) do
+        if unit and unit.star == 1 and unit.name == name then state.已部署格子[格子Index] = false end
     end
     state.bench1[name] = state.bench1[name] - (3 - fieldSame)
     if state.bench1[name] <= 0 then state.bench1[name] = nil end
@@ -585,12 +587,12 @@ local deployStar2 = function(state, card)
     local wantMelee = card.melee == true
     local 格子Index = findFree格子(state, wantMelee)
     if not 格子Index then return end
-    local tile = state.格子Points[格子Index]
+    local tile = state.已部署格子Points[格子Index]
     ssleep(1) --等合成撤人动画
-    local beforeCount = readRemaining()
+    local beforeCount = ocro("卫戍协议剩余可放置角色识别范围")
     if dragDeploy(tile, beforeCount) then
         local name = card.opName or card.name
-        state.格子[格子Index] = { name = name, star = 2, prof = card.prof }
+        state.已部署格子[格子Index] = { name = name, star = 2, prof = card.prof }
         state.bench2[name] = (state.bench2[name] or 1) - 1
         if state.bench2[name] <= 0 then state.bench2[name] = nil end
         log("部署2星:" .. tostring(card.name))
@@ -611,16 +613,16 @@ local execute = function(plan, state, failedSlots)
                 deployStar2(state, card) --三合一:2星在待部署区,立刻部署
             elseif pick.action == "deploy" and not state.deployBroken then
                 local 格子Index = pick.格子Index
-                if state.格子[格子Index] then
+                if state.已部署格子[格子Index] then
                     --合成撤人后原格可能被2星占用,重找空格(同类优先,补位兜底)
                     格子Index = findFree格子(state, card.melee == true)
                 end
                 if 格子Index then
-                    local beforeCount = readRemaining() --买完再读基准(合成会改变剩余数)
+                    local beforeCount = ocro("卫戍协议剩余可放置角色识别范围") --买完再读基准(合成会改变剩余数)
                     if beforeCount == 0 then
                         --部署位已满,干员留在待部署区(不算失败)
-                    elseif dragDeploy(state.格子Points[格子Index], beforeCount) then
-                        state.格子[格子Index] = { name = name, star = 1, prof = card.prof }
+                    elseif dragDeploy(state.已部署格子Points[格子Index], beforeCount) then
+                        state.已部署格子[格子Index] = { name = name, star = 1, prof = card.prof }
                         state.bench1[name] = (state.bench1[name] or 1) - 1
                         if state.bench1[name] <= 0 then state.bench1[name] = nil end
                     else
@@ -636,8 +638,13 @@ local execute = function(plan, state, failedSlots)
     return bought and "progress" or "none"
 end
 
-local upgrade = function(shopLevel)
-
+-- 升级商店
+local upgradeShop = function(currentLevel)
+    tap("卫戍协议商店等级列表" .. currentLevel)
+    ssleep(.5)
+    tap("卫戍协议商店等级列表" .. currentLevel)
+    ssleep(.1)
+    return currentLevel + 1
 end
 
 --槽位状态签名(亮/灰/空槽/背景),用于判定刷新是否生效
@@ -683,30 +690,23 @@ local refresh = function(state, cardCount, cards)
 end
 
 --模拟一轮商店:升本到 4 本→按优先级买/部署→刷新循环,金币花光或上限到就收手
-autochess.商店购买 = function(state, data)
-    state.round = (state.round or 0) + 1
+autochess.商店购买 = function(state, data, round)
     log(state)
     --记录可放置上限;若战斗后场上干员未保留(被清场)则重置占位跟踪
     local remaining = ocro("卫戍协议剩余可放置角色识别范围")
     log.debug("剩余可放置角色: " .. remaining)
-    if remaining then
-        if not state.maxDeploy then state.maxDeploy = remaining end
-        local fieldCount = 0
-        for _, unit in ipairs(state.格子) do if unit then fieldCount = fieldCount + 1 end end
-        if fieldCount > 0 and remaining >= state.maxDeploy then
-            log("场上干员未保留,重置部署跟踪")
-            state.bench1, state.bench2 = {}, {}
-            for 格子Index = 1, #state.格子 do state.格子[格子Index] = false end
-        end
-    end
 
-    --用升级卡 LEVEL 图标校准本数(防确认生效但校验失败导致的等级漂移)
-    local roundLevel = readLevel()
-    if roundLevel and roundLevel ~= state.level then
-        state.level = roundLevel
-    end
+    state.level = readLevel(state.level) or state.level
     local cardCount = 商店卡片数量[state.level]
-    log.debug("商店等级: " .. roundLevel .. "卡片数量" .. cardCount)
+    log.debug("商店等级: " .. state.level .. "卡片数量" .. cardCount)
+    if round == 1 then --后续要写成判断金额再升级更加智能一些
+        upgradeShop(1)
+        state.level = upgradeShop(2)
+    elseif round == 2 then
+        state.level = upgradeShop(3)
+        -- elseif round == 4 then
+        --     state.level = upgradeShop(4)
+    end
 
     if findFree格子(state, true) == nil and findFree格子(state, false) == nil and benchTotal(state) >= benchLimit then
         log("商店已满载,跳过购买")
@@ -717,9 +717,10 @@ autochess.商店购买 = function(state, data)
     for _ = 1, 25 do
         ssleep(.3)
         local cards = {}
-        for slotIndex = 7 - cardCount, 6 do
+        for slotIndex = 1, cardCount - 1 do --暂时不处理装备
             cards[#cards + 1] = readCard(data, slotIndex, failedSlots)
         end
+        log(cards)
         local result = "none"
         local plan = buildPlan(cards, state)
         if #plan > 0 then
@@ -758,17 +759,17 @@ autochess.卫戍协议循环1 = function()
     if readOk and readRet then data.prof = readRet end
     --state:回合内共享状态;格子=各部署格{name,star,prof}(false=空),
     --格子Points/格子Kinds=各格坐标与类别(近/远/补),bench1/bench2=待部署区上1星/2星干员数量
-    local state = { level = 1, refreshCount = 0, 格子 = {}, 格子Points = {}, 格子Kinds = {}, bench1 = {}, bench2 = {} }
+    local state = { level = 1, refreshCount = 0, 已部署格子 = {}, 已部署格子Points = {}, 已部署格子Kinds = {}, bench1 = {}, bench2 = {} }
     local init格子 = function(points, kind)
         for _, point in ipairs(points) do
-            state.格子Points[#state.格子Points + 1] = map2[point[1]][point[2]]
-            state.格子Kinds[#state.格子Kinds + 1] = kind
-            state.格子[#state.格子 + 1] = false
+            state.已部署格子Points[#state.已部署格子Points + 1] = map2[point[1]][point[2]]
+            state.已部署格子Kinds[#state.已部署格子Kinds + 1] = kind
+            state.已部署格子[#state.已部署格子 + 1] = false
         end
     end
-    init格子(近战格子, '近')
-    init格子(远程格子, '远')
-    init格子(补位格子, '补')
+    init格子(近战格子, '近战格子')
+    init格子(远程格子, '远程格子')
+    init格子(医疗格子, '医疗格子')
 
     if not findOne("卫戍协议首页") then
         autochess.卫戍协议进入()
@@ -816,8 +817,9 @@ autochess.卫戍协议循环1 = function()
             ssleep(.1)
             log("第" .. roundNo .. "回合")
             state.refreshCount = 0
+
             ssleep(1) --等卡栏展开动画
-            local shopOk, shopErr = pcall(autochess.商店购买, state, data)
+            local shopOk, shopErr = pcall(autochess.商店购买, state, data, i)
             if not shopOk then log("商店购买异常:" .. tostring(shopErr)) end
             --点准备就绪开战:点击可能被悬浮窗等吞掉,按钮消失(进入战斗)且连续两次确认才算开战
             --不能用槽位有卡判:最后一张卡可能已被买空
