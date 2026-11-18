@@ -3657,6 +3657,7 @@ ocrex1 = function(r, white_list, max_height)
     return res
 end
 
+---@return string text 只返回识别到的第一段字符串文本
 ocro = function(r)
     local ret = ocrex(r)
     if ret and #ret ~= 0 then return ret[1]["text"] end

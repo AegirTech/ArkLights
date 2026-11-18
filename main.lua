@@ -113,7 +113,7 @@ remove_lr_ad()
 detectServer()
 -- predebug_hook()
 backup_config()
-showUI()
+--showUI()
 loadUIConfig()
 restart_mode_hook()
 update_state_from_debugui()
@@ -128,6 +128,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1) --防止启动过快下方信息影响截图
 
+    autochess.卫戍协议循环1()
     -- swip_up_20px = function()
     --     local x1 = scale(1110)
     --     local y1 = scale(276)
@@ -138,7 +139,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     -- end
     -- swip_up_20px()
     -- ssleep(100)
-    -- exit()
+    exit()
 end
 
 load(before_account_hook or '')()
