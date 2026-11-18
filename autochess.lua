@@ -821,7 +821,7 @@ autochess.卫戍协议循环1 = function()
             state.refreshCount = 0
 
             ssleep(1) --等卡栏展开动画
-            local shopOk, shopErr = pcall(autochess.商店购买, state, data, i)
+            local shopOk, shopErr = pcall(autochess.商店购买, state, data, roundNo)
             if not shopOk then log("商店购买异常:" .. tostring(shopErr)) end
             --点准备就绪开战:点击可能被悬浮窗等吞掉,按钮消失(进入战斗)且连续两次确认才算开战
             --不能用槽位有卡判:最后一张卡可能已被买空
