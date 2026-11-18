@@ -275,7 +275,8 @@ end
 -- 三个同名干员自动合成2星,已部署的同名1星会被撤下来,2星落在待部署区,合成后立刻重新部署。
 -- 升本只到4本:确认生效但校验可能失效,靠"总共最多尝试3次=最多+3本"兜底;
 -- 刷新费1,回合结束金币清零,所以每回合尽量把金币花光。
-local meleeJobs = { PIONEER = true, WARRIOR = true }
+
+local 近战职业 = { PIONEER = true, WARRIOR = true }
 local borderOn = "3F8E7F"         --卡边框亮色=可购买
 local borderOff = "50706A"        --卡边框灰色=买不起
 local borderGold = "CE9644"       --已拥有干员的金色发光边框(实测约206,150,68),同样可购买(买它推进合成)
@@ -348,7 +349,7 @@ local readRemaining = function()
 end
 
 
-local correctName = function(name)
+local 卫戍协议干员ocr校正 = function(name)
     if not name or name == "" then return name end
     local nameFixes = {
         ["野鬘"] = "野鬃",
@@ -396,7 +397,7 @@ local readCard = function(data, slotIndex, failedSlots)
     if not card.buyable then return card end
     local name = ""
     for _ = 1, 4 do
-        name = correctName(ocro("卫戍协议商店名称列表" .. slotIndex))
+        name = 卫戍协议干员ocr校正(ocro("卫戍协议商店名称列表" .. slotIndex))
         if name ~= "" then break end
         ssleep(.5)
     end
@@ -429,7 +430,7 @@ local readCard = function(data, slotIndex, failedSlots)
     end
     if card.kind == "op" then
         card.core = card.bonds[coreBond] == true
-        if card.prof then card.melee = meleeJobs[card.prof] == true end
+        if card.prof then card.melee = 近战职业[card.prof] == true end
     end
     return card
 end
@@ -511,7 +512,8 @@ local buildPlan = function(cards, state)
             local priority, action, cellIndex = evaluate(card, sim, benchCount)
             if priority and (not bestPriority or priority < bestPriority or (priority == bestPriority and (card.level or 0) > (best.card.level or 0))) then
                 best, bestIndex, bestPriority =
-                { priority = priority, action = action, cellIndex = cellIndex, card = card }, candidateIndex, priority
+                    { priority = priority, action = action, cellIndex = cellIndex, card = card }, candidateIndex,
+                    priority
             end
         end
         if not best then break end
@@ -539,7 +541,7 @@ local buyCard = function(card)
         ssleep(1)
         if not slotHasCard(slotIndex) and not slotColor(slotIndex, borderSelected) then
             log("购买:" ..
-            tostring(card.name) .. (card.core and "(核心)" or "") .. (card.prof and "[" .. card.prof .. "]" or ""))
+                tostring(card.name) .. (card.core and "(核心)" or "") .. (card.prof and "[" .. card.prof .. "]" or ""))
             return true
         end
         if slotColor(slotIndex, borderOff) then
@@ -687,7 +689,7 @@ local makeSignature = function(cardCount)
     local sigParts = {}
     for slotIndex = 7 - cardCount, 6 do
         sigParts[#sigParts + 1] = slotBuyable(slotIndex) and "1" or
-        (slotColor(slotIndex, borderOff) and "2" or (slotColor(slotIndex, borderEmpty) and "3" or "0"))
+            (slotColor(slotIndex, borderOff) and "2" or (slotColor(slotIndex, borderEmpty) and "3" or "0"))
     end
     return table.concat(sigParts)
 end
