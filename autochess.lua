@@ -368,7 +368,7 @@ local 卫戍协议干员ocr校正 = function(name)
     return name
 end
 
---名字匹配 autochess_data 干员 key:先全等,再包含匹配(OCR 常掉字)
+--名字匹配干员 key(商店池+职业表池外真干员):先全等,再包含匹配(OCR 常掉字)
 local matchOperator = function(data, name)
     if name and data.operators[name] then return name end
     if name and #name >= 3 then --1个汉字=3字节
@@ -380,19 +380,28 @@ local matchOperator = function(data, name)
     end
 end
 
+--盟约区OCR对已知盟约名:池外干员(JSON里只有职业)和JSON读不到时的兜底识别
+local ocrBonds = function(data, slotIndex)
+    local bonds = {}
+    local bondText = ocrText("卫戍协议商店盟约列表" .. slotIndex)
+    for bondName in pairs(data.bonds) do
+        if bondText:find(bondName, 1, true) then bonds[bondName] = true end
+    end
+    return bonds
+end
+
 --读卡:亮/金光边框才细读;名称必须读到(金光/动画可能让单次 OCR 为空,等一会重试);
---名字对上 JSON 直接拿盟约/职业,否则 OCR 盟约区兜底;failedSlots 里的槽位跳过
+--名字对上 JSON 直接拿盟约/职业(池外干员补OCR盟约),否则靠盟约OCR/装备表分类;failedSlots 里的槽位跳过
 local readCard = function(data, slotIndex, failedSlots)
     local card = { slot = slotIndex, buyable = not failedSlots[slotIndex] and slotBuyable(slotIndex) }
     if not card.buyable then return card end
     local name = ""
     for _ = 1, 4 do
         name = 卫戍协议干员ocr校正(ocro("卫戍协议商店名称列表" .. slotIndex))
-        log(name)
         if name ~= "" then break end
         ssleep(.5)
     end
-    if name == "" then log("识别:槽位" .. slotIndex .. "名称多次OCR为空") end
+    if name == "" then log.debug("识别:槽位" .. slotIndex .. "名称多次OCR为空") end
     card.name = name
     local opName = matchOperator(data, name)
     if opName then
@@ -400,18 +409,11 @@ local readCard = function(data, slotIndex, failedSlots)
         card.kind = "op"
         card.opName = opName
         card.level = info.level
-        card.bonds = info.bonds or {}
-        card.prof = data.prof[opName]
+        card.prof = info.prof
+        card.bonds = info.bonds or ocrBonds(data, slotIndex)
     else
-        local bondText = ocrText("卫戍协议商店盟约列表" .. slotIndex)
-        card.bonds = {}
-        for bondName in pairs(data.bonds) do
-            if bondText:find(bondName, 1, true) then card.bonds[bondName] = true end
-        end
-        if data.prof[name] then
-            card.kind = "op"
-            card.prof = data.prof[name]
-        elseif next(card.bonds) then
+        card.bonds = ocrBonds(data, slotIndex)
+        if next(card.bonds) then
             card.kind = "op"
         elseif data.items[name] then
             card.kind = "item"
@@ -744,9 +746,10 @@ autochess.卫戍协议循环1 = function()
     local lost = false
     local settleShots = 0 --上一轮结算页截图计数(仅诊断用)
 
-    --购买识别数据:盟约(autochess_data.json)/职业(character_type_list.json),读不到时退化成纯OCR盟约识别
+    --购买识别数据:盟约/干员/装备(autochess_data.json),职业(character_type_list.json)并入干员信息,
+    --TRAP/TOKEN是装置召唤物丢弃,池外真干员只留职业;读不到时退化成纯OCR盟约识别
     --(声明需在goto之前,否则goto relink会跳进局部变量作用域)
-    local data = { operators = {}, items = {}, prof = {}, bonds = {} }
+    local data = { operators = {}, items = {}, bonds = {} }
     local readOk, readRet = pcall(JsonDecode, readFile("autochess_data.json"))
     if readOk and readRet then
         data.operators = readRet.operators or {}
@@ -756,7 +759,18 @@ autochess.卫戍协议循环1 = function()
         end
     end
     readOk, readRet = pcall(JsonDecode, readFile("character_type_list.json"))
-    if readOk and readRet then data.prof = readRet end
+    if readOk and readRet then
+        for opName, prof in pairs(readRet) do
+            if prof ~= "TRAP" and prof ~= "TOKEN" then
+                local info = data.operators[opName]
+                if info then
+                    info.prof = prof
+                else
+                    data.operators[opName] = { prof = prof }
+                end
+            end
+        end
+    end
     --state:回合内共享状态;格子=各部署格{name,star,prof}(false=空),
     --格子Points/格子Kinds=各格坐标与类别(近/远/补),bench1/bench2=待部署区上1星/2星干员数量
     local state = { level = 1, refreshCount = 0, 已部署格子 = {}, 已部署格子Points = {}, 已部署格子Kinds = {}, bench1 = {}, bench2 = {} }
