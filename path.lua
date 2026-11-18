@@ -7,6 +7,21 @@ path = {}
 -- wait_game_up 有必要在切出游戏后回到游戏吗：有
 -- wait_game_up 有必要做B服界面跳转吗：没有。做了之后，退出账号难实现
 
+point.红色资源下载确认 = function()
+    if not findOne("红色资源下载弹窗图色") then return end
+
+    -- 红色确认框是通用样式，只在提示明确要求下载资源时点击。
+    local ok, lines = pcall(ocrex or ocr, "红色资源下载提示范围")
+    if not ok or type(lines) ~= "table" then return end
+    local text = {}
+    for _, line in ipairs(lines) do
+        text[#text + 1] = line.text or ""
+    end
+    if table.concat(text):gsub("%s+", ""):find("检测到新的资源包", 1, true) then
+        return point.红色资源下载确认按钮
+    end
+end
+
 path.base = {
     -- 匹配图色后，点击首点所在的“重试登录”按钮。
     B服登录被取消弹窗 = "B服登录被取消弹窗",
@@ -16,6 +31,7 @@ path.base = {
     end,
     下载资源确认 = "下载资源确认",
     资源下载确定 = "资源下载确定",
+    红色资源下载确认 = "红色资源下载确认按钮",
     适龄提示界面 = function() return path.base["start黄框"]() end,
     start黄框 = function()
         -- reset login history on app restart
