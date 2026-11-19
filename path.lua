@@ -6668,7 +6668,11 @@ path.赛季任务 = function()
     log("检测赛季开放时间")
     local t = parse_time()
     if season_mode["卫戍协议"] and t < hd_open_time_end then
-        autochess.卫戍协议循环()
+        if not_use_ocr then
+            autochess.卫戍协议循环()
+        else
+            autochess.卫戍协议通关循环()
+        end
     end
 end
 
@@ -10472,8 +10476,12 @@ path.卫戍协议 = function()
     log("卫戍协议开始")
     autochess.卫戍协议进入()
 
-    while not autochess.卫戍协议循环() do
-
+    while true do
+        if not_use_ocr then
+            autochess.卫戍协议循环()
+        else
+            autochess.卫戍协议通关循环()
+        end
     end
 end
 

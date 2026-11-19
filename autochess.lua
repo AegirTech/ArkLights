@@ -71,206 +71,11 @@ for _, t in ipairs({ 待部署区, 装备区 }) do
     end
 end
 
---格子列表1~9 对应的 map2 格子[x,y](第一回合1~3,第二回合4~6,第三回合7~9)
+--无ocr版随意放置格子
 local 格子序号 = { { 4, 4 }, { 3, 3 }, { 3, 2 }, { 4, 2 }, { 3, 1 }, { 4, 3 }, { 3, 4 }, { 4, 1 }, { 4, 2 } }
 
-local 近战格子 = { { 8, 1 }, { 8, 3 } }
-local 远程格子 = { { 7, 2 }, { 7, 3 }, { 7, 1 }, { 6, 1 }, { 8, 2 } }
-local 医疗格子 = { { 6, 2 } }
 
-local coreBond = "精准"
-
-autochess.卫戍协议进入 = function()
-    path.跳转("首页")
-    ssleep(.2)
-    tap("面板作战")
-    if not appear("主页") then return false end
-    if not wait(function()
-            if findOne("终端卫戍协议选中") then return true end
-            tap("终端卫戍协议入口")
-        end, 5) then
-        return false
-    end
-    if not wait(function()
-            if findOne("卫戍协议首页") then return true end
-            tap("终端卫戍协议进入")
-            ssleep(.2)
-        end, 25) then
-        return false
-    end
-    log("卫戍协议进入成功")
-    --ssleep(1)
-    if appear("阿米娅", 1) then
-        if not autochess.卫戍协议教程() then
-            return false
-        end
-    end
-end
-
-autochess.卫戍协议教程 = function()
-    log("卫戍协议教程")
-    if not wait(function()
-            if findOne("卫戍协议选配助战") or findOne("卫戍协议借助战") then return true end
-            if findOne("卫戍协议准备就绪") then
-                tap("卫戍协议战斗准备就绪")
-                ssleep(.3)
-                if findOne("卫戍协议金币清零确定") then
-                    tap("卫戍协议金币清零勾")
-                    ssleep(.1)
-                    tap("卫戍协议金币清零确定")
-                end
-            end
-            if findOne("卫戍协议教程放人黄点") then
-                log("发现教程放人黄点")
-                -- 放第一个人
-                swipe_slow(待部署区[1], map2[4][3])
-                deploy0(map2[4][3], "上")
-                -- 放第二个人
-                swipe_slow(待部署区[1], map2[3][3])
-                deploy0(map2[3][3], "右")
-            end
-            if findOne("卫戍协议教程放装备黄点") then
-                log("发现教程放装备黄点")
-                swipe_slow(装备区[1], map2[4][3])
-            end
-            tap("卫戍协议右下角")
-            ssleep(.1)
-            tap("卫戍协议物资调配处")
-            ssleep(.1)
-            tap("卫戍协议准备就绪")
-            ssleep(.1)
-            tap("卫戍协议物资调配处第一个干员")
-            ssleep(.1)
-            tap("卫戍协议物资调配处道具")
-            ssleep(.1)
-            for i = 1, #point.卫戍协议教程列表 do
-                tap("卫戍协议教程列表" .. i)
-                ssleep(.1)
-            end
-            tap("卫戍协议战斗准备就绪")
-            ssleep(.1)
-            tap("卫戍协议战斗准备就绪")
-            ssleep(.1)
-            tap("卫戍协议战斗准备就绪")
-            ssleep(.1)
-            tap("卫戍协议战斗准备就绪")
-            ssleep(.1)
-        end, 60 * 18, 1) then --教程大概10分钟
-        log("尝试过教程失败，卡住超过了10s，准备重启游戏")
-        exec('su root am force-stop  ' .. appid)
-        return false
-    end
-    return true
-end
-
-autochess.卫戍协议循环 = function()
-    log("卫戍协议循环")
-    local lose = false
-
-    if not findOne("卫戍协议首页") then
-        autochess.卫戍协议进入()
-    end
-    if not appear("卫戍协议首页", 5) then return end
-    if findOne("卫戍协议放弃模拟") then
-        goto relink
-    end
-    if findOne("卫戍协议等级max") then
-        log("卫戍协议等级已满")
-        captureqqimagedeliver("INFO", "卫戍协议等级已满", "卫戍协议等级已满")
-        return true
-    end
-    if not wait(function()
-            if findOne("卫戍协议个人模拟") then return true end
-            tap("卫戍协议个人模拟")
-            ssleep(.1)
-        end, 2) then
-        return false
-    end
-
-    tap("卫戍协议极速模拟")
-    disappear("卫戍协议首页", 3)
-    appear("卫戍协议开始模拟", 3)
-    ssleep(.2)
-    tap("卫戍协议开始模拟")
-
-    if not wait(function()
-            if findOne("卫戍协议选择分队") then return true end
-            tap("卫戍协议准备就绪")
-        end, 10, 1) then
-    end
-    ssleep(.5)
-    tap("卫戍协议选择血最多分队")
-    ssleep(2)
-    wait(function()
-        tap("卫戍协议准备就绪")
-    end, 5, 1)
-    ssleep(10)
-    appear("卫戍协议战斗准备就绪", 40)
-    log("卫戍协议进入第一回合战斗")
-
-    for i = 1, 8 do
-        if appear("卫戍协议战斗准备就绪", 65) then
-            ssleep(.1)
-            log("第" .. i .. "回合")
-            if i == 1 or i == 2 or i == 3 then
-                local 方向 = { "上", "右", "右", "上", "右", "上", "右", "右", "上" }
-                for j = 1, 3 do
-                    local n = j + i * 3 - 3
-                    local 格子 = map2[格子序号[n][1]][格子序号[n][2]]
-                    tap("卫戍协议购买列表" .. j)
-                    ssleep(.2)
-                    tap("卫戍协议购买列表" .. j)
-                    ssleep(.8)
-                    swipe_slow(待部署区[1], 格子)
-                    deploy0(格子, 方向[n])
-                    ssleep(.2)
-                end
-            end
-            tap("卫戍协议战斗准备就绪")
-            ssleep(.5)
-            if appear("卫戍协议金币清零确定") then
-                tap("卫戍协议金币清零勾")
-                ssleep(.1)
-                tap("卫戍协议金币清零确定")
-            end
-            ssleep(15)
-        end
-        if findOne("卫戍协议返回主页") then
-            log("卫戍协议战斗失败")
-            lose = true
-            break
-        end
-    end
-    if lose == true then
-        goto return_to_home_page
-    end
-    appear("卫戍协议战斗准备就绪", 60)
-    tap("卫戍协议战斗返回")
-    ssleep(.5)
-    tap("卫戍协议金币清零确定")
-    ssleep(8)
-    ::relink::
-    appear("卫戍协议放弃模拟", 60)
-    ssleep(.5)
-    tap("卫戍协议放弃模拟")
-    ssleep(.5)
-    tap("卫戍协议金币清零确定")
-    ::return_to_home_page::
-    if not wait(function()
-            tap("卫戍协议准备就绪")
-            ssleep(2)
-            disappear("正在提交反馈至神经", network_timeout)
-            if findOne("卫戍协议首页") then
-                log("卫戍协议一轮循环结束")
-                return true
-            end
-        end, 30, 1) then
-        log("可能是卡住了,点一下返回首页")
-        tap("卫戍协议准备就绪")
-    end
-end
-
--- ===== 极速模拟商店识别购买/部署(2026-11-15) =====
+-- ===== 极速模拟商店识别购买/部署 =====
 -- 每回合识别卡栏布局(极速L1=4卡/L2-5=5卡/L6=6卡,卡位右起1-6,见 point.卫戍协议商店卡位列表):
 -- 名称OCR查 autochess_data.json 的盟约、character_type_list.json 的职业,名字对不上时OCR盟约区兜底。
 -- 优先级:核心盟约新名字尽量多买多部署(没部署位才落待部署区攒购买进度) > 重装最多2个 > 近卫补位;
@@ -280,7 +85,10 @@ end
 -- 合成后商店自动刷新一次出现"3选1"(卡位右起1-3,暂无标定素材,按readCard同逻辑识别名称),选evaluate最优的一个并部署。
 -- 升本只到4本:确认生效但校验可能失效,靠"总共最多尝试3次=最多+3本"兜底;
 -- 刷新费1,回合结束金币清零,每回合一直刷新直到刷新按钮变灰(买不起),把金币花光。
-
+local 近战格子 = { { 8, 1 }, { 8, 3 } }
+local 远程格子 = { { 7, 2 }, { 7, 3 }, { 7, 1 }, { 6, 1 }, { 8, 2 } }
+local 医疗格子 = { { 6, 2 } }
+local coreBond = "精准"
 local 近战职业 = { WARRIOR = true, TANK = true }
 local 远程职业 = { SNIPER = true, CASTER = true, SUPPORT = true }
 local 医疗职业 = { MEDIC = true }
@@ -300,12 +108,6 @@ local ocrText = function(pointKey)
         segments[#segments + 1] = segment.text or ""
     end
     return (table.concat(segments):gsub("[%s　]+", ""))
-end
-
---单元素数字识别(货币/刷新费/剩余可放置数)
-local ocrNumber = function(pointKey)
-    local text = ocro(pointKey)
-    return text and text ~= "" and tonumber((text:gsub("%D", ""))) or nil
 end
 
 -- 获取商店等级
@@ -878,11 +680,226 @@ autochess.商店购买 = function(state, data, round)
     log("商店动作步数用尽")
 end
 
-autochess.卫戍协议循环1 = function()
+autochess.卫戍协议进入 = function()
+    path.跳转("首页")
+    ssleep(.2)
+    tap("面板作战")
+    if not appear("主页") then return false end
+    if not wait(function()
+            if findOne("终端卫戍协议选中") then return true end
+            tap("终端卫戍协议入口")
+        end, 5) then
+        return false
+    end
+    if not wait(function()
+            if findOne("卫戍协议首页") then return true end
+            tap("终端卫戍协议进入")
+            ssleep(.2)
+        end, 25) then
+        return false
+    end
+    log("卫戍协议进入成功")
+    --ssleep(1)
+    if appear("阿米娅", 1) then
+        if not autochess.卫戍协议教程() then
+            return false
+        end
+    end
+end
+
+autochess.卫戍协议教程 = function()
+    log("卫戍协议教程")
+    if not wait(function()
+            if findOne("卫戍协议选配助战") or findOne("卫戍协议借助战") then return true end
+            if findOne("卫戍协议准备就绪") then
+                tap("卫戍协议战斗准备就绪")
+                ssleep(.3)
+                if findOne("卫戍协议金币清零确定") then
+                    tap("卫戍协议金币清零勾")
+                    ssleep(.1)
+                    tap("卫戍协议金币清零确定")
+                end
+            end
+            if findOne("卫戍协议教程放人黄点") then
+                log("发现教程放人黄点")
+                -- 放第一个人
+                swipe_slow(待部署区[1], map2[4][3])
+                deploy0(map2[4][3], "上")
+                -- 放第二个人
+                swipe_slow(待部署区[1], map2[3][3])
+                deploy0(map2[3][3], "右")
+            end
+            if findOne("卫戍协议教程放装备黄点") then
+                log("发现教程放装备黄点")
+                swipe_slow(装备区[1], map2[4][3])
+            end
+            tap("卫戍协议右下角")
+            ssleep(.1)
+            tap("卫戍协议物资调配处")
+            ssleep(.1)
+            tap("卫戍协议准备就绪")
+            ssleep(.1)
+            tap("卫戍协议物资调配处第一个干员")
+            ssleep(.1)
+            tap("卫戍协议物资调配处道具")
+            ssleep(.1)
+            for i = 1, #point.卫戍协议教程列表 do
+                tap("卫戍协议教程列表" .. i)
+                ssleep(.1)
+            end
+            tap("卫戍协议战斗准备就绪")
+            ssleep(.1)
+            tap("卫戍协议战斗准备就绪")
+            ssleep(.1)
+            tap("卫戍协议战斗准备就绪")
+            ssleep(.1)
+            tap("卫戍协议战斗准备就绪")
+            ssleep(.1)
+        end, 60 * 18, 1) then --教程大概10分钟
+        log("尝试过教程失败，卡住超过了10s，准备重启游戏")
+        exec('su root am force-stop  ' .. appid)
+        return false
+    end
+    return true
+end
+
+autochess.卫戍协议循环 = function()
+    log("卫戍协议循环")
+    local lose = false
+
+    if not findOne("卫戍协议首页") then
+        autochess.卫戍协议进入()
+    end
+    if not appear("卫戍协议首页", 5) then return end
+    if findOne("卫戍协议放弃模拟") then
+        goto relink
+    end
+    if findOne("卫戍协议等级max") then
+        log("卫戍协议等级已满")
+        captureqqimagedeliver("INFO", "卫戍协议等级已满", "卫戍协议等级已满")
+        return true
+    end
+    if not wait(function()
+            if findOne("卫戍协议个人模拟") then return true end
+            tap("卫戍协议个人模拟")
+            ssleep(.1)
+        end, 2) then
+        return false
+    end
+
+    tap("卫戍协议极速模拟")
+    disappear("卫戍协议首页", 3)
+    appear("卫戍协议开始模拟", 3)
+    ssleep(.2)
+    tap("卫戍协议开始模拟")
+
+    if not wait(function()
+            if findOne("卫戍协议选择分队") then return true end
+            tap("卫戍协议准备就绪")
+        end, 10, 1) then
+    end
+    ssleep(.5)
+    tap("卫戍协议选择血最多分队")
+    ssleep(2)
+    wait(function()
+        tap("卫戍协议准备就绪")
+    end, 5, 1)
+    ssleep(10)
+    appear("卫戍协议战斗准备就绪", 40)
+    log("卫戍协议进入第一回合战斗")
+
+    for i = 1, 8 do
+        if appear("卫戍协议战斗准备就绪", 65) then
+            ssleep(.1)
+            log("第" .. i .. "回合")
+            if i == 1 or i == 2 or i == 3 then
+                local 方向 = { "上", "右", "右", "上", "右", "上", "右", "右", "上" }
+                for j = 1, 3 do
+                    local n = j + i * 3 - 3
+                    local 格子 = map2[格子序号[n][1]][格子序号[n][2]]
+                    tap("卫戍协议购买列表" .. j)
+                    ssleep(.2)
+                    tap("卫戍协议购买列表" .. j)
+                    ssleep(.8)
+                    swipe_slow(待部署区[1], 格子)
+                    deploy0(格子, 方向[n])
+                    ssleep(.2)
+                end
+            end
+            tap("卫戍协议战斗准备就绪")
+            ssleep(.5)
+            if appear("卫戍协议金币清零确定") then
+                tap("卫戍协议金币清零勾")
+                ssleep(.1)
+                tap("卫戍协议金币清零确定")
+            end
+            ssleep(15)
+        end
+        if findOne("卫戍协议返回主页") then
+            log("卫戍协议战斗失败")
+            lose = true
+            break
+        end
+    end
+    if lose == true then
+        goto return_to_home_page
+    end
+    appear("卫戍协议战斗准备就绪", 60)
+    tap("卫戍协议战斗返回")
+    ssleep(.5)
+    tap("卫戍协议金币清零确定")
+    ssleep(8)
+    ::relink::
+    appear("卫戍协议放弃模拟", 60)
+    ssleep(.5)
+    tap("卫戍协议放弃模拟")
+    ssleep(.5)
+    tap("卫戍协议金币清零确定")
+    ::return_to_home_page::
+    if not wait(function()
+            tap("卫戍协议准备就绪")
+            ssleep(2)
+            disappear("正在提交反馈至神经", network_timeout)
+            if findOne("卫戍协议首页") then
+                log("卫戍协议一轮循环结束")
+                return true
+            end
+        end, 30, 1) then
+        log("可能是卡住了,点一下返回首页")
+        tap("卫戍协议准备就绪")
+    end
+end
+
+autochess.卫戍协议通关循环 = function()
     log("卫戍协议循环")
     local lost = false
     local settleShots = 0 --上一轮结算页截图计数(仅诊断用)
-
+    local team_x, team_y
+    local find_first_team = function()
+        local mubiao = "FF9C1B"
+        local x = 1114
+        local y = 286
+        local px = 210
+        local py = 210
+        for sx = 0, 3 do
+            for sy = 0, 3 do
+                local l = scale(x + sx * px)
+                local t = scale(y + sy * py)
+                local b = scale(y + sy * py + 55)
+                local r = scale(x + sx * px + 55)
+                if not find_color({ l, t, r, b }, mubiao, 1, 90 / 100) then
+                    -- log.debug("color not found", sx, sy)
+                    log("第", sy + 1, "行第", sx + 1, "列没有角标")
+                    log(l, t, r, b)
+                    return math.abs((l + r) / 2), math.abs((t + b) / 2)
+                else
+                    log("第", sy + 1, "行第", sx + 1, "列有角标")
+                    log(l, t, r, b)
+                end
+                -- log.debug("color", sx, sy, color)
+            end
+        end
+    end
     --购买识别数据:盟约/干员/装备(autochess_data.json),职业(character_type_list.json)并入干员信息,
     --TRAP/TOKEN是装置召唤物丢弃,池外真干员只留职业;读不到时退化成纯OCR盟约识别
     --(声明需在goto之前,否则goto relink会跳进局部变量作用域)
@@ -947,18 +964,23 @@ autochess.卫戍协议循环1 = function()
     appear("卫戍协议开始模拟", 3)
     ssleep(.2)
     tap("卫戍协议开始模拟")
-
-    if not wait(function()
-            if findOne("卫戍协议选择分队") then return true end
-            tap("卫戍协议准备就绪")
-        end, 10, 1) then
+    appear("卫戍协议准备就绪", 10)
+    ssleep(.2)
+    tap("卫戍协议准备就绪")
+    disappear("卫戍协议准备就绪", 3)
+    appear("卫戍协议选择分队", 10)
+    ssleep(.4)
+    log("寻找没有角标的分队")
+    team_x, team_y = find_first_team()
+    if team_x and team_y then
+        tap({ team_x, team_y })
+    else
+        tap("卫戍协议选择血最多分队")
     end
-    ssleep(.5)
-    tap("卫戍协议选择血最多分队")
     ssleep(2)
     wait(function()
         tap("卫戍协议准备就绪")
-    end, 5, 1)
+    end, 5, .8)
     ssleep(10)
     appear("卫戍协议战斗准备就绪", 40)
     log("卫戍协议进入第一回合战斗")
@@ -993,22 +1015,14 @@ autochess.卫戍协议循环1 = function()
     if lost == true then
         goto return_to_home_page
     end
-    --最后一轮打完boss战较久,先安静等战斗结束,再周期点屏幕中央推进"卫戍完成"等中间画面,
-    --出现结算页"返回主页"就点它(会自动结算掉模拟,不用再放弃);周期存截图便于排查卡在哪个画面
-    ssleep(150)
-    settleShots = 0
+
     if wait(function()
             if findOne("卫戍协议结算返回主页") then
                 tap("卫戍协议结算返回主页")
                 return true
             end
-            tap({ 960, 540 })
-            settleShots = settleShots + 1
-            snapShot("/sdcard/pictures/结算" .. settleShots .. ".png")
-            ssleep(1)
-        end, 180) then
-        ssleep(3)
-        goto return_to_home_page
+        end, 120, 1) then
+        return true
     end
     log("未等到通关结算页,按中途退出处理")
     tap("卫戍协议战斗返回")
