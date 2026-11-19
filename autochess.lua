@@ -92,6 +92,7 @@ local coreBond = "精准"
 local 近战职业 = { WARRIOR = true, TANK = true }
 local 远程职业 = { SNIPER = true, CASTER = true, SUPPORT = true }
 local 医疗职业 = { MEDIC = true }
+local badge = "FF9C1B"            --选分队界面角标颜色
 local borderOn = "3F8E7F"         --卡边框亮色=可购买
 local borderOff = "50706A"        --卡边框灰色=买不起
 local borderGold = "CE9644"       --已拥有干员的金色发光边框(实测约206,150,68),同样可购买(买它推进合成)
@@ -108,6 +109,31 @@ local ocrText = function(pointKey)
         segments[#segments + 1] = segment.text or ""
     end
     return (table.concat(segments):gsub("[%s　]+", ""))
+end
+
+local findNoBadgeTeam = function()
+    local x = 1114
+    local y = 286
+    local dx = 210
+    local dy = 210
+    for col = 0, 3 do
+        for row = 0, 3 do
+            local l = scale(x + row * dx)
+            local t = scale(y + col * dy)
+            local b = scale(y + col * dy + 55)
+            local r = scale(x + row * dx + 55)
+            if not find_color({ l, t, r, b }, badge, 1, 0.9) then
+                -- log.debug("color not found", row, col)
+                log("第", col + 1, "行第", row + 1, "列没有角标")
+                log(l, t, r, b)
+                return math.abs((l + r) / 2), math.abs((t + b) / 2)
+            else
+                log("第", col + 1, "行第", row + 1, "列有角标")
+                log(l, t, r, b)
+            end
+            -- log.debug("color", row, col, color)
+        end
+    end
 end
 
 -- 获取商店等级
@@ -763,16 +789,35 @@ autochess.卫戍协议教程 = function()
     return true
 end
 
+autochess.卫戍协议放弃 = function()
+    appear("卫戍协议放弃模拟", 60)
+    ssleep(.5)
+    tap("卫戍协议放弃模拟")
+    ssleep(.5)
+    tap("卫戍协议金币清零确定")
+    if not wait(function()
+            tap("卫戍协议准备就绪")
+            ssleep(2)
+            disappear("正在提交反馈至神经", network_timeout)
+            if findOne("卫戍协议首页") then
+                log("卫戍协议一轮循环结束")
+                return true
+            end
+        end, 30, 1) then
+        log("可能是卡住了,点一下返回首页")
+        tap("卫戍协议准备就绪")
+    end
+end
+
 autochess.卫戍协议循环 = function()
     log("卫戍协议循环")
-    local lose = false
 
     if not findOne("卫戍协议首页") then
         autochess.卫戍协议进入()
     end
     if not appear("卫戍协议首页", 5) then return end
     if findOne("卫戍协议放弃模拟") then
-        goto relink
+        return autochess.卫戍协议放弃()
     end
     if findOne("卫戍协议等级max") then
         log("卫戍协议等级已满")
@@ -837,69 +882,24 @@ autochess.卫戍协议循环 = function()
         end
         if findOne("卫戍协议返回主页") then
             log("卫戍协议战斗失败")
-            lose = true
-            break
+            ssleep(.2)
+            tap("卫戍协议返回主页")
+            return true
         end
-    end
-    if lose == true then
-        goto return_to_home_page
     end
     appear("卫戍协议战斗准备就绪", 60)
     tap("卫戍协议战斗返回")
     ssleep(.5)
     tap("卫戍协议金币清零确定")
     ssleep(8)
-    ::relink::
-    appear("卫戍协议放弃模拟", 60)
-    ssleep(.5)
-    tap("卫戍协议放弃模拟")
-    ssleep(.5)
-    tap("卫戍协议金币清零确定")
-    ::return_to_home_page::
-    if not wait(function()
-            tap("卫戍协议准备就绪")
-            ssleep(2)
-            disappear("正在提交反馈至神经", network_timeout)
-            if findOne("卫戍协议首页") then
-                log("卫戍协议一轮循环结束")
-                return true
-            end
-        end, 30, 1) then
-        log("可能是卡住了,点一下返回首页")
-        tap("卫戍协议准备就绪")
-    end
+    autochess.卫戍协议放弃()
 end
 
 autochess.卫戍协议通关循环 = function()
     log("卫戍协议循环")
-    local lost = false
     local settleShots = 0 --上一轮结算页截图计数(仅诊断用)
     local team_x, team_y
-    local find_first_team = function()
-        local mubiao = "FF9C1B"
-        local x = 1114
-        local y = 286
-        local px = 210
-        local py = 210
-        for sx = 0, 3 do
-            for sy = 0, 3 do
-                local l = scale(x + sx * px)
-                local t = scale(y + sy * py)
-                local b = scale(y + sy * py + 55)
-                local r = scale(x + sx * px + 55)
-                if not find_color({ l, t, r, b }, mubiao, 1, 90 / 100) then
-                    -- log.debug("color not found", sx, sy)
-                    log("第", sy + 1, "行第", sx + 1, "列没有角标")
-                    log(l, t, r, b)
-                    return math.abs((l + r) / 2), math.abs((t + b) / 2)
-                else
-                    log("第", sy + 1, "行第", sx + 1, "列有角标")
-                    log(l, t, r, b)
-                end
-                -- log.debug("color", sx, sy, color)
-            end
-        end
-    end
+
     --购买识别数据:盟约/干员/装备(autochess_data.json),职业(character_type_list.json)并入干员信息,
     --TRAP/TOKEN是装置召唤物丢弃,池外真干员只留职业;读不到时退化成纯OCR盟约识别
     --(声明需在goto之前,否则goto relink会跳进局部变量作用域)
@@ -944,7 +944,7 @@ autochess.卫戍协议通关循环 = function()
     end
     if not appear("卫戍协议首页", 5) then return end
     if findOne("卫戍协议放弃模拟") then
-        goto relink
+        return autochess.卫戍协议放弃()
     end
     if findOne("卫戍协议等级max") then
         log("卫戍协议等级已满")
@@ -971,7 +971,7 @@ autochess.卫戍协议通关循环 = function()
     appear("卫戍协议选择分队", 10)
     ssleep(.4)
     log("寻找没有角标的分队")
-    team_x, team_y = find_first_team()
+    team_x, team_y = findNoBadgeTeam()
     if team_x and team_y then
         tap({ team_x, team_y })
     else
@@ -993,7 +993,10 @@ autochess.卫戍协议通关循环 = function()
 
             ssleep(1) --等卡栏展开动画
             local shopOk, shopErr = pcall(autochess.商店购买, state, data, roundNo)
-            if not shopOk then log("商店购买异常:" .. tostring(shopErr)) end
+            if not shopOk then
+                log("商店购买异常:" .. tostring(shopErr))
+                exit()
+            end
 
             wait(function()
                 tap("卫戍协议战斗准备就绪")
@@ -1007,13 +1010,11 @@ autochess.卫戍协议通关循环 = function()
             ssleep(15)
         end
         if findOne("卫戍协议返回主页") then
-            log("卫戍协议战斗失败")
-            lost = true
-            break
+            ssleep(.2)
+            tap("卫戍协议结算返回主页")
+            ssleep(1)
+            return true
         end
-    end
-    if lost == true then
-        goto return_to_home_page
     end
 
     if wait(function()
@@ -1029,145 +1030,5 @@ autochess.卫戍协议通关循环 = function()
     ssleep(.5)
     tap("卫戍协议金币清零确定")
     ssleep(8)
-    ::relink::
-    appear("卫戍协议放弃模拟", 60)
-    ssleep(.5)
-    tap("卫戍协议放弃模拟")
-    ssleep(.5)
-    tap("卫戍协议金币清零确定")
-    ::return_to_home_page::
-    if not wait(function()
-            tap("卫戍协议准备就绪")
-            ssleep(2)
-            disappear("正在提交反馈至神经", network_timeout)
-            if findOne("卫戍协议首页") then
-                log("卫戍协议一轮循环结束")
-                return true
-            end
-        end, 30, 1) then
-        log("可能是卡住了,点一下返回首页")
-        tap("卫戍协议准备就绪")
-    end
-end
-
-autochess.卫戍协议刷角标 = function()
-    log("卫戍协议刷角标开始")
-    local lose = false
-
-    if not findOne("卫戍协议首页") then
-        autochess.卫戍协议进入()
-    end
-    if not appear("卫戍协议首页", 5) then return end
-    if findOne("卫戍协议放弃模拟") then
-        return
-    end
-
-    if not wait(function()
-            if findOne("卫戍协议个人模拟") then return true end
-            tap("卫戍协议个人模拟")
-            ssleep(.1)
-        end, 2) then
-        return false
-    end
-    tap("卫戍协议独立模拟按钮")
-    disappear("卫戍协议首页", 3)
-    appear("卫戍协议开始模拟", 3)
-
-    -- 难度选择
-
-    for i = 1, 100 do
-        tap("卫戍协议最下面")
-        if findOne("卫戍协议规程登记1") then
-            break
-        end
-        ssleep(0.05)
-    end
-    if not findOne("卫戍协议规程登记1") then
-        log("未找到规程登记1")
-        return
-    end
-
-    appear("卫戍协议开始模拟", 3)
-    ssleep(.2)
-    tap("卫戍协议开始模拟")
-
-    if not wait(function()
-            if findOne("卫戍协议选择分队") then return true end
-            tap("卫戍协议准备就绪")
-        end, 10, 1) then
-    end
-    ssleep(.5)
-
-    -- 寻找没有角标的分队
-    local find_first_team = function()
-        local mubiao = "FF9C1B"
-        local x = 1114
-        local y = 127
-        local px = 210
-        local py = 210
-        for sx = 0, 3 do
-            for sy = 0, 3 do
-                local l = scale(x + sx * px)
-                local t = scale(y + sy * py)
-                local b = scale(y + sy * py + 55)
-                local r = scale(x + sx * px + 55)
-                if not find_color({ l, t, r, b }, mubiao, 1, 90 / 100) then
-                    -- log.debug("color not found", sx, sy)
-                    log("第", sy + 1, "行第", sx + 1, "列没有角标")
-                    return math.abs((l + r) / 2), math.abs((t + b) / 2)
-                else
-                    log("第", sy + 1, "行第", sx + 1, "列有角标")
-                    log(l, t, r, b)
-                end
-                -- log.debug("color", sx, sy, color)
-            end
-        end
-    end
-
-    local team_x, team_y = find_first_team()
-    if not find_first_team then
-        log("没有找到没有角标的分队1")
-        tap("卫戍协议分队中间")
-        ssleep(.1)
-        team_x, team_y = find_first_team()
-        if not find_first_team then
-            log("没有找到没有角标的分队2")
-            return
-        end
-    end
-
-    tap(team_x, team_y)
-
-    ssleep(2)
-    wait(function()
-        tap("卫戍协议准备就绪")
-    end, 5, 1)
-    ssleep(10)
-    appear("卫戍协议战斗准备就绪", 40)
-    log("卫戍协议进入第一回合战斗")
-    exit()
-
-    if lose == true then
-        return
-    end
-
-    -- 结束模拟
-    if appear("卫戍协议放弃模拟", 2) then
-        ssleep(.5)
-        tap("卫戍协议放弃模拟")
-        ssleep(.5)
-    end
-    tap("卫戍协议金币清零确定")
-    if not wait(function()
-            tap("卫戍协议准备就绪")
-            ssleep(2)
-            disappear("正在提交反馈至神经", network_timeout)
-            if findOne("卫戍协议首页") then
-                log("卫戍协议一轮循环结束")
-                return true
-            end
-        end, 30, 1) then
-        log("可能是卡住了,点一下返回首页")
-        tap("卫戍协议准备就绪")
-    end
+    return autochess.卫戍协议放弃()
 end
