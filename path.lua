@@ -6674,6 +6674,7 @@ path.赛季任务 = function()
             autochess.卫戍协议通关循环()
         end
     end
+    autochess.卫戍协议奖励()
 end
 
 path.会客厅跳转好友 = function()
@@ -10483,17 +10484,8 @@ path.卫戍协议 = function()
             autochess.卫戍协议通关循环()
         end
     end
+    autochess.卫戍协议奖励()
 end
-
-path.卫戍协议刷角标 = function()
-    log("卫戍协议开始")
-    autochess.卫戍协议进入()
-
-    while not autochess.卫戍协议刷角标() do
-
-    end
-end
-
 
 path.保全 = function()
     path.跳转("首页")

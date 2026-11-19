@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.19 16:52"
+release_date = "11.19 22:49"
 update_announcement = '最近更新: TL活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -113,7 +113,7 @@ remove_lr_ad()
 detectServer()
 -- predebug_hook()
 backup_config()
---showUI()
+showUI()
 loadUIConfig()
 restart_mode_hook()
 update_state_from_debugui()
@@ -127,10 +127,6 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1) --防止启动过快下方信息影响截图
-    autochess.卫戍协议通关循环()
-    autochess.卫戍协议通关循环()
-
-    exit()
 end
 
 load(before_account_hook or '')()
