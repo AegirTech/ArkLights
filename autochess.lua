@@ -75,7 +75,7 @@ end
 local 格子序号 = { { 4, 4 }, { 3, 3 }, { 3, 2 }, { 4, 2 }, { 3, 1 }, { 4, 3 }, { 3, 4 }, { 4, 1 }, { 4, 2 } }
 
 local 近战格子 = { { 8, 1 }, { 8, 2 } }
-local 远程格子 = { { 7, 2 }, { 8, 3 }, { 7, 1 }, { 6, 1 } }
+local 远程格子 = { { 7, 2 }, { 7, 3 }, { 7, 1 }, { 6, 1 }, { 5, 1 } }
 local 医疗格子 = { { 6, 2 } }
 
 local coreBond = "精准"
@@ -279,7 +279,7 @@ end
 -- 升本只到4本:确认生效但校验可能失效,靠"总共最多尝试3次=最多+3本"兜底;
 -- 刷新费1,回合结束金币清零,所以每回合尽量把金币花光。
 
-local 近战职业 = { PIONEER = true, WARRIOR = true }
+local 近战职业 = { WARRIOR = true, TANK = true }
 local 远程职业 = { SNIPER = true, CASTER = true, SUPPORT = true }
 local 医疗职业 = { MEDIC = true }
 local borderOn = "3F8E7F"         --卡边框亮色=可购买
@@ -825,22 +825,15 @@ autochess.卫戍协议循环1 = function()
             if not shopOk then log("商店购买异常:" .. tostring(shopErr)) end
             --点准备就绪开战:点击可能被悬浮窗等吞掉,按钮消失(进入战斗)且连续两次确认才算开战
             --不能用槽位有卡判:最后一张卡可能已被买空
-            local buttonGone = 0
-            wait(function()
-                if findOne("卫戍协议战斗准备就绪") then
-                    buttonGone = 0
-                    tap("卫戍协议战斗准备就绪")
-                    ssleep(.5)
-                    if appear("卫戍协议金币清零确定") then
-                        tap("卫戍协议金币清零勾")
-                        ssleep(.1)
-                        tap("卫戍协议金币清零确定")
-                    end
-                else
-                    buttonGone = buttonGone + 1
-                    if buttonGone >= 2 then return true end
-                end
-            end, 25)
+            ssleep(.5)
+            tap("卫戍协议战斗准备就绪")
+            ssleep(.5)
+            if appear("卫戍协议金币清零确定") then
+                tap("卫戍协议金币清零勾")
+                ssleep(.1)
+                tap("卫戍协议金币清零确定")
+            end
+            ssleep(15)
             ssleep(15)
         end
         if findOne("卫戍协议返回主页") then
