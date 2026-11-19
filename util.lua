@@ -3921,6 +3921,7 @@ end
 
 check_login_frequency = function()
     login_times = (login_times or 0) + 1
+    login_time_history = login_time_history or {}
 
     if login_times > 1 then
         -- captureqqimagedeliver(table.join(qqmessage, ' ') .. ' ' .. "登录次数" ..

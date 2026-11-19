@@ -32,7 +32,7 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.15 11:05"
+release_date = "11.19 02:26"
 update_announcement = '最近更新: TL活动导航'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
@@ -253,7 +253,7 @@ if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     --     end
     --     return card
     -- end
-
+    autochess.卫戍协议循环1()
     autochess.卫戍协议循环1()
     -- swip_up_20px = function()
     --     local x1 = scale(1110)
