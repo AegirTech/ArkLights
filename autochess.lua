@@ -79,12 +79,13 @@ local 格子序号 = { { 4, 4 }, { 3, 3 }, { 3, 2 }, { 4, 2 }, { 3, 1 }, { 4, 3 
 -- 每回合识别卡栏布局(极速L1=4卡/L2-5=5卡/L6=6卡,卡位右起1-6,见 point.卫戍协议商店卡位列表):
 -- 名称OCR查 autochess_data.json 的盟约、character_type_list.json 的职业,名字对不上时OCR盟约区兜底。
 -- 优先级:核心盟约新名字尽量多买多部署(没部署位才落待部署区攒购买进度) > 重装最多2个 > 近卫补位;
+-- 核心部署格按类型(近/远/医)三级选取:空位 > 顶替非核心 > 该类全是核心且新卡4级以上时,顶替3级及以下等级最低(同级星级低)的核心;
 -- 精准盟约要买≥3个不同名字的干员:新名字优先部署,凑齐三人后同名副本也往场上部署(待部署区干员没有作用);
 -- 近战职业(PIONEER/WARRIOR/TANK/SPECIAL)放近战格,医疗(MEDIC)放医疗格,其余放远程格,部署一律朝右。
 -- 三个同名干员自动合成2星:2星自动落到场上最左上方部署的同名1星位置(其余同名1星撤下),场上没有同名1星时才落待部署区;
 -- 合成后商店自动刷新一次出现"3选1"(卡位右起1-3,暂无标定素材,按readCard同逻辑识别名称),选evaluate最优的一个并部署。
 -- 升本只到4本:确认生效但校验可能失效,靠"总共最多尝试3次=最多+3本"兜底;
--- 刷新费1,回合结束金币清零,每回合一直刷新直到刷新按钮变灰(买不起),把金币花光。
+-- 刷新费1,回合结束金币清零,每回合一直刷新直到刷新按钮变灰(买不起)把金币花光;或刷新后所有干员都不可买也提前收手。
 local 近战格子 = { { 8, 1 }, { 8, 3 } }
 local 远程格子 = { { 7, 2 }, { 7, 3 }, { 7, 1 }, { 6, 1 }, { 8, 2 } }
 local 医疗格子 = { { 6, 2 } }
@@ -324,8 +325,10 @@ local findFree格子 = function(state, wantKind)
     end
 end
 
--- 优先找同 kind 的空格；没有空格时，找同 kind 上非核心单位占用的格子顶替
-local findDeploy格子 = function(state, wantKind)
+-- 同 kind 选部署格(按近/远/医分类):1.空位 2.没有空位则顶替非核心干员 3.该类全是核心且新卡4级以上,
+-- 则顶替3级及以下里等级最低(同级取星级低)的核心
+local findDeploy格子 = function(state, card)
+    local wantKind = card.格子Kind
     local freeIndex = findFree格子(state, wantKind)
     if freeIndex then return freeIndex, false end
     for 格子Index = 1, #state.已部署格子 do
@@ -333,6 +336,21 @@ local findDeploy格子 = function(state, wantKind)
         if oper and state.已部署格子Kinds[格子Index] == wantKind and oper.core ~= true then
             return 格子Index, true
         end
+    end
+    if (card.level or 0) >= 4 then
+        local weakIndex
+        for 格子Index = 1, #state.已部署格子 do
+            local oper = state.已部署格子[格子Index]
+            if oper and oper.core and oper.level and oper.level <= 3 and state.已部署格子Kinds[格子Index] == wantKind then
+                local worst = weakIndex and state.已部署格子[weakIndex]
+                if not worst
+                    or oper.level < worst.level
+                    or (oper.level == worst.level and oper.star < worst.star) then
+                    weakIndex = 格子Index
+                end
+            end
+        end
+        if weakIndex then return weakIndex, true end
     end
 end
 
@@ -373,13 +391,19 @@ local fieldCoreNames = function(state)
     return names, count
 end
 
+--顶替放行判定:非核心一星,或3级及以下核心(4级以上新核心的顶替目标,见findDeploy格子)
+local replaceable = function(oper)
+    return oper ~= nil and (oper.core ~= true and oper.star == 1
+        or oper.core == true and oper.level and oper.level <= 3)
+end
+
 --购买优先级:1=核心新名字部署 2=重装补位(场上≤2)/凑齐三人后同名核心补场 3=非核心补位(重装/近卫/医疗/远程等,
 --优先把8个格子部署满) 4=核心新名字上架 5=同名核心上架(攒合成)
 local evaluate = function(card, state, waitingZoneCount)
     local fielded, coreDistinct = fieldCoreNames(state)
 
     if card.core then
-        local 格子Index, overwrite = findDeploy格子(state, card.格子Kind)
+        local 格子Index, overwrite = findDeploy格子(state, card)
         local deployable = 格子Index ~= nil
 
         if not fielded[card.name] then
@@ -426,7 +450,7 @@ local buildPlan = function(cards, state)
         if not best then break end
         local bestCard = best.card
         if best.action == "deploy" then
-            sim.已部署格子[best.格子Index] = { name = bestCard.name, star = 1, prof = bestCard.prof, core = bestCard.core }
+            sim.已部署格子[best.格子Index] = { name = bestCard.name, star = 1, prof = bestCard.prof, core = bestCard.core, level = bestCard.level }
         else
             waitingZoneCount = waitingZoneCount + 1
         end
@@ -531,7 +555,7 @@ local addAndMerge = function(state, card)
                 state.已部署格子[格子Index] = false
             end
         end
-        state.已部署格子[firstGrid] = { name = name, star = 2, prof = card.prof, core = card.core, rank = keepRank }
+        state.已部署格子[firstGrid] = { name = name, star = 2, prof = card.prof, core = card.core, level = card.level, rank = keepRank }
         log("合成:" .. name .. "→2星(自动落场)")
         return "field"
     end
@@ -560,7 +584,7 @@ local deployStar2 = function(state, card)
     if deployBought(state, from, tile) then
         local name = card.name
         state.rank = (state.rank or 0) + 1
-        state.已部署格子[格子Index] = { name = name, star = 2, prof = card.prof, core = card.core, rank = state.rank }
+        state.已部署格子[格子Index] = { name = name, star = 2, prof = card.prof, core = card.core, level = card.level, rank = state.rank }
         state.waitingZone2Star[name] = (state.waitingZone2Star[name] or 1) - 1
         if state.waitingZone2Star[name] <= 0 then state.waitingZone2Star[name] = nil end
         log("部署2星:" .. tostring(card.name))
@@ -604,8 +628,9 @@ local choose = function(state, data)
             deployStar2(state, card)
         elseif merge == nil and pick.action == "deploy" and not state.deployBroken then
             local 格子Index = pick.格子Index
-            if state.已部署格子[格子Index] then
-                格子Index = findFree格子(state, card.格子Kind)
+            local occupied = state.已部署格子[格子Index]
+            if occupied and not (pick.overwrite and replaceable(occupied)) then
+                格子Index = findFree格子(state, card.格子Kind) --3选1只放行顶替(非核心一星/弱核心),其余占位重找同类空格
             end
             if 格子Index then
                 if deployBought(state, landingGrid, state.已部署格子Points[格子Index]) then
@@ -615,6 +640,7 @@ local choose = function(state, data)
                         star = 1,
                         prof = card.prof,
                         core = card.core,
+                        level = card.level,
                         rank = state
                             .rank
                     }
@@ -654,8 +680,8 @@ local execute = function(plan, state, data, failedSlots)
                 local occupied = state.已部署格子[格子Index]
 
                 if occupied then
-                    if pick.overwrite and occupied.core ~= true and occupied.star == 1 then
-                        -- 顶替非核心一星：允许直接覆盖，被顶掉的单位去向见下面说明
+                    if pick.overwrite and replaceable(occupied) then
+                        -- 顶替非核心一星/弱核心(3级及以下)：允许直接覆盖，被顶掉的单位去向见下面说明
                         local old = occupied
                         -- 例如退回待部署区：
                         -- state.waitingZone1Star[old.name] = (state.waitingZone1Star[old.name] or 0) + 1
@@ -673,6 +699,7 @@ local execute = function(plan, state, data, failedSlots)
                             star = 1,
                             prof = card.prof,
                             core = card.core,
+                            level = card.level,
                             rank = state.rank,
                         }
                         state.waitingZone1Star[name] = (state.waitingZone1Star[name] or 1) - 1
@@ -711,6 +738,7 @@ end
 
 --刷新商店(费1):一直点刷新,直到刷新按钮变灰(买不起)为止,不做硬次数限制;
 --刷没刷动仍用"卡位签名或首个亮槽卡名变化"判定(全亮商店签名可能巧合相同,以卡名为准);
+--刷新生效后若所有干员卡位都不可买(刷不出买得起的卡),按钮没灰也返回false收手;
 --刷不动且按钮没变灰(比色失效兜底)时两者都不变,返回false收手
 local refresh = function(state, cardCount, cards)
     local prevSig = makeSignature(cardCount)
@@ -729,13 +757,13 @@ local refresh = function(state, cardCount, cards)
             log("刷新按钮已灰,停止刷新(本回合共" .. state.refreshCount .. "次)")
             return false
         end
-        if makeSignature(cardCount) ~= prevSig then
+        if makeSignature(cardCount) ~= prevSig or (checkSlot and ocro("卫戍协议商店名称列表" .. checkSlot) ~= oldName) then
             log("刷新第" .. state.refreshCount .. "次")
-            return true
-        end
-        if checkSlot and ocro("卫戍协议商店名称列表" .. checkSlot) ~= oldName then
-            log("刷新第" .. state.refreshCount .. "次")
-            return true
+            for slotIndex = 1, cardCount - 1 do --最后一位固定是装备,只看干员卡位
+                if slotBuyable(slotIndex) then return true end
+            end
+            log("刷新后所有干员都不可买,停止刷新(本回合共" .. state.refreshCount .. "次)")
+            return false
         end
     end
     log("刷新无效(按钮未灰但卡栏没变)")
