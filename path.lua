@@ -6124,18 +6124,23 @@ path.活动 = function(x)
     end
     log("进入活动关卡:", x, "跳过导航:", skip_guide)
 
+    -- 活动导航0 是函数点, 不能直接用取色字符串覆盖:
+    -- rfl/rfg 是加载时按点名建好的缓存, 覆盖后 rfg["活动导航0"] 为 nil, findOne 会崩
+    local 活动导航 = "活动导航0"
+    if string.find(x, "HD-EX-", 1, true) then
+        活动导航 = "活动导航EX"
+    elseif string.find(x, "HD-S-", 1, true) then
+        活动导航 = "活动导航S"
+    end
+
     if not skip_guide then
         path.跳转("首页")
         tap(hd_position)
         log(x)
-        if string.find(x, "HD-EX-", 1, true) then
-            point["活动导航0"] = point["活动导航EX"]
-        elseif string.find(x, "HD-S-", 1, true) then
-            point["活动导航0"] = point["活动导航S"]
-        end
+        log.debug()
         if not wait(function()
                 ssleep(2) --at活动有过场动画
-                if findOne("活动导航0") then return true end
+                if findOne(活动导航) then return true end
                 if findOne("跳过剧情") then
                     log(13247, '发现剧情')
                     path.跳过剧情()
@@ -6160,7 +6165,7 @@ path.活动 = function(x)
                 return true
             end
         end, 10, .2)
-        if findOne("活动导航0") then return true end
+        if findOne(活动导航) then return true end
         wait(function()
             tap('制铳师之夜入账')
         end, 2, .2)
@@ -6224,21 +6229,21 @@ path.活动 = function(x)
     --     path.跳转("首页")
     -- end
 
-    if not skip_guide and not appear({ "活动导航0", "活动商店导航" }, 5) then
+    if not skip_guide and not appear({ 活动导航, "活动商店导航" }, 5) then
         log.warn("未找到活动导航")
         return
     end
 
     log("skip_guide", skip_guide)
-    appear("活动导航0", 3)
+    appear(活动导航, 3)
     if not skip_guide then
-        if not findOne("活动导航0") then return end
+        if not findOne(活动导航) then return end
         log("已进入活动页面,根据" .. x .. "选择入口")
         if utf8.left(x, 5) == "HD-EX" then --提取x的前面五个，如果是"HD-EX"，则进入活动的ex界面
             if not wait(function()
                     tap("活动导航EX")
                     ssleep(.5)
-                    if disappear("活动导航0", 1) then
+                    if disappear(活动导航, 1) then
                         ssleep(.5)
                         return true
                     end
@@ -6249,7 +6254,7 @@ path.活动 = function(x)
             if not wait(function()
                     tap("活动导航S")
                     ssleep(.5)
-                    if disappear("活动导航0", 1) then
+                    if disappear(活动导航, 1) then
                         ssleep(.5)
                         return true
                     end
@@ -6258,9 +6263,9 @@ path.活动 = function(x)
             end
         else --正常流程进入活动的第一阶段界面
             if not wait(function()
-                    tap("活动导航0")
+                    tap(活动导航)
                     ssleep(.5)
-                    if disappear("活动导航0", 1) then
+                    if disappear(活动导航, 1) then
                         ssleep(.5)
                         if findOne("跳过章节开启旅途") then
                             tap("跳过章节开启旅途")
