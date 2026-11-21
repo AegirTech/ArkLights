@@ -450,7 +450,13 @@ local buildPlan = function(cards, state)
         if not best then break end
         local bestCard = best.card
         if best.action == "deploy" then
-            sim.已部署格子[best.格子Index] = { name = bestCard.name, star = 1, prof = bestCard.prof, core = bestCard.core, level = bestCard.level }
+            sim.已部署格子[best.格子Index] = {
+                name = bestCard.name,
+                star = 1,
+                prof = bestCard.prof,
+                core = bestCard.core,
+                level = bestCard.level
+            }
         else
             waitingZoneCount = waitingZoneCount + 1
         end
@@ -502,17 +508,14 @@ end
 local deployBought = function(state, from, tile, direction)
     local direction = direction or "右"
     local from = from or waitingZoneRecognize()
-    if not 待部署区[from] then
-        log("部署失败:待部署区第" .. tostring(from) .. "格为空")
-        return false
-    end
+
     log("开始部署第", from, "个干员")
     swipe_slow(待部署区[from], tile)
     deploy0(tile, direction)
     ssleep(.4)
     if waitingZoneRecognize() == from - 1 then
         log.debug("部署成功")
-    elseif waitingZoneRecognize() == from then --应该要写成开关的
+    elseif findOne("卫戍协议待部署区存在干员列表" .. from) then --应该要写成开关的
         log.debug("尝试卖掉")
         swipe_slow(待部署区[from], point["卫戍协议右下角"])
         ssleep(.4)
@@ -555,7 +558,14 @@ local addAndMerge = function(state, card)
                 state.已部署格子[格子Index] = false
             end
         end
-        state.已部署格子[firstGrid] = { name = name, star = 2, prof = card.prof, core = card.core, level = card.level, rank = keepRank }
+        state.已部署格子[firstGrid] = {
+            name = name,
+            star = 2,
+            prof = card.prof,
+            core = card.core,
+            level = card.level,
+            rank = keepRank
+        }
         log("合成:" .. name .. "→2星(自动落场)")
         return "field"
     end
@@ -584,7 +594,14 @@ local deployStar2 = function(state, card)
     if deployBought(state, from, tile) then
         local name = card.name
         state.rank = (state.rank or 0) + 1
-        state.已部署格子[格子Index] = { name = name, star = 2, prof = card.prof, core = card.core, level = card.level, rank = state.rank }
+        state.已部署格子[格子Index] = {
+            name = name,
+            star = 2,
+            prof = card.prof,
+            core = card.core,
+            level = card.level,
+            rank = state.rank
+        }
         state.waitingZone2Star[name] = (state.waitingZone2Star[name] or 1) - 1
         if state.waitingZone2Star[name] <= 0 then state.waitingZone2Star[name] = nil end
         log("部署2星:" .. tostring(card.name))
