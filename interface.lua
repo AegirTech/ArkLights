@@ -1187,9 +1187,9 @@ show_extra_ui = function()
     addTitle(layout, "卫戍协议")
     -- --addInfo(layout, "需要自己过一下教程")
     newRow(layout)
-    -- addTextView(layout, "模式")
-    -- ui.addSpinner(layout, "shp_game_mode", { "1 - 4回合循环" }, 0)
-    -- newRow(layout)
+    addTextView(layout, "角标目标")
+    ui.addSpinner(layout, "autochess_badeg_goal", { "黄色角标(通关3次)", "彩色角标(通关6次)" }, 0)
+    newRow(layout)
     addButton(layout, nil, "卫戍协议开始",
         make_jump_ui_command(layout, nil,
             "extra_mode='卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
