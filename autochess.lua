@@ -93,7 +93,9 @@ local coreBond = "精准"
 local 近战职业 = { WARRIOR = true, TANK = true }
 local 远程职业 = { SNIPER = true, CASTER = true, SUPPORT = true }
 local 医疗职业 = { MEDIC = true }
-local badge = "FF9C1B"            --选分队界面角标颜色
+--选分队界面角标颜色,实测有两种:橙色(255,156,27)常规,青绿(约140,224,204)特殊/已选卡上的角标。
+--青色会被卡片的青色描边(128,187,201)干扰,所以只比角标实心色的高相似度像素
+local badgeList = { "FF9C1B", "8CE0CC" }
 local borderOn = "3F8E7F"         --卡边框亮色=可购买
 local borderOff = "50706A"        --卡边框灰色=买不起
 local borderGold = "CE9644"       --已拥有干员的金色发光边框(实测约206,150,68),同样可购买(买它推进合成)
@@ -112,6 +114,14 @@ local ocrText = function(pointKey)
     return (table.concat(segments):gsub("[%s　]+", ""))
 end
 
+--角标判定: 任一颜色命中即视为有角标(橙色/青绿两种都会出现)
+local findBadge = function(l, t, r, b)
+    for _, color in ipairs(badgeList) do
+        if find_color({ l, t, r, b }, color, 1, 0.9) then return true, color end
+    end
+    return false
+end
+
 local findNoBadgeTeam = function()
     local x = 1114
     local y = 286
@@ -123,13 +133,14 @@ local findNoBadgeTeam = function()
             local t = scale(y + col * dy)
             local b = scale(y + col * dy + 55)
             local r = scale(x + row * dx + 55)
-            if not find_color({ l, t, r, b }, badge, 1, 0.9) then
+            local hasBadge, hitColor = findBadge(l, t, r, b)
+            if not hasBadge then
                 -- log.debug("color not found", row, col)
                 log("第", col + 1, "行第", row + 1, "列没有角标")
                 log(l, t, r, b)
                 return math.abs((l + r) / 2), math.abs((t + b) / 2)
             else
-                log("第", col + 1, "行第", row + 1, "列有角标")
+                log("第", col + 1, "行第", row + 1, "列有角标", hitColor)
                 log(l, t, r, b)
             end
             -- log.debug("color", row, col, color)
