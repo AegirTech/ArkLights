@@ -102,7 +102,7 @@ findAny({ "点1", "点2", "点3" })
 - point表中已经声明的键值对可以直接调用键值字符串，比如 `findOne(key)`,`tap(key)`,等价于`findOne(point.key)`,`tap(point.key)`
 - 新增点位后 center 通常不用手写：运行 `python extract.py auto_center` 自动补齐（点位按点组主要分布区域投票、第一个点计两票；范围取中心位置），生成行尾带"自动补齐"注释的条目；`--refresh` 删旧自动补齐行按当前规则重算，`--modes='{"键":"模式"}'` 注入已知缩放模式
 - 状态机优先兼容 `auto(update(path.base, ...))` 这套速通风格。
-- 新增注释优先使用中文，说明"为什么这样接"，而不是只描述表面动作。
+- 新增注释优先使用中文，使用EmmyLua格式注释新增函数和变量的语义。
 - 命名约定：point 点位名与专有变量名（业务/领域相关）使用中文,通用、过渡性变量名使用英文,可以用一个常用英文单词的就用该单词；UI 内部控件名使用英文;中英文都应该使用完整词语表达变量或函数语义,中文变量名禁止只使用一个单字。
 - 地图与代理作战数据使用 JSON 格式；地图更新可通过 GitHub Action `map_update.yml` 同步。
 - 文件编码：Lua 源文件统一使用 UTF-8（无 BOM）+ CRLF 换行，与 `interface.lua`、`point.lua` 保持一致；编辑后若发现文件变成 UTF-16 等其他编码（编辑器误存所致），用 `iconv -f UTF-16 -t UTF-8` 转回 UTF-8。
@@ -117,8 +117,8 @@ findAny({ "点1", "点2", "点3" })
 - `-s` 为 adb 设备序号（如 `emulator-5556`，雷电模拟器）；adb 优先使用 PATH 中已有的，找不到再用模拟器自带的 adb（在模拟器安装目录下查找），不要写死本机路径；shell/pull 带 `/sdcard` 路径时必须加 `MSYS_NO_PATHCONV=1`。
 - 设备日志同时落在 `/sdcard/lazyide_dbg_*.log`（/sdcard 根目录）；`snapShot` 截图落在 `/sdcard/pictures`。
 - 不推荐 `0.py run`：依赖 win32gui 前台化懒人精灵 IDE 按 F5，窗口激活链路脆弱且日志不可读。
-- 项目暂时不支持断点调试，需要多用 `util.lua` 中的 `log.debug` 写日志定位问题
-- 运行中需要截图确认状态时可以使用 `snapShot` 函数，截图保存在模拟器的 `.env` 中的 `SIMULATOR_SHARED_FOLDER_PATH`；PC 端可通过 `.env` 中的 `PC_SHARED_FOLDER_PATH` 直接读取这些截图
+- 项目暂时不支持断点调试，需要多用 `util.lua` 中的 `log.debug` 写调试信息,`log.info` 写重要信息,`log.warn` 写警告信息,`log.error` 写错误信息
+- 运行中需要截图确认状态时可以使用 `snapShot` 函数（参考`docs\lr_api.lua`），截图保存在模拟器的 `.env` 中的 `SIMULATOR_SHARED_FOLDER_PATH`；PC 端可通过 `.env` 中的 `PC_SHARED_FOLDER_PATH` 直接读取这些截图
 
 需要在设备上单独测试某个模块时，按以下步骤临时修改 `main.lua`：
 
