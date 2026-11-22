@@ -15,6 +15,11 @@ ArkLightsPlus 是基于懒人精灵平台开发的明日方舟全托管自动化
 python3 ./0.py saverun    # Windows
 ./0.sh saverun            # Linux
 
+# 实机调试（首选）：VS Code Lazy-IDE 插件自带的 CLI，走官方 10085 协议上传到设备上的
+# com.nx.nxproj.assist 并运行，改完 lua 后会自动重新打包上传，无需先 0.py save
+EXT=$(ls -d "$HOME"/.vscode/extensions/lazyide.lazyide-* | sort -V | tail -1)   # 自动取已安装的最新版本
+python "$EXT/res/cli/cli.py" --json debug "$(pwd)" -s emulator-5556 --logs --timeout 0
+
 # 发布
 python3 ./0.py r          # Windows：脚本发布
 python3 ./0.py rs         # Windows：基建技能图标包skill.zip 发布
@@ -106,6 +111,14 @@ findAny({ "点1", "点2", "点3" })
 - commit 与 PR 标题格式：英文简写类型 + 半角冒号 + 半角空格 + 中文描述，如 `fix: 更新子模块`；常用类型有 `feat`（新功能）、`fix`（修复）、`docs`（文档）、`refactor`（重构）、`chore`（杂项/构建）。
 
 ### 模块测试方法
+
+实机调试（Lazy-IDE CLI）注意事项：
+
+- `--json` 必须放在子命令前面；输出为 JSONL（print 事件含 `time`/`file`/`line`/`message`），可用 `grep -o '"message": "[^"]*"'` 粗筛日志。
+- 输出不要接 `| head` 等管道：SIGPIPE 会提前杀掉 CLI 导致打包/运行中断；需要后台监控时直接后台运行并轮询输出文件。
+- `-s` 为 adb 设备序号（如 `emulator-5556`，雷电模拟器）；adb 优先使用 PATH 中已有的，找不到再用模拟器自带的 adb（在模拟器安装目录下查找），不要写死本机路径；shell/pull 带 `/sdcard` 路径时必须加 `MSYS_NO_PATHCONV=1`。
+- 设备日志同时落在 `/sdcard/lazyide_dbg_*.log`（/sdcard 根目录）；`snapShot` 截图落在 `/sdcard/pictures`。
+- 不推荐 `0.py run`：依赖 win32gui 前台化懒人精灵 IDE 按 F5，窗口激活链路脆弱且日志不可读。
 
 需要在设备上单独测试某个模块时，按以下步骤临时修改 `main.lua`：
 
