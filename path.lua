@@ -3226,8 +3226,8 @@ path.基建换班 = function()
     -- path.会客厅换班()
     path.制造换班()
     path.贸易换班()
-    path.总览换班()
     path.回收站换班()
+    path.总览换班()
 end
 
 path.控制中枢换班 = function(force_change)
