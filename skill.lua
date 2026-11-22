@@ -1443,10 +1443,27 @@ local function infrastCardName(card)
     if name and name ~= "" and name ~= "干员名未进行识别" then return name end
 end
 
+-- 补扫时可用独占技能复核身份。同一干员的不同精英等级共享身份。
+local function infrastUniqueSkillOwner(skill)
+    if skill == "empty1" or skill == "empty2" then return end
+    local operators = skillpng2operator and skillpng2operator[skill]
+    local owner
+    for _, operator in ipairs(operators or {}) do
+        local name = operator:gsub("[012]$", "")
+        if owner and owner ~= name then return end
+        owner = name
+    end
+    return owner
+end
+
 local function infrastSameCard(first, second)
-    local firstName, secondName = infrastCardName(first), infrastCardName(second)
     if infrastSamePortrait(first.portrait, second.portrait) then return true end
-    return firstName and firstName == secondName and first[1] == second[1] and first[2] == second[2]
+    local firstName, secondName = infrastCardName(first), infrastCardName(second)
+    if firstName and secondName then
+        return firstName == secondName and first[1] == second[1] and first[2] == second[2]
+    end
+    return (first[1] == second[1] and infrastUniqueSkillOwner(first[1]) ~= nil) or
+        (first[2] == second[2] and infrastUniqueSkillOwner(first[2]) ~= nil)
 end
 
 ---用当前设施的在岗卡作为列表前缀，保留其余缓存卡的相对顺序。
@@ -1681,22 +1698,33 @@ end
 
 local infrastMaxPages = 10
 
+---前进一页。返回网格时保留识别该网格的截图，由调用方释放。
 local function infrastNextPage(grid)
-    local nextGrid
-    for _ = 1, 3 do
+    for attempt = 1, 3 do
         if findOne("正在提交反馈至神经") then
             disappear("正在提交反馈至神经", network_timeout)
             ssleep(.5)
         end
         swipo()
         keepCapture()
-        nextGrid = infrastReadGrid()
+        local nextGrid = infrastReadGrid()
         local overlap = infrastGridStep(grid, nextGrid)
-        releaseCapture()
-        if overlap == false then return false end
+        if overlap == false then
+            -- 位移可能还在收尾。先复取同一页，再判断手势结果。
+            releaseCapture()
+            sleep(150)
+            keepCapture()
+            nextGrid = infrastReadGrid()
+            overlap = infrastGridStep(grid, nextGrid)
+        end
+        if overlap == false then
+            releaseCapture()
+            return false
+        end
         if overlap then return nextGrid, overlap end
+        if attempt == 3 then return nil, nil, nextGrid end
+        releaseCapture()
     end
-    return nil, nil, nextGrid
 end
 
 local function infrastCardAt(card, anchor, page, minMood)
@@ -1708,7 +1736,7 @@ local function infrastCardAt(card, anchor, page, minMood)
     return {
         card[1], card[2], mood,
         { x + scale(7), y + scale(18), x + scale(60), y + scale(70) },
-        page, card[6], portrait = card.portrait, anchor = anchor,
+        page, card[6], portrait = infrastPortrait(anchor), anchor = anchor, resident = card.resident,
     }
 end
 
@@ -1760,9 +1788,9 @@ local function infrastScanRoster(stationType, capacity)
         elseif terminal and #terminal.allSlots > #terminal.slots then
             grid, skip, tail = terminal, #terminal.slots, true
         else
+            if terminal then releaseCapture() end
             break
         end
-        keepCapture()
     end
     log.info("基建全量扫描完成", stationType, "页数", lastPage, "识别技能", scanned, "耗时", time() - startTime)
     return { cards = cards, unlocated = {} }
@@ -1841,6 +1869,7 @@ local function infrastReconcilePage(stationType, state, slots, skip, page, first
                 card[1], card[6], state.expected[state.cursor][1], state.expected[state.cursor][6])
             return nil, "预期顺序无法对齐，页 " .. page
         end
+        if state.fullScan and source.resident then card.resident = true end
         infrastRecordCard(state, source, card, visible)
     end
     for index = firstExpected, state.cursor - 1 do
@@ -1872,94 +1901,17 @@ local function infrastTapCard(anchor)
     end, .5)
 end
 
-local function infrastTapRoster(stationType, best)
-    local targets, names = {}, {}
-    for _, card in ipairs(best) do
-        if card[1] == "abyssal_hunter" then
-            names[#names + 1] = card[6]
-        else
-            targets[#targets + 1] = card
-        end
-    end
-    table.sort(targets, function(first, second)
-        if first[5] ~= second[5] then return first[5] < second[5] end
-        if math.abs(first.anchor[1] - second.anchor[1]) > scale(3) then
-            return first.anchor[1] < second.anchor[1]
-        end
-        return first.anchor[2] < second.anchor[2]
-    end)
-    swipo(true)
-    local page = 1
-    local minMood = stationType == "加工站" and 24 or shift_min_mood
-    for _, card in ipairs(targets) do
-        while page < card[5] do
-            local previous = sample("干员第一个")
-            local moved = false
-            for _ = 1, 3 do
-                swipo()
-                if not findOne(previous) then
-                    moved = true
-                    break
-                end
-            end
-            if not moved then return false end
-            page = page + 1
-        end
-        keepCapture()
-        local anchor = infrastVerifyTarget(card)
-        local mood = anchor and infrastCardMood(anchor)
-        releaseCapture()
-        if not anchor then
-            log.debug("基建点选前头像不匹配", stationType, card[5], card.anchor)
-            return false
-        end
-        if not disable_shift_mood and mood < minMood then
-            log.debug("基建点选前心情低于阈值", stationType, mood, minMood)
-            return false
-        end
-        if not infrastTapCard(anchor) then
-            log.debug("基建点选后未出现选中边框", stationType, anchor)
-            return false
-        end
-    end
-    if #names > 0 then
-        swipo(true)
-        if not chooseOperatorByOcr(names) then return false end
-    end
-    return true
-end
-
-local function infrastReuseRoster(stationType, capacity, pool, scoreRoster)
-    local startTime = time()
-    keepCapture()
-    local grid = infrastReadGrid()
-    if not grid.valid or #grid.slots == 0 then
-        releaseCapture()
-        return nil, "首页找不到干员卡片"
-    end
-
-    local firstPage, head = {}, {}
-    local resident = true
-    for index, anchor in ipairs(grid.slots) do
-        local card = infrastScanPoolCard(stationType, anchor, 1)
-        resident = resident and index <= capacity and infrastHasRoomBadge(anchor)
-        card.resident = resident or nil
-        if resident then head[#head + 1] = card end
-        firstPage[index] = card
-    end
-    local expected, pending = infrastExpectedCards(head, pool)
-    local state = {
-        expected = expected, pending = pending, cursor = 1, missing = pool.missing or 0,
-        cards = {}, targets = {}, probes = 0, repaired = 0, scanned = #firstPage,
+local function infrastSelectionState(stationType, expected, pending, missing, scanned)
+    return {
+        expected = expected, pending = pending, cursor = 1, missing = missing or 0,
+        cards = {}, targets = {}, probes = 0, repaired = 0, scanned = scanned or 0,
         minMood = disable_shift_mood and 0 or (stationType == "加工站" and 24 or shift_min_mood or 0),
     }
-    local visible, reason = infrastReconcilePage(stationType, state, grid.slots, 0, 1, firstPage)
-    releaseCapture()
-    if not visible then return nil, reason end
+end
 
-    local best = scoreRoster(infrastRosterSnapshot(state).cards)
-    if not best or #best == 0 then return nil, "没有可选干员" end
-
+-- 全扫首站和复用后续站共用翻页定位，按当前页的列重叠找到真实卡位。
+local function infrastSelectRoster(stationType, state, grid, best)
+    local startTime = time()
     local names, selected = {}, {}
     for _, card in ipairs(best) do
         if card[1] == "abyssal_hunter" then
@@ -1969,10 +1921,17 @@ local function infrastReuseRoster(stationType, capacity, pool, scoreRoster)
             state.targets[card] = true
         end
     end
-    for _, card in ipairs(state.cards) do
-        if state.targets[card] then
-            state.targets[card] = nil
-            visible[#visible + 1] = card
+    local visible, reason = {}, nil
+    if state.fullScan then
+        visible, reason = infrastReconcilePage(stationType, state, grid.slots, 0, 1)
+        releaseCapture()
+        if not visible or reason then return nil, reason end
+    else
+        for _, card in ipairs(state.cards) do
+            if state.targets[card] then
+                state.targets[card] = nil
+                visible[#visible + 1] = card
+            end
         end
     end
 
@@ -2035,11 +1994,11 @@ local function infrastReuseRoster(stationType, capacity, pool, scoreRoster)
         elseif terminal and #terminal.allSlots > #terminal.slots then
             slots, overlap, terminalPage = terminal.allSlots, #terminal.slots, true
         else
+            if terminal then releaseCapture() end
             terminalPage, visible = true, {}
             slots = nil
         end
         if slots then
-            keepCapture()
             visible, reason = infrastReconcilePage(stationType, state, slots, overlap, page, nil, terminalPage)
             releaseCapture()
             if not visible then return nil, reason end
@@ -2051,12 +2010,47 @@ local function infrastReuseRoster(stationType, capacity, pool, scoreRoster)
         if not chooseOperatorByOcr(names) then return nil, "深海猎人选人失败" end
     end
 
-    log.info("基建复用选人完成", stationType, "评分前扫描页数", 1, "选人到达页", page,
-        "末列读卡", state.probes, "识别技能", state.scanned, "补扫页数", state.repaired,
-        "耗时", time() - startTime)
+    if state.fullScan then
+        log.info("基建全扫后选人完成", stationType, "选人到达页", page,
+            "末列读卡", state.probes, "补扫页数", state.repaired, "耗时", time() - startTime)
+    else
+        log.info("基建复用选人完成", stationType, "评分前扫描页数", 1, "选人到达页", page,
+            "末列读卡", state.probes, "识别技能", state.scanned, "补扫页数", state.repaired,
+            "耗时", time() - state.started)
+    end
     local roster = infrastRosterSnapshot(state)
     roster.best = selected
     return roster
+end
+
+local function infrastReuseRoster(stationType, capacity, pool, scoreRoster)
+    local startTime = time()
+    keepCapture()
+    local grid = infrastReadGrid()
+    if not grid.valid or #grid.slots == 0 then
+        releaseCapture()
+        return nil, "首页找不到干员卡片"
+    end
+
+    local firstPage, head = {}, {}
+    local resident = true
+    for index, anchor in ipairs(grid.slots) do
+        local card = infrastScanPoolCard(stationType, anchor, 1)
+        resident = resident and index <= capacity and infrastHasRoomBadge(anchor)
+        card.resident = resident or nil
+        if resident then head[#head + 1] = card end
+        firstPage[index] = card
+    end
+    local expected, pending = infrastExpectedCards(head, pool)
+    local state = infrastSelectionState(stationType, expected, pending, pool.missing, #firstPage)
+    state.started = startTime
+    local visible, reason = infrastReconcilePage(stationType, state, grid.slots, 0, 1, firstPage)
+    releaseCapture()
+    if not visible then return nil, reason end
+
+    local best = scoreRoster(infrastRosterSnapshot(state).cards)
+    if not best or #best == 0 then return nil, "没有可选干员" end
+    return infrastSelectRoster(stationType, state, grid, best)
 end
 
 local function infrastResetSelection()
@@ -2068,6 +2062,18 @@ local function infrastResetSelection()
         return false
     end
     return true
+end
+
+local function infrastSelectFullScan(stationType, roster, best)
+    keepCapture()
+    local grid = infrastReadGrid()
+    if not grid.valid or #grid.slots == 0 then
+        releaseCapture()
+        return nil, "全扫后找不到首页干员卡片"
+    end
+    local state = infrastSelectionState(stationType, roster.cards, roster.unlocated)
+    state.fullScan = true
+    return infrastSelectRoster(stationType, state, grid, best)
 end
 
 local function choosePooledInfrastOperator(stationType, goodType, stationLevel, tradingStationNum,
@@ -2104,11 +2110,14 @@ local function choosePooledInfrastOperator(stationType, goodType, stationLevel, 
     if roster then
         local best = scoreRoster(roster.cards)
         if not best or #best == 0 then return false end
-        if infrastTapRoster(stationType, best) then
-            roster.best = best
-            return true, roster
-        end
-        reason = "目标干员复核或点选失败"
+        swipo(true)
+        local selected
+        selected, reason = infrastSelectFullScan(stationType, roster, best)
+        if selected then return true, selected end
+        log.info("基建保留全扫结果重试选人", stationType, reason)
+        if not infrastResetSelection() then return false end
+        selected, reason = infrastSelectFullScan(stationType, roster, best)
+        if selected then return true, selected end
     end
     log.warn("基建全量选人失败", stationType, reason)
     if infrastResetSelection() then return nil end
