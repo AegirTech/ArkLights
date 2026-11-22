@@ -96,8 +96,6 @@ findAny({ "点1", "点2", "点3" })
 ## 开发约定
 
 - 在 1920 \* 1080 分辨率环境下开发，为了稳定性和多分辨率适应，取色应该保证像素点与周围8个像素颜色一致；尽量取纯色区域中间的点，避免边缘干扰，添加取色点后要同时将图像缩放到 720p 验证能否通过
-- 项目暂时不支持断点调试，需要多用 `log` 写日志定位问题
-- 运行中需要截图确认状态时可以使用 `snapShot` 函数，截图保存在模拟器的 `.env` 中的 `SIMULATOR_SHARED_FOLDER_PATH`；PC 端可通过 `.env` 中的 `PC_SHARED_FOLDER_PATH` 直接读取这些截图
 - 优先使用 `findOne` / `findAny` 做检测，使用 `tap` 执行点击,这些函数可以直接使用经过`convert_coords`拍平的`point`的键名,比如`findOne("xx列表n")`,`tap("xx")`。
 - OCR 尽量使用 `ocrex`（飞桨 OCR）；只识别一个元素的text时用 `ocro`;`ocrex`和`ocro`也支持直接使用`point`键名。
 - 干员名 OCR 结果需要经校正才能使用，参考 `prts.lua`（`干员名ocr校正`，编队/战斗界面）与 `skill.lua`（720p 基建干员名校正）的写法。
@@ -119,6 +117,8 @@ findAny({ "点1", "点2", "点3" })
 - `-s` 为 adb 设备序号（如 `emulator-5556`，雷电模拟器）；adb 优先使用 PATH 中已有的，找不到再用模拟器自带的 adb（在模拟器安装目录下查找），不要写死本机路径；shell/pull 带 `/sdcard` 路径时必须加 `MSYS_NO_PATHCONV=1`。
 - 设备日志同时落在 `/sdcard/lazyide_dbg_*.log`（/sdcard 根目录）；`snapShot` 截图落在 `/sdcard/pictures`。
 - 不推荐 `0.py run`：依赖 win32gui 前台化懒人精灵 IDE 按 F5，窗口激活链路脆弱且日志不可读。
+- 项目暂时不支持断点调试，需要多用 `util.lua` 中的 `log.debug` 写日志定位问题
+- 运行中需要截图确认状态时可以使用 `snapShot` 函数，截图保存在模拟器的 `.env` 中的 `SIMULATOR_SHARED_FOLDER_PATH`；PC 端可通过 `.env` 中的 `PC_SHARED_FOLDER_PATH` 直接读取这些截图
 
 需要在设备上单独测试某个模块时，按以下步骤临时修改 `main.lua`：
 
