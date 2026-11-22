@@ -94,10 +94,9 @@ local 近战职业 = { WARRIOR = true, TANK = true }
 local 远程职业 = { SNIPER = true, CASTER = true, SUPPORT = true }
 local 医疗职业 = { MEDIC = true }
 local badgeList = { "FF9C1B", "8CE0CC" } --角标颜色:黄色,彩色
-local borderOn = "3F8E7F"                --卡边框亮色=可购买
-local borderOff = "50706A"               --卡边框灰色=买不起
-local borderGold = "CE9644"              --已拥有干员的金色发光边框(实测约206,150,68),同样可购买(买它推进合成)
-local borderGoldBright = "E2B25A"        --金光偏亮态兜底
+local badgeGold = "7C5201"               --价格徽章ring金色=可购买(实测(124,82,1),80帧抖动±3,不动画)
+local badgeGray = "7F7E7B"               --价格徽章ring灰色=买不起(实测(127,126,123));
+--卡边框金光是~0.5s闪烁动画(亮态黄白扫光,暗态露出底层边框),不能作可买依据
 local borderSelected = "128E74"          --卡被选中待确认的边框色(18,142,116),再点一次才真正购买
 local borderEmpty = "454545"             --空卡位灰板色(69,69,69),比无卡位的深色背景(约27,32,34)亮
 local waitingZoneLimit = 8               --待部署区共10格,留2格余量
@@ -150,25 +149,33 @@ local readLevel = function(beginLevel)
     return beginLevel
 end
 
---卡位(右起1-6)边框比色:亮=可购买,灰=已购/买不起,都不是=空槽
+--卡位(右起1-6)边框比色:亮=可购买,灰=已购/买不起,都不是=空槽(现仅用于空槽灰板判定)
 local slotColor = function(slotIndex, borderColor)
     local slotPoint = point["卫戍协议商店卡位列表" .. slotIndex]
     if not slotPoint then return false end
     return findOneStr(slotPoint[1] .. "|" .. slotPoint[2] .. "|" .. borderColor) ~= nil
 end
 
+--价格徽章比色(卡顶八边形价格框,见 point.卫戍协议商店徽章列表):金=可购买,灰=买不起。
+--可买判定不用卡边框:已拥有卡的边框金光是~0.5s闪烁动画(亮态黄白扫光色与任何标定色调不符,暗态露出底层边框),
+--单点单次比色对已拥有卡是掷硬币(2026-11-22 连拍实测),徽章颜色稳定无此问题
+local badgeColor = function(slotIndex, color)
+    local badgePoint = point["卫戍协议商店徽章列表" .. slotIndex]
+    if not badgePoint then return false end
+    return findOneStr(badgePoint[1] .. "|" .. badgePoint[2] .. "|" .. color) ~= nil
+end
+
 local slotBuyable = function(slotIndex)
-    --金光=已拥有同名干员,可买且推进合成;两个金色色调兜底
-    return slotColor(slotIndex, borderOn) or slotColor(slotIndex, borderGold) or slotColor(slotIndex, borderGoldBright)
+    return badgeColor(slotIndex, badgeGold)
 end
 
 local slotHasCard = function(slotIndex)
-    return slotBuyable(slotIndex) or slotColor(slotIndex, borderOff)
+    return slotBuyable(slotIndex) or badgeColor(slotIndex, badgeGray)
 end
 
---卡位是否存在:有卡(亮/灰边框)或空槽灰板,都比"无卡位"的深色背景亮
+--卡位是否存在:有卡(价格徽章金/灰)或空槽灰板,都比"无卡位"的深色背景亮
 local slotExists = function(slotIndex)
-    return slotBuyable(slotIndex) or slotColor(slotIndex, borderOff) or slotColor(slotIndex, borderEmpty)
+    return slotHasCard(slotIndex) or slotColor(slotIndex, borderEmpty)
 end
 
 local 卫戍协议干员ocr校正 = function(name)
@@ -230,7 +237,6 @@ local readCard = function(data, slotIndex)
     for _ = 1, 4 do
         name = 卫戍协议干员ocr校正(ocro("卫戍协议商店名称列表" .. slotIndex))
         if name ~= "" then break end
-        log()
         ssleep(.5)
     end
     if name == "" then log.debug("识别:卡位" .. slotIndex .. "名称多次OCR为空") end
@@ -482,7 +488,7 @@ local buyCard = function(card, state)
     --这张买完就凑满三张同名1星?与addAndMerge合成条件同款算法
     local merging = state and (state.waitingZone1Star[card.name] or 0) + fieldSameCount(state, card.name) >= 2
     log("待部署区1星数量", state.waitingZone1Star[card.name], "场上数量", fieldSameCount(state, card.name), "判断", merging)
-    if slotColor(slotIndex, borderOff) then
+    if badgeColor(slotIndex, badgeGray) then
         log("购买转灰(金币不足):" .. card.name)
         return false
     end
@@ -745,12 +751,12 @@ local upgradeShop = function(currentLevel)
     return currentLevel + 1
 end
 
---卡位状态签名(亮/灰/空槽/背景),用于判定刷新是否生效
+--卡位状态签名(徽章金/徽章灰/空槽/背景),用于判定刷新是否生效(徽章颜色稳定,无金光闪烁噪声)
 local makeSignature = function(cardCount)
     local sigParts = {}
     for slotIndex = 1, cardCount - 1 do
         sigParts[slotIndex] = slotBuyable(slotIndex) and "1" or
-            (slotColor(slotIndex, borderOff) and "2" or (slotColor(slotIndex, borderEmpty) and "3" or "0"))
+            (badgeColor(slotIndex, badgeGray) and "2" or (slotColor(slotIndex, borderEmpty) and "3" or "0"))
     end
     return table.concat(sigParts)
 end
@@ -776,7 +782,8 @@ local refresh = function(state, cardCount, cards)
             log("刷新按钮已灰,停止刷新(本回合共" .. state.refreshCount .. "次)")
             return false
         end
-        if makeSignature(cardCount) ~= prevSig or (checkSlot and ocro("卫戍协议商店名称列表" .. checkSlot) ~= oldName) then
+        local newSig = makeSignature(cardCount)
+        if newSig ~= prevSig or (checkSlot and ocro("卫戍协议商店名称列表" .. checkSlot) ~= oldName) then
             log("刷新第" .. state.refreshCount .. "次")
             for slotIndex = 1, cardCount - 1 do --最后一位固定是装备,只看干员卡位
                 if slotBuyable(slotIndex) then return true end
@@ -1185,9 +1192,11 @@ autochess.卫戍协议通关循环 = function()
 
     if wait(function()
             if findOne("卫戍协议结算返回主页") then
+                ssleep(.2)
                 tap("卫戍协议结算返回主页")
-                return true
+                ssleep(.5)
             end
+            if findOne("卫戍协议首页") then return true end
         end, 120, 1) then
         return true
     end
