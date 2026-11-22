@@ -1,209 +1,134 @@
 import("com.nx.assist.lua.LuaEngine")
-local PaddLeOCR = {}
-local PluGinObject
+
 local work = "mnt/sdcard/Pictures"
+local newApk = work .. "/YOLOCR-v6.apk"
+local oldApk = work .. "/PaddLeOCR.apk"
+local detect
 mkdir(work)
-function PaddLeOCR.IniTiaLModeL(Object)
-    if type(Object) ~= "userdata" or Object == nil then
-        return "变量类型错误"
+
+local function loadNewOcr()
+    local loader = assert(LuaEngine.loadApk(newApk), "无法加载 APK " .. newApk)
+    -- 使用不同的类名，避免懒人精灵复用同名类的方法缓存。
+    local entry = assert(loader.loadClass("com.yolocr.speedrun.MyAIPlugin"), "加载 PP-OCRv6 类失败")
+    assert(entry.initializeOcr(LuaEngine.getContext()), "初始化 PP-OCRv6 失败")
+    local err = entry.loadOcrModel("", "", "", "", "", 640, 1, false, "", "")
+    assert(err == nil, err)
+    return function(bitmap)
+        return entry.detectOcr(bitmap, 0.3, 0.5)
     end
-    PluGinObject = Object.loadClass("com.LR.JZ.PaddLeOCR.Main")
-    if PluGinObject == nil then
-        return "加载Java类失败"
-    end
-    return PluGinObject.IniTiaLModeL(LuaEngine.getContext()) == false and "初始化插件失败, 请确保当前设备系统版本不低于7.0" or nil
 end
 
-function PaddLeOCR.GetCPUCoreNumBer()
-    if PluGinObject == nil then
-        return "请先初始化插件"
-    end
-    return PluGinObject.ObtainCoreNumber()
-end
-
-function PaddLeOCR.IFGPUIsItAvaiLabLe()
-    if PluGinObject == nil then
-        return "请先初始化插件"
-    end
-    return PluGinObject.IFGPUIsItAvaiLabLe()
-end
-
-function PaddLeOCR.LoadModeL(LaBeL, DbModeL, RecModeL, Input, Core, GPU, DbPassWord, RecPassWord)
-    if PluGinObject == nil then
-        return "请先初始化插件"
-    end
-    if type(LaBeL) ~= "string" or LaBeL == "" then
-        return "标签参数错误"
-    end
-    if type(DbModeL) ~= "table" or #DbModeL ~= 2 or type(DbModeL[1]) ~= "string" or type(DbModeL[2]) ~= "string" then
-        return "文本检测模型参数错误"
-    end
-    if type(RecModeL) ~= "table" or #RecModeL ~= 2 or type(RecModeL[1]) ~= "string" or type(RecModeL[2]) ~= "string" then
-        return "文本识别模型参数错误"
-    end
-    if type(Input) ~= "number" or not (Input > 0) then
-        return "输入大小参数错误 并且需要大于0"
-    end
-    if type(Core) ~= "number" or not (Core > 0) then
-        return "核心数参数错误 并且需要大于0"
-    end
-    local ParameterGPU = false
-    local ParameterDbPassWord = ""
-    local ParameterRecPassWord = ""
-    if type(GPU) == "boolean" then
-        ParameterGPU = GPU
-    end
-    if type(DbPassWord) == "string" then
-        ParameterDbPassWord = DbPassWord
-    end
-    if type(RecPassWord) == "string" then
-        ParameterRecPassWord = RecPassWord
-    end
-    local VaLue = PluGinObject.LoadModeL(LaBeL, DbModeL[1], DbModeL[2], RecModeL[1], RecModeL[2], Input, Core,
-        ParameterGPU, ParameterDbPassWord, ParameterRecPassWord)
-    if VaLue == nil then
-    end
-    return VaLue
-end
-
-function PaddLeOCR.Detect(BitMap, Confidence, ProbabiLity)
-    if PluGinObject == nil then
-        return "请先初始化插件"
-    end
-    if type(BitMap) ~= "userdata" then
+local function findOldModels()
+    if not fileExist(oldApk) then
         return nil
     end
-    if math.type(Confidence) ~= "float" or Confidence < 0 then
-        return nil
+    for _, name in ipairs({ "PaddLeOCR", "PaddleOCR" }) do
+        local dir = work .. "/" .. name
+        local label = dir .. "/Rec/LaBeL.txt"
+        if not fileExist(label) then
+            label = dir .. "/Rec/Label.txt"
+        end
+        local detParam = dir .. "/Db/PaddLeOCR_Db.param"
+        local detBin = dir .. "/Db/PaddLeOCR_Db.bin"
+        local recParam = dir .. "/Rec/PaddLeOCR_Rec.param"
+        local recBin = dir .. "/Rec/PaddLeOCR_Rec.bin"
+        if fileExist(label) and fileExist(detParam) and fileExist(detBin)
+            and fileExist(recParam) and fileExist(recBin) then
+            return { label, detParam, detBin, recParam, recBin }
+        end
     end
-    if math.type(ProbabiLity) ~= "float" or ProbabiLity < 0 then
-        return nil
+end
+
+local function loadOldOcr()
+    local models = findOldModels()
+    if not models then
+        for _, name in ipairs({ "ppocr.zip", "ppocr2.zip" }) do
+            local archive = work .. "/" .. name
+            if not fileExist(archive) and type(extractAssets) == "function" then
+                pcall(extractAssets, "main.rc", work, name)
+            end
+            if not fileExist(archive) and type(download_from_alist) == "function" then
+                pcall(download_from_alist, name, work)
+            end
+            if fileExist(archive) then
+                pcall(unZip, archive, work)
+                models = findOldModels()
+                if models then
+                    break
+                end
+            end
+        end
     end
-    local Data = PluGinObject.Detect(BitMap, Confidence, ProbabiLity)
-    if Data == "[]" then
+
+    assert(models, "缺少 PaddLeOCR.apk 或 PP-OCRv3 模型文件")
+    local loader = assert(LuaEngine.loadApk(oldApk), "无法加载 APK " .. oldApk)
+    local entry = assert(loader.loadClass("com.LR.JZ.PaddLeOCR.Main"), "加载 PP-OCRv3 类失败")
+    assert(entry.IniTiaLModeL(LuaEngine.getContext()), "初始化 PP-OCRv3 失败")
+    local label, detParam, detBin, recParam, recBin = table.unpack(models)
+    local cores = math.min(2, entry.ObtainCoreNumber())
+    local err = entry.LoadModeL(label, detParam, detBin, recParam, recBin, 640, cores, false, "", "")
+    assert(err == nil, err)
+    return function(bitmap)
+        return entry.Detect(bitmap, 0.3, 0.5)
+    end
+end
+
+if fileExist(newApk) then
+    local ok, result = pcall(loadNewOcr)
+    if ok then
+        detect = result
+        log.debug("OCR 使用 PP-OCRv6", newApk)
+    else
+        log.debug("PP-OCRv6 加载失败 " .. tostring(result))
+    end
+end
+
+if not detect then
+    local ok, result = pcall(loadOldOcr)
+    if ok then
+        detect = result
+        log.debug("OCR 使用 PP-OCRv3", oldApk)
+    else
+        log.debug("PP-OCRv3 加载失败 " .. tostring(result))
+    end
+end
+paddleocr_loadfailed = detect == nil
+
+function ocrex(r)
+    if disable_paddleocr or paddleocr_loadfailed then
+        return ocr(r)
+    end
+    if type(r) == "string" then
+        r = point[r]
+    end
+    local left, top, right, bottom = table.unpack(r)
+    local bitmap = LuaEngine.snapShot(left, top, right, bottom)
+    if not bitmap then
         return {}
     end
-    return jsonLib.decode(Data)
-end
 
--- 优先使用新ocr (yolocr.apk)
-if not fileExist(work .. "/yolocr.apk") then
-    zip_name = "ppocr.zip"
-    if not fileExist(work .. "/" .. zip_name) then
-        toast("未找到飞浆ocr模型文件，正在尝试下载。")
-        if not download_from_alist(zip_name, work) then
-            toast("飞浆ocr模型下载失败,再试一次 ")
-            if not download_from_alist("ppocr2.zip", work) then
-                toast("飞浆ocr模型下载失败,已禁用")
-                paddleocr_loadfailed = true
-                return
-            else
-                zip_name = "ppocr2.zip"
-            end
-            paddleocr_loadfailed = true
-            return
-        end
+    local ok, rows = pcall(function()
+        local data = detect(bitmap)
+        return data == "[]" and {} or jsonLib.decode(data)
+    end)
+    if not bitmap.isRecycled() then
+        bitmap.recycle()
     end
-    if not fileExist(work .. "/PaddLeOCR.apk") then
-        extractAssets("main.rc", work, zip_name)
-        unZip(work .. "/" .. zip_name, work)
+    sleep(5)
+    if not ok then
+        log.debug("OCR 识别失败 " .. tostring(rows))
+        return {}
     end
 
-    -- 加载插件 有时会加载不上插件 加载不上时请把APK删除重新释放即可
-    local Loader = LuaEngine.loadApk(work .. "/PaddLeOCR.apk")
-    -- 初始化OCR插件 需要把 LuaEngine.loadApk函数返回的插件对象传递过去
-    local Err = PaddLeOCR.IniTiaLModeL(Loader)
-    if Err ~= nil then
-        print(string.format("初始化OCR插件失败 原因: %s", Err))
-        paddleocr_loadfailed = true
+    local matches = {}
+    for i, item in ipairs(rows or {}) do
+        matches[i] = {
+            text = item.LaBeL,
+            l = left + item.X0,
+            r = left + item.X1,
+            t = top + item.Y0,
+            b = top + item.Y3,
+        }
     end
-
-    -- 加载模型 公共模型在ZIP文件里
-
-    -- 文本检测模型 文件名带有Db的文件 数组下标1为param文件 下标2为bin文件
-    local DbModeL = {
-        work .. "/PaddLeOCR/Db/PaddLeOCR_Db.param",
-        work .. "/PaddLeOCR/Db/PaddLeOCR_Db.bin"
-    }
-
-    -- 文本识别模型 文件名带有Rec的文件 数组下标1为param文件 下标2为bin文件
-    local RecModeL = {
-        work .. "/PaddLeOCR/Rec/PaddLeOCR_Rec.param",
-        work .. "/PaddLeOCR/Rec/PaddLeOCR_Rec.bin"
-    }
-
-    -- 生成数据时创建的txt文件 又名: 标签文件 字典文件
-    local LaBeL = work .. "/PaddLeOCR/Rec/Label.txt"
-
-    -- 加载模型
-    local Err = PaddLeOCR.LoadModeL(LaBeL, DbModeL, RecModeL, 640, math.floor(2, PaddLeOCR.GetCPUCoreNumBer()),
-        false, nil, nil)
-    if Err ~= nil then
-        log.error(string.format("加载模型错误 原因: %s", Err))
-        paddleocr_loadfailed = true
-    end
-    log("当前机器cpu核心数:", PaddLeOCR.GetCPUCoreNumBer())
-    ocrex = function(r)
-        if disable_paddleocr then
-            return ocr(r)
-        end
-        if type(r) == "string" then r = point[r] end
-        log.debug("ocrinput", r)
-        local BitMap = LuaEngine.snapShot(r[1], r[2], r[3], r[4])
-        local ret = PaddLeOCR.Detect(BitMap, 0.3, 0.5)
-        local res = {}
-        for i = 1, #ret, 1 do
-            res[i] = {
-                text = ret[i].LaBeL,
-                l = r[1] + ret[i]["X0"],
-                r = r[1] + ret[i]["X1"],
-                t = r[2] + ret[i]["Y0"],
-                b = r[2] + ret[i]["Y3"],
-            }
-        end
-
-        --释放 LuaEngine.snapShot 截取的图片 如不释放会导致内存溢出
-        if BitMap ~= nil and BitMap.isRecycled() == false then
-            BitMap.recycle()
-        end
-        --次数过多之后会闪退,加点延时
-        sleep(5)
-        return res
-    end
-else
-    log("使用 SpeedRun AI Plugin (yolocr.apk)")
-    local loader = LuaEngine.loadApk(work .. "/yolocr.apk")
-    local plugin = loader.loadClass("com.yolocr.speedrun.MyAIPlugin")
-
-    ocrex = function(r)
-        if disable_paddleocr then
-            return ocr(r)
-        end
-        if type(r) == "string" then r = point[r] end
-        log.debug("ocrinput", r)
-        local BitMap = LuaEngine.snapShot(r[1], r[2], r[3], r[4])
-        local retJson = plugin.runOCR(BitMap)
-        local ret = jsonLib.decode(retJson)
-        local res = {}
-        if ret and ret.code == 0 and ret.data then
-            for i = 1, #ret.data do
-                local item = ret.data[i]
-                res[i] = {
-                    text = item.text,
-                    l = r[1] + item.x1,
-                    r = r[1] + item.x2,
-                    t = r[2] + item.y1,
-                    b = r[2] + item.y4,
-                }
-            end
-        end
-        --log.debug("ocroutput", res)
-        --释放 LuaEngine.snapShot 截取的图片 如不释放会导致内存溢出
-        if BitMap ~= nil and BitMap.isRecycled() == false then
-            BitMap.recycle()
-        end
-        --次数过多之后会闪退,加点延时
-        sleep(5)
-        return res
-    end
+    return matches
 end
