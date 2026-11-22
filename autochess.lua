@@ -112,9 +112,9 @@ local ocrText = function(pointKey)
     return (table.concat(segments):gsub("[%s　]+", ""))
 end
 
-local findNoBadgeTeam = function(n)
+local findNoBadgeTeam = function()
     local n = autochess_badeg_goal or 0
-    local text = { "黄色或彩色", "彩色" }
+    local text = { "黄色", "彩色" }
     local x = 1114
     local y = 286
     local dx = 210
@@ -125,17 +125,14 @@ local findNoBadgeTeam = function(n)
             local t = scale(y + col * dy)
             local b = scale(y + col * dy + 55)
             local r = scale(x + row * dx + 55)
-            local hasBadge = find_color({ l, t, r, b }, badgeList[n + 1], 1, 0.9)
-            --刷黄标时彩标也要跳过,否则已有彩标的卡会被当成无黄标而反复选中
-            if n == 0 and not hasBadge then
-                hasBadge = find_color({ l, t, r, b }, badgeList[2], 1, 0.9)
-            end
-            if not hasBadge then
-                -- log.debug("color not found", row, col)
+
+            if find_color({ l, t, r, b }, badgeList[2], 1, 0.9) then
+                log("第", col + 1, "行第", row + 1, "列有", text[2], "角标")
+            elseif n == 0 and find_color({ l, t, r, b }, badgeList[1], 1, 0.9) then
+                log("第", col + 1, "行第", row + 1, "列有", text[1], "角标")
+            else
                 log("第", col + 1, "行第", row + 1, "列没有", text[n + 1], "角标")
                 return math.abs((l + r) / 2), math.abs((t + b) / 2)
-            else
-                log("第", col + 1, "行第", row + 1, "列有", text[n + 1], "角标")
             end
         end
     end
