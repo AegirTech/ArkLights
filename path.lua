@@ -2566,9 +2566,48 @@ path.基建信息获取 = function(retry)
     end
 end
 
+---提交已选中的驻员，并在返回设施界面后更新干员池。
+---@param stationType string
+---@param selected boolean|nil
+---@param transaction InfrastSelection|nil
+---@param confirmPoint string
+---@param destination fun(): any
+---@param timeout number
+---@param delay number|nil
+---@return boolean confirmed
+---@return boolean|nil returned
+local function confirmInfrastSelection(stationType, selected, transaction, confirmPoint, destination, timeout, delay)
+    local submitted = false
+    local confirmed = selected and wait(function(reset_wait_start_time)
+        if findOne("正在提交反馈至神经") then reset_wait_start_time() end
+        if findOne("确认蓝") then
+            tap(confirmPoint)
+            submitted = true
+            if delay then ssleep(delay) end
+        elseif submitted and destination() then
+            return true
+        end
+    end, timeout)
+    infrastPoolFinish(stationType, transaction, confirmed == true)
+    if confirmed then return true, true end
+
+    log.warn(stationType .. (selected and "换班确认超时" or "选人失败，取消换班"))
+    local returned = wait(function()
+        if findAny({ "确认蓝", "筛选", "职业选择" }) then
+            back()
+            ssleep(.3)
+        elseif destination() then
+            return true
+        end
+    end, 3)
+    return false, returned
+end
+
 ---@param trading any 是否是贸易站
 path.制造换班 = function(trading)
     -- if not debug then return end
+    -- 池子初始化:同类型设施只全量扫描一次(贸易换班即 制造换班(true))
+    infrastPoolInit(trading and "贸易站" or "制造站")
     local station_color = trading and "#33CCFF" or "#FFCC00"
     local type
     local good
@@ -2720,18 +2759,14 @@ path.制造换班 = function(trading)
             dormitoryLevel)
 
         local stationType = trading and "贸易站" or "制造站"
-        chooseOperator(stationType, type, stationLevel, tradingStationNum,
+        local selected, transaction = chooseOperator(stationType, type, stationLevel, tradingStationNum,
             virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
             goldStationNum, totalStationLevel)
 
-        wait(function(reset_wait_start_time)
-            tap("确认蓝")
-            if trading and findOne("贸易站设施列表" .. i, .9) then return true end
-            if not trading and findOne("制造站设施列表" .. i, .9) then return true end
-            if findOne("正在提交反馈至神经") then
-                reset_wait_start_time()
-            end
+        local _, returned = confirmInfrastSelection(stationType, selected, transaction, "确认蓝", function()
+            return findOne(stationType .. "设施列表" .. i, .9)
         end, 5)
+        if not returned then return end
 
         -- 源石站补货
         if good == "源石站" then
@@ -3169,6 +3204,8 @@ end
 
 path.基建换班 = function()
     -- TODO 掉线需要重跑而非继续
+    -- 重置全部池子(制造/贸易/发电在各换班函数入口重建,加工站惰性初始化)
+    infrastPool = nil
     path.基建信息获取()
     path.宿舍换班()
     path.发电站换班()
@@ -3198,6 +3235,8 @@ path.控制中枢换班 = function(force_change)
 end
 
 path.发电站换班 = function()
+    -- 池子初始化:同类型设施只全量扫描一次
+    infrastPoolInit("发电站")
     local station_color = "#CCFF66"
     local type
     local good
@@ -3232,18 +3271,12 @@ path.发电站换班 = function()
             dormitoryLevel)
 
         local stationType = "发电站"
-        chooseOperator(stationType, type, stationLevel, tradingStationNum,
+        local selected, transaction = chooseOperator(stationType, type, stationLevel, tradingStationNum,
             virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
             goldStationNum, totalStationLevel)
 
-        wait(function(reset_wait_start_time)
-            tap("确认蓝")
-            if findAny({ "进驻信息", "进驻信息选中", "基建总览工作区" }) then
-                return true
-            end
-            if findOne("正在提交反馈至神经") then
-                reset_wait_start_time()
-            end
+        confirmInfrastSelection(stationType, selected, transaction, "确认蓝", function()
+            return findAny({ "进驻信息", "进驻信息选中", "基建总览工作区" })
         end, 5)
     end
     wait(function()
@@ -3284,21 +3317,13 @@ path.发电站换班 = function()
             dormitoryLevel)
 
         local stationType = "发电站"
-        chooseOperator(stationType, type, stationLevel, tradingStationNum,
+        local selected, transaction = chooseOperator(stationType, type, stationLevel, tradingStationNum,
             virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
             goldStationNum, totalStationLevel)
 
-        wait(function(reset_wait_start_time)
-            if findOne("基建总览工作区") then return true end
-            if findOne("正在提交反馈至神经") then
-                reset_wait_start_time()
-            end
-            tap("确认蓝")
-            ssleep(.8)
-            if findOne("正在提交反馈至神经") then
-                reset_wait_start_time()
-            end
-        end, 5)
+        confirmInfrastSelection(stationType, selected, transaction, "确认蓝", function()
+            return findOne("基建总览工作区")
+        end, 5, .8)
     end
     -- 所有制造站位置
     local station = powerStation
@@ -3422,6 +3447,10 @@ end
 path.加工站选人 = function(stationType, material_id, material_level)
     --根据需要合成的材料换人,而不是总体基建效率
     stationType = stationType or "加工站"
+    -- 池子惰性初始化:首次建池,后续调用复用(失同步自动回退全扫)
+    if infrastPool == nil or infrastPool.type ~= stationType then
+        infrastPoolInit(stationType)
+    end
     if not appear("加工站", 2) then return end
     if not wait(function()
             if findOne("确认蓝") then return true end
@@ -3449,21 +3478,14 @@ path.加工站选人 = function(stationType, material_id, material_level)
         return
     end
 
-    chooseOperator(stationType, material_id, material_level, tradingStationNum,
+    local selected, transaction = chooseOperator(stationType, material_id, material_level, tradingStationNum,
         virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
         goldStationNum, totalStationLevel)
 
-    if not wait(function(reset_wait_start_time)
-            if findAny({ "加工站", "开始加工" }) then
-                return true
-            end
-            if findOne("正在提交反馈至神经") then reset_wait_start_time() end
-            tap("加工站确认蓝")
-            ssleep(.2)
-        end, 3) then
-        return
-    end
-    return true
+    local confirmed = confirmInfrastSelection(stationType, selected, transaction, "加工站确认蓝", function()
+        return findAny({ "加工站", "开始加工" })
+    end, 3, .2)
+    if confirmed then return true end
 end
 
 -- 2025基建更新之后改为在基建总览换班
