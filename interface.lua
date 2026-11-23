@@ -1193,6 +1193,9 @@ show_extra_ui = function()
     addButton(layout, nil, "卫戍协议开始",
         make_jump_ui_command(layout, nil,
             "extra_mode='卫戍协议';extra_mode_multi=true;lock:remove(main_ui_lock)"))
+    addButton(layout, nil, "自动借人",
+        make_jump_ui_command(layout, nil,
+            "extra_mode='卫戍协议自动借人';extra_mode_multi=true;lock:remove(main_ui_lock)"))
     -------------------------------------------------------------
     -- addTitle(layout, "宝石铭刻")
     -- addInfo(layout, "最好是1080p，平板模式")

@@ -10518,6 +10518,10 @@ path.卫戍协议 = function()
     autochess.卫戍协议奖励()
 end
 
+path.卫戍协议自动借人 = function()
+    return autochess.自动借人()
+end
+
 path.保全 = function()
     path.跳转("首页")
     tap("面板作战")

@@ -868,6 +868,7 @@ autochess.卫戍协议进入 = function()
         if not autochess.卫戍协议教程() then
             return false
         end
+        autochess.自动借人()
     end
 end
 
@@ -925,6 +926,50 @@ autochess.卫戍协议教程 = function()
         return false
     end
     return true
+end
+
+autochess.借人 = function()
+    local res = findOne("卫戍协议去借用")
+    log.debug("去借用识别结果", res)
+    while findOne("卫戍协议去借用") do
+        local res = findOne("卫戍协议去借用")
+        log.debug("去借用识别结果", res)
+        wait(function()
+            tap(res)
+            log.info("点击去借用")
+            appear("卫戍协议借人更新", 2)
+            ssleep(3)
+            disappear("正在提交反馈至神经", network_timeout)
+            if findOne("卫戍协议借人空") then
+                back()
+            else
+                tap("卫戍协议借人空")
+                ssleep(3)
+                disappear("正在提交反馈至神经", network_timeout)
+                return true
+            end
+        end, 30, .5)
+    end
+    return true
+end
+
+autochess.自动借人 = function()
+    if not findOne("卫戍协议首页") then
+        autochess.卫戍协议进入()
+    end
+    if not appear("卫戍协议首页", 5) then return end
+    ssleep(.2)
+    tap("卫戍协议物资调配处")
+    disappear("卫戍协议首页", 3)
+    appear("卫戍协议选配助战", 3)
+    ssleep(.2)
+    tap("卫戍协议选配助战")
+    disappear("卫戍协议选配助战", 3)
+    ssleep(.2)
+    for i = 1, 8 do
+        autochess.借人()
+        swipe_slow(point["卫戍协议借人翻页起点"], point["卫戍协议借人翻页终点"])
+    end
 end
 
 autochess.卫戍协议放弃 = function()
