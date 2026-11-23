@@ -16,6 +16,7 @@ path.base = {
     end,
     下载资源确认 = "下载资源确认",
     资源下载确定 = "资源下载确定",
+    红色资源下载弹窗图色 = "红色资源下载确认按钮",
     适龄提示界面 = function() return path.base["start黄框"]() end,
     start黄框 = function()
         -- reset login history on app restart
