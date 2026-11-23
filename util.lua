@@ -1196,8 +1196,7 @@ findOne = function(x, confidence)
     end
 
     local x0 = x
-    -- 资源更新弹窗单独使用 90% 相似度，其他模板沿用默认值。
-    confidence = confidence or (x0 == "红色资源下载弹窗图色" and 0.90) or default_findcolor_confidence
+    confidence = confidence or default_findcolor_confidence
 
     if type(x) == 'string' and not x:find(coord_delimeter) then x = point[x] end
     if type(x) == "function" then return x() end
