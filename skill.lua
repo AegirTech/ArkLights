@@ -1423,6 +1423,13 @@ local function infrastSameCard(first, second)
         (first[2] == second[2] and infrastUniqueSkillOwner(first[2]) ~= nil)
 end
 
+-- 按顺序对账时，技能相同的两张卡可占用同一个预期位置。
+local function infrastSameSkills(first, second)
+    if first[1] ~= second[1] or first[2] ~= second[2] then return false end
+    return (first[1] and first[1] ~= "" and first[1] ~= "empty1") or
+        (first[2] and first[2] ~= "" and first[2] ~= "empty2")
+end
+
 ---用当前设施的在岗卡作为列表前缀，保留其余缓存卡的相对顺序。
 local function infrastExpectedCards(head, pool)
     local expected, pending, matched = {}, {}, {}
@@ -1447,17 +1454,16 @@ end
 ---出现末列差异时按顺序消费期望条目。换下干员不消费预期位置。
 local function infrastAlignCard(state, card)
     local expected = state.expected[state.cursor]
-    local matchesExpected = expected and infrastSameCard(card, expected)
+    if expected and infrastSameCard(card, expected) then
+        state.cursor = state.cursor + 1
+        return expected
+    end
     local pendingIndex
     for index, pending in ipairs(state.pending) do
         if infrastSameCard(card, pending) then
-            if pendingIndex or matchesExpected then return false end
+            if pendingIndex then return false end
             pendingIndex = index
         end
-    end
-    if matchesExpected then
-        state.cursor = state.cursor + 1
-        return expected
     end
     if pendingIndex then
         return table.remove(state.pending, pendingIndex)
@@ -1469,6 +1475,10 @@ local function infrastAlignCard(state, card)
             state.cursor = index + 1
             return state.expected[index]
         end
+    end
+    if expected and infrastSameSkills(card, expected) then
+        state.cursor = state.cursor + 1
+        return expected
     end
     return false
 end
@@ -1764,7 +1774,28 @@ local function infrastReconcilePage(stationType, state, slots, page, firstPage)
     local known = #state.expected - state.cursor + 1
     -- 理论末列由有序缓存的剩余位置决定。待定位干员只扩展补扫范围。
     local expectedLast = math.min(infrastPageColumns * 2, known)
-    local visible = {}
+    local visible, scanned = {}, firstPage or {}
+
+    local function scanSlot(index)
+        if not scanned[index] then
+            scanned[index] = infrastScanPoolCard(stationType, slots[index], page)
+            state.scanned = state.scanned + 1
+        end
+        return scanned[index]
+    end
+
+    local function matchesSlot(index, expected)
+        if infrastSamePortrait(infrastPortrait(slots[index]), expected.portrait) then return true end
+        local card = scanSlot(index)
+        if infrastSameCard(card, expected) then return true end
+        if not infrastSameSkills(card, expected) then return false end
+        local name, expectedName = infrastCardName(card), infrastCardName(expected)
+        if name and expectedName and name ~= expectedName then return false end
+        for _, pending in ipairs(state.pending) do
+            if infrastSameCard(card, pending) then return false end
+        end
+        return true
+    end
 
     local checked = not firstPage and expectedLast > 0 and slots[expectedLast] ~= nil
     if checked then
@@ -1772,7 +1803,7 @@ local function infrastReconcilePage(stationType, state, slots, page, firstPage)
         for index = columnStart, expectedLast do
             state.probes = state.probes + 1
             local expected = state.expected[state.cursor + index - 1]
-            if not infrastSamePortrait(infrastPortrait(slots[index]), expected.portrait) then
+            if not matchesSlot(index, expected) then
                 checked = false
             end
         end
@@ -1781,7 +1812,7 @@ local function infrastReconcilePage(stationType, state, slots, page, firstPage)
         -- 末列相符时，中间的插入和缺失仍可能抵消位移。先核验目标再决定是否补扫。
         for index = 1, expectedLast do
             local expected = state.expected[state.cursor + index - 1]
-            if state.targets[expected] and not infrastSamePortrait(infrastPortrait(slots[index]), expected.portrait) then
+            if state.targets[expected] and not matchesSlot(index, expected) then
                 checked = false
                 break
             end
@@ -1790,7 +1821,9 @@ local function infrastReconcilePage(stationType, state, slots, page, firstPage)
     if checked then
         for index = 1, expectedLast do
             local expected = state.expected[state.cursor]
-            infrastRecordCard(state, expected, infrastCardAt(expected, slots[index], page, state.minMood), visible)
+            local card = scanned[index] or infrastCardAt(expected, slots[index], page, state.minMood)
+            card.resident = expected.resident
+            infrastRecordCard(state, expected, card, visible)
             state.cursor = state.cursor + 1
         end
         return visible
@@ -1804,8 +1837,7 @@ local function infrastReconcilePage(stationType, state, slots, page, firstPage)
     local last = math.min(#slots, known + #state.pending)
     for index = 1, last do
         if state.cursor > #state.expected and #state.pending == 0 then break end
-        local card = firstPage and firstPage[index] or infrastScanPoolCard(stationType, slots[index], page)
-        if not firstPage then state.scanned = state.scanned + 1 end
+        local card = scanSlot(index)
         local source = infrastAlignCard(state, card)
         if not source then
             if state.cursor > #state.expected then break end
@@ -3370,7 +3402,7 @@ end
 ---基建干员池的顺序、待定位和确认记账自测，独立于截图与手势。
 testInfrastPool = function()
     local function card(id)
-        return { "相同技能", "empty2", 24, {}, 1, id, portrait = nil }
+        return { "测试技能" .. id, "empty2", 24, {}, 1, id, portrait = nil }
     end
     local first, second, third, fourth, fifth = card("a"), card("b"), card("c"), card("d"), card("e")
     local resident1, resident2 = card("r1"), card("r2")
@@ -3406,5 +3438,17 @@ testInfrastPool = function()
     })
     assert(#nextPool.cards == 2 and nextPool.cards[1] == first and nextPool.cards[2] == third)
     assert(#nextPool.pending == 1 and nextPool.pending[1] == resident2)
+    local cached = { "bskill_tra_spd1", "empty2", 24, {}, 1 }
+    local observed = { "bskill_tra_spd1", "empty2", 24, {}, 1 }
+    local future, unlocated = infrastExpectedCards({ observed }, { cards = { cached }, pending = {} })
+    assert(#future == 2 and future[2] == cached and #unlocated == 0)
+    state = { expected = { cached }, pending = {}, cursor = 1, missing = 0 }
+    assert(infrastAlignCard(state, observed) == cached and state.missing == 0)
+    assert(not infrastSameSkills({ "empty1", "empty2" }, { "empty1", "empty2" }))
+    assert(not infrastSameSkills(cached, { "bskill_tra_spd1", "bskill_tra_spd2" }))
+
+    observed[6], returned1[1] = returned1[6], cached[1]
+    state = { expected = { cached }, pending = { returned1 }, cursor = 1, missing = 0 }
+    assert(infrastAlignCard(state, observed) == returned1 and state.cursor == 1)
     log.info("基建干员池自测通过")
 end
