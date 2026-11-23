@@ -3576,16 +3576,17 @@ path.回收站换班 = function(stationType)
             end
             tap("清空选择")
         end, 5) then
-        log.debug()
+        log.warn("清空失败")
         return
     end
-
+    ssleep(.5) --等待动画消失
     -- 图标不够，会出现空集，暂时不做判断直接选前两个
     -- chooseOperator(stationType, type, stationLevel, tradingStationNum,
     --     virtralPowerStationNum, dormitoryCapacity, dormitoryLevelSum,
     --     goldStationNum, totalStationLevel)
 
     tap("干员选择列表1")
+    ssleep(.1)
     tap("干员选择列表2")
 
 
