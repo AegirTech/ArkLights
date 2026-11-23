@@ -106,79 +106,36 @@ end
 
 local infrastPageColumns = 5
 
--- 前五列供技能扫描。第六列的头像只用于确认下一屏的重叠。
--- slots 是常规扫描范围，allSlots 还含完整可见的第六列，供滚到尽头时补扫。
+-- 每页扫描前五列。
 local function infrastReadGrid()
-    local grid = { slots = {}, allSlots = {}, columns = {}, valid = true }
+    local grid = { slots = {}, valid = true }
     local upperY, lowerY = scale(379), scale(801)
     local left = scale(600)
     local right = math.min(scale(1770), screen.width - scale(192))
     local pitch = scale(216)
-    local x = left
-    while x <= right do
+    local x, columns, previousX, previousHasLower = left, 0, nil, true
+    while x <= right and columns < infrastPageColumns do
         if infrastCardEdge(x, upperY) then
-            local previous = grid.columns[#grid.columns]
-            if (previous and math.abs(x - previous[1][1] - pitch) > scale(5)) or
-                (not previous and x > left + pitch + scale(26)) then
+            if (previousX and math.abs(x - previousX - pitch) > scale(5)) or
+                (not previousX and x > left + pitch + scale(26)) or not previousHasLower then
                 grid.valid = false
             end
-            local column = { { x, upperY } }
+            table.insert(grid.slots, { x, upperY })
+            local lowerX
             for dx = -scale(2), scale(2) do
                 if infrastCardEdge(x + dx, lowerY) then
-                    column[2] = { x + dx, lowerY }
+                    lowerX = x + dx
+                    table.insert(grid.slots, { lowerX, lowerY })
                     break
                 end
             end
-            if previous and #previous == 1 then grid.valid = false end
-            table.insert(grid.columns, column)
-            for _, anchor in ipairs(column) do
-                infrastPortrait(anchor)
-                table.insert(grid.allSlots, anchor)
-                if #grid.columns <= infrastPageColumns then table.insert(grid.slots, anchor) end
-            end
-            if #grid.columns > infrastPageColumns then break end
+            columns, previousX, previousHasLower = columns + 1, x, lowerX ~= nil
             x = x + pitch - scale(5)
         else
             x = x + 1
         end
     end
     return grid
-end
-
--- 返回上一屏已扫描、当前屏开头应跳过的卡数。nil 表示卡片没有翻动，false 表示无法确认位移。
-local function infrastGridStep(previous, current)
-    if not previous.valid or not current.valid or #previous.columns == 0 or #current.columns == 0 then
-        return false
-    end
-    local previousColumns, currentColumns = previous.columns, current.columns
-    for shift = 0, math.min(infrastPageColumns, #previousColumns - 1) do
-        local overlap = math.min(#previousColumns - shift, #currentColumns)
-        local same = true
-        for column = 1, overlap do
-            local old, new = previousColumns[column + shift], currentColumns[column]
-            if #old ~= #new then
-                same = false
-                break
-            end
-            for row = 1, #old do
-                if not infrastSamePortrait(old[row].portrait, new[row].portrait) then
-                    same = false
-                    break
-                end
-            end
-            if not same then break end
-        end
-        if same then
-            if shift == 0 then
-                if #previousColumns == #currentColumns then return nil end
-                return false
-            end
-            local skip = math.max(0, #previous.slots - shift * 2)
-            if skip <= #current.slots then return skip end
-            return false
-        end
-    end
-    return false
 end
 
 local function infrastMoodPoint(anchor, mood)
@@ -1698,32 +1655,28 @@ end
 
 local infrastMaxPages = 10
 
----前进一页。返回网格时保留识别该网格的截图，由调用方释放。
-local function infrastNextPage(grid)
-    for attempt = 1, 3 do
+---沿用基建翻页的首卡采样。返回网格时保留该页截图，由调用方释放。
+local function infrastNextPage()
+    local firstCard = sample("干员第一个")
+    for _ = 1, 3 do
         if findOne("正在提交反馈至神经") then
             disappear("正在提交反馈至神经", network_timeout)
             ssleep(.5)
         end
         swipo()
-        keepCapture()
-        local nextGrid = infrastReadGrid()
-        local overlap = infrastGridStep(grid, nextGrid)
-        if overlap == false then
-            -- 位移可能还在收尾。先复取同一页，再判断手势结果。
-            releaseCapture()
-            sleep(150)
+        if not findOne(firstCard) then
             keepCapture()
-            nextGrid = infrastReadGrid()
-            overlap = infrastGridStep(grid, nextGrid)
-        end
-        if overlap == false then
+            local grid = infrastReadGrid()
+            if not grid.valid or #grid.slots == 0 then
+                releaseCapture()
+                sleep(150)
+                keepCapture()
+                grid = infrastReadGrid()
+            end
+            if grid.valid and #grid.slots > 0 then return grid end
             releaseCapture()
             return false
         end
-        if overlap then return nextGrid, overlap end
-        if attempt == 3 then return nil, nil, nextGrid end
-        releaseCapture()
     end
 end
 
@@ -1756,18 +1709,17 @@ local function infrastScanRoster(stationType, capacity)
         return nil, "首页找不到干员卡片"
     end
 
-    local cards, skip, tail = {}, 0, false
+    local cards = {}
     local resident, scanned, lastPage = true, 0, 0
-    for iteration = 1, infrastMaxPages do
-        local page = tail and iteration - 1 or iteration
-        local slots = tail and grid.allSlots or grid.slots
+    for page = 1, infrastMaxPages do
+        local slots = grid.slots
         local unknown, stop = 0, false
         lastPage = page
-        for index = skip + 1, #slots do
+        for index = 1, #slots do
             local anchor = slots[index]
             local card = infrastScanPoolCard(stationType, anchor, page)
             scanned = scanned + 1
-            resident = resident and page == 1 and not tail and index <= capacity and infrastHasRoomBadge(anchor)
+            resident = resident and page == 1 and index <= capacity and infrastHasRoomBadge(anchor)
             card.resident = resident or nil
             if card[1] == "empty1" and not resident then
                 unknown = unknown + 1
@@ -1779,18 +1731,12 @@ local function infrastScanRoster(stationType, capacity)
             cards[#cards + 1] = card
         end
         releaseCapture()
-        if stop or tail or page == infrastMaxPages then break end
+        if stop or page == infrastMaxPages then break end
 
-        local nextGrid, overlap, terminal = infrastNextPage(grid)
-        if nextGrid == false then return nil, "翻页位移无法确认，页 " .. page end
-        if nextGrid then
-            grid, skip = nextGrid, overlap
-        elseif terminal and #terminal.allSlots > #terminal.slots then
-            grid, skip, tail = terminal, #terminal.slots, true
-        else
-            if terminal then releaseCapture() end
-            break
-        end
+        local nextGrid = infrastNextPage()
+        if nextGrid == false then return nil, "翻页后识别不到有效卡片，上一页 " .. page end
+        if not nextGrid then break end
+        grid = nextGrid
     end
     log.info("基建全量扫描完成", stationType, "页数", lastPage, "识别技能", scanned, "耗时", time() - startTime)
     return { cards = cards, unlocated = {} }
@@ -1814,20 +1760,18 @@ local function infrastRecordCard(state, source, card, visible)
 end
 
 -- 调用方持有截图。首页已实扫，之后只核验末列和本页要点选的卡。
-local function infrastReconcilePage(stationType, state, slots, skip, page, firstPage, terminal)
-    local first = skip + 1
+local function infrastReconcilePage(stationType, state, slots, page, firstPage)
     local known = #state.expected - state.cursor + 1
-    local columns = infrastPageColumns + (terminal and 1 or 0)
     -- 理论末列由有序缓存的剩余位置决定。待定位干员只扩展补扫范围。
-    local expectedLast = math.min(columns * 2, skip + known)
+    local expectedLast = math.min(infrastPageColumns * 2, known)
     local visible = {}
 
-    local checked = not firstPage and expectedLast >= first and slots[expectedLast] ~= nil
+    local checked = not firstPage and expectedLast > 0 and slots[expectedLast] ~= nil
     if checked then
         local columnStart = expectedLast - (expectedLast - 1) % 2
-        for index = math.max(first, columnStart), expectedLast do
+        for index = columnStart, expectedLast do
             state.probes = state.probes + 1
-            local expected = state.expected[state.cursor + index - first]
+            local expected = state.expected[state.cursor + index - 1]
             if not infrastSamePortrait(infrastPortrait(slots[index]), expected.portrait) then
                 checked = false
             end
@@ -1835,8 +1779,8 @@ local function infrastReconcilePage(stationType, state, slots, skip, page, first
     end
     if checked then
         -- 末列相符时，中间的插入和缺失仍可能抵消位移。先核验目标再决定是否补扫。
-        for index = first, expectedLast do
-            local expected = state.expected[state.cursor + index - first]
+        for index = 1, expectedLast do
+            local expected = state.expected[state.cursor + index - 1]
             if state.targets[expected] and not infrastSamePortrait(infrastPortrait(slots[index]), expected.portrait) then
                 checked = false
                 break
@@ -1844,7 +1788,7 @@ local function infrastReconcilePage(stationType, state, slots, skip, page, first
         end
     end
     if checked then
-        for index = first, expectedLast do
+        for index = 1, expectedLast do
             local expected = state.expected[state.cursor]
             infrastRecordCard(state, expected, infrastCardAt(expected, slots[index], page, state.minMood), visible)
             state.cursor = state.cursor + 1
@@ -1857,8 +1801,8 @@ local function infrastReconcilePage(stationType, state, slots, skip, page, first
         log.info("基建末列或目标位置不一致，补扫本页", stationType, page)
     end
     local firstExpected = state.cursor
-    local last = math.min(#slots, skip + known + #state.pending)
-    for index = first, last do
+    local last = math.min(#slots, known + #state.pending)
+    for index = 1, last do
         if state.cursor > #state.expected and #state.pending == 0 then break end
         local card = firstPage and firstPage[index] or infrastScanPoolCard(stationType, slots[index], page)
         if not firstPage then state.scanned = state.scanned + 1 end
@@ -1923,7 +1867,7 @@ local function infrastSelectRoster(stationType, state, grid, best)
     end
     local visible, reason = {}, nil
     if state.fullScan then
-        visible, reason = infrastReconcilePage(stationType, state, grid.slots, 0, 1)
+        visible, reason = infrastReconcilePage(stationType, state, grid.slots, 1)
         releaseCapture()
         if not visible or reason then return nil, reason end
     else
@@ -1935,7 +1879,7 @@ local function infrastSelectRoster(stationType, state, grid, best)
         end
     end
 
-    local page, terminalPage = 1, false
+    local page = 1
     local function correctedPool()
         local corrected = infrastRosterSnapshot(state)
         corrected.best = {}
@@ -1976,7 +1920,10 @@ local function infrastSelectRoster(stationType, state, grid, best)
             return nil, "目标干员点选失败，页 " .. page
         end
         if not next(state.targets) then break end
-        if terminalPage then
+        if page >= infrastMaxPages then return nil, "已到选人页数上限" end
+        local nextGrid = infrastNextPage()
+        if nextGrid == false then return nil, "翻页后识别不到有效卡片，上一页 " .. page end
+        if not nextGrid then
             local remaining = #state.expected - state.cursor + 1
             if state.missing + remaining <= infrastMissingTolerance then
                 state.cursor = #state.expected + 1
@@ -1985,25 +1932,11 @@ local function infrastSelectRoster(stationType, state, grid, best)
             end
             return nil, "列表末尾缺少目标干员，预期缺失 " .. (state.missing + remaining)
         end
-        if page >= infrastMaxPages then return nil, "已到选人页数上限" end
-        local nextGrid, overlap, terminal = infrastNextPage(grid)
-        if nextGrid == false then return nil, "翻页位移无法确认，页 " .. page end
-        local slots
-        if nextGrid then
-            grid, slots, page = nextGrid, nextGrid.slots, page + 1
-        elseif terminal and #terminal.allSlots > #terminal.slots then
-            slots, overlap, terminalPage = terminal.allSlots, #terminal.slots, true
-        else
-            if terminal then releaseCapture() end
-            terminalPage, visible = true, {}
-            slots = nil
-        end
-        if slots then
-            visible, reason = infrastReconcilePage(stationType, state, slots, overlap, page, nil, terminalPage)
-            releaseCapture()
-            if not visible then return nil, reason end
-            if reason then return nil, reason, correctedPool() end
-        end
+        grid, page = nextGrid, page + 1
+        visible, reason = infrastReconcilePage(stationType, state, grid.slots, page)
+        releaseCapture()
+        if not visible then return nil, reason end
+        if reason then return nil, reason, correctedPool() end
     end
     if #names > 0 then
         if page > 1 then swipo(true) end
@@ -2044,7 +1977,7 @@ local function infrastReuseRoster(stationType, capacity, pool, scoreRoster)
     local expected, pending = infrastExpectedCards(head, pool)
     local state = infrastSelectionState(stationType, expected, pending, pool.missing, #firstPage)
     state.started = startTime
-    local visible, reason = infrastReconcilePage(stationType, state, grid.slots, 0, 1, firstPage)
+    local visible, reason = infrastReconcilePage(stationType, state, grid.slots, 1, firstPage)
     releaseCapture()
     if not visible then return nil, reason end
 
@@ -3473,25 +3406,5 @@ testInfrastPool = function()
     })
     assert(#nextPool.cards == 2 and nextPool.cards[1] == first and nextPool.cards[2] == third)
     assert(#nextPool.pending == 1 and nextPool.pending[1] == resident2)
-    local function grid(ids)
-        local mapped = { columns = {}, slots = {}, allSlots = {}, valid = true }
-        for index, id in ipairs(ids) do
-            local column = {
-                { index * 216, 379, portrait = { id, 0, 0 } },
-                { index * 216, 801, portrait = { id, 255, 0 } },
-            }
-            mapped.columns[index] = column
-            for _, anchor in ipairs(column) do
-                mapped.allSlots[#mapped.allSlots + 1] = anchor
-                if index <= 5 then mapped.slots[#mapped.slots + 1] = anchor end
-            end
-        end
-        return mapped
-    end
-    local initial = grid({ 0, 60, 120, 180, 240, 300 })
-    assert(infrastGridStep(initial, grid({ 300, 360, 420, 480, 540, 600 })) == 0)
-    assert(infrastGridStep(initial, grid({ 240, 300, 360, 420, 480, 540 })) == 2)
-    assert(infrastGridStep(initial, initial) == nil)
-    assert(#initial.allSlots - #initial.slots == 2)
     log.info("基建干员池自测通过")
 end
