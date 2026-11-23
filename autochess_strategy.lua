@@ -27,6 +27,7 @@ local function coverLanes(covered, lanes, primary)
     for _, lane in ipairs(lanes or primary) do covered[lane] = true end
 end
 
+-- 用已确认的棋盘覆盖评估阻挡、输出和治疗。没有主要路线时以全场角色数量估算缺口。
 local function assessBoard(state, rules, stage)
     local primary = state.primaryLanes or empty
     local occupants = {}
@@ -111,6 +112,7 @@ local function tierApplies(tier, state, id, board, tag)
     return false
 end
 
+-- 盟约激活后还要检查场上受益者。整备区成员可以提供人数，战斗覆盖取决于场上阵容。
 local function effectsOnBoard(state, rules, observed, board)
     local coverage = { damage = false, survival = false }
     local bonuses = { damage = 0, survival = 0 }
@@ -229,6 +231,7 @@ local function evaluate(state, rules, mode, stage, preferences)
     local cash = state.coins or 0
     local preservesInterest = safe and stage ~= "boss" and team.carryGold and team.interestThreshold
         and cash >= team.interestThreshold and 1 or 0
+    -- 评分向量逐项比较。各阶段共用战力底线，后续分项决定发育、成型或首领战的取舍。
     local score = { -deficits, -missing.blocker, -missing.survival, -missing.damage }
     local function rank(...)
         for _, criterion in ipairs({ ... }) do score[#score + 1] = criterion end
@@ -251,6 +254,11 @@ local function evaluate(state, rules, mode, stage, preferences)
     }
 end
 
+--- 评估当前局面的覆盖、战力缺口和排序分项，供回放和实机日志使用。
+---@param snapshot table 当前整备快照
+---@param rules table 已解码的策略资源
+---@param preferences table? 开局偏好的输出和生存盟约
+---@return table report 当前局面的评估
 function strategy.score(snapshot, rules, preferences)
     local mode, stage = context(snapshot, rules)
     return evaluate(snapshot, rules, mode, stage, preferences or empty)
@@ -282,12 +290,14 @@ end
 
 local function search(rules, mode, stage, preferences, root, onAcquire)
     local beam = { root }
+    -- 把原局面也作为候选。可见操作都无法改善评分时，交给经济判断或结束整备。
     local best = root
     for _ = 1, searchDepth do
         local expanded = {}
         for _, node in ipairs(beam) do
             for _, candidate in ipairs(transitions.candidates(node.state, rules, mode, onAcquire)) do
                 local report = evaluate(candidate.state, rules, mode, stage, preferences)
+                -- 已满足底线时，逐步维持战力。待领取奖励会占据当前操作界面，因此单独允许领取。
                 if not root.report.safe or report.safe or candidate.action.type == "claim" then
                     local path = { table.unpack(node.path) }
                     path[#path + 1] = candidate.action
@@ -322,6 +332,7 @@ local function economy(snapshot, rules, mode, report, preferences)
     if coins == nil or not level or snapshot.stage == "settled" then return end
     local team = (rules.teams or empty)[snapshot.teamId] or empty
     local reserve = report.safe and report.stage ~= "boss" and team.carryGold and team.interestThreshold or 0
+    -- 记录两种操作各自能触及的最便宜目标。经济操作的预算包含后续购卡和已确认的分队留存门槛。
     local refreshGoal, upgradeGoal
     for _, unit in pairs(rules.units) do
         if unit.upgradeTo and unit.price ~= nil then
@@ -355,6 +366,12 @@ local function economy(snapshot, rules, mode, report, preferences)
     end
 end
 
+--- 在当前可见局面中搜索并返回第一步。买入动作的 next 记录评分时假设的部署。
+---@param snapshot table 当前整备快照
+---@param rules table 已解码的策略资源
+---@param preferences table? 开局偏好的输出和生存盟约
+---@return table action 当前建议动作
+---@return table report 搜索路径、整条路径的预计花费和选择理由
 function strategy.decide(snapshot, rules, preferences)
     preferences = preferences or empty
     local mode, stage = context(snapshot, rules)
@@ -399,6 +416,11 @@ function strategy.decide(snapshot, rules, preferences)
     }
 end
 
+--- 在离线回放中复核并推演一个动作。买入之后的部署由下一次调用单独处理。
+---@param snapshot table 动作发生前的快照
+---@param rules table 已解码的策略资源
+---@param action table 需要复核的单步动作
+---@return table? snapshot 推演后的快照，动作待观察或失效时返回 nil
 function strategy.apply(snapshot, rules, action)
     local mode = context(snapshot, rules)
     if action.type == "end" then return transitions.clone(snapshot) end
@@ -428,6 +450,12 @@ function strategy.apply(snapshot, rules, action)
     return transitions.apply(snapshot, rules, mode, action, acquisition(rules, mode))
 end
 
+--- 离线结算休整结束与下轮开始的触发。调用方根据回放提供下一回合和收入。
+---@param snapshot table 本轮整备快照
+---@param rules table 已解码的策略资源
+---@param nextRound integer 回放中确认的后续回合
+---@param nextRoundIncome number? 已知的下轮新增资金
+---@return table snapshot 下轮快照
 function strategy.advance(snapshot, rules, nextRound, nextRoundIncome)
     local mode = context(snapshot, rules)
     assert(nextRound > snapshot.round and nextRound <= mode.maxRound, "无效的后续回合")
@@ -436,6 +464,7 @@ function strategy.advance(snapshot, rules, nextRound, nextRoundIncome)
         bonds.apply(state, rules, mode, "prep_end")
     end
     for id, value in pairs(state.stacks or empty) do
+        -- 临时层在换轮时清零。永久层继续沿用已知数值或 nil。
         if type(value) == "table" then state.stacks[id] = { permanent = value.permanent, temporary = 0 } end
     end
     local team = (rules.teams or empty)[state.teamId] or empty

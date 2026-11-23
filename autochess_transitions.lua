@@ -16,7 +16,7 @@ local function clone(state)
     local result = {}
     for key, value in pairs(state) do
         if key == "tiles" or key == "blockedTiles" or key == "benchSlots" then
-            result[key] = value -- Fixed metadata is shared across hypothetical states.
+            result[key] = value -- 搜索分支共享只读格位数据。阵容和资金等可变状态独立复制。
         else
             result[key] = copy(value)
         end
@@ -63,7 +63,7 @@ local function firstBenchSlot(state, limit)
         return
     end
 
-    -- Use numeric slots by default. Preserve a snapshot's numeric-string slot convention.
+    -- 回放快照可能使用数字或数字字符串作为格位 ID。新增格位沿用已有键的格式。
     local stringSlots = bench[1] == nil and bench["1"] ~= nil
     if not stringSlots then
         local hasNumber, hasNumericString = false, false
@@ -101,6 +101,7 @@ local function upgradePlan(state, rules, id)
     if unit.elite == true or eliteUnit.elite == false then return end
     if unit.group and eliteUnit.group and unit.group ~= eliteUnit.group then return end
 
+    -- 合成按基础棋子 ID 匹配副本。盟约的人数统计另按同组去重。
     local isCopy = function(unitId) return unitId == id end
     local fieldCopies = orderedSlots(state.board, isCopy)
     local benchCopies = orderedSlots(state.bench, isCopy)
@@ -134,6 +135,7 @@ local function applyUpgrade(result, upgrade)
         remaining = remaining - 1
     end
 
+    -- 回放按前排优先落回场上，纯整备区合成则留在首个副本格。之后等待实际奖励选项。
     if upgrade.field[1] ~= nil then
         result.board[upgrade.field[1]] = upgrade.id
     else
@@ -170,6 +172,7 @@ local function acquire(state, rules, mode, offer, index, claim, onAcquire)
         return
     end
 
+    -- 先判断本次买入能否直接合成，满整备区仍可接受能合成的副本。
     local upgrade = upgradePlan(state, rules, offer.id)
     local benchSlot = not upgrade and firstBenchSlot(state, mode.benchLimit or 10) or nil
     if not upgrade and benchSlot == nil then return end
@@ -183,6 +186,7 @@ local function acquire(state, rules, mode, offer, index, claim, onAcquire)
         if validAmount(result.coins) and price ~= nil and price <= result.coins then
             result.coins = result.coins - price
         else
+            -- 金额不可确认时丢弃预算账本，等下一份快照恢复后再评估后续购买。
             result.coins = nil
             result.spendingUnconfirmed = true
         end
@@ -262,6 +266,7 @@ end
 
 local function applyMove(state, action)
     local result = clone(state)
+    -- 离线替换把原场上棋子移回新棋子腾出的整备格。
     result.bench[action.slot] = result.board[action.target] or nil
     result.board[action.target] = action.unit
     if result.equipment then result.equipment[action.target] = nil end
@@ -305,6 +310,7 @@ function transitions.candidates(state, rules, mode, onAcquire)
             local cost = action.price or 0
             result[#result + 1] = { action = action, state = nextState, cost = cost, moves = 1 }
             if not choosing and landing ~= nil then
+                -- 同一层同时评估保留在整备区和买后立即上场，执行端按实际落位重新决策。
                 for _, target in ipairs(targets) do
                     local followOn = moveAction(nextState, rules, openCapacity, landing, offer.id, target)
                     if followOn then

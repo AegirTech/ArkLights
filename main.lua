@@ -113,7 +113,7 @@ remove_lr_ad()
 detectServer()
 -- predebug_hook()
 backup_config()
---showUI()
+showUI()
 loadUIConfig()
 restart_mode_hook()
 update_state_from_debugui()
@@ -127,8 +127,6 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1) --防止启动过快下方信息影响截图
-    path.基建换班()
-    exit()
 end
 
 load(before_account_hook or '')()

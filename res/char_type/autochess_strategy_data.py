@@ -80,6 +80,7 @@ def effect_targets(values):
 
 
 def unit_effect(effect_id, data, memberships):
+    # 结构字段提供触发和参数，说明文本补充整备区和临时层语义。无法归类时由调用方保留效果 ID。
     event_type = data["eventType"]
     effect_type = data["effectType"]
     trigger = TRIGGERS.get(event_type)
@@ -274,6 +275,7 @@ def export_bonds(season, semantics):
         parts = season["effectBuffInfoDataDict"].get(source_id, [])
         fingerprint = bond_fingerprint(raw, phase, parts)
         semantic = semantics.get(bond_id, {})
+        # 效果 ID 与原表指纹都匹配才沿用人工标注，规则变更后重新复核。
         if semantic.get("sourceId") != source_id or semantic.get("sourceFingerprint") != fingerprint:
             semantic = {}
         bond = {
@@ -438,6 +440,7 @@ def main():
             read_json(args.activity_table), read_json(args.character_table), read_json(args.semantics),
             args.activity_id, args.version,
         )
+        # 导出和 --check 共用确定性序列化，便于按 ID 检查两版资源差异。
         payload = json.dumps(data, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
         if args.check:
             if not args.output.is_file() or args.output.read_text(encoding="utf-8") != payload:

@@ -19,6 +19,7 @@ local function countMembers(state, units, id, rule)
         for _, unitId in pairs(zone or empty) do
             local unit = units[unitId]
             if unit then
+                -- 普通版与精锐版共享棋子组。人数档按组去重，副本档和精锐档按各自条件数棋子。
                 local group = unit.group or unitId
                 local member = rule.countMode == "elite" and bonds.isElite(unit, unitId)
                 if rule.countMode ~= "elite" then
@@ -44,6 +45,11 @@ local function stackParts(state, id)
     if type(value) == "table" then return value.permanent, value.temporary end
 end
 
+--- 读取当前规程下各盟约的成员、层数和已满足档位。
+---@param state table 当前局面
+---@param rules table 策略资源
+---@param mode table 当前规程配置
+---@return table observed 以盟约 ID 为键的观测结果
 function bonds.observe(state, rules, mode)
     local observed = {}
     local allowed = mode.activeBonds and bonds.set(mode.activeBonds)
@@ -74,6 +80,7 @@ function bonds.observe(state, rules, mode)
         local rule = rules.bonds[id]
         value.active = value.count >= (rule.minCount or 1) and (not rule.maxCount or value.count <= rule.maxCount)
         if value.active then
+            -- 人数档只依赖成员数量。层数档需要永久层和临时层的合计值。
             for index, tier in ipairs(rule.tiers or empty) do
                 if value.count >= (tier.count or 0)
                     and (not tier.stacks or tier.stacks == 0 or (value.stacks and value.stacks >= tier.stacks)) then
@@ -88,6 +95,7 @@ end
 
 local function targets(effect, observed)
     if effect.targetMode == "active_highest" then
+        -- 只推演可确认的唯一最高层目标。并列或任一已激活盟约的层数未知时，目标待观察。
         local highest, best
         for id, value in pairs(observed) do
             if value.active then
@@ -154,6 +162,12 @@ local function eachGain(effect, observed, apply)
     end
 end
 
+--- 在推演局面中结算当前触发时点可确认的效果。
+---@param state table 待更新的推演局面
+---@param rules table 策略资源
+---@param mode table 当前规程配置
+---@param trigger string 效果触发时点
+---@param acquired string? 买入或领取时获得的棋子 ID
 function bonds.apply(state, rules, mode, trigger, acquired)
     local observed = bonds.observe(state, rules, mode)
     state.earnedStacks = state.earnedStacks or {}
@@ -166,6 +180,7 @@ function bonds.apply(state, rules, mode, trigger, acquired)
                 local permanent, temporary = stackParts(state, id)
                 local key = effect.temporary and "temporary" or "permanent"
                 local parts = { permanent = permanent, temporary = temporary }
+                -- 已知的永久增量可以单独记录。总层数仍取决于原有层数是否可确认。
                 if parts[key] ~= nil then parts[key] = parts[key] + amount end
                 state.stacks[id] = parts
                 if not effect.temporary then
@@ -182,6 +197,11 @@ function bonds.apply(state, rules, mode, trigger, acquired)
     end, acquired)
 end
 
+--- 对生产与成长潜力打分。战斗触发按低权重计入成长分，实际层数由观察或确定性结算更新。
+---@param state table 当前局面
+---@param rules table 策略资源
+---@param observed table 当前盟约观测结果
+---@return number growth 成长分
 function bonds.growth(state, rules, observed)
     local growth = 0
     local function value(effect, weight)
