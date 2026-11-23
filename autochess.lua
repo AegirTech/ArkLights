@@ -966,9 +966,9 @@ autochess.自动借人 = function()
     tap("卫戍协议选配助战")
     disappear("卫戍协议选配助战", 3)
     ssleep(.2)
-    for i = 1, 8 do
+    for i = 1, 10 do
         autochess.借人()
-        swipe_slow(point["卫戍协议借人翻页起点"], point["卫戍协议借人翻页终点"])
+        swipe_slow(point["卫戍协议借人翻页起点"], point["卫戍协议借人翻页终点"], 0.5)
     end
 end
 
