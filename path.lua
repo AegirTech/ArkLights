@@ -1941,6 +1941,7 @@ update_state = function()
     fight_history = {}
     --作战计数器
     fight_tick = 0
+    battle_times = 1
     no_success_one_loop = 0
     prev_jump = "基建"
     not_first_time_jump = false
@@ -4970,6 +4971,7 @@ path.开始游戏 = function(x, disable_ptrs_check)
         save_token = true
     end
     local need_copy_homework = nil
+    battle_times = 1
     log("开始游戏,第", fight_tick, "次作战,关卡:", x)
     if copy_homework_only then pre_fight = x end
 
