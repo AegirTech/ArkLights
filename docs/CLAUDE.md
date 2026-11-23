@@ -15,6 +15,11 @@ ArkLightsPlus 是基于懒人精灵平台开发的明日方舟全托管自动化
 python3 ./0.py saverun    # Windows
 ./0.sh saverun            # Linux
 
+# 实机调试（首选）：VS Code Lazy-IDE 插件自带的 CLI，走官方 10085 协议上传到设备上的
+# com.nx.nxproj.assist 并运行，改完 lua 后会自动重新打包上传，无需先 0.py save
+EXT=$(ls -d "$HOME"/.vscode/extensions/lazyide.lazyide-* | sort -V | tail -1)   # 自动取已安装的最新版本
+python "$EXT/res/cli/cli.py" --json debug "$(pwd)" -s emulator-5556 --logs --timeout 0
+
 # 发布
 python3 ./0.py r          # Windows：脚本发布
 python3 ./0.py rs         # Windows：基建技能图标包skill.zip 发布
@@ -91,21 +96,29 @@ findAny({ "点1", "点2", "点3" })
 ## 开发约定
 
 - 在 1920 \* 1080 分辨率环境下开发，为了稳定性和多分辨率适应，取色应该保证像素点与周围8个像素颜色一致；尽量取纯色区域中间的点，避免边缘干扰，添加取色点后要同时将图像缩放到 720p 验证能否通过
-- 项目暂时不支持断点调试，需要多用 `log` 写日志定位问题
-- 运行中需要截图确认状态时可以使用 `snapShot` 函数，截图保存在模拟器的 `.env` 中的 `SIMULATOR_SHARED_FOLDER_PATH`；PC 端可通过 `.env` 中的 `PC_SHARED_FOLDER_PATH` 直接读取这些截图
 - 优先使用 `findOne` / `findAny` 做检测，使用 `tap` 执行点击,这些函数可以直接使用经过`convert_coords`拍平的`point`的键名,比如`findOne("xx列表n")`,`tap("xx")`。
 - OCR 尽量使用 `ocrex`（飞桨 OCR）；只识别一个元素的text时用 `ocro`;`ocrex`和`ocro`也支持直接使用`point`键名。
 - 干员名 OCR 结果需要经校正才能使用，参考 `prts.lua`（`干员名ocr校正`，编队/战斗界面）与 `skill.lua`（720p 基建干员名校正）的写法。
 - point表中已经声明的键值对可以直接调用键值字符串，比如 `findOne(key)`,`tap(key)`,等价于`findOne(point.key)`,`tap(point.key)`
 - 新增点位后 center 通常不用手写：运行 `python extract.py auto_center` 自动补齐（点位按点组主要分布区域投票、第一个点计两票；范围取中心位置），生成行尾带"自动补齐"注释的条目；`--refresh` 删旧自动补齐行按当前规则重算，`--modes='{"键":"模式"}'` 注入已知缩放模式
 - 状态机优先兼容 `auto(update(path.base, ...))` 这套速通风格。
-- 新增注释优先使用中文，说明"为什么这样接"，而不是只描述表面动作。
+- 新增注释优先使用中文，使用EmmyLua格式注释新增函数和变量的语义。
 - 命名约定：point 点位名与专有变量名（业务/领域相关）使用中文,通用、过渡性变量名使用英文,可以用一个常用英文单词的就用该单词；UI 内部控件名使用英文;中英文都应该使用完整词语表达变量或函数语义,中文变量名禁止只使用一个单字。
 - 地图与代理作战数据使用 JSON 格式；地图更新可通过 GitHub Action `map_update.yml` 同步。
 - 文件编码：Lua 源文件统一使用 UTF-8（无 BOM）+ CRLF 换行，与 `interface.lua`、`point.lua` 保持一致；编辑后若发现文件变成 UTF-16 等其他编码（编辑器误存所致），用 `iconv -f UTF-16 -t UTF-8` 转回 UTF-8。
-- commit 与 PR 标题格式：英文简写类型 + 半角冒号 + 半角空格 + 中文描述，如 `fix: 更新子模块`；常用类型有 `feat`（新功能）、`fix`（修复）、`docs`（文档）、`refactor`（重构）、`chore`（杂项/构建）。
+- 得到用户确认后再提交。commit 与 PR 标题格式：英文简写类型 + 半角冒号 + 半角空格 + 中文描述，如 `fix: 更新子模块`；常用类型有 `feat`（新功能）、`fix`（修复）、`docs`（文档）、`refactor`（重构）、`chore`（杂项/构建）。
 
 ### 模块测试方法
+
+实机调试（Lazy-IDE CLI）注意事项：
+
+- `--json` 必须放在子命令前面；输出为 JSONL（print 事件含 `time`/`file`/`line`/`message`），可用 `grep -o '"message": "[^"]*"'` 粗筛日志。
+- 输出不要接 `| head` 等管道：SIGPIPE 会提前杀掉 CLI 导致打包/运行中断；需要后台监控时直接后台运行并轮询输出文件。
+- `-s` 为 adb 设备序号（如 `emulator-5556`，雷电模拟器）；adb 优先使用 PATH 中已有的，找不到再用模拟器自带的 adb（在模拟器安装目录下查找），不要写死本机路径；shell/pull 带 `/sdcard` 路径时必须加 `MSYS_NO_PATHCONV=1`。
+- 设备日志同时落在 `/sdcard/lazyide_dbg_*.log`（/sdcard 根目录）；`snapShot` 截图落在 `/sdcard/pictures`。
+- 不推荐 `0.py run`：依赖 win32gui 前台化懒人精灵 IDE 按 F5，窗口激活链路脆弱且日志不可读。
+- 项目暂时不支持断点调试，需要多用 `util.lua` 中的 `log.debug` 写调试信息,`log.info` 写重要信息,`log.warn` 写警告信息,`log.error` 写错误信息
+- 运行中需要截图确认状态时可以使用 `snapShot` 函数（参考`docs\lr_api.lua`），截图保存在模拟器的 `.env` 中的 `SIMULATOR_SHARED_FOLDER_PATH`；PC 端可通过 `.env` 中的 `PC_SHARED_FOLDER_PATH` 直接读取这些截图
 
 需要在设备上单独测试某个模块时，按以下步骤临时修改 `main.lua`：
 

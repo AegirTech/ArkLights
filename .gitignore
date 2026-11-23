@@ -14,6 +14,11 @@ tmp*
 !/roguelike/
 !/docs/
 !/res/
+!/.agents/
+/.agents/*
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/autochess-resource-update/
 /res/maps/
 /res/skillicon2operator.json
 !/res/ppocr.zip

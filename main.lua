@@ -32,8 +32,8 @@ default_auto_timeout_second = 300
 dev_maps = false
 frame_milesecond = 1000 // 30
 milesecond_after_click = frame_milesecond
-release_date = "11.22 14:28"
-update_announcement = '最近更新: TL活动导航'
+release_date = "11.23 05:04"
+update_announcement = '最近更新: OS活动导航,卫戍协议'
 ui_submit_color = "#ff0d47a1"
 ui_cancel_color = "#ff1976d2"
 ui_warn_color = "#ff33ccff"
@@ -113,7 +113,7 @@ remove_lr_ad()
 detectServer()
 -- predebug_hook()
 backup_config()
-showUI()
+--showUI()
 loadUIConfig()
 restart_mode_hook()
 update_state_from_debugui()
@@ -127,6 +127,8 @@ end
 if dev_mode and getPackageName() ~= "com.bilabila.arknightsspeedrun2" then
     log.debug("dev mode")
     ssleep(1) --防止启动过快下方信息影响截图
+    path.基建换班()
+    exit()
 end
 
 load(before_account_hook or '')()
@@ -143,8 +145,6 @@ if auto_update_gameclient == true then auto_update_game() end
 
 if getPackageName() == "com.bilabila.arknightsspeedrun2" then
     check_server_is_close()
-    pcall(upload_device_info)
-    pcall(upload_launch_info, "launch")
 end
 
 -- log("100",cloud.enabled(),cloud_task)

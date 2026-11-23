@@ -1,15 +1,9 @@
----滑动以获得基建干员信息
----@param operators table 干员
----@param pngdata table 该组干员属于那种建筑
----@param pageid number 最大翻页次数
----@param mood_only boolean 仅识别心情
----@param stationType string 建筑类型
-discover = still_wrapper(function(operators, pngdata, pageid, mood_only, stationType)
-    -- 异步滑动
-    -- local delay = swipo(false, true)
-    -- local start_time = time()
-    -- local w, h, color = getScreenPixel(table.unpack(point.第一干员卡片范围))
-
+---扫描当前页干员卡片角点,返回卡片锚点列表
+---顺序为列优先(与游戏列表顺序一致):每列先上行(y=379)后下行(y=801)
+---注意:本屏第6列(第11、12张卡)超出扫描窗口 x∈[600,1590] 不会被检出,
+---与 swipo 的 10 卡滑动步长正好衔接,故扫描序列无缺口也无重复
+---@return table[] card 卡片锚点数组,每项 {x, y} 为卡片左上角;空表=本屏无卡片
+scanInfrastCardAnchors = function()
     local prewhite = 0
     -- TODO 是这个导致卡片没识别到吗
     local y = scale(383)
@@ -23,13 +17,8 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
             table.insert(corner, x)
         end
     end
-    log.debug(#corner)
 
     local card = {}
-    if #corner == 0 then
-        log.warn("基建换班找不到卡片")
-        return
-    end
     local prex = -math.huge
     for _, x in pairs(corner) do
         if x - prex > scale(207) then
@@ -38,123 +27,224 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
             table.insert(card, { x, scale(801) })
         end
     end
+    return card
+end
 
-    -- card = table.slice(card, 4, 4)
-    log.debug(card)
+local function infrastRgb(x, y)
+    local rgb = tonumber(getColor(x, y), 16) or 0
+    return rgb // 65536, rgb // 256 % 256, rgb % 256
+end
+
+---定位技能区左边框，允许降采样造成的灰度偏差和选中态的蓝色叠层。
+local function infrastCardEdge(x, y)
+    local edgeY = y + scale(4)
+    local red, green, blue = infrastRgb(x, edgeY)
+    local pale = red >= 105 and red <= 159 and math.max(red, green, blue) - math.min(red, green, blue) <= 12
+    local selected = red >= 85 and red <= 130 and green - red >= 18 and blue - green >= 7 and blue <= 175
+    if not pale and not selected then return false end
+    local before = (tonumber(getColor(x - 1, edgeY), 16) or 0) % 256
+    if before < 152 or before - blue < 25 then return false end
+    local background = (tonumber(getColor(x - scale(6), edgeY), 16) or 0) % 256
+    if background < 205 then return false end
+    local nextRed, nextGreen, nextBlue = infrastRgb(x, y + scale(8))
+    return math.abs(nextRed - red) <= 12 and math.abs(nextGreen - green) <= 12 and math.abs(nextBlue - blue) <= 12
+end
+
+-- 头像中部的采样点避开在岗徽章、选中序号、技能图标和心情条。
+local function infrastPortrait(anchor)
+    if anchor.portrait then return anchor.portrait end
+    local x, y = anchor[1], anchor[2]
+    local r, g, b = infrastRgb(x, y + scale(4))
+    local opacity = (r >= 106 and r <= 127 and g - r >= 12 and b - g >= 6) and (r / 137)
+    local green, blue = g - r, b - r
+    local pixels = {}
+    for _, dy in ipairs({ -107, -92, -75, -61 }) do
+        for _, dx in ipairs({ 31, 56, 84, 111, 138 }) do
+            r, g, b = infrastRgb(x + scale(dx), y + scale(dy))
+            if opacity then
+                r = r / opacity
+                g = (g - green) / opacity
+                b = (b - blue) / opacity
+            end
+            table.insert(pixels, r)
+            table.insert(pixels, g)
+            table.insert(pixels, b)
+        end
+    end
+    anchor.portrait = pixels
+    return pixels
+end
+
+local function infrastSamePortrait(a, b)
+    if not a or not b or #a == 0 or #a ~= #b then return false end
+    local difference = 0
+    for i = 1, #a do
+        difference = difference + math.abs(a[i] - b[i])
+    end
+    return difference <= 15 * #a
+end
+
+-- 房间徽章有深色底和鲜亮的设施图标、房号。只用于第1页头部的工位范围。
+local function infrastHasRoomBadge(anchor)
+    local x, y = anchor[1], anchor[2]
+    local badgeY = y - scale(255)
+    for _, dx in ipairs({ 35, 60, 115 }) do
+        local r, g, b = infrastRgb(x + scale(dx), badgeY)
+        if r > 75 or g > 120 or b > 155 then return false end
+    end
+    local bright = 0
+    for _, dy in ipairs({ -250, -245, -240 }) do
+        for _, dx in ipairs({ 12, 18, 22, 26, 35, 43, 81, 90, 98 }) do
+            local r, g, b = infrastRgb(x + scale(dx), y + scale(dy))
+            if math.max(r, g, b) >= 150 then
+                bright = bright + 1
+            end
+        end
+    end
+    return bright >= 4
+end
+
+local infrastPageColumns = 5
+
+-- 每页扫描前五列。
+local function infrastReadGrid()
+    local grid = { slots = {}, valid = true }
+    local upperY, lowerY = scale(379), scale(801)
+    local left = scale(600)
+    local right = math.min(scale(1770), screen.width - scale(192))
+    local pitch = scale(216)
+    local x, columns, previousX, previousHasLower = left, 0, nil, true
+    while x <= right and columns < infrastPageColumns do
+        if infrastCardEdge(x, upperY) then
+            if (previousX and math.abs(x - previousX - pitch) > scale(5)) or
+                (not previousX and x > left + pitch + scale(26)) or not previousHasLower then
+                grid.valid = false
+            end
+            table.insert(grid.slots, { x, upperY })
+            local lowerX
+            for dx = -scale(2), scale(2) do
+                if infrastCardEdge(x + dx, lowerY) then
+                    lowerX = x + dx
+                    table.insert(grid.slots, { lowerX, lowerY })
+                    break
+                end
+            end
+            columns, previousX, previousHasLower = columns + 1, x, lowerX ~= nil
+            x = x + pitch - scale(5)
+        else
+            x = x + 1
+        end
+    end
+    return grid
+end
+
+local function infrastMoodPoint(anchor, mood)
+    return cmpColor(anchor[1] + scale(49) + scale((mood - 1) * 5.3478),
+        anchor[2] + scale(93), 'FFFFFF', .4) == 1
+end
+
+local function infrastCardMood(anchor)
+    for mood = 24, 1, -1 do
+        if infrastMoodPoint(anchor, mood) then return mood end
+    end
+    return 0
+end
+
+---识别单张干员卡片
+---@param v table 卡片锚点 {x, y}
+---@param pngdata table 该组干员属于那种建筑(技能图标模板集)
+---@param pageid number 页码
+---@param stationType string 建筑类型(决定 OCR 策略:仅制造站/发电站/宿舍/控制中枢 OCR 名字)
+---@param moodOnly boolean 仅识别心情,不识别技能
+---@return table 卡片条目 {png, png2, mood, icon1, pageid, name}
+scanInfrastCard = function(v, pngdata, pageid, stationType, moodOnly)
+    -- 技能图标1坐标
+    local icon1 = {
+        v[1] + scale(7), v[2] + scale(18), v[1] + scale(60), v[2] + scale(70),
+    }
+    -- 技能图标2坐标
+    local icon2 = {
+        v[1] + scale(70), v[2] + scale(18), v[1] + scale(123), v[2] + scale(70),
+    }
+    local name = "干员名未进行识别"
+    local withOcr = dev_mode or (not not_use_ocr and not moodOnly and
+        table.findv({ "制造站", "发电站", "宿舍", "控制中枢" }, stationType))
+    if stationType == "制造站" or stationType == "发电站" then
+        withOcr = not not_use_ocr and not moodOnly
+    elseif stationType == "贸易站" or stationType == "加工站" then
+        withOcr = false
+    end
+    if withOcr then
+        local status, charName = pcall(ocro, {
+            v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
+        })
+        if status then
+            name = correctCharName(charName)
+        else
+            toast("OCR错误：请在 高级设置-基建 内勾选不使用OCR")
+        end
+    end
+
+    local png = 'empty1'
+    local png2 = 'empty2'
+    if not moodOnly then
+        png = findBuildingSkill(icon1[1], icon1[2], icon1[3], icon1[4], pngdata) or
+            png
+        log("png1", png, name)
+        local operator = skillpng2operator[png]
+        if not operator or #operator ~= 1 then
+            png2 = findBuildingSkill(icon2[1], icon2[2], icon2[3], icon2[4], pngdata) or
+                png2
+            log("png2", png2, name)
+        end
+    end
+
+    return { png, png2, infrastCardMood(v), icon1, pageid, name }
+end
+
+---滑动以获得基建干员信息
+---@param operators table 干员
+---@param pngdata table 该组干员属于那种建筑
+---@param pageid number 最大翻页次数
+---@param mood_only boolean 仅识别心情
+---@param stationType string 建筑类型
+discover = still_wrapper(function(operators, pngdata, pageid, mood_only, stationType)
+    local card = scanInfrastCardAnchors()
+    log.debug(#card)
+    if #card == 0 then
+        log.warn("基建换班找不到卡片")
+        return
+    end
+
     local empty1_num = 0
     for idx, v in pairs(card) do
-        -- 技能图标1坐标
-        local icon1 = {
-            v[1] + scale(7), v[2] + scale(18), v[1] + scale(60), v[2] + scale(70),
-        }
-        -- 技能图标2坐标
-        local icon2 = {
-            v[1] + scale(70), v[2] + scale(18), v[1] + scale(123), v[2] + scale(70),
-        }
-        --log("icon1", icon1, v[1], v[2])
-        local name = "干员名未进行识别"
-        if dev_mode or (not not_use_ocr and not mood_only and
-                table.findv({ "制造站", "发电站", "宿舍", "控制中枢" }, stationType)) then
-            local status, charName = pcall(ocro, {
-                v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
-            })
-            if status then
-                name = correctCharName(charName)
-            else
-                toast("OCR错误：请在 高级设置-基建 内勾选不使用OCR")
+        local item = scanInfrastCard(v, pngdata, pageid, stationType, mood_only)
+        -- 已到结尾，返回
+        if not mood_only and item[1] == 'empty1' then
+            log("未识别到技能1", item[6])
+            empty1_num = empty1_num + 1
+            -- 第一页有可能有多个
+            if (pageid > 1 and empty1_num > 1) or (pageid == 1 and empty1_num > 3) then
+                log("page end", item[4], idx, v)
+                return true
             end
         end
-
-        local png = ''
-        local png2 = ''
-        -- log("mood_only", mood_only)
-        if not mood_only then
-            png = 'empty1'
-            png =
-                findBuildingSkill(icon1[1], icon1[2], icon1[3], icon1[4], pngdata) or
-                png
-            log("png1", png, name)
-            -- 已到结尾，返回
-            if png == 'empty1' then
-                log("未识别到技能1", name)
-                empty1_num = empty1_num + 1
-                -- 第一页有可能有多个
-                if (pageid > 1 and empty1_num > 1) or pageid == 1 and empty1_num > 3 then
-                    log("page end", icon1, idx, v)
-                    return true
-                end
-            end
-            png2 = 'empty2'
-            operator = skillpng2operator[png]
-            if #operator == 1 then
-
-            else
-                png2 =
-                    findBuildingSkill(icon2[1], icon2[2], icon2[3], icon2[4], pngdata) or
-                    png2
-                log("png2", png2, name)
-                if png2 ~= 'empty2' and not disable_log then
-                    operator2 = skillpng2operator[png2]
-                    operator = table.intersect(operator, operator2)
-                end
-            end
-        end
-
-        -- 心情判断
-        local mood = 0
-        -- log(v[1])
-        local mood1 = { v[1] + scale(49), v[2] + scale(93) }
-        -- log(mood1)
-        for i = 24, 1, -1 do
-            local moodi = { mood1[1] + scale((i - 1) * 5.3478), mood1[2] }
-            -- log(moodi, getColor(moodi[1], moodi[2]))
-            -- if getColor(moodi[1], moodi[2]) == 'FFFFFF' then
-            if cmpColor(moodi[1], moodi[2], 'FFFFFF', 0.4) == 1 then
-                mood = i
-                break
-            end
-        end
-        log.debug(idx, operator, mood, name)
-        table.insert(operators, { png, png2, mood, icon1, pageid, name })
+        log.debug(idx, item[1], item[3], item[6])
+        table.insert(operators, item)
     end
-    -- sleep(max(0, delay - (time() - start_time)))
     log.debug(operators)
-    -- exit()
 end)
 
 -- 宿舍专用识别,不识别技能,只识别心情和干员名,有可能给深海队和推王组用
 discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, stationType)
-    local prewhite = 0
-    local y = scale(383)
-    local corner = {}
-    for x = scale(600), scale(1590) do
-        if cmpColor(x, y, 'FFFFFF', default_findcolor_confidence) == 1 then
-            prewhite = prewhite + 1
-        elseif prewhite > scale(5) and
-            cmpColor(x, y, '898989', default_findcolor_confidence) == 1 then
-            prewhite = 0
-            table.insert(corner, x)
-        end
-    end
+    local card = scanInfrastCardAnchors()
     log("dis ocr")
-    log.debug(#corner)
-
-    local card = {}
-    if #corner == 0 then
+    log.debug(#card)
+    if #card == 0 then
         log.warn("基建换班找不到卡片")
         return
     end
-    local prex = -math.huge
-    for _, x in pairs(corner) do
-        if x - prex > scale(207) then
-            prex = x
-            table.insert(card, { x, scale(379) })
-            table.insert(card, { x, scale(801) })
-        end
-    end
 
-    -- card = table.slice(card, 4, 4)
-    log.debug(card)
     local empty1_num = 0
     for idx, v in pairs(card) do
         -- 技能判断
@@ -1228,146 +1318,264 @@ initPngdata = function()
     log("基建图标数据初始化完成")
 end
 
-local 选择干员1 = function(干员目录)
-    local 需要干员数 = #干员目录
-    local 已选择 = {}
-    local selected = 0
-
-    local 找干员 = function(识别结果)
-        for i = 1, 需要干员数 do
-            -- print "需要干员", i, 干员组[i]
-            if 已选择[i] == nil then
-                for _, 结果 in ipairs(识别结果) do
-                    --print(结果)
-                    if 结果["text"] == 干员目录[i] then
-                        tap({ 结果["r"] - scale(100), 结果["b"] - scale(200) }) --肉鸽?
-                        --加一个appear出现角色选择的蓝框
-                        sleep(300)
-                        已选择[i] = 1
-                        selected = selected + 1
-                        break
-                    end
+local function 选择深海猎人(干员目录)
+    local 未选 = {}
+    for _, name in ipairs(干员目录) do 未选[name] = true end
+    for _ = 1, 18 do
+        keepCapture()
+        local 上排 = 干员名ocr校正(ocrex("基建上排干员范围"))
+        local 下排 = 干员名ocr校正(ocrex("基建下排干员范围"))
+        releaseCapture()
+        for _, 行 in ipairs({ 上排, 下排 }) do
+            for _, 结果 in ipairs(行) do
+                if 未选[结果.text] then
+                    tap({ 结果.r - scale(100), 结果.b - scale(200) })
+                    sleep(300)
+                    未选[结果.text] = nil
                 end
             end
         end
+        if not next(未选) then return true end
+        local previous = sample("干员第一个")
+        swipo()
+        if findOne(previous) then break end
     end
-    keepCapture()
-    for i = 1, 18 do
-        local 识别结果 = 干员名ocr校正(ocrex("基建上排干员范围"))
-        找干员(识别结果)
-        识别结果 = 干员名ocr校正(ocrex("基建下排干员范围"))
-        找干员(识别结果)
-        if selected < 需要干员数 then
-            swipo()
-            keepCapture()
-        else
-            return { 0 }
-        end
-    end
+    return false
 end
 
--- 基建按照名字选择干员
+---按职业筛选，通过 OCR 选中全部指定的深海猎人。
 chooseOperatorByOcr = function(干员)
-    local 编入数量 = 0
-    local 未编入数量 = 0
-
-    if appear("筛选") then
-        tap("职业选择")
-        appear("职业选择", 2)
+    local 职业分组 = {}
+    for _, name in ipairs(干员) do
+        local 职业 = 干员职业[name]
+        if not 职业 then return false end
+        职业分组[职业] = 职业分组[职业] or {}
+        table.insert(职业分组[职业], name)
     end
-    local choseChar = function(干员)
-        local 记录未编入数量
-        --8个职业
-        for i = 1, 8 do
-            local 干员名字字符串 = ""
-            local 干员目录 = {}
-            for _, item in ipairs(干员) do
-                if 干员职业[item] == operator_job[i] then
-                    干员名字字符串 = 干员名字字符串 .. item
-                    table.insert(干员目录, item)
+    local selected = true
+    if not appear("筛选") then return false end
+    tap("职业选择")
+    if not appear("职业选择", 2) then return false end
+    for index, 职业 in ipairs(operator_job) do
+        local 组 = 职业分组[职业]
+        if 组 then
+            local 选项 = "普通作战编队列表" .. index
+            if not findOne(选项) then
+                tap(选项)
+                if not appear(选项) then
+                    selected = false
+                    break
                 end
+                sleep(200)
             end
-            if 干员名字字符串 ~= "" then
-                if not findOne("普通作战编队列表" .. i) then
-                    tap("普通作战编队列表" .. i)
-                    appear("普通作战编队列表" .. i)
-                    sleep(200)
-                end
-                未编入 = 选择干员1(干员目录)
-                未编入数量 = 未编入数量 + 未编入[1]
-                if 未编入数量 == 1 and 未编入干员[1] == nil then
-                    未编入干员 = { i, 未编入[2] }
-                end
+            if not 选择深海猎人(组) then
+                selected = false
+                break
             end
-            --print("编入数量", 编入数量)
         end
     end
-    choseChar(干员)
-    releaseCapture()
     if not findOne("职业选择") then
         tap("职业选择")
-        ssleep(.2)
         appear("职业选择", 2)
     end
-    if findOne("职业选择") then
-        tap("职业选择")
-        appear("筛选", 2)
-    end
-
-    --[[ if not wait(function()
-            if findOne("筛选") then return true end
-            tap("筛选")
-            ssleep(.5)
-        end, 10) then
-        return
-    end ]]
-    return true
+    if findOne("职业选择") then tap("职业选择") end
+    return appear("筛选", 2) and selected
 end
 
--- 是否是贸易站，商品类别
-chooseOperator = function(stationType, goodType, stationLevel,
-                          tradingStationNum, powerStationNum, dormitoryCapacity,
-                          dormitoryLevelSum, goldStationNum, totalStationLevel)
-    log("stationType", stationType)
-    log("goodType", goodType)
-    log("stationLevel", stationLevel)
-    log("tradingStationNum", tradingStationNum)
-    log("powerStationNum", powerStationNum)
-    log("dormitoryCapacity", dormitoryCapacity)
-    log("dormitoryLevelSum", dormitoryLevelSum)
-    log("goldStationNum", goldStationNum)
-    log("totalStationLevel", totalStationLevel)
-    -- exit()
+-- 同类型设施之间保留空闲干员的顺序。刚换下的在岗干员已知身份，位置由下一设施的页面确定。
+local infrastMissingTolerance = 1
 
-    initPngdata()
-    wait(function()
-        return png_init
-    end, 5)
-    -- exit()
-    -- ==> 滑动获取所有技能
+infrastPool = nil
 
-    local maxSwipTimes = 10
-    local operator = {}
-    for i = 1, maxSwipTimes do
-        -- if discover(operator,
-        --             (not trading) and manufacturingPngdata or tradingPngdata, i) then
-        -- log(stationType, #stationType2pngData[stationType])
-        if discover(operator, stationType2pngData[stationType], i, false, stationType) then break end
-        if stationType == "肥鸭" then break end
-        -- exit()
+local pooledInfrastTypes = { 制造站 = true, 贸易站 = true, 发电站 = true, 加工站 = true }
 
-        local state = sample("干员第一个")
-        -- 三次重试
-        for j = 1, 3 do
-            log.debug("尝试第", j, "次翻页")
-            if findOne("正在提交反馈至神经") then
-                disappear("正在提交反馈至神经", network_timeout)
-                ssleep(.5)
+---开始同类型设施的换班批次。
+---@param stationType string
+infrastPoolInit = function(stationType)
+    infrastPool = { type = stationType }
+end
+
+local function infrastCardName(card)
+    local name = card[6]
+    if name and name ~= "" and name ~= "干员名未进行识别" then return name end
+end
+
+-- 补扫时可用独占技能复核身份。同一干员的不同精英等级共享身份。
+local function infrastUniqueSkillOwner(skill)
+    if skill == "empty1" or skill == "empty2" then return end
+    local operators = skillpng2operator and skillpng2operator[skill]
+    local owner
+    for _, operator in ipairs(operators or {}) do
+        local name = operator:gsub("[012]$", "")
+        if owner and owner ~= name then return end
+        owner = name
+    end
+    return owner
+end
+
+local function infrastSameCard(first, second)
+    if infrastSamePortrait(first.portrait, second.portrait) then return true end
+    local firstName, secondName = infrastCardName(first), infrastCardName(second)
+    if firstName and secondName then
+        return firstName == secondName and first[1] == second[1] and first[2] == second[2]
+    end
+    return (first[1] == second[1] and infrastUniqueSkillOwner(first[1]) ~= nil) or
+        (first[2] == second[2] and infrastUniqueSkillOwner(first[2]) ~= nil)
+end
+
+-- 按顺序对账时，技能相同的两张卡可占用同一个预期位置。
+local function infrastSameSkills(first, second)
+    if first[1] ~= second[1] or first[2] ~= second[2] then return false end
+    return (first[1] and first[1] ~= "" and first[1] ~= "empty1") or
+        (first[2] and first[2] ~= "" and first[2] ~= "empty2")
+end
+
+---用当前设施的在岗卡作为列表前缀，保留其余缓存卡的相对顺序。
+local function infrastExpectedCards(head, pool)
+    local expected, pending, matched = {}, {}, {}
+    for _, card in ipairs(head) do expected[#expected + 1] = card end
+    for _, source in ipairs({ pool.cards, pool.pending }) do
+        local target = source == pool.cards and expected or pending
+        for _, card in ipairs(source) do
+            local duplicate = false
+            for index, resident in ipairs(head) do
+                if not matched[index] and infrastSameCard(card, resident) then
+                    matched[index] = true
+                    duplicate = true
+                    break
+                end
             end
-            swipo()
-            if not findOne(state) then break end
+            if not duplicate then target[#target + 1] = card end
         end
     end
+    return expected, pending
+end
+
+---出现末列差异时按顺序消费期望条目。换下干员不消费预期位置。
+local function infrastAlignCard(state, card)
+    local expected = state.expected[state.cursor]
+    if expected and infrastSameCard(card, expected) then
+        state.cursor = state.cursor + 1
+        return expected
+    end
+    local pendingIndex
+    for index, pending in ipairs(state.pending) do
+        if infrastSameCard(card, pending) then
+            if pendingIndex then return false end
+            pendingIndex = index
+        end
+    end
+    if pendingIndex then
+        return table.remove(state.pending, pendingIndex)
+    end
+    for index = state.cursor + 1, math.min(#state.expected, state.cursor + infrastMissingTolerance) do
+        if infrastSameCard(card, state.expected[index]) then
+            state.missing = state.missing + index - state.cursor
+            if state.missing > infrastMissingTolerance then return false end
+            state.cursor = index + 1
+            return state.expected[index]
+        end
+    end
+    if expected and infrastSameSkills(card, expected) then
+        state.cursor = state.cursor + 1
+        return expected
+    end
+    return false
+end
+
+---@class InfrastSelection
+---@field best table[] 本次点选的干员
+---@field cards table[]|nil 扫描得到的有序卡片
+---@field unlocated table[]|nil 暂未定位的换下干员
+
+---待确认的选人结果包含有序卡片和实际点选目标。
+local function infrastPoolAfterSelection(stationType, transaction)
+    local cards, pending = {}, {}
+    local selected = {}
+    for _, card in ipairs(transaction.best) do
+        if card[1] == "abyssal_hunter" then
+            local found
+            for _, real in ipairs(transaction.cards) do
+                if infrastCardName(real) == card[6] then
+                    if found then return nil end
+                    found = real
+                end
+            end
+            if not found then return nil end
+            selected[found] = true
+        else
+            selected[card] = true
+        end
+    end
+    for _, card in ipairs(transaction.cards) do
+        if not selected[card] then
+            if card.resident then
+                pending[#pending + 1] = card
+            else
+                cards[#cards + 1] = card
+            end
+        end
+    end
+    -- 旧流程的技能扫描边界可能早于列表物理末尾，暂时保留边界外的换下干员。
+    for _, card in ipairs(transaction.unlocated) do pending[#pending + 1] = card end
+    return { type = stationType, cards = cards, pending = pending }
+end
+
+local function infrastApplyStationLinks(stationType, best)
+    if stationType == "制造站" then
+        for _, card in ipairs(best) do
+            if table.findv(card, "bskill_man_spd_bd2") then
+                isCharExsit["迷迭香"] = true
+            elseif card[1] == "abyssal_hunter" then
+                isCharExsit[card[6]] = true
+            end
+        end
+    elseif stationType == "贸易站" then
+        for _, card in ipairs(best) do
+            if table.findv(card, "bskill_tra_flow_durin") then
+                isCharExsit["鸿雪"] = true
+                break
+            end
+        end
+    elseif stationType == "发电站" then
+        local card = best[1]
+        if table.findv(card, "bskill_pow_count") then
+            virtralPowerStationNum = virtralPowerStationNum + 1
+            isCharExsit["承曦格雷伊"] = true
+        elseif table.findv(card, "bskill_pow_spd&cost") then
+            isCharExsit["正义骑士号"] = true
+            isCharExsit["作业平台"] = isCharExsit["作业平台"] or 1
+        elseif card[6] == "Lancet-2" then
+            isCharExsit["Lancet-2"] = true
+            isCharExsit["作业平台"] = isCharExsit["作业平台"] or 1
+        elseif table.findv({ "Castle-3", "THRM-EX", "正义骑士号", "Friston-3", "PhonoR-0" }, card[6]) then
+            isCharExsit["作业平台"] = isCharExsit["作业平台"] or 1
+        end
+    end
+end
+
+---设施确认后提交候选池和进驻联动。失败时下次重新全扫。
+---@param stationType string
+---@param transaction InfrastSelection|nil
+---@param confirmed boolean
+infrastPoolFinish = function(stationType, transaction, confirmed)
+    if not pooledInfrastTypes[stationType] then return end
+    if not confirmed or not transaction then
+        infrastPoolInit(stationType)
+        return
+    end
+    infrastApplyStationLinks(stationType, transaction.best)
+    infrastPool = transaction.cards and infrastPoolAfterSelection(stationType, transaction) or { type = stationType }
+    log.info("基建干员池确认", stationType, infrastPool.cards and #infrastPool.cards or 0,
+        infrastPool.pending and #infrastPool.pending or 0)
+end
+
+---深海猎人候选注入(歌蕾蒂娅在场时的制造站特殊处理,原 chooseOperator 逻辑)
+---向 operator 尾部追加 4 个 png=abyssal_hunter 的伪条目(非真实列表卡片),选中后由
+---chooseOperatorByOcr 按 OCR 名字选人;这些干员被抽离但不在池子记账,靠按名字移除兜底
+---@param stationType string 设施类型(仅制造站生效)
+---@param operator table 候选干员数组(原地追加伪条目)
+infrastAppendAbyssal = function(stationType, operator)
     if not not_use_ocr and stationType == "制造站" and isCharExsit["歌蕾蒂娅"] then
         -- 自定义深海猎人技能为"abyssal_hunter"
         table.insert(operator,
@@ -1383,28 +1591,24 @@ chooseOperator = function(stationType, goodType, stationLevel,
             干员职业 = JsonDecode(readFile("character_type_list.json"))
         end
     end
+end
 
-    swipo(true, true)
-    start_time = time()
-
-    log.debug("所有干员识别结果:", operator)
-    -- 检查operator
-    local tto = 0
-    for i = 1, #operator do
-        if operator[i][1] == "" then
-            log("没有技能", operator[i])
-            -- table.remove(operator, i)
-            -- i = i - 1
-            tto = tto + 1
-        end
-    end
-    log("所有干员识别数量:", #operator, "失败数量:", tto)
-    if #operator == tto then
-        log.warn("全部干员识别失败")
-        return
-    end
-
-    -- 计算最优技能
+---按设施类型计算最优干员组合。四类干员池设施在提交进驻时更新联动。
+---@param stationType string 设施类型
+---@param operator table 候选干员数组(条目结构见池子模块注释)
+---@param goodType string 制造物/交易物类别;训练室=被训干员职业;加工站=材料id
+---@param stationLevel number 设施等级;训练室=被训干员专精等级;加工站=材料等级
+---@param tradingStationNum number 贸易站数量
+---@param powerStationNum number 发电站数量(占位,未使用)
+---@param dormitoryCapacity number 宿舍可容纳人数
+---@param dormitoryLevelSum number 宿舍等级之和
+---@param goldStationNum number 赤金生产线数
+---@param totalStationLevel number 基建总等级
+---@return table best 选中条目引用数组(无解时为 nil,如肥鸭心情不达标)
+---@return number best_score 最优组合评分
+infrastOperatorBest = function(stationType, operator, goodType, stationLevel,
+                               tradingStationNum, powerStationNum, dormitoryCapacity,
+                               dormitoryLevelSum, goldStationNum, totalStationLevel)
     local best, best_score
     if stationType == "制造站" then
         best, best_score = manufacturingStationOperatorBest(operator,
@@ -1413,26 +1617,11 @@ chooseOperator = function(stationType, goodType, stationLevel,
             dormitoryLevelSum,
             totalStationLevel,
             goodType, stationLevel)
-        log("制造站选", best)
-        for i = 1, #best do
-            if table.findv(best[i], "bskill_man_spd_bd2") then
-                isCharExsit["迷迭香"] = true
-            elseif table.findv(best[i], "abyssal_hunter") then
-                isCharExsit[best[i][6]] = true
-            end
-        end
     elseif stationType == "贸易站" then
         best, best_score = tradingStationOperatorBest(operator, dormitoryCapacity,
             dormitoryLevelSum,
             goldStationNum, goodType,
             stationLevel)
-        log("贸易站选", best)
-        for i = 1, #best do
-            if table.findv(best[i], "bskill_tra_flow_durin") then
-                isCharExsit["鸿雪"] = true
-                break
-            end
-        end
     elseif stationType == "会客厅" then
         best, best_score = meetingStationOperatorBest(operator)
         if table.findv(best[1], "bskill_meet_spd_hast1") then
@@ -1440,19 +1629,6 @@ chooseOperator = function(stationType, goodType, stationLevel,
         end
     elseif stationType == "发电站" then
         best, best_score = powerStationOperatorBest(operator)
-        log("发电站选", best)
-        if table.findv(best[1], "bskill_pow_count") then
-            virtralPowerStationNum = virtralPowerStationNum + 1
-            isCharExsit["承曦格雷伊"] = true
-        elseif table.findv(best[1], "bskill_pow_spd&cost") then
-            isCharExsit["正义骑士号"] = true
-            isCharExsit["作业平台"] = isCharExsit["作业平台"] or 0 + 1
-        elseif table.findv({ "Lancet-2" }, best[1][6]) then
-            isCharExsit["Lancet-2"] = true
-            isCharExsit["作业平台"] = isCharExsit["作业平台"] or 0 + 1
-        elseif table.findv({ "Castle-3", "THRM-EX", "正义骑士号", "Friston-3", "PhonoR-0" }, best[1][6]) then
-            isCharExsit["作业平台"] = isCharExsit["作业平台"] or 0 + 1
-        end
     elseif stationType == "办公室" then
         best, best_score = officeStationOperatorBest(operator)
         log("办公室选", best)
@@ -1472,7 +1648,7 @@ chooseOperator = function(stationType, goodType, stationLevel,
     elseif stationType == "肥鸭" then
         best, best_score = dormitoryOperatorFiammetta(operator)
         if best_score < 1 then
-            return
+            return nil, best_score
         else
             log("宿舍选肥鸭")
         end
@@ -1483,8 +1659,525 @@ chooseOperator = function(stationType, goodType, stationLevel,
     elseif stationType == "加工站" then
         --goodType表示材料,stationLevel表示材料等级等级
         best, best_score = workshopOperatorBest(operator, goodType, stationLevel)
-        log("加工站选", best)
     end
+    return best, best_score
+end
+
+local infrastMaxPages = 10
+
+---沿用基建翻页的首卡采样。返回网格时保留该页截图，由调用方释放。
+local function infrastNextPage()
+    local firstCard = sample("干员第一个")
+    for _ = 1, 3 do
+        if findOne("正在提交反馈至神经") then
+            disappear("正在提交反馈至神经", network_timeout)
+            ssleep(.5)
+        end
+        swipo()
+        if not findOne(firstCard) then
+            keepCapture()
+            local grid = infrastReadGrid()
+            if not grid.valid or #grid.slots == 0 then
+                releaseCapture()
+                sleep(150)
+                keepCapture()
+                grid = infrastReadGrid()
+            end
+            if grid.valid and #grid.slots > 0 then return grid end
+            releaseCapture()
+            return false
+        end
+    end
+end
+
+local function infrastCardAt(card, anchor, page, minMood)
+    local x, y = anchor[1], anchor[2]
+    local mood = card[3]
+    if minMood > 0 and (mood >= minMood) ~= infrastMoodPoint(anchor, minMood) then
+        mood = infrastCardMood(anchor)
+    end
+    return {
+        card[1], card[2], mood,
+        { x + scale(7), y + scale(18), x + scale(60), y + scale(70) },
+        page, card[6], portrait = infrastPortrait(anchor), anchor = anchor, resident = card.resident,
+    }
+end
+
+local function infrastScanPoolCard(stationType, anchor, page)
+    local card = scanInfrastCard(anchor, stationType2pngData[stationType], page, stationType)
+    card.portrait = infrastPortrait(anchor)
+    card.anchor = anchor
+    return card
+end
+
+local function infrastScanRoster(stationType, capacity)
+    local startTime = time()
+    keepCapture()
+    local grid = infrastReadGrid()
+    if not grid.valid or #grid.slots == 0 then
+        releaseCapture()
+        return nil, "首页找不到干员卡片"
+    end
+
+    local cards = {}
+    local resident, scanned, lastPage = true, 0, 0
+    for page = 1, infrastMaxPages do
+        local slots = grid.slots
+        local unknown, stop = 0, false
+        lastPage = page
+        for index = 1, #slots do
+            local anchor = slots[index]
+            local card = infrastScanPoolCard(stationType, anchor, page)
+            scanned = scanned + 1
+            resident = resident and page == 1 and index <= capacity and infrastHasRoomBadge(anchor)
+            card.resident = resident or nil
+            if card[1] == "empty1" and not resident then
+                unknown = unknown + 1
+                if unknown > (page == 1 and 3 or 1) then
+                    stop = true
+                    break
+                end
+            end
+            cards[#cards + 1] = card
+        end
+        releaseCapture()
+        if stop or page == infrastMaxPages then break end
+
+        local nextGrid = infrastNextPage()
+        if nextGrid == false then return nil, "翻页后识别不到有效卡片，上一页 " .. page end
+        if not nextGrid then break end
+        grid = nextGrid
+    end
+    log.info("基建全量扫描完成", stationType, "页数", lastPage, "识别技能", scanned, "耗时", time() - startTime)
+    return { cards = cards, unlocated = {} }
+end
+
+-- 有序列表的已访问部分保存实扫卡，未访问部分沿用原顺序。
+local function infrastRosterSnapshot(state)
+    local cards = {}
+    for _, card in ipairs(state.cards) do cards[#cards + 1] = card end
+    for index = state.cursor, #state.expected do cards[#cards + 1] = state.expected[index] end
+    return { cards = cards, unlocated = state.pending }
+end
+
+-- 通过原缓存条目关联评分目标。补扫插入卡后，同一目标仍能找到新的坐标。
+local function infrastRecordCard(state, source, card, visible)
+    state.cards[#state.cards + 1] = card
+    if state.targets[source] then
+        state.targets[source] = nil
+        visible[#visible + 1] = card
+    end
+end
+
+-- 调用方持有截图。首页已实扫，之后只核验末列和本页要点选的卡。
+local function infrastReconcilePage(stationType, state, slots, page, firstPage)
+    local known = #state.expected - state.cursor + 1
+    -- 理论末列由有序缓存的剩余位置决定。待定位干员只扩展补扫范围。
+    local expectedLast = math.min(infrastPageColumns * 2, known)
+    local visible, scanned = {}, firstPage or {}
+
+    local function scanSlot(index)
+        if not scanned[index] then
+            scanned[index] = infrastScanPoolCard(stationType, slots[index], page)
+            state.scanned = state.scanned + 1
+        end
+        return scanned[index]
+    end
+
+    local function matchesSlot(index, expected)
+        if infrastSamePortrait(infrastPortrait(slots[index]), expected.portrait) then return true end
+        local card = scanSlot(index)
+        if infrastSameCard(card, expected) then return true end
+        if not infrastSameSkills(card, expected) then return false end
+        local name, expectedName = infrastCardName(card), infrastCardName(expected)
+        if name and expectedName and name ~= expectedName then return false end
+        for _, pending in ipairs(state.pending) do
+            if infrastSameCard(card, pending) then return false end
+        end
+        return true
+    end
+
+    local checked = not firstPage and expectedLast > 0 and slots[expectedLast] ~= nil
+    if checked then
+        local columnStart = expectedLast - (expectedLast - 1) % 2
+        for index = columnStart, expectedLast do
+            state.probes = state.probes + 1
+            local expected = state.expected[state.cursor + index - 1]
+            if not matchesSlot(index, expected) then
+                checked = false
+            end
+        end
+    end
+    if checked then
+        -- 末列相符时，中间的插入和缺失仍可能抵消位移。先核验目标再决定是否补扫。
+        for index = 1, expectedLast do
+            local expected = state.expected[state.cursor + index - 1]
+            if state.targets[expected] and not matchesSlot(index, expected) then
+                checked = false
+                break
+            end
+        end
+    end
+    if checked then
+        for index = 1, expectedLast do
+            local expected = state.expected[state.cursor]
+            local card = scanned[index] or infrastCardAt(expected, slots[index], page, state.minMood)
+            card.resident = expected.resident
+            infrastRecordCard(state, expected, card, visible)
+            state.cursor = state.cursor + 1
+        end
+        return visible
+    end
+
+    if not firstPage then
+        state.repaired = state.repaired + 1
+        log.info("基建末列或目标位置不一致，补扫本页", stationType, page)
+    end
+    local firstExpected = state.cursor
+    local last = math.min(#slots, known + #state.pending)
+    for index = 1, last do
+        if state.cursor > #state.expected and #state.pending == 0 then break end
+        local card = scanSlot(index)
+        local source = infrastAlignCard(state, card)
+        if not source then
+            if state.cursor > #state.expected then break end
+            log.debug("基建页内对账未匹配", stationType, page, index, state.cursor,
+                card[1], card[6], state.expected[state.cursor][1], state.expected[state.cursor][6])
+            return nil, "预期顺序无法对齐，页 " .. page
+        end
+        if state.fullScan and source.resident then card.resident = true end
+        infrastRecordCard(state, source, card, visible)
+    end
+    for index = firstExpected, state.cursor - 1 do
+        if state.targets[state.expected[index]] then
+            return visible, "目标干员已缺失，页 " .. page
+        end
+    end
+    return visible
+end
+
+local function infrastVerifyTarget(card)
+    local anchor = card.anchor
+    for _, offset in ipairs({ 0, -1, 1, -2, 2, -3, 3 }) do
+        local current = { anchor[1] + scale(offset), anchor[2] }
+        if infrastSamePortrait(infrastPortrait(current), card.portrait) then
+            return current
+        end
+    end
+end
+
+local function infrastTapCard(anchor)
+    tap({ anchor[1] + scale(113), anchor[2] + scale(18) })
+    return wait(function()
+        for dx = 13, 17 do
+            if cmpColor(anchor[1] - scale(dx), anchor[2] - scale(125), '0098DC', .9) == 1 then
+                return true
+            end
+        end
+    end, .5)
+end
+
+local function infrastSelectionState(stationType, expected, pending, missing, scanned)
+    return {
+        expected = expected, pending = pending, cursor = 1, missing = missing or 0,
+        cards = {}, targets = {}, probes = 0, repaired = 0, scanned = scanned or 0,
+        minMood = disable_shift_mood and 0 or (stationType == "加工站" and 24 or shift_min_mood or 0),
+    }
+end
+
+-- 全扫首站和复用后续站共用翻页定位，按当前页的列重叠找到真实卡位。
+local function infrastSelectRoster(stationType, state, grid, best)
+    local startTime = time()
+    local names, selected = {}, {}
+    for _, card in ipairs(best) do
+        if card[1] == "abyssal_hunter" then
+            names[#names + 1] = card[6]
+            selected[#selected + 1] = card
+        else
+            state.targets[card] = true
+        end
+    end
+    local visible, reason = {}, nil
+    if state.fullScan then
+        visible, reason = infrastReconcilePage(stationType, state, grid.slots, 1)
+        releaseCapture()
+        if not visible or reason then return nil, reason end
+    else
+        for _, card in ipairs(state.cards) do
+            if state.targets[card] then
+                state.targets[card] = nil
+                visible[#visible + 1] = card
+            end
+        end
+    end
+
+    local page = 1
+    local function correctedPool()
+        local corrected = infrastRosterSnapshot(state)
+        corrected.best = {}
+        local nextPool = infrastPoolAfterSelection(stationType, corrected)
+        nextPool.missing = state.missing
+        return nextPool
+    end
+
+    local function tapPage()
+        local anchors = {}
+        keepCapture()
+        for index, card in ipairs(visible) do
+            local anchor = infrastVerifyTarget(card)
+            if not anchor then
+                releaseCapture()
+                return false
+            end
+            if state.minMood > 0 and not infrastMoodPoint(anchor, state.minMood) then
+                card[3] = infrastCardMood(anchor)
+                releaseCapture()
+                return false, true
+            end
+            anchors[index] = anchor
+        end
+        releaseCapture()
+        for index, card in ipairs(visible) do
+            if not infrastTapCard(anchors[index]) then return false end
+            selected[#selected + 1] = card
+        end
+        return true
+    end
+    while true do
+        local tapped, moodChanged = tapPage()
+        if not tapped then
+            if moodChanged then
+                return nil, "目标干员需要重新评分，页 " .. page, correctedPool()
+            end
+            return nil, "目标干员点选失败，页 " .. page
+        end
+        if not next(state.targets) then break end
+        if page >= infrastMaxPages then return nil, "已到选人页数上限" end
+        local nextGrid = infrastNextPage()
+        if nextGrid == false then return nil, "翻页后识别不到有效卡片，上一页 " .. page end
+        if not nextGrid then
+            local remaining = #state.expected - state.cursor + 1
+            if state.missing + remaining <= infrastMissingTolerance then
+                state.cursor = #state.expected + 1
+                state.missing = state.missing + remaining
+                return nil, "列表末尾缺少目标干员", correctedPool()
+            end
+            return nil, "列表末尾缺少目标干员，预期缺失 " .. (state.missing + remaining)
+        end
+        grid, page = nextGrid, page + 1
+        visible, reason = infrastReconcilePage(stationType, state, grid.slots, page)
+        releaseCapture()
+        if not visible then return nil, reason end
+        if reason then return nil, reason, correctedPool() end
+    end
+    if #names > 0 then
+        if page > 1 then swipo(true) end
+        if not chooseOperatorByOcr(names) then return nil, "深海猎人选人失败" end
+    end
+
+    if state.fullScan then
+        log.info("基建全扫后选人完成", stationType, "选人到达页", page,
+            "末列读卡", state.probes, "补扫页数", state.repaired, "耗时", time() - startTime)
+    else
+        log.info("基建复用选人完成", stationType, "评分前扫描页数", 1, "选人到达页", page,
+            "末列读卡", state.probes, "识别技能", state.scanned, "补扫页数", state.repaired,
+            "耗时", time() - state.started)
+    end
+    local roster = infrastRosterSnapshot(state)
+    roster.best = selected
+    return roster
+end
+
+local function infrastReuseRoster(stationType, capacity, pool, scoreRoster)
+    local startTime = time()
+    keepCapture()
+    local grid = infrastReadGrid()
+    if not grid.valid or #grid.slots == 0 then
+        releaseCapture()
+        return nil, "首页找不到干员卡片"
+    end
+
+    local firstPage, head = {}, {}
+    local resident = true
+    for index, anchor in ipairs(grid.slots) do
+        local card = infrastScanPoolCard(stationType, anchor, 1)
+        resident = resident and index <= capacity and infrastHasRoomBadge(anchor)
+        card.resident = resident or nil
+        if resident then head[#head + 1] = card end
+        firstPage[index] = card
+    end
+    local expected, pending = infrastExpectedCards(head, pool)
+    local state = infrastSelectionState(stationType, expected, pending, pool.missing, #firstPage)
+    state.started = startTime
+    local visible, reason = infrastReconcilePage(stationType, state, grid.slots, 1, firstPage)
+    releaseCapture()
+    if not visible then return nil, reason end
+
+    local best = scoreRoster(infrastRosterSnapshot(state).cards)
+    if not best or #best == 0 then return nil, "没有可选干员" end
+    return infrastSelectRoster(stationType, state, grid, best)
+end
+
+local function infrastResetSelection()
+    swipo(true)
+    if not wait(function()
+            if findOne("干员未选中") and findOne("第一干员未选中") then return true end
+            tap("清空选择")
+        end, 5) then
+        return false
+    end
+    return true
+end
+
+local function infrastSelectFullScan(stationType, roster, best)
+    keepCapture()
+    local grid = infrastReadGrid()
+    if not grid.valid or #grid.slots == 0 then
+        releaseCapture()
+        return nil, "全扫后找不到首页干员卡片"
+    end
+    local state = infrastSelectionState(stationType, roster.cards, roster.unlocated)
+    state.fullScan = true
+    return infrastSelectRoster(stationType, state, grid, best)
+end
+
+local function choosePooledInfrastOperator(stationType, goodType, stationLevel, tradingStationNum,
+                                           powerStationNum, dormitoryCapacity, dormitoryLevelSum,
+                                           goldStationNum, totalStationLevel)
+    local capacity = (stationType == "制造站" or stationType == "贸易站") and stationLevel or 1
+    local pool = infrastPool
+    if not pool or pool.type ~= stationType or not pool.cards then pool = nil end
+    local function scoreRoster(cards)
+        local candidates = {}
+        for _, card in ipairs(cards) do candidates[#candidates + 1] = card end
+        infrastAppendAbyssal(stationType, candidates)
+        local best, score = infrastOperatorBest(stationType, candidates, goodType, stationLevel,
+            tradingStationNum, powerStationNum, dormitoryCapacity, dormitoryLevelSum, goldStationNum, totalStationLevel)
+        log.info("基建换班选人", stationType, best and #best or 0, score)
+        return best
+    end
+
+    if pool then
+        local roster, reason, corrected = infrastReuseRoster(stationType, capacity, pool, scoreRoster)
+        if roster then return true, roster end
+        if corrected then
+            log.info("基建用已核验的干员重新评分", stationType, reason)
+            if not infrastResetSelection() then return false end
+            roster, reason = infrastReuseRoster(stationType, capacity, corrected, scoreRoster)
+            if roster then return true, roster end
+        end
+        log.warn(stationType .. "池子失同步，回退全量扫描", reason)
+        infrastPoolInit(stationType)
+        if not infrastResetSelection() then return false end
+    end
+
+    local roster, reason = infrastScanRoster(stationType, capacity)
+    if roster then
+        local best = scoreRoster(roster.cards)
+        if not best or #best == 0 then return false end
+        swipo(true)
+        local selected
+        selected, reason = infrastSelectFullScan(stationType, roster, best)
+        if selected then return true, selected end
+        log.info("基建保留全扫结果重试选人", stationType, reason)
+        if not infrastResetSelection() then return false end
+        selected, reason = infrastSelectFullScan(stationType, roster, best)
+        if selected then return true, selected end
+    end
+    log.warn("基建全量选人失败", stationType, reason)
+    if infrastResetSelection() then return nil end
+    return false
+end
+
+-- 是否是贸易站，商品类别
+---基建换班选人。四类干员池设施返回待确认结果供路径提交。
+---@param stationType string 设施类型(制造站/贸易站/发电站/加工站/会客厅/办公室/宿舍/肥鸭/训练室/回收站/控制中枢)
+---@param goodType string 制造物/交易物类别;训练室=被训干员职业;加工站=材料id
+---@param stationLevel number 设施等级(发电站恒为1个工位)
+---@param tradingStationNum number 贸易站数量
+---@param powerStationNum number 发电站数量(占位,未使用;发电站分支读写全局 virtralPowerStationNum)
+---@param dormitoryCapacity number 宿舍可容纳人数
+---@param dormitoryLevelSum number 宿舍等级之和
+---@param goldStationNum number 赤金生产线数
+---@param totalStationLevel number 基建总等级
+---@return boolean|nil selected 已点选
+---@return InfrastSelection|nil transaction 干员池设施的待确认结果
+chooseOperator = function(stationType, goodType, stationLevel,
+                          tradingStationNum, powerStationNum, dormitoryCapacity,
+                          dormitoryLevelSum, goldStationNum, totalStationLevel)
+    log("stationType", stationType)
+    log("goodType", goodType)
+    log("stationLevel", stationLevel)
+    log("tradingStationNum", tradingStationNum)
+    log("powerStationNum", powerStationNum)
+    log("dormitoryCapacity", dormitoryCapacity)
+    log("dormitoryLevelSum", dormitoryLevelSum)
+    log("goldStationNum", goldStationNum)
+    log("totalStationLevel", totalStationLevel)
+    -- exit()
+
+    initPngdata()
+    wait(function()
+        return png_init
+    end, 5)
+
+    if pooledInfrastTypes[stationType] then
+        local selected, transaction = choosePooledInfrastOperator(stationType, goodType, stationLevel, tradingStationNum,
+            powerStationNum, dormitoryCapacity, dormitoryLevelSum, goldStationNum, totalStationLevel)
+        if selected ~= nil then return selected, transaction end
+        log.warn("基建使用旧版全量选人", stationType)
+    end
+
+    -- ==> 滑动获取所有技能
+
+    local maxSwipTimes = 10
+    local operator = {}
+    for i = 1, maxSwipTimes do
+        -- log(stationType, #stationType2pngData[stationType])
+        if discover(operator, stationType2pngData[stationType], i, false, stationType) then break end
+        if stationType == "肥鸭" then break end
+
+        local state = sample("干员第一个")
+        local moved = false
+        for j = 1, 3 do
+            log.debug("尝试第", j, "次翻页")
+            if findOne("正在提交反馈至神经") then
+                disappear("正在提交反馈至神经", network_timeout)
+                ssleep(.5)
+            end
+            swipo()
+            if not findOne(state) then
+                moved = true
+                break
+            end
+        end
+        if not moved then break end
+    end
+    infrastAppendAbyssal(stationType, operator)
+
+    swipo(true, true)
+    local start_time = time()
+
+    log.debug("所有干员识别结果:", operator)
+    -- 检查operator
+    local tto = 0
+    for i = 1, #operator do
+        if operator[i][1] == "" then
+            log("没有技能", operator[i])
+            tto = tto + 1
+        end
+    end
+    log("所有干员识别数量:", #operator, "失败数量:", tto)
+    if #operator == tto then
+        log.warn("全部干员识别失败")
+        return
+    end
+
+    -- 计算最优技能
+    local best, best_score = infrastOperatorBest(stationType, operator, goodType,
+        stationLevel, tradingStationNum, powerStationNum, dormitoryCapacity,
+        dormitoryLevelSum, goldStationNum, totalStationLevel)
+    if not best or (pooledInfrastTypes[stationType] and #best == 0) then return end
     sleep(max(0, 500 - (time() - start_time)))
     tap("清空选择")
 
@@ -1492,13 +2185,12 @@ chooseOperator = function(stationType, goodType, stationLevel,
     table.sort(best, function(a, b) return a[5] < b[5] end)
 
     -- 选择干员
-    operator = best
-    log.debug(operator, best_score)
+    log.debug(best, best_score)
     local pageid = 1
-    for i = 1, #operator do
-        log(i, operator[i])
-        while operator[i][5] > pageid do
-            if not table.findv({ "abyssal_hunter" }, operator[i][1]) then
+    for i = 1, #best do
+        log(i, best[i])
+        while best[i][5] > pageid do
+            if not table.findv({ "abyssal_hunter" }, best[i][1]) then
                 local state = sample("干员第一个")
                 for j = 1, 3 do
                     log("844尝试翻页", j)
@@ -1512,27 +2204,26 @@ chooseOperator = function(stationType, goodType, stationLevel,
             end
             pageid = pageid + 1
         end
-        if not table.findv({ "abyssal_hunter" }, operator[i][1]) then
-            local p = operator[i][4]
+        if not table.findv({ "abyssal_hunter" }, best[i][1]) then
+            local p = best[i][4]
             tap({ p[1] + scale(106), p[2] })
             sleep(50)
         end
     end
 
     local names = {}
-    for i = 1, #operator do
-        log.debug(i, operator[i])
-        if table.findv({ "abyssal_hunter" }, operator[i][1]) then
-            table.insert(names, operator[i][6])
+    for i = 1, #best do
+        log.debug(i, best[i])
+        if table.findv({ "abyssal_hunter" }, best[i][1]) then
+            table.insert(names, best[i][6])
         end
     end
     log(names)
-    if #names > 0 then
-        chooseOperatorByOcr(names)
-    end
+    if #names > 0 and not chooseOperatorByOcr(names) then return false end
     swipo(true, true)
+
+    if pooledInfrastTypes[stationType] then return true, { best = best } end
     return true
-    -- exit()
 end
 
 -- 会客厅干员选择：先选+25%，剩下按鹰序
@@ -2705,4 +3396,59 @@ correctCharName = function(t)
         t = "司霆惊蛰"
     end
     return t
+end
+
+---覆盖:建池/期望页码/头部合并去重/陌生人插入定位/期望缺失移位/派驻移除/失同步判定
+---基建干员池的顺序、待定位和确认记账自测，独立于截图与手势。
+testInfrastPool = function()
+    local function card(id)
+        return { "测试技能" .. id, "empty2", 24, {}, 1, id, portrait = nil }
+    end
+    local first, second, third, fourth, fifth = card("a"), card("b"), card("c"), card("d"), card("e")
+    local resident1, resident2 = card("r1"), card("r2")
+    resident1.resident, resident2.resident = true, true
+    local returned1, returned2 = card("p1"), card("p2")
+
+    local expected, pending = infrastExpectedCards({ resident1, resident2 }, {
+        cards = { first, card("r1"), second, third, fourth, fifth },
+        pending = { returned1, returned2 },
+    })
+    assert(#expected == 7 and expected[1] == resident1 and expected[2] == resident2)
+    assert(expected[3] == first and expected[4] == second and expected[7] == fifth)
+    assert(#pending == 2)
+
+    local state = { expected = expected, pending = pending, cursor = 1, missing = 0 }
+    for _, observed in ipairs({ resident1, returned1, resident2, first, second }) do
+        assert(infrastAlignCard(state, observed))
+    end
+    assert(state.cursor == 5 and #pending == 1)
+    for _, observed in ipairs({ returned2, fourth, fifth }) do
+        assert(infrastAlignCard(state, observed))
+    end
+    assert(state.cursor == #expected + 1 and state.missing == 1 and #pending == 0)
+
+    state = { expected = { first, second, third, fourth }, pending = {}, cursor = 1, missing = 0 }
+    assert(infrastAlignCard(state, second))
+    assert(not infrastAlignCard(state, fourth))
+
+    local nextPool = infrastPoolAfterSelection("制造站", {
+        cards = { resident1, resident2, first, second, third },
+        best = { resident1, second },
+        unlocated = {},
+    })
+    assert(#nextPool.cards == 2 and nextPool.cards[1] == first and nextPool.cards[2] == third)
+    assert(#nextPool.pending == 1 and nextPool.pending[1] == resident2)
+    local cached = { "bskill_tra_spd1", "empty2", 24, {}, 1 }
+    local observed = { "bskill_tra_spd1", "empty2", 24, {}, 1 }
+    local future, unlocated = infrastExpectedCards({ observed }, { cards = { cached }, pending = {} })
+    assert(#future == 2 and future[2] == cached and #unlocated == 0)
+    state = { expected = { cached }, pending = {}, cursor = 1, missing = 0 }
+    assert(infrastAlignCard(state, observed) == cached and state.missing == 0)
+    assert(not infrastSameSkills({ "empty1", "empty2" }, { "empty1", "empty2" }))
+    assert(not infrastSameSkills(cached, { "bskill_tra_spd1", "bskill_tra_spd2" }))
+
+    observed[6], returned1[1] = returned1[6], cached[1]
+    state = { expected = { cached }, pending = { returned1 }, cursor = 1, missing = 0 }
+    assert(infrastAlignCard(state, observed) == returned1 and state.cursor == 1)
+    log.info("基建干员池自测通过")
 end
