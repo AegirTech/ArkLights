@@ -190,12 +190,12 @@ scanInfrastCard = function(v, pngdata, pageid, stationType, moodOnly)
     if not moodOnly then
         png = findBuildingSkill(icon1[1], icon1[2], icon1[3], icon1[4], pngdata) or
             png
-        log("png1", png, name)
+        --log("png1", png, name)
         local operator = skillpng2operator[png]
         if not operator or #operator ~= 1 then
             png2 = findBuildingSkill(icon2[1], icon2[2], icon2[3], icon2[4], pngdata) or
                 png2
-            log("png2", png2, name)
+            --log("png2", png2, name)
         end
     end
 
@@ -229,10 +229,10 @@ discover = still_wrapper(function(operators, pngdata, pageid, mood_only, station
                 return true
             end
         end
-        log.debug(idx, item[1], item[3], item[6])
+        --log.debug(idx, item[1], item[3], item[6])
         table.insert(operators, item)
     end
-    log.debug(operators)
+    --log.debug(operators)
 end)
 
 -- 宿舍专用识别,不识别技能,只识别心情和干员名,有可能给深海队和推王组用
@@ -253,7 +253,6 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
         }
         local name = "干员名未识别"
         if dev_mode or (not not_use_ocr) then
-            log.debug()
             local status, charName = pcall(ocro, {
                 v[1] + scale(7), v[2] + scale(104), v[1] + scale(191), v[2] + scale(134),
             })
@@ -279,7 +278,7 @@ discoverWithOcr = still_wrapper(function(operators, pngdata, pageid, mood_only, 
                 break
             end
         end
-        log.debug(idx, operator, mood, name)
+        --log.debug(idx, operator, mood, name)
         table.insert(operators, { png, png2, mood, icon1, pageid, name })
     end
     log.debug(operators)
@@ -697,7 +696,7 @@ manufacturingStationOperatorBest = function(operator, tradingStationNum,
         maxStorage = 54
     end
     --log(operator)
-    log.debug("goodType", goodType, operator[1])
+    --log.debug("goodType", goodType, operator[1])
     -- log("maxStorage", maxStorage)
     -- log("maxOperator", maxOperator)
 
@@ -1697,9 +1696,15 @@ local function infrastCardAt(card, anchor, page, minMood)
         mood = infrastCardMood(anchor)
     end
     return {
-        card[1], card[2], mood,
+        card[1],
+        card[2],
+        mood,
         { x + scale(7), y + scale(18), x + scale(60), y + scale(70) },
-        page, card[6], portrait = infrastPortrait(anchor), anchor = anchor, resident = card.resident,
+        page,
+        card[6],
+        portrait = infrastPortrait(anchor),
+        anchor = anchor,
+        resident = card.resident,
     }
 end
 
@@ -1879,8 +1884,15 @@ end
 
 local function infrastSelectionState(stationType, expected, pending, missing, scanned)
     return {
-        expected = expected, pending = pending, cursor = 1, missing = missing or 0,
-        cards = {}, targets = {}, probes = 0, repaired = 0, scanned = scanned or 0,
+        expected = expected,
+        pending = pending,
+        cursor = 1,
+        missing = missing or 0,
+        cards = {},
+        targets = {},
+        probes = 0,
+        repaired = 0,
+        scanned = scanned or 0,
         minMood = disable_shift_mood and 0 or (stationType == "加工站" and 24 or shift_min_mood or 0),
     }
 end
