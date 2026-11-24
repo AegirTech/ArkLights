@@ -304,6 +304,15 @@ clear_fight_auto_battle = function()
     log("清除连战历史记录完成")
 end
 
+clear_official_account = function()
+    local filepath = '/data/user/0/com.hypergryph.arknights/shared_prefs/HypergryphSdkPreferences.xml'
+    if root_mode then
+        exec("su root sh -c 'rm -rf " .. filepath .. "'")
+    else
+        delfile(filepath)
+    end
+end
+
 -- 设置官服登录账户
 official_set_login_user = function(data)
     local data = data or ""

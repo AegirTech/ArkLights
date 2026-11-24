@@ -1063,6 +1063,9 @@ show_debug_ui = function()
     ui.addCheckBox(debug_layout_调试, "catch_run_crash", "防止脚本异常崩溃", true)
 
     newRow(debug_layout_调试)
+    ui.addCheckBox(debug_layout_调试, "clear_userdata_before_login", "登录前清空登录缓存", true)
+
+    newRow(debug_layout_调试)
     addButton(debug_layout_调试, nil, "安装游戏官服", "install_new_game(0)")
     addButton(debug_layout_调试, nil, "安装游戏b服", "install_new_game(1)")
 

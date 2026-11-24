@@ -141,6 +141,10 @@ if delete_download_floder == true then delele_download_file() end
 
 if auto_update_gameclient == true then auto_update_game() end
 
+if clear_userdata_before_login == true then
+    clear_official_account()
+end
+
 if getPackageName() == "com.bilabila.arknightsspeedrun2" then
     check_server_is_close()
 end
@@ -230,6 +234,10 @@ elseif not crontab_enable_only and (not extra_mode and true or extra_mode_multi)
         end
 
         log(job)
+        -- 清空登录态
+        if clear_userdata_before_login == true then
+            clear_official_account()
+        end
         if not skip_account then run(job) end
     end
     saveConfig("continue_account", '')
@@ -246,11 +254,19 @@ elseif not crontab_enable_only then
         username = username:trim()
         password = password:trim()
         table.insert(job, 1, "退出账号")
+        -- 清空登录态
+        if clear_userdata_before_login == true then
+            clear_official_account()
+        end
     elseif #strOr(single_account) > 0 and #strOr(single_password) > 0 then
         username = single_account
         password = single_password
         if single_account_login then
             table.insert(job, 1, "退出账号")
+            -- 清空登录态
+            if clear_userdata_before_login == true then
+                clear_official_account()
+            end
         end
     end
 

@@ -4443,6 +4443,7 @@ update_state_from_debugui = function()
 
 
     catch_run_crash = (catch_run_crash == nil) and true or catch_run_crash
+    clear_userdata_before_login = (clear_userdata_before_login == nil) and true or clear_userdata_before_login
 
     if not (always_enable_log or enable_log) then run = disable_log_wrapper(run) end
     QQ = (QQ or ''):commonmap():trim()
