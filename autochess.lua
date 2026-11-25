@@ -1187,7 +1187,13 @@ autochess.卫戍协议通关循环 = function()
         ssleep(.5)
         team_x, team_y = findNoBadgeTeam()
         if not team_x then
-            log("第二页没有找到没有角标的分队2")
+            log("第二页没有找到没有角标的分队")
+            tap("卫戍协议分队滚动条下面")
+            ssleep(.5)
+            team_x, team_y = findNoBadgeTeam()
+            if not team_x then
+                log("第三页没有找到没有角标的分队")
+            end
         end
     end
 
